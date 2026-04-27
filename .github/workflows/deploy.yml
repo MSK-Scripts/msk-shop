@@ -26,7 +26,7 @@ jobs:
 
       # ── 3. Install ───────────────────────────────────────────
       - name: 📦 Install dependencies
-        run: npm install
+        run: npm ci
 
       # ── 4. Build ─────────────────────────────────────────────
       # NEXT_PUBLIC_* vars must be available at build time.
@@ -77,7 +77,7 @@ jobs:
             printf 'TEBEX_PRIVATE_KEY=%s\n'               "$TEBEX_PRIVATE"     >> /opt/msk-shop/.env.local
 
             # Install only production dependencies
-            npm install --omit=dev
+            npm ci --omit=dev
 
             # Fix ownership
             chown -R www-data:www-data /opt/msk-shop/
