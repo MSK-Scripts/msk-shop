@@ -83,8 +83,9 @@ jobs:
             # Install only production dependencies
             npm ci --omit=dev
 
-            # Fix ownership
+            # Fix all permissions — must run after npm ci and before restart
             chown -R www-data:www-data /opt/msk-shop/
+            chmod -R u+w /opt/msk-shop/.next/
 
             # Reload service file if it changed
             cp /opt/msk-shop/msk-shop.service /etc/systemd/system/msk-shop.service
