@@ -48,7 +48,7 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           port: ${{ secrets.FTP_PORT }}
-          source: ".next/,public/,content/,package.json,package-lock.json,next.config.ts,msk-shop.service"
+          source: ".next/,public/,content/,package.json,package-lock.json,next.config.js,msk-shop.service"
           target: /opt/msk-shop/
 
       # ── 6. Server setup ──────────────────────────────────────
@@ -69,6 +69,10 @@ jobs:
           envs: TEBEX_PUBLIC_TOKEN,TEBEX_PROJECT_ID,BASE_URL,TEBEX_PRIVATE
           script: |
             cd /opt/msk-shop
+
+            # Fix npm cache permissions for www-data (uid 33)
+            mkdir -p /var/www/.npm
+            chown -R 33:33 /var/www/.npm
 
             # Write .env.local safely via env vars (secrets never appear in script text)
             printf 'NEXT_PUBLIC_TEBEX_PUBLIC_TOKEN=%s\n' "$TEBEX_PUBLIC_TOKEN" >  /opt/msk-shop/.env.local
