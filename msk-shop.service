@@ -1,0 +1,19 @@
+[Unit]
+Description=MSK Scripts Shop (Next.js)
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/opt/msk-shop
+
+# KORREKTUR: Nutze den direkten Pfad zur lokalen Binary anstatt npx!
+ExecStart=/opt/msk-shop/node_modules/.bin/next start -p 3005
+
+Restart=always
+RestartSec=5
+Environment=NODE_ENV=production
+EnvironmentFile=/opt/msk-shop/.env.local
+
+[Install]
+WantedBy=multi-user.target
