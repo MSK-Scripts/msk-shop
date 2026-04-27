@@ -13,10 +13,10 @@ const nextConfig = {
     const cspHeader = `
       default-src 'self';
       script-src 'self' 'unsafe-eval' 'unsafe-inline';
-      style-src 'self' 'unsafe-inline' fonts.googleapis.com;
+      style-src 'self' 'unsafe-inline';
       img-src 'self' blob: data: cdn.tebex.io *.tebex.io dunb17ur4ymx4.cloudfront.net *.cloudfront.net *.msk-scripts.de;
-      font-src 'self' data: fonts.gstatic.com;
-      connect-src 'self' ws: wss: https:;
+      font-src 'self' data:;
+      connect-src 'self' ws: wss: https://headless.tebex.io https://ident.tebex.io https://discord.com;
       object-src 'none';
       base-uri 'self';
       form-action 'self';

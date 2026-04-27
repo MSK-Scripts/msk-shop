@@ -2,8 +2,15 @@ import fs from 'fs'
 import path from 'path'
 
 const LEGAL_DIR = path.join(process.cwd(), 'content', 'legal')
+// Allowlist of valid slugs — prevents path traversal attacks
+const ALLOWED_SLUGS = ['impressum', 'privacy', 'terms'] as const
+type LegalSlug = typeof ALLOWED_SLUGS[number]
 
 export function getLegalContent(slug: string): string {
+  // Validate slug against allowlist to prevent path traversal (e.g. ../../.env.local)
+  if (!ALLOWED_SLUGS.includes(slug as LegalSlug)) {
+    throw new Error(`Invalid legal slug: ${slug}`)
+  }
   const filePath = path.join(LEGAL_DIR, `${slug}.md`)
   return fs.readFileSync(filePath, 'utf-8')
 }
