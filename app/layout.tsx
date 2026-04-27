@@ -1,9 +1,19 @@
 import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
 import './globals.css'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { CartDrawer } from '@/components/cart/CartDrawer'
 import { SalePriceFetcher } from '@/components/SalePriceFetcher'
+
+// next/font/google automatically self-hosts Inter at build time.
+// No requests to fonts.googleapis.com at runtime.
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+  display: 'swap',
+  variable: '--font-inter',
+})
 
 export const metadata: Metadata = {
   title: 'MSK Scripts Shop',
@@ -12,9 +22,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={inter.variable}>
       <body className="flex flex-col min-h-screen">
-        {/* Navbar has its own Suspense boundary for useSearchParams */}
         <Navbar />
         <CartDrawer />
         <SalePriceFetcher />

@@ -1,0 +1,91 @@
+name: Deploy MSK Shop
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Build & Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── 1. Checkout ──────────────────────────────────────────
+      - name: ⬇️ Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      # ── 2. Node.js ───────────────────────────────────────────
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      # ── 3. Install ───────────────────────────────────────────
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      # ── 4. Build ─────────────────────────────────────────────
+      # NEXT_PUBLIC_* vars must be available at build time.
+      - name: 🏗️ Build
+        env:
+          NEXT_PUBLIC_TEBEX_PUBLIC_TOKEN: ${{ secrets.NEXT_PUBLIC_TEBEX_PUBLIC_TOKEN }}
+          NEXT_PUBLIC_TEBEX_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_TEBEX_PROJECT_ID }}
+          NEXT_PUBLIC_BASE_URL: ${{ secrets.NEXT_PUBLIC_BASE_URL }}
+          TEBEX_PRIVATE_KEY: ${{ secrets.TEBEX_PRIVATE_KEY }}
+        run: npm run build
+
+      # ── 5. Deploy via SCP ────────────────────────────────────
+      # Transfers build output + runtime files to the server.
+      # Source must be comma-separated (not YAML block scalar).
+      - name: 🚀 Deploy to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: ${{ secrets.FTP_PORT }}
+          source: ".next/,public/,content/,package.json,package-lock.json,next.config.ts,msk-shop.service"
+          target: /opt/msk-shop/
+
+      # ── 6. Server setup ──────────────────────────────────────
+      # Secrets are passed via env: (not interpolated into script text)
+      # and written to .env.local using printf for safe handling.
+      - name: 🛠️ Install production deps, set permissions & restart
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          TEBEX_PUBLIC_TOKEN: ${{ secrets.NEXT_PUBLIC_TEBEX_PUBLIC_TOKEN }}
+          TEBEX_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_TEBEX_PROJECT_ID }}
+          BASE_URL: ${{ secrets.NEXT_PUBLIC_BASE_URL }}
+          TEBEX_PRIVATE: ${{ secrets.TEBEX_PRIVATE_KEY }}
+        with:
+          host: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: ${{ secrets.FTP_PORT }}
+          envs: TEBEX_PUBLIC_TOKEN,TEBEX_PROJECT_ID,BASE_URL,TEBEX_PRIVATE
+          script: |
+            cd /opt/msk-shop
+
+            # Write .env.local safely via env vars (secrets never appear in script text)
+            printf 'NEXT_PUBLIC_TEBEX_PUBLIC_TOKEN=%s\n' "$TEBEX_PUBLIC_TOKEN" >  /opt/msk-shop/.env.local
+            printf 'NEXT_PUBLIC_TEBEX_PROJECT_ID=%s\n'   "$TEBEX_PROJECT_ID"  >> /opt/msk-shop/.env.local
+            printf 'NEXT_PUBLIC_BASE_URL=%s\n'            "$BASE_URL"          >> /opt/msk-shop/.env.local
+            printf 'TEBEX_PRIVATE_KEY=%s\n'               "$TEBEX_PRIVATE"     >> /opt/msk-shop/.env.local
+
+            # Install only production dependencies
+            npm ci --omit=dev
+
+            # Fix ownership
+            chown -R www-data:www-data /opt/msk-shop/
+
+            # Reload service file if it changed
+            cp /opt/msk-shop/msk-shop.service /etc/systemd/system/msk-shop.service
+            systemctl daemon-reload
+
+            # Restart the shop
+            systemctl restart msk-shop
+            systemctl status msk-shop --no-pager
