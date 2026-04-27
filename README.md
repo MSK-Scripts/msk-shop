@@ -158,7 +158,7 @@ npm run build
 
 ```bash
 chown -R www-data:www-data /opt/msk-shop
-chmod -R 755 /opt/msk-shop
+# chmod -R 755 /opt/msk-shop # Do NOT use this command!
 ```
 
 ---
@@ -182,13 +182,14 @@ a2enmod proxy proxy_http rewrite ssl headers
 
 cp /opt/msk-shop/msk-shop.conf /etc/apache2/sites-available/msk-shop.conf
 cp /opt/msk-shop/msk-shop_ssl.conf /etc/apache2/sites-available/msk-shop_ssl.conf
-a2ensite msk-shop.conf
-a2ensite msk-shop_ssl.conf
+a2ensite msk-shop.conf msk-shop_ssl.conf
 
 # Get SSL certificate if not already done
+# You don't need certbot if you use your own certificate, just change it in msk-shop_ssl.conf
 apt install certbot python3-certbot-apache
 certbot --apache -d msk-scripts.de -d www.msk-scripts.de
 
+# Reload apache2 after changes
 systemctl reload apache2
 ```
 
