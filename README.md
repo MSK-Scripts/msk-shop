@@ -180,8 +180,10 @@ systemctl status msk-shop
 ```bash
 a2enmod proxy proxy_http rewrite ssl headers
 
-cp /opt/msk-shop/msk-shop.apache.conf /etc/apache2/sites-available/msk-shop.conf
+cp /opt/msk-shop/msk-shop.conf /etc/apache2/sites-available/msk-shop.conf
+cp /opt/msk-shop/msk-shop_ssl.conf /etc/apache2/sites-available/msk-shop_ssl.conf
 a2ensite msk-shop.conf
+a2ensite msk-shop_ssl.conf
 
 # Get SSL certificate if not already done
 apt install certbot python3-certbot-apache
