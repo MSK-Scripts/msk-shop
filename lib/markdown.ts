@@ -3,7 +3,7 @@ import path from 'path'
 
 const LEGAL_DIR = path.join(process.cwd(), 'content', 'legal')
 // Allowlist of valid slugs — prevents path traversal attacks
-const ALLOWED_SLUGS = ['impressum', 'privacy', 'terms'] as const
+const ALLOWED_SLUGS = ['imprint', 'privacy', 'terms'] as const
 type LegalSlug = typeof ALLOWED_SLUGS[number]
 
 export function getLegalContent(slug: string): string {
