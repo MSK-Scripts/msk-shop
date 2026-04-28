@@ -28,10 +28,10 @@ export async function getCategory(id: string | number): Promise<TebexCategory> {
   return (await res.json()).data
 }
 
-export async function createBasket(completeUrl: string, cancelUrl: string): Promise<TebexBasket> {
+export async function createBasket(): Promise<TebexBasket> {
   const res = await fetch('/api/basket', {
     method: 'POST', headers: H,
-    body: JSON.stringify({ complete_url: completeUrl, cancel_url: cancelUrl }),
+    body: JSON.stringify({}),
   })
   const data = await res.json()
   if (!res.ok) throw new Error(`createBasket: ${res.status}`)

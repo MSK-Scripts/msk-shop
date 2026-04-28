@@ -3,17 +3,8 @@ import { getBasketCreateAuth, TEBEX_BASE, TEBEX_HEADERS } from './auth'
 import { rateLimit } from '@/lib/rateLimit'
 
 const PUBLIC_TOKEN = process.env.NEXT_PUBLIC_TEBEX_PUBLIC_TOKEN!
-const ALLOWED_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://www.msk-scripts.de'
-
-// Only allow redirect URLs pointing to our own domain (prevents open redirect / SSRF)
-function isAllowedUrl(url: unknown): boolean {
-  if (typeof url !== 'string') return false
-  try {
-    const parsed = new URL(url)
-    const allowed = new URL(ALLOWED_BASE_URL)
-    return parsed.hostname === allowed.hostname
-  } catch { return false }
-}
+// Always use server-side BASE_URL for redirect URLs — client cannot inject arbitrary URLs
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://www.msk-scripts.de'
 
 export async function POST(req: NextRequest) {
   try {
@@ -25,20 +16,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
     }
 
-    const body = await req.json()
-
-    // Validate redirect URLs — prevents open redirect / SSRF
-    if (!isAllowedUrl(body.complete_url) || !isAllowedUrl(body.cancel_url)) {
-      return NextResponse.json({ error: 'Invalid redirect URL' }, { status: 400 })
-    }
-
     const basketBody: Record<string, unknown> = {
-      complete_url: body.complete_url,
-      cancel_url: body.cancel_url,
+      // Redirect URLs always come from server ENV — never from client body
+      complete_url: `${BASE_URL}/checkout?status=complete`,
+      cancel_url: `${BASE_URL}/cart`,
       complete_auto_redirect: false,
       ip_address: ip,
     }
-    if (body.username) basketBody.username = body.username
 
     const res = await fetch(`${TEBEX_BASE}/accounts/${PUBLIC_TOKEN}/baskets`, {
       method: 'POST',

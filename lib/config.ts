@@ -66,7 +66,29 @@ export const PACKAGE_TAGS: Record<number, string[]> = {
   6446947: ['oxmysql', 'msk_core', 'ox_inventory', 'msk_enginetoggle'], // MSK VehicleKeys - S
 }
 
-// ── Site Config ───────────────────────────────────────────────
+// ── News Popup ────────────────────────────────────────────
+// Shown bottom-right on every full page load. Closes with X button.
+// Set enabled: false to hide it completely.
+
+export const NEWS_POPUP = {
+  enabled: true,
+
+  title: '🎉 New Release',
+
+  // Supports simple text. Use \n for line breaks.
+  text: 'MSK VehicleKeys v2.0 is now available with QBCore support and major performance improvements.',
+
+  // Optional button — set to null to hide it
+  button: {
+    label: 'View Package',
+    href: '/packages/6446947',
+  } as { label: string; href: string } | null,
+
+  // Optional second button — set to null to hide it
+  secondButton: null as { label: string; href: string } | null,
+}
+
+// ── Site Config ───────────────────────────────────────────
 export const SITE_CONFIG = {
   name: 'MSK Scripts Shop',
   tagline: 'High quality FiveM resources & Discord bots for your server',

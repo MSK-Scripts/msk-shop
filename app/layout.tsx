@@ -15,6 +15,8 @@ const inter = Inter({
   variable: '--font-inter',
 })
 
+import { NewsPopup } from '@/components/ui/NewsPopup'
+
 export const metadata: Metadata = {
   title: 'MSK Scripts Shop',
   description: 'High quality FiveM resources & Discord bots for your server',
@@ -27,6 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Navbar />
         <CartDrawer />
         <SalePriceFetcher />
+        <NewsPopup />
         <main className="flex-1">{children}</main>
         <Footer />
       </body>

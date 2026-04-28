@@ -19,10 +19,7 @@ export function useCart() {
     if (ident) {
       try { const b = await getBasket(ident); setBasket(b); return ident } catch {}
     }
-    const b = await createBasket(
-      `${getBaseUrl()}/checkout?status=complete`,
-      `${getBaseUrl()}/cart`
-    )
+    const b = await createBasket()
     setIdent(b.ident); setBasket(b); return b.ident
   }, [ident, setIdent, setBasket])
 
@@ -190,10 +187,7 @@ export function useCart() {
       if (!basket?.packages?.length) { setLoading(false); return }
       try {
         const baseUrl = typeof window !== 'undefined' ? window.location.origin : getBaseUrl()
-        const newBasket = await createBasket(
-          `${baseUrl}/checkout?status=complete`,
-          `${baseUrl}/cart`
-        )
+        const newBasket = await createBasket()
         // Re-add all packages to new basket
         const storedDiscordId = typeof window !== 'undefined' ? sessionStorage.getItem('discordId') : null
         const currentBasket = await getBasket(ident)
