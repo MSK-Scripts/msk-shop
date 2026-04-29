@@ -1,13 +1,13 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { X, ShoppingBag, Trash2, ExternalLink, Tag, Loader2, ChevronDown, Info } from 'lucide-react'
+import { X, ShoppingBag, Trash2, Tag, Loader2, ChevronDown } from 'lucide-react'
 import { useCartStore } from '@/store/cart'
 import { useCart } from '@/lib/useCart'
 
 export function CartDrawer() {
   const { isOpen, closeCart, basket } = useCartStore()
-  const { removePackage, applyCode, isLoading, total, subtotal, currency, checkoutUrl, itemCount, giftRecipients } = useCart()
+  const { removePackage, applyCode, removeCode, isLoading, total, subtotal, currency, checkoutUrl, itemCount, giftRecipients } = useCart()
   const [couponInput, setCouponInput] = useState('')
   const [couponLoading, setCouponLoading] = useState(false)
   const [couponError, setCouponError] = useState('')
@@ -33,7 +33,7 @@ export function CartDrawer() {
     e.preventDefault()
     if (!couponInput.trim()) return
     if (coupons.length > 0) {
-      setCouponError('Remove the active coupon at checkout first.')
+      setCouponError('Please remove the active coupon first.')
       return
     }
     setCouponLoading(true)
@@ -152,29 +152,18 @@ export function CartDrawer() {
                         <Tag size={12} className="text-accent" />
                         <span className="text-xs text-accent font-mono font-bold">{code}</span>
                       </div>
-                      {/* Tebex Headless API has no coupon removal endpoint.
-                          Removal is only possible via Tebex Checkout. */}
-                      {checkoutUrl ? (
-                        <a
-                          href={checkoutUrl}
-                        title="To remove coupon, go to checkout"
-                        className="text-dim hover:text-danger transition-colors"
-                        >
-                          <X size={12} />
-                        </a>
-                      ) : (
-                        <span className="text-dim"><X size={12} /></span>
-                      )}
+                      <button
+                      onClick={() => removeCode(code)}
+                        disabled={isLoading}
+                      title="Remove coupon"
+                      className="text-dim hover:text-danger transition-colors disabled:opacity-50"
+                      >
+                      {isLoading ? <Loader2 size={12} className="animate-spin" /> : <X size={12} />}
+                      </button>
                     </div>
                   )
                 })}
-                {/* Info note for coupon removal */}
-                {checkoutUrl && (
-                  <div className="flex items-start gap-1.5 text-dim text-[10px]">
-                    <Info size={10} className="mt-0.5 shrink-0" />
-                    <span>To remove coupon, click <a href={checkoutUrl} className="text-accent underline">checkout</a> and remove it there.</span>
-                  </div>
-                )}
+                {/* Info note removed — coupon can now be removed directly */}
               </div>
             )}
 
