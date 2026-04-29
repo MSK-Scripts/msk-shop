@@ -7,7 +7,7 @@ import { useCart } from '@/lib/useCart'
 import { useCartStore } from '@/store/cart'
 
 export default function CartPage() {
-  const { basket, isLoading, removePackage, total, subtotal, currency, checkoutUrl, refreshBasket, giftRecipients } = useCart()
+  const { basket, isLoading, removePackage, removeCode, total, subtotal, currency, checkoutUrl, refreshBasket, giftRecipients } = useCart()
   const { openCart } = useCartStore()
 
   useEffect(() => {
@@ -105,12 +105,13 @@ export default function CartPage() {
                 {coupons.map(c => (
                   <div key={c.code ?? c.coupon_code} className="flex items-center justify-between">
                     <span className="text-accent font-mono text-sm font-bold">{c.code ?? c.coupon_code}</span>
-                    {checkoutUrl && (
-                      <a href={checkoutUrl} target="_blank" rel="noopener noreferrer"
-                        className="text-xs text-dim hover:text-danger transition-colors">
-                        Remove at checkout
-                      </a>
-                    )}
+                    <button
+                      onClick={() => removeCode(c.code ?? c.coupon_code ?? '')}
+                      disabled={isLoading}
+                      className="text-xs text-dim hover:text-danger transition-colors disabled:opacity-50"
+                    >
+                      Remove
+                    </button>
                   </div>
                 ))}
               </div>
