@@ -106,7 +106,7 @@
     @apply bg-surface2 text-accent text-xs font-mono px-1.5 py-0.5 rounded;
   }
   .legal-content hr {
-    @apply border-borderlt my-8;
+    @apply border-borderlt mt-8 mb-2;
   }
   /* Tables */
   .legal-content table {
