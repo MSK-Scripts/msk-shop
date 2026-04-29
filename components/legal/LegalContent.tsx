@@ -3,11 +3,10 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { ChevronDown } from 'lucide-react'
-import { renderMarkdown } from '@/lib/markdown'
 
 interface Props {
-  contentEn: string
-  contentDe: string
+  htmlEn: string
+  htmlDe: string
   breadcrumb: string
   href: string
 }
@@ -17,11 +16,11 @@ const languages = [
   { code: 'de', label: 'Deutsch', flag: '🇩🇪' },
 ]
 
-export function LegalContent({ contentEn, contentDe, breadcrumb, href }: Props) {
+export function LegalContent({ htmlEn, htmlDe, breadcrumb, href }: Props) {
   const [lang, setLang] = useState<'en' | 'de'>('en')
   const [open, setOpen] = useState(false)
 
-  const html = renderMarkdown(lang === 'en' ? contentEn : contentDe)
+  const html = lang === 'en' ? htmlEn : htmlDe
   const current = languages.find(l => l.code === lang)!
 
   return (
