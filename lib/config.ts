@@ -73,16 +73,17 @@ export const PACKAGE_TAGS: Record<number, string[]> = {
 export const NEWS_POPUP = {
   enabled: true,
 
-  title: '🎉 New Release',
+  title: '🎉 New Shop',
 
   // Supports simple text. Use \n for line breaks.
-  text: 'MSK VehicleKeys v2.0 is now available with QBCore support and major performance improvements.',
+  text: 'Get 20% off all packages with code NEWSHOP20 at checkout!',
 
   // Optional button — set to null to hide it
-  button: {
-    label: 'View Package',
-    href: '/packages/6446947',
-  } as { label: string; href: string } | null,
+  button: null as { label: string; href: string } | null,
+  // button: {
+  //   label: 'View Package',
+  //   href: '/packages/6446947',
+  // } as { label: string; href: string } | null,
 
   // Optional second button — set to null to hide it
   secondButton: null as { label: string; href: string } | null,
