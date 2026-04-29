@@ -72,7 +72,7 @@ export function LegalContent({ htmlEn, htmlDe, breadcrumb, href }: Props) {
 
       {/* Rendered markdown */}
       <div
-        className="text-muted leading-relaxed"
+        className="legal-content"
         dangerouslySetInnerHTML={{ __html: html }}
       />
     </div>

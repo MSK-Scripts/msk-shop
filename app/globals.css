@@ -66,6 +66,70 @@
 }
 
 @layer components {
+  /* Legal pages markdown renderer — styled via CSS class, not Tailwind utilities in dynamic HTML */
+  .legal-content {
+    @apply text-muted leading-relaxed;
+  }
+  .legal-content h1 {
+    @apply text-3xl font-extrabold text-white mb-4;
+  }
+  .legal-content h2 {
+    @apply text-white text-lg font-bold mt-10 mb-3 pt-2;
+  }
+  .legal-content h3 {
+    @apply text-white font-semibold mt-5 mb-2;
+  }
+  .legal-content p {
+    @apply mt-3 mb-5 leading-relaxed;
+  }
+  .legal-content ul {
+    list-style-type: disc;
+    @apply pl-6 mt-3 mb-5;
+  }
+  .legal-content ol {
+    list-style-type: decimal;
+    @apply pl-6 mt-3 mb-5;
+  }
+  .legal-content li {
+    @apply mb-1.5 leading-relaxed;
+  }
+  .legal-content strong {
+    @apply text-white font-semibold;
+  }
+  .legal-content em {
+    @apply italic;
+  }
+  .legal-content a {
+    @apply text-accent hover:underline;
+  }
+  .legal-content code {
+    @apply bg-surface2 text-accent text-xs font-mono px-1.5 py-0.5 rounded;
+  }
+  .legal-content hr {
+    @apply border-borderlt my-8;
+  }
+  /* Tables */
+  .legal-content table {
+    @apply w-full border-collapse my-5 text-sm;
+  }
+  .legal-content thead tr {
+    @apply bg-surface2;
+  }
+  .legal-content th {
+    @apply text-left px-4 py-2.5 text-xs font-bold text-white uppercase tracking-wide;
+  }
+  .legal-content td {
+    @apply px-4 py-2.5 text-xs text-muted border-t border-borderlt;
+  }
+  .legal-content tbody tr:nth-child(even) {
+    background: rgba(42, 43, 46, 0.4);
+  }
+  .legal-content .table-wrap {
+    @apply overflow-x-auto rounded-lg border border-borderlt my-5;
+  }
+}
+
+@layer components {
   .msk-btn-primary {
     @apply inline-flex items-center justify-center gap-2 rounded-lg bg-accent text-white font-bold text-sm px-4 py-2.5 transition-all hover:bg-accenthov active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
   }

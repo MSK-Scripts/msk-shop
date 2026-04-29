@@ -14,6 +14,7 @@ export function getLegalContent(slug: string): string {
   return fs.readFileSync(filePath, 'utf-8')
 }
 
+// Renders markdown to plain HTML — styled via .legal-content CSS class in globals.css
 export function renderMarkdown(md: string): string {
   const lines = md.split('\n')
   const output: string[] = []
@@ -27,25 +28,25 @@ export function renderMarkdown(md: string): string {
 
     // Horizontal rule ---
     if (/^-{3,}$/.test(line.trim())) {
-      output.push('<hr class="border-borderlt my-6" />')
+      output.push('<hr />')
       i++; continue
     }
 
     // H1
     if (line.startsWith('# ')) {
-      output.push(`<h1 class="text-3xl font-extrabold text-white mb-4">${inline(line.slice(2))}</h1>`)
+      output.push(`<h1>${inline(line.slice(2))}</h1>`)
       i++; continue
     }
 
     // H2
     if (line.startsWith('## ')) {
-      output.push(`<h2 class="text-white text-lg font-bold mt-10 mb-3 pt-2">${inline(line.slice(3))}</h2>`)
+      output.push(`<h2>${inline(line.slice(3))}</h2>`)
       i++; continue
     }
 
     // H3
     if (line.startsWith('### ')) {
-      output.push(`<h3 class="text-white font-semibold mt-5 mb-2">${inline(line.slice(4))}</h3>`)
+      output.push(`<h3>${inline(line.slice(4))}</h3>`)
       i++; continue
     }
 
@@ -60,15 +61,14 @@ export function renderMarkdown(md: string): string {
       continue
     }
 
-    // Unordered list — supports both - and *
+    // Unordered list — supports - and *
     if (line.startsWith('- ') || line.startsWith('* ')) {
       const items: string[] = []
       while (i < lines.length && (lines[i].startsWith('- ') || lines[i].startsWith('* '))) {
-        const content = lines[i].startsWith('- ') ? lines[i].slice(2) : lines[i].slice(2)
-        items.push(`<li class="leading-relaxed">${inline(content)}</li>`)
+        items.push(`<li>${inline(lines[i].slice(2))}</li>`)
         i++
       }
-      output.push(`<ul class="list-disc pl-5 mt-3 mb-5 space-y-1.5">${items.join('')}</ul>`)
+      output.push(`<ul>${items.join('')}</ul>`)
       continue
     }
 
@@ -76,14 +76,14 @@ export function renderMarkdown(md: string): string {
     if (/^\d+\.\s/.test(line)) {
       const items: string[] = []
       while (i < lines.length && /^\d+\.\s/.test(lines[i])) {
-        items.push(`<li class="leading-relaxed">${inline(lines[i].replace(/^\d+\.\s/, ''))}</li>`)
+        items.push(`<li>${inline(lines[i].replace(/^\d+\.\s/, ''))}</li>`)
         i++
       }
-      output.push(`<ol class="list-decimal pl-5 mt-3 mb-5 space-y-1.5">${items.join('')}</ol>`)
+      output.push(`<ol>${items.join('')}</ol>`)
       continue
     }
 
-    // Paragraph
+    // Paragraph — collect consecutive non-special lines
     const paraLines: string[] = []
     while (
       i < lines.length &&
@@ -99,7 +99,7 @@ export function renderMarkdown(md: string): string {
       i++
     }
     if (paraLines.length > 0) {
-      output.push(`<p class="mt-3 mb-5 leading-relaxed">${paraLines.join('<br />')}</p>`)
+      output.push(`<p>${paraLines.join('<br />')}</p>`)
     }
   }
 
@@ -117,36 +117,30 @@ function renderTable(lines: string[]): string {
   const [headerRow, ...bodyRows] = rows
 
   const headers = parseRow(headerRow)
-    .map(h => `<th class="text-left px-4 py-2.5 text-xs font-bold text-white uppercase tracking-wide">${inline(h)}</th>`)
+    .map(h => `<th>${inline(h)}</th>`)
     .join('')
 
-  const body = bodyRows.map((row, ri) => {
+  const body = bodyRows.map(row => {
     const cells = parseRow(row)
-      .map(c => `<td class="px-4 py-2.5 text-xs leading-relaxed">${inline(c)}</td>`)
+      .map(c => `<td>${inline(c)}</td>`)
       .join('')
-    const bg = ri % 2 === 1 ? 'bg-surface2/30' : ''
-    return `<tr class="border-t border-borderlt ${bg}">${cells}</tr>`
+    return `<tr>${cells}</tr>`
   }).join('')
 
-  return `<div class="overflow-x-auto my-5 rounded-lg border border-borderlt">
-  <table class="w-full text-muted border-collapse">
-    <thead><tr class="bg-surface2">${headers}</tr></thead>
-    <tbody>${body}</tbody>
-  </table>
-</div>`
+  return `<div class="table-wrap"><table><thead><tr>${headers}</tr></thead><tbody>${body}</tbody></table></div>`
 }
 
 function inline(text: string): string {
   return text
-    .replace(/\*\*(.+?)\*\*/g, '<strong class="text-white font-semibold">$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/`(.+?)`/g, '<code class="bg-surface2 text-accent text-xs font-mono px-1.5 py-0.5 rounded">$1</code>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, '<em>$1</em>')
+    .replace(/`(.+?)`/g, '<code>$1</code>')
     .replace(
       /\[(.+?)\]\((https?:\/\/.+?)\)/g,
-      '<a href="$2" class="text-accent hover:underline" target="_blank" rel="noopener noreferrer">$1</a>'
+      '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'
     )
     .replace(
       /\[(.+?)\]\((mailto:.+?)\)/g,
-      '<a href="$2" class="text-accent hover:underline">$1</a>'
+      '<a href="$2">$1</a>'
     )
 }
