@@ -60,11 +60,12 @@ export function renderMarkdown(md: string): string {
       continue
     }
 
-    // Unordered list
-    if (line.startsWith('- ')) {
+    // Unordered list — supports both - and *
+    if (line.startsWith('- ') || line.startsWith('* ')) {
       const items: string[] = []
-      while (i < lines.length && lines[i].startsWith('- ')) {
-        items.push(`<li class="leading-relaxed">${inline(lines[i].slice(2))}</li>`)
+      while (i < lines.length && (lines[i].startsWith('- ') || lines[i].startsWith('* '))) {
+        const content = lines[i].startsWith('- ') ? lines[i].slice(2) : lines[i].slice(2)
+        items.push(`<li class="leading-relaxed">${inline(content)}</li>`)
         i++
       }
       output.push(`<ul class="list-disc pl-5 mt-3 mb-5 space-y-1.5">${items.join('')}</ul>`)
@@ -89,6 +90,7 @@ export function renderMarkdown(md: string): string {
       lines[i].trim() !== '' &&
       !lines[i].startsWith('#') &&
       !lines[i].startsWith('- ') &&
+      !lines[i].startsWith('* ') &&
       !lines[i].startsWith('|') &&
       !/^-{3,}$/.test(lines[i].trim()) &&
       !/^\d+\.\s/.test(lines[i])
