@@ -7,7 +7,7 @@
 The responsible party within the meaning of the General Data Protection Regulation (GDPR) is:
 
 **Moritz Kohm**
-Adresse folgt
+Address to follow
 Germany
 
 Email: [info@msk-scripts.de](mailto:info@msk-scripts.de)

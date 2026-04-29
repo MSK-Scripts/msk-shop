@@ -11,8 +11,8 @@ const footerLinks = {
   Legal: [
     { label: 'Imprint', href: '/terms/imprint', external: false },
     { label: 'Privacy Policy', href: '/terms/privacy', external: false },
-    // { label: 'Privacy Policy', href: 'https://checkout.tebex.io/privacy', external: true },
-    { label: 'Terms & Conditions', href: 'https://checkout.tebex.io/terms', external: true },
+    { label: 'Terms & Conditions', href: '/terms', external: false },
+    // { label: 'Terms & Conditions', href: 'https://checkout.tebex.io/terms', external: true },
   ],
 }
 

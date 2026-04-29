@@ -22,6 +22,8 @@ All purchases are processed by **Tebex Limited** (formerly Buycraft), acting as 
 
 Purchasing an MSK Scripts resource grants you a **non-transferable, non-exclusive single-server license** to use the resource on one (1) FiveM server at a time.
 
+This means that the licensor (MSK Scripts) retains all rights to the software, including all intellectual property rights. This includes, but is not limited to, copyrights, trademark rights, and all other intellectual property rights.
+
 - The resource may only be used on a single FiveM server simultaneously
 - Resale, redistribution, or public sharing is strictly prohibited
 - Reverse engineering, decompilation, or circumventing the Asset Escrow system is prohibited
@@ -33,7 +35,7 @@ Purchasing an MSK Scripts resource grants you a **non-transferable, non-exclusiv
 
 As these are digital products, no right of withdrawal applies once the product has been delivered, provided you explicitly agreed at checkout that delivery begins before the withdrawal period expires.
 
-In the event of technical issues attributable to our side, we offer support and may provide refunds on a case-by-case basis. Contact us at: [contact@msk-scripts.de](mailto:contact@msk-scripts.de)
+In the event of technical issues attributable to our side, we offer support and may provide refunds on a case-by-case basis. Contact us at: [info@msk-scripts.de](mailto:info@msk-scripts.de)
 
 ---
 
@@ -69,4 +71,4 @@ We reserve the right to update these Terms & Conditions at any time. Changes wil
 
 ## 10. Governing Law
 
-German law applies. Place of jurisdiction is Mannheim, Germany, to the extent permitted by law.
+These Terms of Use are governed by the laws of the Federal Republic of Germany. The exclusive jurisdiction for all disputes arising out of or in connection with these Terms of Use is the licensor’s place of business, to the extent permitted by law.

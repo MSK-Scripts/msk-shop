@@ -22,6 +22,8 @@ Alle Käufe werden über **Tebex Limited** (früher Buycraft) als Zahlungsdienst
 
 Mit dem Kauf einer MSK Scripts-Ressource erhalten Sie eine **nicht übertragbare, nicht exklusive Einzelserver-Lizenz** zur Nutzung der Ressource auf einem (1) FiveM-Server gleichzeitig.
 
+Das bedeutet, der Lizenzgeber (MSK Scripts) behält alle Rechte an der Software, einschließlich aller Rechte am geistigen Eigentum. Dies umfasst, ohne darauf beschränkt zu sein, Urheberrechte, Markenrechte und alle anderen Rechte des geistigen Eigentums.
+
 - Die Ressource darf nur auf einem einzigen FiveM-Server gleichzeitig betrieben werden
 - Weiterverkauf, Weitergabe oder öffentliche Verbreitung sind strengstens untersagt
 - Reverse Engineering, Dekompilierung oder die Umgehung des Asset-Escrow-Systems sind verboten
@@ -33,7 +35,7 @@ Mit dem Kauf einer MSK Scripts-Ressource erhalten Sie eine **nicht übertragbare
 
 Da es sich um digitale Produkte handelt, besteht nach der Lieferung kein Widerrufsrecht, sofern Sie beim Checkout ausdrücklich zugestimmt haben, dass die Lieferung vor Ablauf der Widerrufsfrist beginnt.
 
-Bei technischen Problemen, die auf unsere Seite zurückzuführen sind, bieten wir Support und können im Einzelfall Erstattungen gewähren. Kontakt: [contact@msk-scripts.de](mailto:contact@msk-scripts.de)
+Bei technischen Problemen, die auf unsere Seite zurückzuführen sind, bieten wir Support und können im Einzelfall Erstattungen gewähren. Kontakt: [info@msk-scripts.de](mailto:info@msk-scripts.de)
 
 ---
 
@@ -69,4 +71,4 @@ Wir behalten uns das Recht vor, diese Nutzungsbedingungen jederzeit zu aktualisi
 
 ## 10. Anwendbares Recht
 
-Es gilt deutsches Recht. Gerichtsstand ist Mannheim, Deutschland, soweit gesetzlich zulässig.
+Diese Nutzungsbedingungen unterliegen dem Recht der Bundesrepublik Deutschland. Gerichtsstand für alle Streitigkeiten aus oder im Zusammenhang mit diesen Nutzungsbedingungen ist der Sitz des Lizenzgebers, soweit gesetzlich zulässig.
