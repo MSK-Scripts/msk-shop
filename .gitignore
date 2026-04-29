@@ -4,6 +4,7 @@ node_modules/
 # Next.js build output
 .next/
 out/
+next-env.d.ts
 
 # Environment variables — NEVER commit these
 .env
@@ -39,6 +40,7 @@ desktop.ini
 *.pem
 *.key
 *.crt
+*.cer
 *.p12
 
 # Vercel / deployment
@@ -46,6 +48,3 @@ desktop.ini
 
 # Debug
 /api/debug/
-
-# Local config overrides
-msk-shop.apache.conf

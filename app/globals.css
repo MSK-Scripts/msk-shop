@@ -106,7 +106,11 @@
     @apply bg-surface2 text-accent text-xs font-mono px-1.5 py-0.5 rounded;
   }
   .legal-content hr {
-    @apply border-borderlt mt-8 mb-2;
+    @apply border-borderlt my-6;
+  }
+  /* Remove top margin from headings that directly follow hr */
+  .legal-content hr + h2 {
+    @apply mt-4;
   }
   /* Tables */
   .legal-content table {

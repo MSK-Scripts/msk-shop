@@ -17,15 +17,21 @@ Tebex Limited is a company registered under the laws of England and Wales.
 Company Number: 08129184
 VAT Number: GB167189962 & EU372035465
 
+---
+
 ## Shop Operator
- 
+
 Moritz Kohm
 
 Email: [info@msk-scripts.de](mailto:info@msk-scripts.de)
 
+---
+
 ## Liability Disclaimer
 
 Despite careful content control, we assume no liability for the content of external links. The operators of the linked pages are solely responsible for their content.
+
+---
 
 ## Payment Processing
 

@@ -17,15 +17,21 @@ Tebex Limited ist eine nach englischem und walisischem Recht eingetragene Gesell
 Registernummer: 08129184
 USt-IdNr.: GB167189962 & EU372035465
 
+---
+
 ## Shop-Betreiber
 
 Moritz Kohm
 
 E-Mail: [info@msk-scripts.de](mailto:info@msk-scripts.de)
 
+---
+
 ## Haftungsausschluss
 
 Trotz sorgfältiger inhaltlicher Kontrolle übernehmen wir keine Haftung für die Inhalte externer Links. Für den Inhalt der verlinkten Seiten sind ausschließlich deren Betreiber verantwortlich.
+
+---
 
 ## Zahlungsabwicklung
 
