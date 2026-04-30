@@ -3,8 +3,9 @@
 ## Angaben gemäß § 5 DDG
 
 **Moritz Kohm**
-MSK Scripts
-Adresse folgt
+c/o Impressumservice Dein-Impressum  
+Stettiner Str. 41  
+35410 Hungen  
 Deutschland
 
 **Kontakt:**  
@@ -21,8 +22,10 @@ Der Verwendung meiner/unserer Daten für Marketing- und Werbezwecke gemäß § 7
 
 ## Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV
 
-Moritz Kohm
-Adresse folgt
+**Moritz Kohm**
+c/o Impressumservice Dein-Impressum  
+Stettiner Str. 41  
+35410 Hungen  
 Deutschland
 
 ---

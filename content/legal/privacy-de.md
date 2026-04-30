@@ -6,8 +6,10 @@
 
 Der Verantwortliche im Sinne der Datenschutz-Grundverordnung (DSGVO) ist:
 
-**Moritz Kohmn**
-Adresse folgt
+**Moritz Kohm**
+c/o Impressumservice Dein-Impressum  
+Stettiner Str. 41  
+35410 Hungen  
 Deutschland
 
 E-Mail: [info@msk-scripts.de](mailto:info@msk-scripts.de)

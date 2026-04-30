@@ -7,7 +7,9 @@
 The responsible party within the meaning of the General Data Protection Regulation (GDPR) is:
 
 **Moritz Kohm**
-Address to follow
+c/o Impressumservice Dein-Impressum  
+Stettiner Str. 41  
+35410 Hungen  
 Germany
 
 Email: [info@msk-scripts.de](mailto:info@msk-scripts.de)

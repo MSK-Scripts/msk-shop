@@ -3,8 +3,9 @@
 ## Information pursuant to Section 5 of the German Data Protection Act (DDG)
 
 **Moritz Kohm**
-MSK Scripts
-Address to follow
+c/o Impressumservice Dein-Impressum  
+Stettiner Str. 41  
+35410 Hungen  
 Germany
 
 **Contact:**  
@@ -21,8 +22,10 @@ The use of my/our data for marketing and advertising purposes pursuant to § 7 (
 
 ## Responsible for content pursuant to § 18 (2) MStV
 
-Moritz Kohm
-Address to follow
+**Moritz Kohm**
+c/o Impressumservice Dein-Impressum  
+Stettiner Str. 41  
+35410 Hungen  
 Germany
 
 ---
