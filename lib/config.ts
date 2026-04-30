@@ -76,7 +76,7 @@ export const NEWS_POPUP = {
   title: '🎉 New Shop',
 
   // Supports simple text. Use \n for line breaks.
-  text: 'Get 20% off all packages with code NEWSHOP20 at checkout!',
+  text: 'Get 20% off on all packages with code NEWSHOP20 at checkout!',
 
   // Optional button — set to null to hide it
   button: null as { label: string; href: string } | null,
