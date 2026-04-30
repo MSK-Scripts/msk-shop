@@ -2,11 +2,20 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { X } from 'lucide-react'
+import { X, Copy, Check } from 'lucide-react'
 import { NEWS_POPUP } from '@/lib/config'
 
 export function NewsPopup() {
   const [visible, setVisible] = useState(false)
+  const [copied, setCopied] = useState(false)
+  const [hovered, setHovered] = useState(false)
+
+  function copyCode() {
+    if (!NEWS_POPUP.coupon) return
+    navigator.clipboard.writeText(NEWS_POPUP.coupon)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
 
   // Show on every full page load (not on client-side navigation)
   // We use a sessionStorage flag that's set per-navigation to distinguish
@@ -47,6 +56,40 @@ export function NewsPopup() {
         <p className="text-muted text-xs leading-relaxed mb-3.5">
           {NEWS_POPUP.text}
         </p>
+
+        {/* Coupon Code */}
+        {NEWS_POPUP.coupon && (
+          <div
+            onClick={copyCode}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+            className="mb-3.5 rounded-lg overflow-hidden border border-borderlt cursor-pointer select-none"
+            title="Click to copy"
+          >
+            {/* Code row */}
+            <div className="bg-surface2 px-3 py-2 flex items-center justify-between gap-2">
+              <span className="text-white font-bold text-sm tracking-widest font-mono">
+                {NEWS_POPUP.coupon}
+              </span>
+              {copied
+                ? <Check size={13} className="text-accent shrink-0" />
+                : <Copy size={13} className="text-dim shrink-0" />
+              }
+            </div>
+            {/* Copy button row */}
+            <div
+              className="px-3 py-1.5 flex items-center justify-center transition-colors duration-150"
+              style={{ backgroundColor: copied ? '#4e9827' : hovered ? '#5eb131' : '#3a3b3e' }}
+            >
+              <span
+                className="text-[10px] font-bold tracking-widest uppercase transition-colors duration-150"
+                style={{ color: copied || hovered ? '#ffffff' : '#8d9096' }}
+              >
+                {copied ? 'Copied!' : 'Click to Copy'}
+              </span>
+            </div>
+          </div>
+        )}
 
         {/* Buttons */}
         {(NEWS_POPUP.button || NEWS_POPUP.secondButton) && (

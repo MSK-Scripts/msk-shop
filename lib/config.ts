@@ -87,6 +87,11 @@ export const NEWS_POPUP = {
 
   // Optional second button — set to null to hide it
   secondButton: null as { label: string; href: string } | null,
+
+  // Optional coupon code — set to null to hide it
+  // Displays a copyable coupon field below the text
+  // coupon: null as string | null,
+  coupon: 'NEWSHOP20',
 }
 
 // ── Site Config ───────────────────────────────────────────
