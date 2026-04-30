@@ -46,7 +46,7 @@ jobs:
         with:
           host: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.FTP_PORT }}
           source: ".next/,public/,content/,package.json,package-lock.json,next.config.js,msk-shop.service"
           target: /opt/msk-shop/
@@ -64,7 +64,7 @@ jobs:
         with:
           host: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.FTP_PORT }}
           envs: TEBEX_PUBLIC_TOKEN,TEBEX_PROJECT_ID,BASE_URL,TEBEX_PRIVATE
           script: |
