@@ -17,7 +17,7 @@
 //    link        → where the button points (GitHub, Discord, website...)
 //    linkLabel   → label of the button, e.g. "View on GitHub" / "Get Bot"
 //    badges      → list of badges to show (label + variant)
-//                  variants: "esx" | "qb" | "standalone" | "js" | "lua"
+//                  variants: "esx" | "qb" | "standalone" | "js" | "lua" | "py" | "discord" | "fivem"
 //                  Add as many badges as you want, or leave the array empty []
 //    tags        → list of tags to show (e.g. ['Installation', 'Configuration'])
 //
@@ -32,7 +32,7 @@ export interface CustomPackage {
   image: string
   link: string
   linkLabel: string
-  badges: { label: string; variant: 'esx' | 'qb' | 'standalone' | 'js' | 'lua' }[]
+  badges: { label: string; variant: 'esx' | 'qb' | 'standalone' | 'js' | 'lua' | 'py' | 'discord' | 'fivem' }[]
   tags: string[]
 }
 
@@ -55,7 +55,7 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
   // Add your custom packages here ↓
   {
     id: 'msk-discord-ticketbot',
-    name: 'MSK Discord Ticketbot',
+    name: 'Discord Ticketbot',
     description: 'A powerful Discord bot for your FiveM community with role sync, ticket system and more.',
     price: 'Free',
     isFree: true,
@@ -63,10 +63,25 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
     link: 'https://github.com/MSK-Scripts/discord_ticketbot',
     linkLabel: 'View on GitHub',
     badges: [
-      { label: 'Discord', variant: 'standalone' },
+      { label: 'Discord', variant: 'discord' },
       { label: 'JavaScript', variant: 'js' },
     ],
     tags: ['Installation', 'Configuration', 'Ticket System'],
+  },
+  {
+    id: 'msk-discord-multibot',
+    name: 'Discord Multibot',
+    description: 'A Discord multibot, allowing you to create multiple bots for different purposes, such as a event bot, a command bot, and more.',
+    price: 'Free',
+    isFree: true,
+    image: 'msk_multibot_banner.png',
+    link: 'https://github.com/MSK-Scripts/discord_multibot',
+    linkLabel: 'View on GitHub',
+    badges: [
+      { label: 'Discord', variant: 'discord' },
+      { label: 'Python', variant: 'py' },
+    ],
+    tags: ['Installation', 'Configuration'],
   },
   {
     id: 'msk-core',
@@ -78,24 +93,26 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
     link: 'https://github.com/MSK-Scripts/msk_core',
     linkLabel: 'View on GitHub',
     badges: [
-      { label: 'FiveM', variant: 'standalone' },
+      { label: 'FiveM', variant: 'fivem' },
       { label: 'Lua', variant: 'lua' },
+      { label: 'Standalone', variant: 'standalone' },
     ],
     tags: ['Library for MSK Scripts', 'Utilities'],
   },
   {
     id: 'msk-enginetoggle',
     name: 'MSK EngineToggle',
-    description: 'A simple resource to toggle the engine of a vehicle in FiveM.',
+    description: 'A simple resource to toggle the engine of a vehicle in FiveM. Compatible with various vehiclekey scripts.',
     price: 'Free',
     isFree: true,
     image: 'msk_enginetoggle.png',
     link: 'https://github.com/MSK-Scripts/msk_enginetoggle',
     linkLabel: 'View on GitHub',
     badges: [
+      { label: 'FiveM', variant: 'fivem' },
+      { label: 'Lua', variant: 'lua' },
       { label: 'ESX', variant: 'esx' },
       { label: 'QBCore', variant: 'qb' },
-      { label: 'Lua', variant: 'lua' },
     ],
     tags: ['Vehicle', 'EngineToggle', 'MSK Vehiclekeys'],
   },

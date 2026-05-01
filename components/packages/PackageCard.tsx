@@ -16,11 +16,14 @@ interface Props {
 }
 
 const badgeStyles = {
-  esx:        'bg-red-500/10 text-red-400 border border-red-500/25',
+  esx:        'bg-[#F7941D]/10 text-[#F7941D] border border-[#F7941D]/25',
   qb:         'bg-purple-500/10 text-purple-400 border border-purple-500/25',
   js:         'bg-yellow-500/10 text-yellow-400 border border-yellow-500/25',
   standalone: 'bg-accent/10 text-accent border border-accent/25',
   lua:        'bg-blue-500/10 text-blue-400 border border-blue-500/25',
+  py:         'bg-sky-500/10 text-sky-400 border border-sky-500/25',
+  discord:    'bg-indigo-500/10 text-indigo-400 border border-indigo-500/25',
+  fivem:      'bg-orange-500/10 text-orange-400 border border-orange-500/25',
 }
 
 export function PackageCard({ pkg, tags, badges, description }: Props) {
@@ -53,7 +56,7 @@ export function PackageCard({ pkg, tags, badges, description }: Props) {
         {/* Sale badge — top right */}
         {hasDiscount && (
           <div className="absolute top-2.5 right-3">
-            <span className="msk-badge bg-danger/10 text-danger border border-danger/25">Sale</span>
+            <span className="msk-badge bg-red-600/15 text-red-500 border border-red-600/30">Sale</span>
           </div>
         )}
         {/* Other badges — bottom left */}

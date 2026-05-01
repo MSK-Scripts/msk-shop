@@ -11,11 +11,14 @@ import { FEATURED_PACKAGE_IDS, PACKAGE_BADGES, PACKAGE_TAGS, PACKAGE_DESCRIPTION
 import { CUSTOM_PACKAGES, CUSTOM_PACKAGES_TITLE } from '@/content/custom-packages'
 
 const badgeStyles = {
-  esx:        'bg-red-500/10 text-red-400 border border-red-500/25',
+  esx:        'bg-[#F7941D]/10 text-[#F7941D] border border-[#F7941D]/25',
   qb:         'bg-purple-500/10 text-purple-400 border border-purple-500/25',
   js:         'bg-yellow-500/10 text-yellow-400 border border-yellow-500/25',
   standalone: 'bg-accent/10 text-accent border border-accent/25',
   lua:        'bg-blue-500/10 text-blue-400 border border-blue-500/25',
+  py:         'bg-sky-500/10 text-sky-400 border border-sky-500/25',
+  discord:    'bg-indigo-500/10 text-indigo-400 border border-indigo-500/25',
+  fivem:      'bg-orange-500/10 text-orange-400 border border-orange-500/25',
 }
 
 export const revalidate = 60
@@ -65,13 +68,9 @@ export default async function HomePage() {
               <span className="msk-label">Github</span>
               <h2 className="msk-section-title">{CUSTOM_PACKAGES_TITLE}</h2>
             </div>
-            <div className={`grid gap-4 ${
-              CUSTOM_PACKAGES.length === 1 ? 'grid-cols-1 max-w-sm mx-auto' :
-              CUSTOM_PACKAGES.length === 2 ? 'grid-cols-1 sm:grid-cols-2' :
-              'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
-            }`}>
+          <div className="flex flex-wrap justify-center gap-4">
             {CUSTOM_PACKAGES.map(pkg => (
-              <div key={pkg.id} className="msk-card flex flex-col group">
+              <div key={pkg.id} className="w-full sm:w-[calc(50%-8px)] lg:w-[calc(33.333%-11px)] msk-card flex flex-col group">
                 {/* Image */}
                 <div className="relative h-40 overflow-hidden bg-gradient-to-br from-[#151a14] to-[#0f160f]">
                   {pkg.image ? (

@@ -12,16 +12,19 @@ export const FEATURED_PACKAGE_IDS: number[] = [
 // ── Package Badges ────────────────────────────────────────────
 // Add one or more badges to packages by their Tebex package ID.
 // badge.label = Text shown on the badge (e.g. "ESX", "QBCore", "Standalone")
-// badge.variant = Color style: 'esx' | 'qb' | 'standalone' | 'js' | 'lua'
+// badge.variant = Color style: 'esx' | 'qb' | 'standalone' | 'js' | 'lua' | 'py' | 'discord' | 'fivem'
 //
 // Color reference:
-//   esx        → red
+//   esx        → orange (ESX logo color)
 //   qb         → purple
 //   standalone → green (accent)
 //   js         → yellow
 //   lua        → blue
+//   py         → sky blue
+//   discord    → indigo
+//   fivem      → orange
 
-export type BadgeVariant = 'esx' | 'qb' | 'standalone' | 'js' | 'lua'
+export type BadgeVariant = 'esx' | 'qb' | 'standalone' | 'js' | 'lua' | 'py' | 'discord' | 'fivem'
 export interface Badge { label: string; variant: BadgeVariant }
 
 export const PACKAGE_BADGES: Record<number, Badge[]> = {
