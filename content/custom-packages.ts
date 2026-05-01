@@ -75,7 +75,7 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
     price: 'Free',
     isFree: true,
     image: 'msk_core_banner.png',
-    link: 'https://github.com/MSK-Scripts/msk-core',
+    link: 'https://github.com/MSK-Scripts/msk_core',
     linkLabel: 'View on GitHub',
     badges: [
       { label: 'FiveM', variant: 'standalone' },
@@ -90,7 +90,7 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
     price: 'Free',
     isFree: true,
     image: 'msk_enginetoggle.png',
-    link: 'https://github.com/MSK-Scripts/msk-enginetoggle',
+    link: 'https://github.com/MSK-Scripts/msk_enginetoggle',
     linkLabel: 'View on GitHub',
     badges: [
       { label: 'ESX', variant: 'esx' },
