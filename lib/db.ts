@@ -22,7 +22,7 @@ export function getPool(): mysql.Pool {
 
 // Convenience wrapper – executes a parameterised query and returns rows.
 export async function query<T = unknown>(sql: string, params?: unknown[]): Promise<T[]> {
-  const [rows] = await getPool().execute(sql, params);
+  const [rows] = await getPool().execute(sql, params as mysql.QueryValue[]);
   return rows as T[];
 }
 
