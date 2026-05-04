@@ -74,12 +74,6 @@ jobs:
             mkdir -p /var/www/.npm
             chown -R 33:33 /var/www/.npm
 
-            # Write .env.local safely via env vars (secrets never appear in script text)
-            printf 'NEXT_PUBLIC_TEBEX_PUBLIC_TOKEN=%s\n' "$TEBEX_PUBLIC_TOKEN" >  /opt/msk-shop/.env.local
-            printf 'NEXT_PUBLIC_TEBEX_PROJECT_ID=%s\n'   "$TEBEX_PROJECT_ID"  >> /opt/msk-shop/.env.local
-            printf 'NEXT_PUBLIC_BASE_URL=%s\n'            "$BASE_URL"          >> /opt/msk-shop/.env.local
-            printf 'TEBEX_PRIVATE_KEY=%s\n'               "$TEBEX_PRIVATE"     >> /opt/msk-shop/.env.local
-
             # Install only production dependencies
             npm ci --omit=dev
 

@@ -51,6 +51,14 @@ CREATE TABLE IF NOT EXISTS ticketbot_rate_limits (
     PRIMARY KEY (api_key, window_start)
 );
 
+-- GitHub Sponsors lookup (written by webhook, read during verify)
+CREATE TABLE IF NOT EXISTS ticketbot_sponsors (
+    github_username VARCHAR(100) PRIMARY KEY,
+    tier            ENUM('basic', 'premium', 'premium_plus') NOT NULL DEFAULT 'basic',
+    active          BOOLEAN      NOT NULL DEFAULT TRUE,
+    updated_at      DATETIME     NOT NULL DEFAULT NOW() ON UPDATE NOW()
+);
+
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_transcripts_guild   ON ticketbot_transcripts(guild_id);
 CREATE INDEX IF NOT EXISTS idx_transcripts_expires ON ticketbot_transcripts(expires_at);

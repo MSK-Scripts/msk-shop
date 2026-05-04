@@ -95,6 +95,15 @@ export async function POST(req: Request): Promise<NextResponse> {
       const expiry = new Date();
       expiry.setDate(expiry.getDate() + 32); // ~1 month buffer
 
+      // Update sponsors lookup table
+      await query(
+        `INSERT INTO ticketbot_sponsors (github_username, tier, active)
+         VALUES (?, ?, TRUE)
+         ON DUPLICATE KEY UPDATE tier = ?, active = TRUE`,
+        [githubUsername, tier, tier],
+      );
+
+      // Update guild record if already linked
       await query(
         `UPDATE ticketbot_guilds
          SET tier = ?, active = TRUE, expires_at = ?
@@ -107,7 +116,15 @@ export async function POST(req: Request): Promise<NextResponse> {
 
     case 'cancelled':
     case 'pending_cancellation': {
-      // On cancellation: downgrade to basic but keep the row active so transcripts still work.
+      // Update sponsors lookup table
+      await query(
+        `INSERT INTO ticketbot_sponsors (github_username, tier, active)
+         VALUES (?, 'basic', FALSE)
+         ON DUPLICATE KEY UPDATE tier = 'basic', active = FALSE`,
+        [githubUsername],
+      );
+
+      // Downgrade guild record if already linked
       await query(
         `UPDATE ticketbot_guilds
          SET tier = 'basic', expires_at = NULL
