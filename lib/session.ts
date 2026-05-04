@@ -9,8 +9,9 @@ export interface DiscordGuild {
 }
 
 export interface VerifySession {
-  githubUsername?: string;
-  guilds?:         DiscordGuild[];
+  githubUsername?:  string;
+  discordUserId?:   string;
+  guilds?:          DiscordGuild[];
 }
 
 /** Generate a random state token for OAuth CSRF protection. */

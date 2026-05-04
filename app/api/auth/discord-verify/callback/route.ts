@@ -58,13 +58,21 @@ export async function GET(req: Request) {
     return NextResponse.redirect(`${baseUrl}/verify?error=discord_token_failed`);
   }
 
-  // Fetch all guilds the user belongs to
+  // Fetch Discord user ID and guild list in parallel
+  let discordUserId: string;
   let rawGuilds: Array<{ id: string; name: string; icon: string | null; owner: boolean; permissions: string }>;
   try {
-    const guildsRes = await fetch('https://discord.com/api/v10/users/@me/guilds', {
-      headers: { 'Authorization': `Bearer ${tokenData.access_token}` },
-    });
-    rawGuilds = await guildsRes.json();
+    const [userRes, guildsRes] = await Promise.all([
+      fetch('https://discord.com/api/v10/users/@me', {
+        headers: { 'Authorization': `Bearer ${tokenData.access_token}` },
+      }),
+      fetch('https://discord.com/api/v10/users/@me/guilds', {
+        headers: { 'Authorization': `Bearer ${tokenData.access_token}` },
+      }),
+    ]);
+    const discordUser = await userRes.json();
+    rawGuilds         = await guildsRes.json();
+    discordUserId     = discordUser.id;
   } catch {
     return NextResponse.redirect(`${baseUrl}/verify?error=discord_guilds_failed`);
   }
@@ -74,8 +82,8 @@ export async function GET(req: Request) {
     .filter(g => isAdmin(g.permissions, g.owner))
     .map(g => ({ id: g.id, name: g.name, icon: g.icon }));
 
-  // Update session with guild list and redirect to guild selection step
-  const updatedSession = signSession({ githubUsername: session.githubUsername, guilds: adminGuilds });
+  // Update session with guild list + Discord user ID, redirect to guild selection
+  const updatedSession = signSession({ githubUsername: session.githubUsername, discordUserId, guilds: adminGuilds });
   const res            = NextResponse.redirect(`${baseUrl}/verify?step=select`);
 
   res.cookies.set('msk_verify_session', updatedSession, {

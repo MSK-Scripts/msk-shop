@@ -18,7 +18,7 @@ export async function POST(req: Request) {
   const session     = sessionRaw ? parseSession(sessionRaw) : null;
 
   // Must have completed both GitHub and Discord steps
-  if (!session?.githubUsername || !session?.guilds) {
+  if (!session?.githubUsername || !session?.guilds || !session?.discordUserId) {
     return NextResponse.json({ error: 'Incomplete verification. Please start from the beginning.' }, { status: 401 });
   }
 
@@ -58,21 +58,21 @@ export async function POST(req: Request) {
   let apiKey: string;
 
   if (existingGuild) {
-    // Guild exists — update tier, github_username, and reset API key
+    // Guild exists — update tier, github_username, discord_user_id and reset API key
     apiKey = generateApiKey();
     await query(
       `UPDATE ticketbot_guilds
-       SET tier = ?, github_username = ?, discord_user_id = NULL, api_key = ?, active = TRUE, expires_at = NULL
+       SET tier = ?, github_username = ?, discord_user_id = ?, api_key = ?, active = TRUE, expires_at = NULL
        WHERE guild_id = ?`,
-      [tier, session.githubUsername, apiKey, guildId],
+      [tier, session.githubUsername, session.discordUserId, apiKey, guildId],
     );
   } else {
     // New guild — create record
     apiKey = generateApiKey();
     await query(
-      `INSERT INTO ticketbot_guilds (guild_id, api_key, tier, github_username, active)
-       VALUES (?, ?, ?, ?, TRUE)`,
-      [guildId, apiKey, tier, session.githubUsername],
+      `INSERT INTO ticketbot_guilds (guild_id, api_key, tier, github_username, discord_user_id, active)
+       VALUES (?, ?, ?, ?, ?, TRUE)`,
+      [guildId, apiKey, tier, session.githubUsername, session.discordUserId],
     );
   }
 
