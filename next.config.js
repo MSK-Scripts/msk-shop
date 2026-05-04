@@ -7,6 +7,7 @@ const nextConfig = {
       { protocol: 'https', hostname: 'dunb17ur4ymx4.cloudfront.net' },
       { protocol: 'https', hostname: '**.cloudfront.net' },
       { protocol: 'https', hostname: 'assets-global.website-files.com' },
+      { protocol: 'https', hostname: 'cdn.discordapp.com' },
     ],
   },
   async headers() {
@@ -14,7 +15,7 @@ const nextConfig = {
       default-src 'self';
       script-src 'self' 'unsafe-eval' 'unsafe-inline';
       style-src 'self' 'unsafe-inline';
-      img-src 'self' blob: data: cdn.tebex.io *.tebex.io dunb17ur4ymx4.cloudfront.net *.cloudfront.net *.msk-scripts.de;
+      img-src 'self' blob: data: cdn.tebex.io *.tebex.io dunb17ur4ymx4.cloudfront.net *.cloudfront.net *.msk-scripts.de cdn.discordapp.com;
       font-src 'self' data:;
       connect-src 'self' ws: wss: https://headless.tebex.io https://ident.tebex.io https://discord.com;
       object-src 'none';
