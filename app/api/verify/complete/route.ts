@@ -2,6 +2,7 @@ import { NextResponse }   from 'next/server';
 import { cookies }        from 'next/headers';
 import { randomBytes }    from 'crypto';
 import { parseSession }   from '@/lib/session';
+import { signDashboardSession } from '@/lib/dashboardSession';
 import { query, queryOne } from '@/lib/db';
 import type { Tier }      from '@/lib/tiers';
 
@@ -77,7 +78,15 @@ export async function POST(req: Request) {
   }
 
   // Clear the verify session cookie — flow is complete
+  const dashboardToken = signDashboardSession({ guildId });
   const res = NextResponse.json({ success: true, apiKey, tier });
   res.cookies.delete('msk_verify_session');
+  res.cookies.set('msk_dashboard_session', dashboardToken, {
+    httpOnly: true,
+    secure:   true,
+    sameSite: 'lax',
+    maxAge:   60 * 60 * 24 * 30, // 30 days
+    path:     '/',
+  });
   return res;
 }

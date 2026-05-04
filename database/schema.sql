@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS ticketbot_guilds (
     github_username VARCHAR(100),
     discord_user_id VARCHAR(20),
     custom_domain   VARCHAR(255),
+    domain_status   ENUM('none', 'pending_dns', 'active') NOT NULL DEFAULT 'none',
     active          BOOLEAN      NOT NULL DEFAULT TRUE,
     created_at      DATETIME     NOT NULL DEFAULT NOW(),
     expires_at      DATETIME     NULL

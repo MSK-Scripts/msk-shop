@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { CheckCircle, Github, Copy, Check, AlertCircle, Loader2, ExternalLink } from 'lucide-react'
+import { CheckCircle, Github, Copy, Check, AlertCircle, Loader2, ExternalLink, Globe } from 'lucide-react'
 import type { DiscordGuild, VerifySession } from '@/lib/session'
 
 // ── Step Indicator ─────────────────────────────────────────────────────────────
@@ -315,6 +315,11 @@ export default function VerifyClient({ session, step, errorCode }: Props) {
               >
                 <ExternalLink size={14} />
                 Zur Installationsanleitung
+              </a>
+
+              <a href="/dashboard" className="msk-btn-primary w-full justify-center mt-2">
+                <Globe size={14} />
+                Zum Dashboard (Eigene Domain)
               </a>
             </div>
           )}
