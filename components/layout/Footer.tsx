@@ -3,6 +3,10 @@ import Image from 'next/image'
 import styles from './Footer.module.css'
 
 const footerLinks = {
+  Ticketbot: [
+    { label: 'Verify', href: '/verify', external: false },
+    { label: 'Dashboard', href: '/dashboard', external: false },
+  ],
   Community: [
     { label: 'Discord', href: 'https://discord.gg/5hHSBRHvJE', external: true },
     { label: 'GitHub', href: 'https://github.com/MSK-Scripts', external: true },
@@ -12,7 +16,6 @@ const footerLinks = {
     { label: 'Imprint', href: '/terms/imprint', external: false },
     { label: 'Privacy Policy', href: '/terms/privacy', external: false },
     { label: 'Terms & Conditions', href: '/terms', external: false },
-    // { label: 'Terms & Conditions', href: 'https://checkout.tebex.io/terms', external: true },
   ],
 }
 
