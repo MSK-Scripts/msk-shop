@@ -28,7 +28,7 @@ function LanguageToggle({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => v
 
 // ── Step Indicator ─────────────────────────────────────────────────────────────
 
-function StepIndicator({ current, t }: { current: number; t: typeof translations.en }) {
+function StepIndicator({ current, t }: { current: number; t: { step_github: string; step_discord: string; step_select: string; step_done: string } }) {
   const steps = [t.step_github, t.step_discord, t.step_select, t.step_done]
   return (
     <div className="flex items-center justify-center gap-0 mb-8 w-full max-w-md mx-auto">
