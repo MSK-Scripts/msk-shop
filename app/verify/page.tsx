@@ -3,8 +3,8 @@ import { parseSession }  from '@/lib/session';
 import VerifyClient      from './VerifyClient';
 
 export const metadata = {
-  title: 'Server verifizieren – MSK Scripts',
-  description: 'Verknüpfe deinen GitHub-Account und Discord-Server um deinen Ticket Bot API Key zu erhalten.',
+  title: 'Verify Server – MSK Scripts',
+  description: 'Link your GitHub account and Discord server to receive your MSK Ticket Bot API key.',
 }
 
 export default async function VerifyPage({

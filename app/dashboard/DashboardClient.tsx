@@ -46,7 +46,7 @@ function LanguageToggle({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => v
 
 // ── Status Badge ───────────────────────────────────────────────────────────────
 
-function StatusBadge({ status, t }: { status: Guild['domain_status']; t: typeof dashboardTranslations.en }) {
+function StatusBadge({ status, t }: { status: Guild['domain_status']; t: { active_label: string; pending_label: string } }) {
   if (status === 'active') return (
     <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent bg-accent/10 border border-accent/30 rounded-full px-2.5 py-0.5">
       <CheckCircle size={11} /> {t.active_label}
