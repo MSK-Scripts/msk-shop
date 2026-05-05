@@ -3,11 +3,33 @@
 import { useState } from 'react'
 import { CheckCircle, Github, Copy, Check, AlertCircle, Loader2, ExternalLink, Globe } from 'lucide-react'
 import type { DiscordGuild, VerifySession } from '@/lib/session'
+import { translations, type Lang } from '@/lib/i18n'
+
+// ── Language Toggle ────────────────────────────────────────────────────────────
+
+function LanguageToggle({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => void }) {
+  return (
+    <div className="flex items-center gap-1 bg-surface2 border border-borderlt rounded-lg p-1 text-xs font-semibold">
+      <button
+        onClick={() => setLang('en')}
+        className={`px-2.5 py-1 rounded transition-colors ${lang === 'en' ? 'bg-accent text-white' : 'text-muted hover:text-white'}`}
+      >
+        EN
+      </button>
+      <button
+        onClick={() => setLang('de')}
+        className={`px-2.5 py-1 rounded transition-colors ${lang === 'de' ? 'bg-accent text-white' : 'text-muted hover:text-white'}`}
+      >
+        DE
+      </button>
+    </div>
+  )
+}
 
 // ── Step Indicator ─────────────────────────────────────────────────────────────
 
-function StepIndicator({ current }: { current: number }) {
-  const steps = ['GitHub', 'Discord', 'Server auswählen', 'Fertig']
+function StepIndicator({ current, t }: { current: number; t: typeof translations.en }) {
+  const steps = [t.step_github, t.step_discord, t.step_select, t.step_done]
   return (
     <div className="flex items-center justify-center gap-0 mb-8 w-full max-w-md mx-auto">
       {steps.map((label, i) => {
@@ -30,8 +52,7 @@ function StepIndicator({ current }: { current: number }) {
               </span>
             </div>
             {i < steps.length - 1 && (
-              <div className={`h-px flex-1 mx-2 mb-4 transition-colors
-                ${done ? 'bg-accent' : 'bg-border'}`} />
+              <div className={`h-px flex-1 mx-2 mb-4 transition-colors ${done ? 'bg-accent' : 'bg-border'}`} />
             )}
           </div>
         )
@@ -80,38 +101,39 @@ function ErrorBanner({ message }: { message: string }) {
   )
 }
 
-// ── Error Messages ─────────────────────────────────────────────────────────────
-
-function friendlyError(code: string | null): string | null {
-  const map: Record<string, string> = {
-    invalid_state:         'Sicherheitsüberprüfung fehlgeschlagen. Bitte versuche es erneut.',
-    github_token_failed:   'GitHub-Authentifizierung fehlgeschlagen. Bitte versuche es erneut.',
-    github_user_failed:    'GitHub-Nutzerdaten konnten nicht abgerufen werden.',
-    discord_token_failed:  'Discord-Authentifizierung fehlgeschlagen. Bitte versuche es erneut.',
-    discord_guilds_failed: 'Discord-Server konnten nicht abgerufen werden.',
-    github_required:       'Bitte verbinde zuerst deinen GitHub-Account.',
-  }
-  return code ? (map[code] ?? `Unbekannter Fehler: ${code}`) : null
-}
-
 // ── Main Component ─────────────────────────────────────────────────────────────
 
 interface Props {
-  session:    VerifySession | null
-  step:       string | null
-  errorCode:  string | null
+  session:   VerifySession | null
+  step:      string | null
+  errorCode: string | null
+}
+
+const TIER_LABELS: Record<string, { en: string; de: string }> = {
+  basic:        { en: 'Basic (Free)',  de: 'Basic (Kostenlos)' },
+  premium:      { en: 'Premium',       de: 'Premium' },
+  premium_plus: { en: 'Premium+',      de: 'Premium+' },
 }
 
 export default function VerifyClient({ session, step, errorCode }: Props) {
-  const [selectedGuildId, setSelectedGuildId] = useState<string>('')
-  const [loading, setLoading]                 = useState(false)
-  const [result, setResult]                   = useState<{ apiKey: string; tier: string } | null>(null)
-  const [completeError, setCompleteError]     = useState<string | null>(null)
-  const [copied, setCopied]                   = useState(false)
+  const [lang, setLang]                         = useState<Lang>('en')
+  const t                                       = translations[lang]
+  const [selectedGuildId, setSelectedGuildId]   = useState<string>('')
+  const [loading, setLoading]                   = useState(false)
+  const [result, setResult]                     = useState<{ apiKey: string; tier: string } | null>(null)
+  const [completeError, setCompleteError]       = useState<string | null>(null)
+  const [copied, setCopied]                     = useState(false)
 
-  const errorMessage = friendlyError(errorCode)
+  const errorMap: Record<string, keyof typeof t> = {
+    invalid_state:         'err_invalid_state',
+    github_token_failed:   'err_github_token_failed',
+    github_user_failed:    'err_github_user_failed',
+    discord_token_failed:  'err_discord_token_failed',
+    discord_guilds_failed: 'err_discord_guilds_failed',
+    github_required:       'err_github_required',
+  }
+  const errorMessage = errorCode ? t[errorMap[errorCode] ?? 'err_invalid_state'] : null
 
-  // Determine which step we're on
   const hasGitHub  = !!session?.githubUsername
   const hasDiscord = !!session?.guilds
   const currentStep = result ? 4 : hasDiscord ? 3 : hasGitHub ? 2 : 1
@@ -120,7 +142,6 @@ export default function VerifyClient({ session, step, errorCode }: Props) {
     if (!selectedGuildId) return
     setLoading(true)
     setCompleteError(null)
-
     try {
       const res  = await fetch('/api/verify/complete', {
         method:  'POST',
@@ -128,17 +149,10 @@ export default function VerifyClient({ session, step, errorCode }: Props) {
         body:    JSON.stringify({ guildId: selectedGuildId }),
       })
       const data = await res.json()
-
-      if (!res.ok) {
-        setCompleteError(data.error ?? 'Unbekannter Fehler.')
-      } else {
-        setResult({ apiKey: data.apiKey, tier: data.tier })
-      }
-    } catch {
-      setCompleteError('Netzwerkfehler. Bitte versuche es erneut.')
-    } finally {
-      setLoading(false)
-    }
+      if (!res.ok) setCompleteError(data.error ?? 'Error')
+      else setResult({ apiKey: data.apiKey, tier: data.tier })
+    } catch { setCompleteError('Network error. Please try again.') }
+    finally   { setLoading(false) }
   }
 
   const handleCopy = () => {
@@ -148,88 +162,77 @@ export default function VerifyClient({ session, step, errorCode }: Props) {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const TIER_LABELS: Record<string, string> = {
-    basic:        'Basic (Free)',
-    premium:      'Premium',
-    premium_plus: 'Premium+',
-  }
-
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-16">
       <div className="w-full max-w-lg">
 
         {/* Header */}
-        <div className="text-center mb-8">
-          <span className="msk-label">Ticket Bot</span>
-          <h1 className="text-3xl font-extrabold text-white mt-2">Server verifizieren</h1>
-          <p className="text-muted text-sm mt-2">
-            Verknüpfe deinen GitHub-Account und Discord-Server um deinen API Key zu erhalten.
-          </p>
+        <div className="flex items-start justify-between mb-8">
+          <div>
+            <span className="msk-label">{t.verify_label}</span>
+            <h1 className="text-3xl font-extrabold text-white mt-2">{t.verify_title}</h1>
+            <p className="text-muted text-sm mt-2">{t.verify_subtitle}</p>
+          </div>
+          <div className="mt-1">
+            <LanguageToggle lang={lang} setLang={setLang} />
+          </div>
         </div>
 
-        <StepIndicator current={currentStep} />
+        <StepIndicator current={currentStep} t={t} />
 
         <div className="bg-surface border border-borderlt rounded-xl p-6">
 
-          {errorMessage && <ErrorBanner message={errorMessage} />}
+          {errorMessage && <ErrorBanner message={errorMessage as string} />}
 
-          {/* ── Step 1: GitHub ── */}
+          {/* Step 1 — GitHub */}
           {currentStep === 1 && (
             <div className="text-center">
               <div className="w-14 h-14 rounded-full bg-surface2 border border-borderlt flex items-center justify-center mx-auto mb-4">
                 <Github size={28} className="text-muted" />
               </div>
-              <h2 className="text-white font-bold text-lg mb-2">GitHub verbinden</h2>
-              <p className="text-muted text-sm mb-6">
-                Damit wir deinen Sponsoring-Status überprüfen können, musst du dich mit GitHub anmelden.
-              </p>
+              <h2 className="text-white font-bold text-lg mb-2">{t.github_title}</h2>
+              <p className="text-muted text-sm mb-6">{t.github_desc}</p>
               <a href="/api/auth/github" className="msk-btn-primary w-full justify-center">
                 <Github size={18} />
-                Mit GitHub anmelden
+                {t.github_btn}
               </a>
             </div>
           )}
 
-          {/* ── Step 2: Discord ── */}
+          {/* Step 2 — Discord */}
           {currentStep === 2 && (
             <div className="text-center">
               <div className="w-14 h-14 rounded-full bg-discord/20 border border-discord/30 flex items-center justify-center mx-auto mb-4">
                 <DiscordIcon size={28} />
               </div>
-              <h2 className="text-white font-bold text-lg mb-1">Discord verbinden</h2>
+              <h2 className="text-white font-bold text-lg mb-1">{t.discord_title}</h2>
               <p className="text-muted text-sm mb-1">
-                Angemeldet als{' '}
+                {t.discord_signed_as}{' '}
                 <span className="text-accent font-semibold">@{session?.githubUsername}</span>
               </p>
-              <p className="text-muted text-sm mb-6">
-                Verbinde nun deinen Discord-Account um deine Server zu sehen.
-              </p>
+              <p className="text-muted text-sm mb-6">{t.discord_desc}</p>
               <a href="/api/auth/discord-verify" className="msk-btn-discord w-full justify-center">
                 <DiscordIcon size={18} />
-                Mit Discord anmelden
+                {t.discord_btn}
               </a>
             </div>
           )}
 
-          {/* ── Step 3: Select Guild ── */}
+          {/* Step 3 — Select Server */}
           {currentStep === 3 && !result && (
             <div>
-              <h2 className="text-white font-bold text-lg mb-1">Server auswählen</h2>
-              <p className="text-muted text-sm mb-3">
-                Wähle den Discord-Server für den du den API Key generieren möchtest.
-                Du siehst nur Server auf denen du Administrator bist.
-              </p>
+              <h2 className="text-white font-bold text-lg mb-1">{t.select_title}</h2>
+              <p className="text-muted text-sm mb-3">{t.select_desc}</p>
+
               <div className="flex items-start gap-2 bg-yellow-500/10 border border-yellow-500/30 rounded-lg px-3 py-2.5 mb-4 text-xs text-yellow-400">
                 <AlertCircle size={14} className="shrink-0 mt-0.5" />
-                <span>Falls du diesen Server bereits verifiziert hast, wird dein bisheriger API Key <strong>sofort ungültig</strong>. Du musst den neuen Key anschließend in der <code className="bg-black/20 px-1 rounded">.env</code> deines Bots eintragen und ihn neu starten.</span>
+                <span>{t.select_warning}</span>
               </div>
 
               {completeError && <ErrorBanner message={completeError} />}
 
-              {session?.guilds && session.guilds.length === 0 && (
-                <div className="text-center py-6 text-muted text-sm">
-                  Keine Server gefunden auf denen du Administrator bist.
-                </div>
+              {session?.guilds?.length === 0 && (
+                <div className="text-center py-6 text-muted text-sm">{t.select_no_guilds}</div>
               )}
 
               <div className="space-y-2 mb-6 max-h-72 overflow-y-auto pr-1">
@@ -240,17 +243,14 @@ export default function VerifyClient({ session, step, errorCode }: Props) {
                     className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-all text-left
                       ${selectedGuildId === guild.id
                         ? 'border-accent bg-accent/10'
-                        : 'border-borderlt bg-surface2 hover:border-border'
-                      }`}
+                        : 'border-borderlt bg-surface2 hover:border-border'}`}
                   >
                     <GuildIcon guild={guild} />
                     <div className="flex-1 min-w-0">
                       <div className="text-sm font-semibold text-white truncate">{guild.name}</div>
                       <div className="text-xs text-dim">{guild.id}</div>
                     </div>
-                    {selectedGuildId === guild.id && (
-                      <CheckCircle size={18} className="text-accent shrink-0" />
-                    )}
+                    {selectedGuildId === guild.id && <CheckCircle size={18} className="text-accent shrink-0" />}
                   </button>
                 ))}
               </div>
@@ -261,29 +261,30 @@ export default function VerifyClient({ session, step, errorCode }: Props) {
                 className="msk-btn-primary w-full justify-center"
               >
                 {loading ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle size={16} />}
-                {loading ? 'Wird verarbeitet...' : 'API Key generieren'}
+                {loading ? t.select_btn_loading : t.select_btn}
               </button>
             </div>
           )}
 
-          {/* ── Step 4: Done ── */}
+          {/* Step 4 — Done */}
           {result && (
             <div className="text-center">
               <div className="w-14 h-14 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center mx-auto mb-4">
                 <CheckCircle size={28} className="text-accent" />
               </div>
-              <h2 className="text-white font-bold text-lg mb-1">Verifizierung abgeschlossen!</h2>
+              <h2 className="text-white font-bold text-lg mb-1">{t.done_title}</h2>
               <p className="text-muted text-sm mb-2">
-                Dein Tier:{' '}
+                {t.done_tier}{' '}
                 <span className="text-accent font-semibold">
-                  {TIER_LABELS[result.tier] ?? result.tier}
+                  {TIER_LABELS[result.tier]?.[lang] ?? result.tier}
                 </span>
               </p>
               <p className="text-muted text-sm mb-6">
-                Trage den API Key in die <code className="bg-surface2 border border-borderlt px-1.5 py-0.5 rounded text-xs text-accent">.env</code> deines Bots ein.
+                {t.done_instruction}{' '}
+                <code className="bg-surface2 border border-borderlt px-1.5 py-0.5 rounded text-xs text-accent">.env</code>
+                {lang === 'de' ? ' deines Bots ein.' : ' of your bot.'}
               </p>
 
-              {/* API Key Display */}
               <div className="bg-surface2 border border-borderlt rounded-lg p-4 mb-4 text-left">
                 <div className="text-xs text-dim mb-2 font-medium uppercase tracking-wider">MSK_API_KEY</div>
                 <div className="flex items-center gap-2">
@@ -291,39 +292,36 @@ export default function VerifyClient({ session, step, errorCode }: Props) {
                   <button
                     onClick={handleCopy}
                     className="shrink-0 p-1.5 rounded hover:bg-surface transition-colors text-muted hover:text-white"
-                    title="Kopieren"
+                    title={t.done_copy}
                   >
                     {copied ? <Check size={16} className="text-accent" /> : <Copy size={16} />}
                   </button>
                 </div>
               </div>
 
-              <p className="text-dim text-xs mb-4">
-                ⚠️ Teile diesen Key mit niemandem. Er gibt Zugriff auf deinen Transcript-Upload.
-              </p>
+              <p className="text-dim text-xs mb-2">{t.done_warning}</p>
 
               <div className="flex items-center gap-2 bg-accent/10 border border-accent/30 rounded-lg px-3 py-2.5 mb-4 text-xs text-accent">
                 <CheckCircle size={14} className="shrink-0" />
-                Du kannst diese Seite jetzt schließen, sobald du den Key sicher kopiert hast.
+                {t.done_close}
               </div>
 
               <a
                 href="https://docu.msk-scripts.de/discord/discord_ticketbot/getting-started"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="msk-btn-ghost w-full justify-center"
+                className="msk-btn-ghost w-full justify-center mb-2"
               >
                 <ExternalLink size={14} />
-                Zur Installationsanleitung
+                {t.done_docs}
               </a>
 
-              <a href="/dashboard" className="msk-btn-primary w-full justify-center mt-2">
+              <a href="/dashboard" className="msk-btn-primary w-full justify-center">
                 <Globe size={14} />
-                Zum Dashboard (Eigene Domain)
+                {t.done_dashboard}
               </a>
             </div>
           )}
-
         </div>
       </div>
     </div>
