@@ -97,7 +97,7 @@ export const NEWS_POPUP = {
 
   // Optional coupon code — set to null to hide it
   // Displays a copyable coupon field below the text
-  // coupon: null as string | null,
+  coupon: null as string | null,
   //coupon: 'NEWSHOP20',
 }
 
