@@ -76,25 +76,29 @@ export const PACKAGE_TAGS: Record<number, string[]> = {
 export const NEWS_POPUP = {
   enabled: true,
 
-  title: '🎉 New Shop',
+  title: 'Discord Ticket Bot',
 
   // Supports simple text. Use \n for line breaks.
-  text: 'Get 20% off on all packages with code NEWSHOP20 at checkout!',
+  text: 'Get your API Key now and create a ticket system for your community!',
 
   // Optional button — set to null to hide it
-  button: null as { label: string; href: string } | null,
-  // button: {
-  //   label: 'View Package',
-  //   href: '/packages/6446947',
-  // } as { label: string; href: string } | null,
+  //button: null as { label: string; href: string } | null,
+  button: {
+    label: 'Get API Key',
+    href: '/verify',
+  } as { label: string; href: string } | null,
 
   // Optional second button — set to null to hide it
-  secondButton: null as { label: string; href: string } | null,
+  //secondButton: null as { label: string; href: string } | null,
+  secondButton: {
+    label: 'Dashboard',
+    href: '/dashboard',
+  } as { label: string; href: string } | null,
 
   // Optional coupon code — set to null to hide it
   // Displays a copyable coupon field below the text
   // coupon: null as string | null,
-  coupon: 'NEWSHOP20',
+  //coupon: 'NEWSHOP20',
 }
 
 // ── Site Config ───────────────────────────────────────────
