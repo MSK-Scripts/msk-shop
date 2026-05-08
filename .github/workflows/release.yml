@@ -52,7 +52,7 @@ jobs:
           echo -e "\n---\n📊 **$STATS**" >> release_body.md
 
       - name: GitHub Release erstellen
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           body_path: release_body.md
           generate_release_notes: true
