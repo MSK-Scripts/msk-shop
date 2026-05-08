@@ -1,0 +1,66 @@
+name: CodeQL Advanced
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  schedule:
+    # Runs every Monday at 08:00 UTC
+    - cron: '0 8 * * 1'
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ javascript-typescript ]
+        # CodeQL supports: c-cpp, csharp, go, java-kotlin,
+        # javascript-typescript, python, ruby, swift
+
+    steps:
+      # ── 1. Checkout ────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── 2. Node.js ─────────────────────────────────────────────
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # ── 3. Install dependencies ────────────────────────────────
+      # Required so CodeQL can trace the build and resolve imports.
+      - name: Install dependencies
+        run: npm ci
+
+      # ── 4. Initialize CodeQL ───────────────────────────────────
+      # Downloads the CodeQL toolchain and sets up the database.
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: ${{ matrix.language }}
+          # Advanced queries include security-extended for deeper XSS,
+          # injection, path-traversal and prototype-pollution checks.
+          queries: security-extended, security-and-quality
+
+      # ── 5. Autobuild ───────────────────────────────────────────
+      # For JS/TS, autobuild just confirms the source is parseable.
+      # For compiled languages it would actually compile the project.
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v4
+
+      # ── 6. Perform analysis ────────────────────────────────────
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: '/language:${{ matrix.language }}'
