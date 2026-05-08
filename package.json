@@ -10,9 +10,9 @@
   },
   "dependencies": {
     "next": "15.5.15",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "zustand": "^5.0.4",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "zustand": "^5.0.13",
     "swr": "^2.3.3",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.503.0",
