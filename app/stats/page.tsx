@@ -2,7 +2,7 @@ import { query, queryOne } from '@/lib/db'
 import StatsClient         from './StatsClient'
 import type { Stats }      from './StatsClient'
 
-export const revalidate = 300
+export const dynamic = 'force-dynamic'
 
 export const metadata = {
   title:       'Bot Statistics – MSK Scripts',
