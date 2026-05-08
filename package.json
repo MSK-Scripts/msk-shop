@@ -31,6 +31,7 @@
     "eslint-config-next": "^15.5.18"
   },
   "overrides": {
+    "postcss": "$postcss",
     "eslint": "^9.0.0"
   }
 }
