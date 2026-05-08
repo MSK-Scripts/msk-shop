@@ -165,9 +165,9 @@ export function useCart() {
       const b = await getBasket(ident)
       setBasket(b)
       return true
-    } catch (e: any) {
+    } catch (e: unknown) {
       // Tebex 400 = coupon not applicable to basket items
-      if (e?.message?.includes('400')) return 'not_applicable'
+      if (e instanceof Error && e.message.includes('400')) return 'not_applicable'
       return false
     } finally { setLoading(false) }
   }, [ident, setBasket, setLoading, setSubtotal])
@@ -215,7 +215,7 @@ export function useCart() {
   }, [ident, setBasket])
 
   const links = basket?.links
-  const checkoutUrl = !Array.isArray(links) && links ? (links as any).checkout ?? null : null
+  const checkoutUrl = !Array.isArray(links) && links ? (links as { checkout?: string }).checkout ?? null : null
 
   return {
     basket, ident, username, isLoading,
