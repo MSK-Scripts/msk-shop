@@ -19,10 +19,16 @@ export const translations = {
     github_btn:         'Sign in with GitHub',
 
     // Step 2 — Discord
-    discord_title:      'Connect Discord',
-    discord_signed_as:  'Signed in as',
-    discord_desc:       'Connect your Discord account to see your servers.',
-    discord_btn:        'Sign in with Discord',
+    discord_title:         'Connect Discord',
+    discord_signed_as:     'Signed in as',
+    discord_desc:          'Connect your Discord account to see your servers.',
+    discord_btn:           'Sign in with Discord',
+    discord_btn_checking:  'Checking Discord...',
+    discord_status_minor:  'Discord is experiencing minor issues. Login may be affected.',
+    discord_status_major:  'Discord is currently experiencing major issues. Login is likely unavailable — please try again later.',
+    discord_status_critical: 'Discord is currently down. Login is unavailable — please try again later.',
+    discord_status_unknown:'Discord status could not be verified. Login may not work.',
+    discord_try_anyway:    'Try anyway →',
 
     // Step 3 — Select Server
     select_title:       'Select Server',
@@ -83,10 +89,16 @@ export const translations = {
     github_btn:         'Mit GitHub anmelden',
 
     // Step 2 — Discord
-    discord_title:      'Discord verbinden',
-    discord_signed_as:  'Angemeldet als',
-    discord_desc:       'Verbinde nun deinen Discord-Account um deine Server zu sehen.',
-    discord_btn:        'Mit Discord anmelden',
+    discord_title:         'Discord verbinden',
+    discord_signed_as:     'Angemeldet als',
+    discord_desc:          'Verbinde nun deinen Discord-Account um deine Server zu sehen.',
+    discord_btn:           'Mit Discord anmelden',
+    discord_btn_checking:  'Discord wird geprüft...',
+    discord_status_minor:  'Discord hat derzeit kleinere Probleme. Der Login könnte beeinträchtigt sein.',
+    discord_status_major:  'Discord hat derzeit größere Probleme. Der Login ist wahrscheinlich nicht möglich — bitte versuche es später erneut.',
+    discord_status_critical: 'Discord ist derzeit nicht erreichbar. Der Login ist nicht möglich — bitte versuche es später erneut.',
+    discord_status_unknown:'Der Discord-Status konnte nicht geprüft werden. Der Login funktioniert möglicherweise nicht.',
+    discord_try_anyway:    'Trotzdem versuchen →',
 
     // Step 3 — Select Server
     select_title:       'Server auswählen',

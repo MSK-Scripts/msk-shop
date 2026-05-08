@@ -128,6 +128,8 @@ export default function VerifyClient({ session, step, errorCode }: Props) {
   const [completeError, setCompleteError]       = useState<string | null>(null)
   const [copied, setCopied]                     = useState(false)
   const [existingGuild, setExistingGuild]       = useState<{ tier: Tier } | null>(null)
+  const [discordChecking, setDiscordChecking]   = useState(false)
+  const [discordStatus, setDiscordStatus]       = useState<'none' | 'minor' | 'major' | 'critical' | 'unknown' | null>(null)
 
   const errorMap: Record<string, keyof typeof t> = {
     invalid_state:         'err_invalid_state',
@@ -202,6 +204,27 @@ export default function VerifyClient({ session, step, errorCode }: Props) {
     finally   { setDashboardLoading(false) }
   }
 
+  const handleDiscordLogin = async () => {
+    setDiscordChecking(true)
+    setDiscordStatus(null)
+    try {
+      const res  = await fetch('/api/discord/health')
+      const data = await res.json()
+      const indicator = data.indicator as typeof discordStatus
+      if (indicator === 'none') {
+        // All good — redirect immediately
+        window.location.href = '/api/auth/discord-verify'
+        return
+      }
+      // Issues detected — show banner, let user decide
+      setDiscordStatus(indicator ?? 'unknown')
+    } catch {
+      setDiscordStatus('unknown')
+    } finally {
+      setDiscordChecking(false)
+    }
+  }
+
   const handleCopy = () => {
     if (!result) return
     navigator.clipboard.writeText(result.apiKey)
@@ -258,10 +281,42 @@ export default function VerifyClient({ session, step, errorCode }: Props) {
                 <span className="text-accent font-semibold">@{session?.githubUsername}</span>
               </p>
               <p className="text-muted text-sm mb-6">{t.discord_desc}</p>
-              <a href="/api/auth/discord-verify" className="msk-btn-discord w-full justify-center">
-                <DiscordIcon size={18} />
-                {t.discord_btn}
-              </a>
+
+              {/* Discord status banner */}
+              {discordStatus && discordStatus !== 'none' && (
+                <div className={`flex flex-col gap-2 rounded-lg px-4 py-3 mb-4 text-sm text-left ${
+                  discordStatus === 'minor' || discordStatus === 'unknown'
+                    ? 'bg-yellow-500/10 border border-yellow-500/30 text-yellow-400'
+                    : 'bg-danger/10 border border-danger/30 text-danger'
+                }`}>
+                  <div className="flex items-start gap-2">
+                    <AlertCircle size={16} className="shrink-0 mt-0.5" />
+                    <span>{
+                      discordStatus === 'minor'    ? t.discord_status_minor    :
+                      discordStatus === 'major'    ? t.discord_status_major    :
+                      discordStatus === 'critical' ? t.discord_status_critical :
+                      t.discord_status_unknown
+                    }</span>
+                  </div>
+                  <a
+                    href="/api/auth/discord-verify"
+                    className="text-xs underline underline-offset-2 opacity-70 hover:opacity-100 transition-opacity pl-6"
+                  >
+                    {t.discord_try_anyway}
+                  </a>
+                </div>
+              )}
+
+              <button
+                onClick={handleDiscordLogin}
+                disabled={discordChecking}
+                className="msk-btn-discord w-full justify-center disabled:opacity-60"
+              >
+                {discordChecking
+                  ? <Loader2 size={18} className="animate-spin" />
+                  : <DiscordIcon size={18} />}
+                {discordChecking ? t.discord_btn_checking : t.discord_btn}
+              </button>
             </div>
           )}
 
