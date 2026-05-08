@@ -16,13 +16,13 @@ jobs:
     steps:
       # ── 1. Checkout ──────────────────────────────────────────
       - name: ⬇️ Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 1
 
       # ── 2. Node.js ───────────────────────────────────────────
       - name: ⚙️ Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '20'
           cache: npm
@@ -58,7 +58,7 @@ jobs:
       # Secrets are passed via env: (not interpolated into script text)
       # and written to .env.local using printf for safe handling.
       - name: 🛠️ Install production deps, set permissions & restart
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.5
         env:
           TEBEX_PUBLIC_TOKEN: ${{ secrets.NEXT_PUBLIC_TEBEX_PUBLIC_TOKEN }}
           TEBEX_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_TEBEX_PROJECT_ID }}
