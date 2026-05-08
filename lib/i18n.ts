@@ -106,6 +106,56 @@ export const translations = {
 
 export type TranslationKey = keyof typeof translations.en;
 
+// Stats page translations
+export const statsTranslations = {
+  en: {
+    label:                   'Ticket Bot',
+    title:                   'Ticketbot Statistics',
+    subtitle:                'Anonymous live statistics of the MSK Ticket Bot across all Discord servers. No server IDs, usernames or other personal data are displayed.',
+    status_live:             'Live',
+    status_refresh:          'refreshed every 5 minutes',
+    status_unavailable:      'Unavailable',
+    status_db_unreachable:   'database unreachable',
+    card_transcripts:        'Transcripts',
+    card_transcripts_sub:    'Total transcripts created',
+    card_api_keys:           'API Keys',
+    card_api_keys_sub:       'Active API keys',
+    card_attachments:        'Attachments',
+    card_attachments_sub:    'Total stored attachments',
+    card_avg_transcript:     'Avg. Transcript Size',
+    card_avg_transcript_sub: 'Average transcript file size',
+    card_avg_attachment:     'Avg. Attachment Size',
+    card_avg_attachment_sub: 'Average attachment file size',
+    card_sponsors:           'GitHub Sponsors',
+    card_sponsors_sub:       'Active sponsors',
+    tier_distribution:       'API Key Distribution',
+    footer_note:             'All statistics are anonymous — no server information or user data is stored or displayed.',
+  },
+  de: {
+    label:                   'Ticket Bot',
+    title:                   'Ticketbot Statistiken',
+    subtitle:                'Anonyme Echtzeit-Statistiken des MSK Ticket Bots über alle Discord-Server. Es werden keine Server-IDs, Nutzernamen oder andere persönliche Daten angezeigt.',
+    status_live:             'Live',
+    status_refresh:          'aktualisiert alle 5 Minuten',
+    status_unavailable:      'Nicht verfügbar',
+    status_db_unreachable:   'Datenbank nicht erreichbar',
+    card_transcripts:        'Transkripte',
+    card_transcripts_sub:    'Insgesamt erstellte Transkripte',
+    card_api_keys:           'API Keys',
+    card_api_keys_sub:       'Aktive API Keys',
+    card_attachments:        'Anhänge',
+    card_attachments_sub:    'Insgesamt gespeicherte Anhänge',
+    card_avg_transcript:     'Ø Transkript-Größe',
+    card_avg_transcript_sub: 'Durchschnittliche Dateigröße',
+    card_avg_attachment:     'Ø Anhang-Größe',
+    card_avg_attachment_sub: 'Durchschnittliche Anhang-Größe',
+    card_sponsors:           'GitHub Sponsoren',
+    card_sponsors_sub:       'Aktive Sponsoren',
+    tier_distribution:       'API Key Verteilung',
+    footer_note:             'Alle Statistiken sind anonym — es werden keine Serverinformationen oder Nutzerdaten gespeichert oder angezeigt.',
+  },
+} as const;
+
 // Dashboard translations
 export const dashboardTranslations = {
   en: {

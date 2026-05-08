@@ -4,6 +4,7 @@ import styles from './Footer.module.css'
 
 const footerLinks = {
   Ticketbot: [
+    { label: 'Statistics', href: '/stats', external: false },
     { label: 'Verify', href: '/verify', external: false },
     { label: 'Dashboard', href: '/dashboard', external: false },
   ],
