@@ -177,7 +177,7 @@ export function useCart() {
     setLoading(true)
     try {
       // Try API removal first
-      const res = await removeCoupon(ident, code)
+      await removeCoupon(ident, code)
       const b = await getBasket(ident)
       setBasket(b)
       setSubtotal(b.total_price)
@@ -186,7 +186,6 @@ export function useCart() {
       // Workaround: create a new basket and re-add all packages.
       if (!basket?.packages?.length) { setLoading(false); return }
       try {
-        const baseUrl = typeof window !== 'undefined' ? window.location.origin : getBaseUrl()
         const newBasket = await createBasket()
         // Re-add all packages to new basket
         const storedDiscordId = typeof window !== 'undefined' ? sessionStorage.getItem('discordId') : null

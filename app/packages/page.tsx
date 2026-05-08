@@ -1,4 +1,4 @@
-import { getPackages, getCategories } from '@/lib/tebex'
+import { getPackages } from '@/lib/tebex'
 import { PackageCard } from '@/components/packages/PackageCard'
 
 export const revalidate = 60

@@ -77,13 +77,12 @@ function DiscordIcon({ size = 20 }: { size?: number }) {
 
 function GuildIcon({ guild }: { guild: DiscordGuild }) {
   if (guild.icon) {
-    return (
-      <img
-        src={`https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png?size=64`}
-        alt={guild.name}
-        className="w-10 h-10 rounded-full object-cover"
-      />
-    )
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img
+      src={`https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png?size=64`}
+      alt={guild.name}
+      className="w-10 h-10 rounded-full object-cover"
+    />
   }
   return (
     <div className="w-10 h-10 rounded-full bg-surface2 border border-borderlt flex items-center justify-center text-sm font-bold text-muted">
@@ -117,7 +116,7 @@ const TIER_LABELS: Record<string, { en: string; de: string }> = {
   premium_plus: { en: 'Premium+',      de: 'Premium+' },
 }
 
-export default function VerifyClient({ session, step, errorCode }: Props) {
+export default function VerifyClient({ session, step: _step, errorCode }: Props) {
   const router                                  = useRouter()
   const [lang, setLang]                         = useState<Lang>('en')
   const t                                       = translations[lang]

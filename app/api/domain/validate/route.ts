@@ -25,7 +25,7 @@ async function checkDns(domain: string): Promise<boolean> {
   }
 }
 
-export async function POST(req: Request): Promise<NextResponse> {
+export async function POST(_req: Request): Promise<NextResponse> {
   // Auth
   const cookieStore = await cookies();
   const token       = cookieStore.get('msk_dashboard_session')?.value;

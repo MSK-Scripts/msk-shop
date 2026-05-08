@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import Link from 'next/link'
-import { Trash2, ExternalLink, ShoppingBag, Loader2 } from 'lucide-react'
+import { Trash2, ShoppingBag, Loader2 } from 'lucide-react'
 import { useCart } from '@/lib/useCart'
 import { useCartStore } from '@/store/cart'
 
@@ -59,6 +59,7 @@ export default function CartPage() {
               return (
                 <div key={item.id} className="bg-surface border border-borderlt rounded-xl p-4 flex items-center gap-4">
                   {item.image && (
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img src={item.image} alt={item.name} className="w-16 h-16 rounded-lg object-cover shrink-0" />
                   )}
                   <div className="flex-1 min-w-0">

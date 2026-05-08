@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { ShoppingCart, Loader2, LogIn } from 'lucide-react'
 import { useCart } from '@/lib/useCart'
 import { useSalePricesStore } from '@/store/salePrices'
-import type { Badge, BadgeVariant } from '@/lib/config'
+import type { Badge } from '@/lib/config'
 import type { TebexPackage } from '@/types/tebex'
 
 interface Props {

@@ -60,7 +60,7 @@ export async function getAllAuthUrls(
 export async function addToBasket(
   ident: string,
   packageId: number,
-  packageType: string = 'single',
+  _packageType: string = 'single',
   quantity = 1,
   usernameId?: string | null,
   variableData?: Record<string, string>
@@ -85,7 +85,7 @@ export async function addToBasket(
 export async function addGiftToBasket(
   ident: string,
   packageId: number,
-  packageType: string = 'single',
+  _packageType: string = 'single',
   giftUsername: string,
   usernameId?: string | null,
   discordId?: string | null,

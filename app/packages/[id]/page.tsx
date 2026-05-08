@@ -39,7 +39,6 @@ export default async function PackageDetailPage({
 
   const basePrice = pkg.base_price ?? 0
   const totalPrice = pkg.total_price ?? basePrice
-  const isFree = basePrice === 0
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-8">

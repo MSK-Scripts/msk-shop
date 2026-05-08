@@ -1,5 +1,3 @@
-import Link from 'next/link'
-import Image from 'next/image'
 import { ExternalLink } from 'lucide-react'
 import { getPackages } from '@/lib/tebex'
 import { Hero } from '@/components/home/Hero'
@@ -74,6 +72,7 @@ export default async function HomePage() {
                 {/* Image */}
                 <div className="relative h-40 overflow-hidden bg-gradient-to-br from-[#151a14] to-[#0f160f]">
                   {pkg.image ? (
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={pkg.image}
                       alt={pkg.name}

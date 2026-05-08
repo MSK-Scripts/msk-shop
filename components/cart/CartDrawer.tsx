@@ -98,6 +98,7 @@ export function CartDrawer() {
                 return (
                   <div key={item.id} className="flex items-center gap-3 p-3 bg-surface2 rounded-lg border border-borderlt">
                     {item.image && (
+                      // eslint-disable-next-line @next/next/no-img-element
                       <img src={item.image} alt={item.name} className="w-12 h-12 rounded object-cover shrink-0" />
                     )}
                     <div className="flex-1 min-w-0">
