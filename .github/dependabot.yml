@@ -15,13 +15,28 @@ updates:
         update-types:
           - "minor"
           - "patch"
-    # ESLint v10+ is not yet supported by eslint-config-next@15.x —
-    # block major bumps until Next.js officially supports the new major.
-    # eslint-config-next must stay in sync with the installed Next.js version.
+    # Block major version bumps for packages with known breaking changes:
+    # - eslint v10+: not supported by eslint-config-next@15.x
+    # - eslint-config-next: must stay in sync with installed Next.js version
+    # - next: major upgrades require manual migration (App Router changes)
+    # - tailwindcss: v4 is a complete rewrite (no tailwind.config.js, CSS-based config)
+    # - typescript: major compiler changes require manual verification
+    # - lucide-react: v1.x API changes from 0.x need manual review
+    # - @types/node: major bumps should stay in sync with Node.js runtime version
     ignore:
       - dependency-name: "eslint"
         update-types: ["version-update:semver-major"]
       - dependency-name: "eslint-config-next"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "next"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "tailwindcss"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "lucide-react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@types/node"
         update-types: ["version-update:semver-major"]
     # Security updates always get their own PR regardless of grouping
     open-pull-requests-limit: 10
