@@ -19,7 +19,7 @@ export function SalePriceFetcher() {
         const res = await fetch(`/api/packages?ident=${ident}`, { cache: 'no-store' })
         if (!res.ok) return
         const data = await res.json()
-        const packages: any[] = data.data ?? []
+        const packages: { id: number; base_price: number; total_price?: number }[] = data.data ?? []
 
         const prices: Record<number, { base_price: number; total_price: number }> = {}
         for (const pkg of packages) {
