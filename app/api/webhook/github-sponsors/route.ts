@@ -24,16 +24,6 @@ interface SponsorshipPayload {
   };
 }
 
-// ── Helpers ────────────────────────────────────────────────────────────────────
-
-/**
- * Strip CR/LF and other control characters from a value before writing it to
- * logs. Without this, a crafted sponsor login could inject fake log lines.
- */
-function sanitizeForLog(value: string): string {
-  return String(value).replace(/[\r\n\t\x00-\x1f\x7f]/g, '_').substring(0, 100);
-}
-
 // ── Tier Mapping ───────────────────────────────────────────────────────────────
 
 /** Map GitHub Sponsors monthly amount → internal tier. */
@@ -95,9 +85,27 @@ export async function POST(req: Request): Promise<NextResponse> {
     return NextResponse.json({ error: 'Missing sponsor login.' }, { status: 400 });
   }
 
-  const safeAction   = sanitizeForLog(action);
-  const safeUsername = sanitizeForLog(githubUsername);
-  console.info(`[github-sponsors] Action: ${safeAction} | Sponsor: ${safeUsername}`);
+  // Map action to a string literal so CodeQL's taint tracker sees a clean value.
+  // .replace()-based sanitizers are not recognised by CodeQL; a switch with
+  // literal returns fully breaks the taint chain.
+  const logAction: string = (() => {
+    switch (action) {
+      case 'created':              return 'created';
+      case 'cancelled':            return 'cancelled';
+      case 'tier_changed':         return 'tier_changed';
+      case 'pending_cancellation': return 'pending_cancellation';
+      case 'edited':               return 'edited';
+      default:                     return 'unknown';
+    }
+  })();
+
+  // GitHub usernames are alphanumeric + hyphens (1–39 chars). Anything that
+  // does not match is replaced with a safe placeholder before logging.
+  const logUsername: string = /^[a-zA-Z0-9-]{1,39}$/.test(githubUsername)
+    ? githubUsername
+    : '[invalid-username]';
+
+  console.info(`[github-sponsors] Action: ${logAction} | Sponsor: ${logUsername}`);
 
   // 4. Handle each action
   switch (action) {
@@ -122,7 +130,7 @@ export async function POST(req: Request): Promise<NextResponse> {
          WHERE github_username = ?`,
         [tier, expiry, githubUsername],
       );
-      console.info(`[github-sponsors] Upgraded ${safeUsername} → ${sanitizeForLog(tier)}`);
+      console.info(`[github-sponsors] Upgraded ${logUsername} → ${tier}`);
       break;
     }
 
@@ -143,7 +151,7 @@ export async function POST(req: Request): Promise<NextResponse> {
          WHERE github_username = ?`,
         [githubUsername],
       );
-      console.info(`[github-sponsors] Downgraded ${safeUsername} → basic`);
+      console.info(`[github-sponsors] Downgraded ${logUsername} → basic`);
       break;
     }
 
