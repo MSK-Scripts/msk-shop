@@ -8,6 +8,24 @@ import {
 import { dashboardTranslations, type Lang } from '@/lib/i18n'
 import type { Tier } from '@/lib/tiers'
 
+// ── Helpers ────────────────────────────────────────────────────────────────────
+
+/**
+ * Validates a user-supplied domain and returns a safe https:// URL.
+ * Returns null if the value is not a valid hostname (prevents XSS via
+ * javascript: URLs or other protocol injections).
+ */
+function safeDomainHref(domain: string): string | null {
+  try {
+    const url = new URL(`https://${domain}`)
+    // Ensure nothing was injected into the hostname (e.g. path, port, protocol)
+    if (url.hostname !== domain) return null
+    return url.href
+  } catch {
+    return null
+  }
+}
+
 // ── Types ──────────────────────────────────────────────────────────────────────
 
 interface Guild {
@@ -270,15 +288,19 @@ export default function DashboardClient({ guild, serverIp }: Props) {
                 <div className="flex items-center justify-between bg-surface2 border border-borderlt rounded-lg px-4 py-3 mb-4">
                   <div className="flex items-center gap-2 min-w-0">
                     <CheckCircle size={15} className="text-accent shrink-0" />
-                    <a
-                      href={`https://${domain}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-accent hover:underline truncate flex items-center gap-1"
-                    >
-                      {domain}
-                      <ExternalLink size={11} />
-                    </a>
+                    {safeDomainHref(domain) ? (
+                      <a
+                        href={safeDomainHref(domain)!}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-accent hover:underline truncate flex items-center gap-1"
+                      >
+                        {domain}
+                        <ExternalLink size={11} />
+                      </a>
+                    ) : (
+                      <span className="text-sm text-accent truncate">{domain}</span>
+                    )}
                   </div>
                   <button
                     onClick={handleRemove}
