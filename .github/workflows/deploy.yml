@@ -73,9 +73,15 @@ jobs:
           script: |
             cd /opt/msk-shop
 
+            # Stop the service before touching node_modules to avoid ENOTEMPTY
+            systemctl stop msk-shop || true
+
             # Fix npm cache permissions for www-data (uid 33)
             mkdir -p /var/www/.npm
             chown -R 33:33 /var/www/.npm
+
+            # Clean node_modules to ensure a fresh install (avoids ENOTEMPTY on npm ci)
+            rm -rf /opt/msk-shop/node_modules
 
             # Install only production dependencies
             npm ci --omit=dev
