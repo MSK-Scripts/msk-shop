@@ -15,6 +15,14 @@ updates:
         update-types:
           - "minor"
           - "patch"
+    # ESLint v10+ is not yet supported by eslint-config-next@15.x —
+    # block major bumps until Next.js officially supports the new major.
+    # eslint-config-next must stay in sync with the installed Next.js version.
+    ignore:
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "eslint-config-next"
+        update-types: ["version-update:semver-major"]
     # Security updates always get their own PR regardless of grouping
     open-pull-requests-limit: 10
     labels:
