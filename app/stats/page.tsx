@@ -57,7 +57,8 @@ async function loadStats(): Promise<Stats> {
       avgAttachmentBytes: avgAttachment?.avg_bytes ? Math.round(Number(avgAttachment.avg_bytes)) : 0,
       sponsors:           Number(sponsors?.total ?? 0),
     }
-  } catch {
+  } catch (err) {
+    console.error('[Stats] DB error:', err)
     return EMPTY_STATS
   }
 }
