@@ -1,7 +1,7 @@
 import { NextResponse }  from 'next/server'
 import { query, queryOne } from '@/lib/db'
 
-export const revalidate = 300 // 5-Minuten-Cache
+export const dynamic = 'force-dynamic' // 5-Minuten-Cache
 
 interface CountRow  { total: number }
 interface AvgRow    { avg_bytes: number | null }
