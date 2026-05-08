@@ -29,8 +29,21 @@ export const translations = {
     select_desc:        'Choose the Discord server you want to generate the API key for. You only see servers where you are an Administrator.',
     select_warning:     'If you have already verified this server, your current API key will become invalid immediately. You must update the key in your bot\'s .env and restart it.',
     select_no_guilds:   'No servers found where you are an Administrator.',
-    select_btn:         'Generate API Key',
-    select_btn_loading: 'Processing...',
+    select_btn:         'Continue →',
+    select_btn_loading: 'Checking...',
+
+    // Step 3 — Already registered
+    existing_title:          'Server already registered',
+    existing_desc:           'This server already has an active API key linked to your account.',
+    existing_new_key_title:  'Generate new API key',
+    existing_new_key_desc:   'Your current key will be immediately invalidated. You must update it in your bot\'s .env and restart the bot.',
+    existing_new_key_btn:    'Generate new key',
+    existing_new_key_loading:'Generating...',
+    existing_dashboard_title:'Go to Dashboard',
+    existing_dashboard_desc: 'Open your dashboard to manage your custom domain without generating a new key.',
+    existing_dashboard_btn:  'Go to Dashboard',
+    existing_dashboard_loading: 'Redirecting...',
+    existing_back:           '← Back to server selection',
 
     // Step 4 — Done
     done_title:         'Verification complete!',
@@ -80,8 +93,21 @@ export const translations = {
     select_desc:        'Wähle den Discord-Server für den du den API Key generieren möchtest. Du siehst nur Server auf denen du Administrator bist.',
     select_warning:     'Falls du diesen Server bereits verifiziert hast, wird dein bisheriger API Key sofort ungültig. Du musst den neuen Key in der .env deines Bots eintragen und ihn neu starten.',
     select_no_guilds:   'Keine Server gefunden auf denen du Administrator bist.',
-    select_btn:         'API Key generieren',
-    select_btn_loading: 'Wird verarbeitet...',
+    select_btn:         'Weiter →',
+    select_btn_loading: 'Wird geprüft...',
+
+    // Step 3 — Already registered
+    existing_title:          'Server bereits registriert',
+    existing_desc:           'Dieser Server hat bereits einen aktiven API Key der mit deinem Account verknüpft ist.',
+    existing_new_key_title:  'Neuen API Key generieren',
+    existing_new_key_desc:   'Dein bisheriger Key wird sofort ungültig. Du musst ihn in der .env deines Bots aktualisieren und den Bot neu starten.',
+    existing_new_key_btn:    'Neuen Key generieren',
+    existing_new_key_loading:'Wird generiert...',
+    existing_dashboard_title:'Zum Dashboard',
+    existing_dashboard_desc: 'Öffne dein Dashboard um deine eigene Domain zu verwalten, ohne einen neuen Key zu generieren.',
+    existing_dashboard_btn:  'Zum Dashboard',
+    existing_dashboard_loading: 'Wird weitergeleitet...',
+    existing_back:           '← Zurück zur Serverauswahl',
 
     // Step 4 — Done
     done_title:         'Verifizierung abgeschlossen!',

@@ -1,9 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { CheckCircle, Github, Copy, Check, AlertCircle, Loader2, ExternalLink, Globe } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { CheckCircle, Github, Copy, Check, AlertCircle, Loader2, ExternalLink, Globe, RefreshCw, LayoutDashboard } from 'lucide-react'
 import type { DiscordGuild, VerifySession } from '@/lib/session'
 import { translations, type Lang } from '@/lib/i18n'
+import type { Tier } from '@/lib/tiers'
 
 // ── Language Toggle ────────────────────────────────────────────────────────────
 
@@ -116,13 +118,16 @@ const TIER_LABELS: Record<string, { en: string; de: string }> = {
 }
 
 export default function VerifyClient({ session, step, errorCode }: Props) {
+  const router                                  = useRouter()
   const [lang, setLang]                         = useState<Lang>('en')
   const t                                       = translations[lang]
   const [selectedGuildId, setSelectedGuildId]   = useState<string>('')
   const [loading, setLoading]                   = useState(false)
+  const [dashboardLoading, setDashboardLoading] = useState(false)
   const [result, setResult]                     = useState<{ apiKey: string; tier: string } | null>(null)
   const [completeError, setCompleteError]       = useState<string | null>(null)
   const [copied, setCopied]                     = useState(false)
+  const [existingGuild, setExistingGuild]       = useState<{ tier: Tier } | null>(null)
 
   const errorMap: Record<string, keyof typeof t> = {
     invalid_state:         'err_invalid_state',
@@ -138,7 +143,31 @@ export default function VerifyClient({ session, step, errorCode }: Props) {
   const hasDiscord = !!session?.guilds
   const currentStep = result ? 4 : hasDiscord ? 3 : hasGitHub ? 2 : 1
 
-  const handleComplete = async () => {
+  // Step 1: check if guild already has a key, then show choice or proceed directly
+  const handleContinue = async () => {
+    if (!selectedGuildId) return
+    setLoading(true)
+    setCompleteError(null)
+    try {
+      const res  = await fetch('/api/verify/check-guild', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ guildId: selectedGuildId }),
+      })
+      const data = await res.json()
+      if (!res.ok) { setCompleteError(data.error ?? 'Error'); return }
+      if (data.exists && data.ownedByCurrentUser) {
+        setExistingGuild({ tier: data.tier })
+      } else {
+        // Not registered yet (or owned by different account — let complete handle that error)
+        await handleGenerateKey()
+      }
+    } catch { setCompleteError('Network error. Please try again.') }
+    finally   { setLoading(false) }
+  }
+
+  // Step 2a: generate a new API key (replaces existing)
+  const handleGenerateKey = async () => {
     if (!selectedGuildId) return
     setLoading(true)
     setCompleteError(null)
@@ -150,9 +179,27 @@ export default function VerifyClient({ session, step, errorCode }: Props) {
       })
       const data = await res.json()
       if (!res.ok) setCompleteError(data.error ?? 'Error')
-      else setResult({ apiKey: data.apiKey, tier: data.tier })
+      else { setExistingGuild(null); setResult({ apiKey: data.apiKey, tier: data.tier }) }
     } catch { setCompleteError('Network error. Please try again.') }
     finally   { setLoading(false) }
+  }
+
+  // Step 2b: go to dashboard without generating a new key
+  const handleGoToDashboard = async () => {
+    if (!selectedGuildId) return
+    setDashboardLoading(true)
+    setCompleteError(null)
+    try {
+      const res  = await fetch('/api/verify/redirect-dashboard', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ guildId: selectedGuildId }),
+      })
+      const data = await res.json()
+      if (!res.ok) { setCompleteError(data.error ?? 'Error'); return }
+      router.push('/dashboard')
+    } catch { setCompleteError('Network error. Please try again.') }
+    finally   { setDashboardLoading(false) }
   }
 
   const handleCopy = () => {
@@ -219,7 +266,7 @@ export default function VerifyClient({ session, step, errorCode }: Props) {
           )}
 
           {/* Step 3 — Select Server */}
-          {currentStep === 3 && !result && (
+          {currentStep === 3 && !result && !existingGuild && (
             <div>
               <h2 className="text-white font-bold text-lg mb-1">{t.select_title}</h2>
               <p className="text-muted text-sm mb-3">{t.select_desc}</p>
@@ -256,12 +303,74 @@ export default function VerifyClient({ session, step, errorCode }: Props) {
               </div>
 
               <button
-                onClick={handleComplete}
+                onClick={handleContinue}
                 disabled={!selectedGuildId || loading}
                 className="msk-btn-primary w-full justify-center"
               >
                 {loading ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle size={16} />}
                 {loading ? t.select_btn_loading : t.select_btn}
+              </button>
+            </div>
+          )}
+
+          {/* Step 3 — Already registered: choose action */}
+          {currentStep === 3 && !result && existingGuild && (
+            <div>
+              <div className="flex items-center gap-2.5 mb-4">
+                <div className="w-10 h-10 rounded-full bg-yellow-500/15 border border-yellow-500/30 flex items-center justify-center shrink-0">
+                  <AlertCircle size={20} className="text-yellow-400" />
+                </div>
+                <div>
+                  <h2 className="text-white font-bold text-base leading-tight">{t.existing_title}</h2>
+                  <p className="text-muted text-xs mt-0.5">{t.existing_desc}</p>
+                </div>
+              </div>
+
+              {completeError && <ErrorBanner message={completeError} />}
+
+              <div className="space-y-3 mb-5">
+                {/* Option A — Generate new key */}
+                <div className="bg-surface2 border border-borderlt rounded-xl p-4">
+                  <div className="flex items-center gap-2 mb-1">
+                    <RefreshCw size={14} className="text-muted shrink-0" />
+                    <span className="text-sm font-semibold text-white">{t.existing_new_key_title}</span>
+                  </div>
+                  <p className="text-xs text-dim mb-3 pl-5">{t.existing_new_key_desc}</p>
+                  <button
+                    onClick={handleGenerateKey}
+                    disabled={loading || dashboardLoading}
+                    className="msk-btn-ghost w-full justify-center text-xs py-2"
+                  >
+                    {loading ? <Loader2 size={13} className="animate-spin" /> : <RefreshCw size={13} />}
+                    {loading ? t.existing_new_key_loading : t.existing_new_key_btn}
+                  </button>
+                </div>
+
+                {/* Option B — Go to Dashboard (Premium / Premium+ only) */}
+                {(existingGuild.tier === 'premium' || existingGuild.tier === 'premium_plus') && (
+                  <div className="bg-accent/5 border border-accent/25 rounded-xl p-4">
+                    <div className="flex items-center gap-2 mb-1">
+                      <LayoutDashboard size={14} className="text-accent shrink-0" />
+                      <span className="text-sm font-semibold text-white">{t.existing_dashboard_title}</span>
+                    </div>
+                    <p className="text-xs text-dim mb-3 pl-5">{t.existing_dashboard_desc}</p>
+                    <button
+                      onClick={handleGoToDashboard}
+                      disabled={loading || dashboardLoading}
+                      className="msk-btn-primary w-full justify-center text-xs py-2"
+                    >
+                      {dashboardLoading ? <Loader2 size={13} className="animate-spin" /> : <LayoutDashboard size={13} />}
+                      {dashboardLoading ? t.existing_dashboard_loading : t.existing_dashboard_btn}
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <button
+                onClick={() => { setExistingGuild(null); setCompleteError(null) }}
+                className="text-xs text-dim hover:text-muted transition-colors w-full text-center"
+              >
+                {t.existing_back}
               </button>
             </div>
           )}
