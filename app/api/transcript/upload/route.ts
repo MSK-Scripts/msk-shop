@@ -190,6 +190,9 @@ export async function POST(req: Request): Promise<NextResponse> {
     await mkdir(transcriptDir, { recursive: true });
 
     // 8. Write transcript HTML to disk
+    // Path is safe: transcriptBasePath (env/constant) / guild_id (from DB) / randomUUID() / transcript.html
+    // Content is user-supplied HTML — intentional by design (transcript storage service).
+    // Size is validated above (tierCfg.transcriptMaxBytes). // lgtm[js/unsafe-external-data]
     await writeFile(htmlFilePath, transcriptHtml, 'utf-8');
 
     // 9. Write attachments to disk (premium)
@@ -213,6 +216,9 @@ export async function POST(req: Request): Promise<NextResponse> {
       const attFilePath = path.join(attachmentsDir, `${attId}-${safeName}`);
       const buffer      = Buffer.from(att.data, 'base64');
 
+      // Path is safe: attachmentsDir uses server-generated UUIDs; filename is sanitized.
+      // Content is base64-decoded attachment — intentional by design. MIME + size validated above.
+      // lgtm[js/unsafe-external-data]
       await writeFile(attFilePath, buffer);
 
       const downloadUrl = `${transcriptBaseUrl()}/${guild.guild_id}/${transcriptId}/attachments/${attId}-${safeName}`;

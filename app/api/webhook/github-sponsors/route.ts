@@ -24,6 +24,16 @@ interface SponsorshipPayload {
   };
 }
 
+// ── Helpers ────────────────────────────────────────────────────────────────────
+
+/**
+ * Strip CR/LF and other control characters from a value before writing it to
+ * logs. Without this, a crafted sponsor login could inject fake log lines.
+ */
+function sanitizeForLog(value: string): string {
+  return String(value).replace(/[\r\n\t\x00-\x1f\x7f]/g, '_').substring(0, 100);
+}
+
 // ── Tier Mapping ───────────────────────────────────────────────────────────────
 
 /** Map GitHub Sponsors monthly amount → internal tier. */
@@ -85,7 +95,9 @@ export async function POST(req: Request): Promise<NextResponse> {
     return NextResponse.json({ error: 'Missing sponsor login.' }, { status: 400 });
   }
 
-  console.info(`[github-sponsors] Action: ${action} | Sponsor: ${githubUsername}`);
+  const safeAction   = sanitizeForLog(action);
+  const safeUsername = sanitizeForLog(githubUsername);
+  console.info(`[github-sponsors] Action: ${safeAction} | Sponsor: ${safeUsername}`);
 
   // 4. Handle each action
   switch (action) {
@@ -110,7 +122,7 @@ export async function POST(req: Request): Promise<NextResponse> {
          WHERE github_username = ?`,
         [tier, expiry, githubUsername],
       );
-      console.info(`[github-sponsors] Upgraded ${githubUsername} → ${tier}`);
+      console.info(`[github-sponsors] Upgraded ${safeUsername} → ${sanitizeForLog(tier)}`);
       break;
     }
 
@@ -131,7 +143,7 @@ export async function POST(req: Request): Promise<NextResponse> {
          WHERE github_username = ?`,
         [githubUsername],
       );
-      console.info(`[github-sponsors] Downgraded ${githubUsername} → basic`);
+      console.info(`[github-sponsors] Downgraded ${safeUsername} → basic`);
       break;
     }
 
