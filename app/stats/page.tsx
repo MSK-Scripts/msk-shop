@@ -1,6 +1,7 @@
-import { query, queryOne } from '@/lib/db'
-import StatsClient         from './StatsClient'
-import type { Stats }      from './StatsClient'
+import { query, queryOne }    from '@/lib/db'
+import { getIgnoredApiKeys } from '@/lib/statsIgnore'
+import StatsClient            from './StatsClient'
+import type { Stats }         from './StatsClient'
 
 export const dynamic = 'force-dynamic'
 
@@ -26,6 +27,12 @@ const EMPTY_STATS: Stats = {
 
 async function loadStats(): Promise<Stats> {
   try {
+    const ignored    = getIgnoredApiKeys()
+    const hasIgnored = ignored.length > 0
+    const exclude    = hasIgnored
+      ? `AND api_key NOT IN (${ignored.map(() => '?').join(', ')})`
+      : ''
+
     const [
       transcripts,
       apiKeys,
@@ -36,8 +43,8 @@ async function loadStats(): Promise<Stats> {
       sponsors,
     ] = await Promise.all([
       queryOne<CountRow>('SELECT COUNT(*) AS total FROM ticketbot_transcripts'),
-      queryOne<CountRow>('SELECT COUNT(*) AS total FROM ticketbot_guilds WHERE active = TRUE'),
-      query<TierRow>('SELECT tier, COUNT(*) AS count FROM ticketbot_guilds WHERE active = TRUE GROUP BY tier'),
+      queryOne<CountRow>(`SELECT COUNT(*) AS total FROM ticketbot_guilds WHERE active = TRUE ${exclude}`, ignored),
+      query<TierRow>(`SELECT tier, COUNT(*) AS count FROM ticketbot_guilds WHERE active = TRUE ${exclude} GROUP BY tier`, ignored),
       queryOne<AvgRow>('SELECT AVG(file_size_bytes) AS avg_bytes FROM ticketbot_transcripts'),
       queryOne<CountRow>('SELECT COUNT(*) AS total FROM ticketbot_attachments'),
       queryOne<AvgRow>('SELECT AVG(file_size_bytes) AS avg_bytes FROM ticketbot_attachments'),

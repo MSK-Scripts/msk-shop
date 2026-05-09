@@ -33,6 +33,7 @@ desktop.ini
 *.swo
 *~
 .claude/
+CLAUDE.md
 
 # TypeScript
 *.tsbuildinfo
