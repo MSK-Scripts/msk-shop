@@ -9,8 +9,8 @@ import { join, resolve }          from 'path';
 // The filename NEVER comes from user input — only the key is user-supplied,
 // and it is validated against this fixed map before any filesystem access.
 const FILE_MAP: Record<string, string> = {
-  config:  'config.jsonc',
-  snippet: 'snippet.jsonc',
+  config:  'config/config.jsonc',
+  snippet: 'config/snippet.jsonc',
   env:     '.env',
 };
 
