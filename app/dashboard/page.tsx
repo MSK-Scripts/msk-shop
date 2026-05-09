@@ -10,11 +10,12 @@ export const metadata = {
 }
 
 interface GuildRow {
-  guild_id:      string;
-  tier:          Tier;
-  custom_domain: string | null;
-  domain_status: 'none' | 'pending_dns' | 'active';
+  guild_id:        string;
+  tier:            Tier;
+  custom_domain:   string | null;
+  domain_status:   'none' | 'pending_dns' | 'active';
   github_username: string | null;
+  is_hosted:       number;
 }
 
 export default async function DashboardPage() {
@@ -27,7 +28,7 @@ export default async function DashboardPage() {
   }
 
   const guild = await queryOne<GuildRow>(
-    `SELECT guild_id, tier, custom_domain, domain_status, github_username
+    `SELECT guild_id, tier, custom_domain, domain_status, github_username, is_hosted
      FROM ticketbot_guilds WHERE guild_id = ?`,
     [session.guildId],
   );

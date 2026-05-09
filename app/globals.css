@@ -133,6 +133,22 @@
   }
 }
 
+/* ── CodeMirror Editor — MSK theme overrides ─────────────────────────────── */
+.cm-editor {
+  background-color: #1b1b1d !important;
+}
+.cm-editor.cm-focused {
+  outline: none !important;
+}
+.cm-editor .cm-scroller {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+/* Scrollbar inside editor */
+.cm-scroller::-webkit-scrollbar       { width: 6px; height: 6px; }
+.cm-scroller::-webkit-scrollbar-track { background: #1b1b1d; }
+.cm-scroller::-webkit-scrollbar-thumb { background: #3d3d3f; border-radius: 3px; }
+.cm-scroller::-webkit-scrollbar-thumb:hover { background: #5eb131; }
+
 @layer components {
   .msk-btn-primary {
     @apply inline-flex items-center justify-center gap-2 rounded-lg bg-accent text-white font-bold text-sm px-4 py-2.5 transition-all hover:bg-accenthov active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;

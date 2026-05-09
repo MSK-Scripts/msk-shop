@@ -1,12 +1,15 @@
 'use client'
 
-import { useState } from 'react'
+import { useState }  from 'react'
+import dynamic        from 'next/dynamic'
 import {
   Globe, CheckCircle, AlertCircle, Clock, Trash2,
   ExternalLink, RefreshCw, Loader2, Info,
 } from 'lucide-react'
 import { dashboardTranslations, type Lang } from '@/lib/i18n'
 import type { Tier } from '@/lib/tiers'
+
+const BotConfigEditor = dynamic(() => import('@/components/BotConfigEditor'), { ssr: false })
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -34,6 +37,7 @@ interface Guild {
   custom_domain:   string | null
   domain_status:   'none' | 'pending_dns' | 'active'
   github_username: string | null
+  is_hosted:       number
 }
 
 interface Props {
@@ -323,6 +327,13 @@ export default function DashboardClient({ guild, serverIp }: Props) {
             </>
           )}
         </div>
+
+        {/* Bot Config Editor — only visible for hosted customers */}
+        {!!guild.is_hosted && (
+          <div className="mt-4">
+            <BotConfigEditor />
+          </div>
+        )}
 
         {/* Footer Links */}
         <div className="mt-4 flex gap-3">

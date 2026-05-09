@@ -13,10 +13,14 @@ CREATE TABLE IF NOT EXISTS ticketbot_guilds (
     discord_user_id VARCHAR(20),
     custom_domain   VARCHAR(255),
     domain_status   ENUM('none', 'pending_dns', 'active') NOT NULL DEFAULT 'none',
+    is_hosted       TINYINT(1)   NOT NULL DEFAULT 0,
     active          BOOLEAN      NOT NULL DEFAULT TRUE,
     created_at      DATETIME     NOT NULL DEFAULT NOW(),
     expires_at      DATETIME     NULL
 );
+
+-- Migration (run once on existing databases):
+-- ALTER TABLE ticketbot_guilds ADD COLUMN is_hosted TINYINT(1) NOT NULL DEFAULT 0;
 
 -- Transcripts
 CREATE TABLE IF NOT EXISTS ticketbot_transcripts (

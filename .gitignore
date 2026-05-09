@@ -54,3 +54,4 @@ CLAUDE.md
 # Apache server configs — server-specific, must not be committed
 msk-shop.conf
 msk-shop_ssl.conf
+Customer-Create-Bot.md
