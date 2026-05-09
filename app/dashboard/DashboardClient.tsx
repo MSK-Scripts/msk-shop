@@ -331,7 +331,7 @@ export default function DashboardClient({ guild, serverIp }: Props) {
         {/* Bot Config Editor — only visible for hosted customers */}
         {!!guild.is_hosted && (
           <div className="mt-4">
-            <BotConfigEditor />
+            <BotConfigEditor lang={lang} />
           </div>
         )}
 
