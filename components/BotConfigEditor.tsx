@@ -463,7 +463,7 @@ export default function BotConfigEditor() {
               Danach ist ein Neustart erforderlich.
             </p>
           </div>
-          <button onClick={handleUpdate} disabled={isBusy || notFound}
+          <button onClick={handleUpdate} disabled={isBusy}
             className="msk-btn-ghost shrink-0"
             title="Auf neueste Version aktualisieren"
           >
