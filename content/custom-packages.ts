@@ -79,7 +79,7 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
     linkLabel: 'View on GitHub',
     badges: [
       { label: 'Discord', variant: 'discord' },
-      { label: 'Python', variant: 'py' },
+      { label: 'JavaScript', variant: 'js' },
     ],
     tags: ['Installation', 'Configuration'],
   },
