@@ -87,7 +87,7 @@ jobs:
             npm ci --omit=dev
 
             # Fix all permissions — must run after npm ci and before restart
-            chown -R www-data:www-data /opt/msk-shop/
+            chown -R musiker15:musiker15 /opt/msk-shop/
             chmod -R u+w /opt/msk-shop/.next/
 
             # Reload service file if it changed
