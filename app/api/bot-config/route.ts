@@ -10,7 +10,7 @@ import { join, resolve }          from 'path';
 // and it is validated against this fixed map before any filesystem access.
 const FILE_MAP: Record<string, string> = {
   config:  'config/config.jsonc',
-  snippet: 'config/snippet.jsonc',
+  snippet: 'config/snippets.jsonc',
   env:     '.env',
 };
 
