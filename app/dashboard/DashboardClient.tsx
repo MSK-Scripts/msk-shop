@@ -181,19 +181,35 @@ export default function DashboardClient({ guild, serverIp }: Props) {
           </div>
         </div>
 
-        {/* Tier Badge */}
-        <div className={`inline-flex items-center gap-2 border rounded-lg px-3 py-1.5 text-sm font-semibold mb-6 ${TIER_COLORS[guild.tier]}`}>
-          {t[`tier_${guild.tier}` as 'tier_basic' | 'tier_premium' | 'tier_premium_plus']}
-          {guild.tier === 'basic' && (
+        {/* Tier Badge + Quick Links */}
+        <div className="flex items-center justify-between mb-6">
+          <div className={`inline-flex items-center gap-2 border rounded-lg px-3 py-1.5 text-sm font-semibold ${TIER_COLORS[guild.tier]}`}>
+            {t[`tier_${guild.tier}` as 'tier_basic' | 'tier_premium' | 'tier_premium_plus']}
+            {guild.tier === 'basic' && (
+              <a
+                href="https://github.com/sponsors/MSK-Scripts"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-accent hover:underline text-xs font-normal ml-1"
+              >
+                {t.upgrade}
+              </a>
+            )}
+          </div>
+          <div className="flex gap-2">
+            <a href="/verify" className="msk-btn-ghost text-sm">
+              {t.new_api_key}
+            </a>
             <a
-              href="https://github.com/sponsors/MSK-Scripts"
+              href="https://docu.msk-scripts.de/discord/discord_ticketbot/getting-started"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-accent hover:underline text-xs font-normal ml-1"
+              className="msk-btn-ghost text-sm"
             >
-              {t.upgrade}
+              <ExternalLink size={14} />
+              {t.docs}
             </a>
-          )}
+          </div>
         </div>
 
         {/* Custom Domain Card */}
@@ -335,21 +351,6 @@ export default function DashboardClient({ guild, serverIp }: Props) {
           </div>
         )}
 
-        {/* Footer Links */}
-        <div className="mt-4 flex gap-3">
-          <a href="/verify" className="msk-btn-ghost text-sm">
-            {t.new_api_key}
-          </a>
-          <a
-            href="https://docu.msk-scripts.de/discord/discord_ticketbot/getting-started"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="msk-btn-ghost text-sm"
-          >
-            <ExternalLink size={14} />
-            {t.docs}
-          </a>
-        </div>
 
       </div>
     </div>
