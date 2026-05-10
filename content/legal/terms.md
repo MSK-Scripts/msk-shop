@@ -8,8 +8,9 @@ These Terms & Conditions apply to all use of the MSK Scripts services available 
 
 - **MSK Scripts Shop** — purchase of digital products (FiveM resources and Discord bots) via Tebex
 - **MSK Ticket Bot Transcript Service** — an optional subscription-based hosted service for users who self-host the MSK Ticket Bot
+- **Hosted Bot Management** — an optional fully managed hosting service for the MSK Ticket Bot, exclusively available to Premium+ customers by individual arrangement
 
-By completing a purchase or registering for the Transcript Service, you agree to these terms.
+By completing a purchase or registering for any of these services, you agree to these terms.
 
 ---
 
@@ -129,7 +130,53 @@ If the service is unavailable at the time a transcript is uploaded by the bot, t
 
 ---
 
-## 8. Limitation of Liability
+## 8. Hosted Bot Management Service
+
+### 8.1 Service Description
+
+The Hosted Bot Management Service allows Premium+ customers to have their MSK Ticket Bot instance fully hosted and operated on MSK Scripts' servers. The service is only available by individual arrangement via our [Discord server](https://discord.gg/5hHSBRHvJE) and is not automatically activated by a Premium+ GitHub Sponsors subscription.
+
+The service includes:
+- Hosting of the bot process on MSK Scripts' servers (managed via PM2)
+- Access to a web-based management panel at **www.msk-scripts.de/dashboard** for editing configuration files (`config.jsonc`, `snippets.jsonc`, `.env`), controlling the bot (start / stop / restart / update), and viewing live log output
+
+### 8.2 Access to Configuration Data and Credentials
+
+By using the Hosted Bot Management Service, you acknowledge and agree that:
+
+- Your bot's configuration files — including `config.jsonc`, `snippets.jsonc`, and the **`.env` file containing sensitive credentials** (such as your Discord bot token and API keys) — are stored on MSK Scripts' servers in a directory accessible to the service operator
+- MSK Scripts personnel may access these files for support, maintenance, and security purposes
+- You are solely responsible for any credentials stored in the `.env` file and for ensuring that the bot token and other secrets have not been compromised
+- You must **immediately regenerate** any compromised credentials (e.g. Discord bot token) and notify us so we can update the configuration
+
+### 8.3 Customer Responsibilities
+
+You are solely responsible for:
+- Ensuring that your bot's configuration and usage comply with **Discord's Terms of Service** and Community Guidelines
+- The content processed by the hosted bot (messages, transcripts, user data)
+- Informing your Discord server members that a third-party service (MSK Scripts) operates the bot infrastructure on your behalf
+- Any legal obligations arising from the collection and storage of user data by the bot within your Discord server
+
+### 8.4 Bot Usage Compliance
+
+The hosted bot must not be configured or used to:
+- Collect or store data in violation of applicable law or Discord's Terms of Service
+- Send spam, unsolicited messages, or engage in any abusive behaviour
+- Perform actions that could harm Discord's infrastructure or other users
+
+We reserve the right to immediately suspend the hosted bot if it is used in violation of these terms, Discord's policies, or applicable law.
+
+### 8.5 Service Availability and Termination
+
+We do not guarantee a specific uptime for the Hosted Bot Management Service. The service may be interrupted for maintenance, updates, or other operational reasons.
+
+Either party may terminate the hosting arrangement at any time with reasonable notice. Upon termination:
+- We will provide you with your configuration files (`config.jsonc`, `snippets.jsonc`, `.env`) so you can migrate to self-hosting
+- Bot data, logs, and configuration files will be deleted from our servers within 14 days of termination
+
+---
+
+## 9. Limitation of Liability
 
 MSK Scripts accepts no liability for damages arising from the use of our products or services, unless caused by gross negligence or willful misconduct.
 
@@ -142,13 +189,13 @@ In particular, we accept no liability for:
 
 ---
 
-## 9. Support
+## 10. Support
 
 Support for shop products and the Transcript Service is provided via our Discord server. We aim to respond promptly but cannot guarantee specific response times.
 
 ---
 
-## 10. Changes to Terms
+## 11. Changes to Terms
 
 We reserve the right to update these Terms & Conditions at any time. Changes will be published on this page with an updated date. Continued use of our services after changes are published constitutes acceptance of the updated terms.
 
@@ -156,6 +203,6 @@ For material changes to the Transcript Service subscription terms, we will make 
 
 ---
 
-## 11. Governing Law
+## 12. Governing Law
 
 These Terms are governed by the laws of the **Federal Republic of Germany**. To the extent permitted by law, the exclusive place of jurisdiction for all disputes arising from or in connection with these Terms is the licensor's place of business.

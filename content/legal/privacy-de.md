@@ -24,6 +24,8 @@ Diese Website betreibt zwei eigenständige Dienste mit jeweils eigener Datenvera
 
 **b) MSK Ticket Bot Transcript Service** — ein optionaler gehosteter Dienst für Nutzer, die den MSK Ticket Bot selbst betreiben. Er speichert Ticket-Transkripte online und stellt öffentliche Links bereit. Nutzer authentifizieren sich über GitHub und Discord OAuth, um einen API Key zu erhalten.
 
+**c) Hosted Bot Management** — ein optionaler, vollständig verwalteter Hosting-Dienst für Premium+-Kunden. Der Bot läuft auf den Servern von MSK Scripts; die Verwaltung erfolgt über das Web-Dashboard.
+
 ### Vom Shop erhobene Daten
 
 - **CFX.re / FiveM-Nutzername und Nutzer-ID** — erforderlich zur Authentifizierung und Lieferung über das FiveM Asset Escrow-System
@@ -45,6 +47,13 @@ Diese Website betreibt zwei eigenständige Dienste mit jeweils eigener Datenvera
 - **Rate-Limiting-Daten** — Anfragezähler pro API Key pro Stunde zur Missbrauchsverhinderung
 - **GitHub-Sponsoring-Daten** — über GitHub Sponsors Webhook empfangen (GitHub-Nutzername und Tier); zur Aktivierung oder Aktualisierung des Abos verarbeitet
 
+### Vom Hosted Bot Management Service erhobene Daten
+
+- **Bot-Konfigurationsdateien** — `config.jsonc` und `snippets.jsonc` werden als Teil des Dienstbetriebs auf unserem Server gespeichert
+- **`.env`-Datei** — enthält sensible Zugangsdaten des Kunden (z.B. Discord-Bot-Token, MSK API Key); auf unserem Server gespeichert und zum Betrieb des Bots erforderlich
+- **PM2-Log-Ausgabe** — Laufzeitausgabe des Bot-Prozesses; über das Dashboard live abrufbar, wird nicht dauerhaft gespeichert
+- **Discord-Server-ID (Guild-ID)** — zur Identifikation der gehosteten Bot-Instanz; verknüpft mit dem bestehenden Transcript Service-Konto
+
 ### Nicht erhobene Daten
 
 - Wir erheben keine Zahlungsdaten für den Shop. Die Zahlungsabwicklung erfolgt ausschließlich durch **Tebex Limited**.
@@ -63,6 +72,8 @@ Diese Website betreibt zwei eigenständige Dienste mit jeweils eigener Datenvera
 | Transcript Service — Transkript- und Anhangsspeicherung | Art. 6 Abs. 1 lit. b DSGVO — Vertragserfüllung |
 | Transcript Service — GitHub Sponsors Webhook | Art. 6 Abs. 1 lit. b DSGVO — Vertragserfüllung |
 | Rate Limiting | Art. 6 Abs. 1 lit. f DSGVO — berechtigte Interessen (Missbrauchsschutz) |
+| Hosted Bot Management — Speicherung von Konfigurationsdateien und Zugangsdaten | Art. 6 Abs. 1 lit. b DSGVO — Vertragserfüllung |
+| Hosted Bot Management — Bot-Prozess-Logs | Art. 6 Abs. 1 lit. b DSGVO — Vertragserfüllung |
 
 ---
 
@@ -144,7 +155,26 @@ Wir betreiben einen Webhook-Endpunkt, der Ereignisse von **GitHub Sponsors** emp
 
 Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO — zur Erbringung des gebuchten Dienstes erforderlich.
 
-### 5.5 Eigene Domain (nur Premium)
+### 5.6 Hosted Bot Management
+
+Für Premium+-Kunden, die den Hosted Bot Management Service nutzen, werden folgende Daten auf unseren Servern in einem Verzeichnis gespeichert, das Ihrer Discord-Server-ID zugeordnet ist:
+
+| Daten | Beschreibung | Speicherdauer |
+|---|---|---|
+| `config.jsonc` | Bot-Konfiguration (Ticket-Typen, Rollen, Einstellungen) | Bis zur Beendigung des Hostings |
+| `snippets.jsonc` | Canned Responses (falls konfiguriert) | Bis zur Beendigung des Hostings |
+| `.env` | Bot-Zugangsdaten (Discord-Token, API-Keys) | Bis zur Beendigung des Hostings |
+| Bot-Log-Ausgabe | Laufzeitausgabe des Bot-Prozesses; live über das Dashboard abrufbar | Nicht dauerhaft gespeichert — nur Live-Puffer |
+
+**Sensible Zugangsdaten:** Die `.env`-Datei kann Ihren Discord-Bot-Token und weitere API-Keys enthalten. Diese Datei wird auf unserem Server gespeichert und ist zum Betrieb des Bots erforderlich. Mitarbeiter von MSK Scripts können diese Datei für Wartungs- und Supportzwecke einsehen. Sie sind dafür verantwortlich, dass die darin gespeicherten Zugangsdaten nicht kompromittiert sind.
+
+**Rechtsgrundlage:** Art. 6 Abs. 1 lit. b DSGVO — die Verarbeitung ist zur Erfüllung des Hosting-Vertrags erforderlich.
+
+**Zugriffskontrolle:** Auf die Konfigurationsdateien können ausschließlich der Dienstbetreiber (MSK Scripts) und Sie über das authentifizierte Dashboard unter **www.msk-scripts.de/dashboard** zugreifen.
+
+Bei Beendigung des Hosting-Arrangements werden alle Dateien in Ihrem Bot-Verzeichnis (einschließlich der `.env`-Datei) innerhalb von **14 Tagen** von unseren Servern gelöscht.
+
+### 5.7 Eigene Domain (nur Premium)
 
 Bei Konfiguration einer eigenen Domain wird der Domain-Name in unserer Datenbank gespeichert. Bei der Aktivierung:
 - Wird eine **Apache2 VirtualHost-Konfiguration** auf unserem Server erstellt
@@ -214,6 +244,8 @@ Unsere Startseite zeigt die aktuelle Online-Mitgliederzahl unseres Discord-Serve
 | Transkript-HTML-Dateien | 30 Tage (Basic) / 60 Tage (Premium) / 90 Tage (Premium+) |
 | Anhangsdateien | Wie Transkript |
 | GitHub-Sponsoring-Daten | Bis zur Kontolöschung |
+| Hosted Bot Konfigurationsdateien (`config.jsonc`, `snippets.jsonc`, `.env`) | Bis zur Beendigung des Hostings + 14 Tage |
+| Hosted Bot Log-Ausgabe | Nicht dauerhaft gespeichert (nur Live-Puffer) |
 
 ---
 

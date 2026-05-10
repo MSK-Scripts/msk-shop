@@ -8,8 +8,9 @@ Diese Nutzungsbedingungen gelten für die Nutzung aller MSK Scripts-Dienste unte
 
 - **MSK Scripts Shop** — Kauf digitaler Produkte (FiveM-Ressourcen und Discord-Bots) über Tebex
 - **MSK Ticket Bot Transcript Service** — ein optionaler, abonnementbasierter Hosting-Dienst für Nutzer, die den MSK Ticket Bot selbst betreiben
+- **Hosted Bot Management** — ein optionaler, vollständig verwalteter Hosting-Dienst für den MSK Ticket Bot, der ausschließlich Premium+-Kunden auf individuelle Anfrage zur Verfügung steht
 
-Mit dem Abschluss eines Kaufs oder der Registrierung für den Transcript Service stimmen Sie diesen Bedingungen zu.
+Mit dem Abschluss eines Kaufs oder der Registrierung für einen dieser Dienste stimmen Sie diesen Bedingungen zu.
 
 ---
 
@@ -129,7 +130,53 @@ Ist der Dienst zum Zeitpunkt eines Transkript-Uploads nicht erreichbar, sendet d
 
 ---
 
-## 8. Haftungsbeschränkung
+## 8. Hosted Bot Management Service
+
+### 8.1 Leistungsbeschreibung
+
+Der Hosted Bot Management Service ermöglicht Premium+-Kunden, ihren MSK Ticket Bot vollständig auf den Servern von MSK Scripts betreiben zu lassen. Der Dienst ist ausschließlich auf individuelle Anfrage über unseren [Discord-Server](https://discord.gg/5hHSBRHvJE) verfügbar und wird nicht automatisch durch ein Premium+-GitHub-Sponsors-Abonnement aktiviert.
+
+Der Dienst umfasst:
+- Hosting des Bot-Prozesses auf MSK Scripts-Servern (verwaltet über PM2)
+- Zugang zu einem webbasierten Management-Panel unter **www.msk-scripts.de/dashboard** zum Bearbeiten von Konfigurationsdateien (`config.jsonc`, `snippets.jsonc`, `.env`), zur Bot-Steuerung (Starten / Stoppen / Neustart / Update) sowie zur Anzeige der Live-Log-Ausgabe
+
+### 8.2 Zugang zu Konfigurationsdaten und Zugangsdaten
+
+Durch die Nutzung des Hosted Bot Management Service erkennen Sie an und stimmen zu, dass:
+
+- Ihre Bot-Konfigurationsdateien — einschließlich `config.jsonc`, `snippets.jsonc` und der **`.env`-Datei mit sensiblen Zugangsdaten** (z.B. Discord-Bot-Token und API-Keys) — auf den Servern von MSK Scripts in einem für den Dienstbetreiber zugänglichen Verzeichnis gespeichert werden
+- Mitarbeiter von MSK Scripts diese Dateien für Support, Wartung und Sicherheitszwecke einsehen können
+- Sie allein verantwortlich sind für alle in der `.env`-Datei gespeicherten Zugangsdaten und dafür, dass Bot-Token und andere Geheimnisse nicht kompromittiert sind
+- Sie kompromittierte Zugangsdaten (z.B. Discord-Bot-Token) unverzüglich **neu generieren** und uns informieren müssen, damit wir die Konfiguration aktualisieren können
+
+### 8.3 Pflichten des Kunden
+
+Sie sind allein verantwortlich für:
+- Die Einhaltung der **Discord Nutzungsbedingungen** und Community-Richtlinien durch Konfiguration und Betrieb des gehosteten Bots
+- Den vom gehosteten Bot verarbeiteten Inhalt (Nachrichten, Transkripte, Nutzerdaten)
+- Die Information Ihrer Discord-Server-Mitglieder darüber, dass ein Drittanbieter (MSK Scripts) die Bot-Infrastruktur in Ihrem Auftrag betreibt
+- Alle rechtlichen Verpflichtungen, die sich aus der Erhebung und Speicherung von Nutzerdaten durch den Bot in Ihrem Discord-Server ergeben
+
+### 8.4 Compliance des Bot-Betriebs
+
+Der gehostete Bot darf nicht konfiguriert oder genutzt werden, um:
+- Daten unter Verstoß gegen geltendes Recht oder die Discord-Nutzungsbedingungen zu erheben oder zu speichern
+- Spam, unerwünschte Nachrichten zu versenden oder missbräuchliches Verhalten zu ermöglichen
+- Handlungen durchzuführen, die die Infrastruktur von Discord oder andere Nutzer schädigen könnten
+
+Wir behalten uns das Recht vor, den gehosteten Bot bei Verstößen gegen diese Bedingungen, Discord-Richtlinien oder geltendes Recht sofort zu sperren.
+
+### 8.5 Dienstverfügbarkeit und Beendigung
+
+Wir garantieren keine bestimmte Betriebszeit für den Hosted Bot Management Service. Der Dienst kann für Wartungsarbeiten, Updates oder aus anderen betrieblichen Gründen unterbrochen werden.
+
+Beide Parteien können das Hosting-Arrangement jederzeit mit angemessener Frist beenden. Bei Beendigung:
+- Stellen wir Ihnen Ihre Konfigurationsdateien (`config.jsonc`, `snippets.jsonc`, `.env`) zur Verfügung, damit Sie auf Self-Hosting wechseln können
+- Bot-Daten, Logs und Konfigurationsdateien werden innerhalb von 14 Tagen nach Beendigung von unseren Servern gelöscht
+
+---
+
+## 9. Haftungsbeschränkung
 
 MSK Scripts übernimmt keine Haftung für Schäden, die durch die Nutzung unserer Produkte oder Dienste entstehen, es sei denn, diese sind auf grobe Fahrlässigkeit oder Vorsatz zurückzuführen.
 
@@ -142,13 +189,13 @@ Insbesondere übernehmen wir keine Haftung für:
 
 ---
 
-## 9. Support
+## 10. Support
 
 Support für Shop-Produkte und den Transcript Service wird über unseren Discord-Server bereitgestellt. Wir bemühen uns um zeitnahe Antworten, können jedoch keine garantierten Reaktionszeiten zusichern.
 
 ---
 
-## 10. Änderungen der Nutzungsbedingungen
+## 11. Änderungen der Nutzungsbedingungen
 
 Wir behalten uns das Recht vor, diese Nutzungsbedingungen jederzeit zu aktualisieren. Änderungen werden auf dieser Seite mit aktualisiertem Datum veröffentlicht. Die fortgesetzte Nutzung unserer Dienste nach Veröffentlichung der Änderungen gilt als Zustimmung zu den aktualisierten Bedingungen.
 
@@ -156,6 +203,6 @@ Bei wesentlichen Änderungen der Abo-Bedingungen für den Transcript Service wer
 
 ---
 
-## 11. Anwendbares Recht
+## 12. Anwendbares Recht
 
 Diese Nutzungsbedingungen unterliegen dem Recht der **Bundesrepublik Deutschland**. Gerichtsstand für alle Streitigkeiten aus oder im Zusammenhang mit diesen Nutzungsbedingungen ist, soweit gesetzlich zulässig, der Sitz des Lizenzgebers.
