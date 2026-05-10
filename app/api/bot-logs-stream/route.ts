@@ -9,6 +9,12 @@ import { queryOne }              from '@/lib/db';
 const execAsync   = promisify(exec);
 const GUILD_ID_RE = /^\d{17,20}$/;
 
+// Strips all ANSI escape sequences (colors, cursor movement, etc.) from a string.
+const ANSI_RE = /\x1b\[[0-9;]*[mGKHFJA-Za-z]/g;
+function stripAnsi(str: string): string {
+  return str.replace(ANSI_RE, '');
+}
+
 interface GuildRow { is_hosted: number }
 
 interface Pm2Process {
@@ -78,9 +84,10 @@ export async function GET() {
       tail.stdout?.on('data', (chunk: Buffer) => {
         const lines = chunk.toString('utf-8').split('\n');
         for (const line of lines) {
-          if (line.trim()) {
+          const clean = stripAnsi(line);
+          if (clean.trim()) {
             try {
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify(line)}\n\n`));
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify(clean)}\n\n`));
             } catch { /* stream already closed by client disconnect */ }
           }
         }
