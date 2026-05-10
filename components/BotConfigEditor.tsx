@@ -74,6 +74,20 @@ function validateEnv(content: string, lang: Lang): string | null {
 const validate = (file: ConfigFile, content: string, lang: Lang) =>
   file === 'env' ? validateEnv(content, lang) : validateJsonc(content, lang)
 
+// ── Log line styling ───────────────────────────────────────────────────────────
+
+function logLineClass(line: string): string {
+  if (line.startsWith('==>'))                                    return 'text-accent/50 font-semibold text-[10px] pt-2'
+  if (/\[FATAL\]|\[ERROR\]/.test(line))                         return 'text-red-400'
+  if (/\[WARN\s*\]|\[WARN\]/.test(line))                        return 'text-yellow-400'
+  if (/\[OK\s*\]/.test(line) || line.includes('✔'))             return 'text-green-400'
+  if (/\[INFO\s*\]/.test(line))                                 return 'text-sky-400/90'
+  if (/\[Commands\]|\[Events\]|\[Components\]/.test(line))      return 'text-zinc-400'
+  if (/\[Ready\]|\[StaffReminder\]/.test(line))                 return 'text-accent/80'
+  if (line.trim().startsWith('at ') || line.trim().startsWith('  at ')) return 'text-red-400/60 pl-4'
+  return 'text-zinc-300'
+}
+
 // ── Status helpers ─────────────────────────────────────────────────────────────
 
 function StatusDot({ status }: { status: BotStatus | null }) {
@@ -525,7 +539,7 @@ export default function BotConfigEditor({ lang }: { lang: Lang }) {
               <span className="text-xs text-dim">{t.bot_live_empty}</span>
             ) : (
               liveLines.map((line, i) => (
-                <div key={i} className="text-[11px] text-green-400/80 whitespace-pre-wrap break-all leading-relaxed">
+                <div key={i} className={`text-[11px] whitespace-pre-wrap break-all leading-relaxed ${logLineClass(line)}`}>
                   {line}
                 </div>
               ))
