@@ -24,7 +24,7 @@ Diese Website betreibt zwei eigenständige Dienste mit jeweils eigener Datenvera
 
 **b) MSK Ticket Bot Transcript Service** — ein optionaler gehosteter Dienst für Nutzer, die den MSK Ticket Bot selbst betreiben. Er speichert Ticket-Transkripte online und stellt öffentliche Links bereit. Nutzer authentifizieren sich über GitHub und Discord OAuth, um einen API Key zu erhalten.
 
-**c) Hosted Bot Management** — ein optionaler, vollständig verwalteter Hosting-Dienst für Premium+-Kunden. Der Bot läuft auf den Servern von MSK Scripts; die Verwaltung erfolgt über das Web-Dashboard.
+**c) Hosted Bot Management** — ein optionaler, vollständig verwalteter Hosting-Dienst für Premium- und Premium+-Kunden. Der Bot läuft auf den Servern von MSK Scripts; die Verwaltung erfolgt über das Web-Dashboard.
 
 ### Vom Shop erhobene Daten
 
@@ -157,7 +157,7 @@ Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO — zur Erbringung des gebuchten Die
 
 ### 5.6 Hosted Bot Management
 
-Für Premium+-Kunden, die den Hosted Bot Management Service nutzen, werden folgende Daten auf unseren Servern in einem Verzeichnis gespeichert, das Ihrer Discord-Server-ID zugeordnet ist:
+Für Premium- und Premium+-Kunden, die den Hosted Bot Management Service nutzen, werden folgende Daten auf unseren Servern in einem Verzeichnis gespeichert, das Ihrer Discord-Server-ID zugeordnet ist:
 
 | Daten | Beschreibung | Speicherdauer |
 |---|---|---|

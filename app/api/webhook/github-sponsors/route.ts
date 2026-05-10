@@ -1,7 +1,13 @@
 import { NextResponse }  from 'next/server';
 import { createHmac }    from 'crypto';
-import { query }         from '@/lib/db';
+import { rename }        from 'fs/promises';
+import { exec }          from 'child_process';
+import { join, resolve } from 'path';
+import { promisify }     from 'util';
+import { query, queryOne } from '@/lib/db';
 import type { Tier }     from '@/lib/tiers';
+
+const execAsync = promisify(exec);
 
 // ── GitHub Sponsors Webhook ────────────────────────────────────────────────────
 //
@@ -10,7 +16,13 @@ import type { Tier }     from '@/lib/tiers';
 //
 // Set the secret in your .env.local as GITHUB_SPONSORS_WEBHOOK_SECRET
 
+// ── Constants ──────────────────────────────────────────────────────────────────
+
+const GUILD_ID_RE = /^\d{17,20}$/;
+
 // ── Types ──────────────────────────────────────────────────────────────────────
+
+interface GuildRow { guild_id: string; is_hosted: number }
 
 interface SponsorshipPayload {
   action: 'created' | 'cancelled' | 'tier_changed' | 'pending_cancellation' | 'edited';
@@ -55,6 +67,67 @@ async function verifyGitHubSignature(req: Request, rawBody: string): Promise<boo
     mismatch |= expected.charCodeAt(i) ^ signature.charCodeAt(i);
   }
   return mismatch === 0;
+}
+
+// ── Hosted Bot Archiving ───────────────────────────────────────────────────────
+
+/**
+ * Called when a sponsorship is cancelled or downgraded below Premium+.
+ * Stops the PM2 process, renames the bot directory to archive it,
+ * and sets is_hosted = 0 in the database.
+ */
+async function archiveHostedBot(githubUsername: string): Promise<void> {
+  const guild = await queryOne<GuildRow>(
+    'SELECT guild_id, is_hosted FROM ticketbot_guilds WHERE github_username = ?',
+    [githubUsername],
+  );
+
+  // Nothing to do if the guild isn't hosted or doesn't exist yet.
+  if (!guild?.is_hosted || !guild.guild_id || !GUILD_ID_RE.test(guild.guild_id)) return;
+
+  const guildId = guild.guild_id;
+  const base    = process.env.BOT_CONFIG_BASE_PATH;
+  if (!base) {
+    console.warn('[github-sponsors] BOT_CONFIG_BASE_PATH not set — skipping hosted bot archive');
+    return;
+  }
+
+  const resolvedBase = resolve(base);
+  const botPath      = resolve(join(base, guildId));
+
+  // Path traversal guard — guild_id already passes GUILD_ID_RE but double-check.
+  if (!botPath.startsWith(resolvedBase + '/') && !botPath.startsWith(resolvedBase + '\\')) {
+    console.error(`[github-sponsors] Path traversal detected for guild: ${guildId}`);
+    return;
+  }
+
+  // 1. Stop and remove the PM2 process — ignore errors (may already be stopped/absent).
+  const appName = `ticketbot-${guildId}`;
+  try {
+    await execAsync(`pm2 stop ${appName}`,   { timeout: 10_000 });
+    await execAsync(`pm2 delete ${appName}`, { timeout: 10_000 });
+    console.info(`[github-sponsors] PM2: stopped and deleted ${appName}`);
+  } catch (err) {
+    console.warn(`[github-sponsors] PM2 stop/delete failed (may already be absent): ${String(err)}`);
+  }
+
+  // 2. Rename bot directory to archive it.
+  const timestamp   = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+  const archivePath = resolve(join(base, `${guildId}_archived_${timestamp}`));
+  try {
+    await rename(botPath, archivePath);
+    console.info(`[github-sponsors] Archived: ${botPath} → ${archivePath}`);
+  } catch (err) {
+    console.error(`[github-sponsors] Directory archive failed: ${String(err)}`);
+    // Continue — still update is_hosted in the DB even if rename failed.
+  }
+
+  // 3. Mark as no longer hosted in the database.
+  await query(
+    'UPDATE ticketbot_guilds SET is_hosted = 0 WHERE guild_id = ?',
+    [guildId],
+  );
+  console.info(`[github-sponsors] is_hosted = 0 set for guild ${guildId}`);
 }
 
 // ── Route Handler ──────────────────────────────────────────────────────────────
@@ -131,6 +204,12 @@ export async function POST(req: Request): Promise<NextResponse> {
         [tier, expiry, githubUsername],
       );
       console.info(`[github-sponsors] Upgraded ${logUsername} → ${tier}`);
+
+      // Archive the hosted bot only if the tier dropped completely to basic.
+      // A downgrade from Premium+ to Premium keeps the directory intact.
+      if (tier === 'basic') {
+        await archiveHostedBot(githubUsername);
+      }
       break;
     }
 
@@ -152,6 +231,9 @@ export async function POST(req: Request): Promise<NextResponse> {
         [githubUsername],
       );
       console.info(`[github-sponsors] Downgraded ${logUsername} → basic`);
+
+      // Archive the hosted bot if the guild had one.
+      await archiveHostedBot(githubUsername);
       break;
     }
 

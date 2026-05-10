@@ -8,7 +8,7 @@ These Terms & Conditions apply to all use of the MSK Scripts services available 
 
 - **MSK Scripts Shop** — purchase of digital products (FiveM resources and Discord bots) via Tebex
 - **MSK Ticket Bot Transcript Service** — an optional subscription-based hosted service for users who self-host the MSK Ticket Bot
-- **Hosted Bot Management** — an optional fully managed hosting service for the MSK Ticket Bot, exclusively available to Premium+ customers by individual arrangement
+- **Hosted Bot Management** — an optional fully managed hosting service for the MSK Ticket Bot, available to Premium and Premium+ customers by individual arrangement
 
 By completing a purchase or registering for any of these services, you agree to these terms.
 
@@ -134,7 +134,7 @@ If the service is unavailable at the time a transcript is uploaded by the bot, t
 
 ### 8.1 Service Description
 
-The Hosted Bot Management Service allows Premium+ customers to have their MSK Ticket Bot instance fully hosted and operated on MSK Scripts' servers. The service is only available by individual arrangement via our [Discord server](https://discord.gg/5hHSBRHvJE) and is not automatically activated by a Premium+ GitHub Sponsors subscription.
+The Hosted Bot Management Service allows Premium and Premium+ customers to have their MSK Ticket Bot instance fully hosted and operated on MSK Scripts' servers. The service is only available by individual arrangement via our [Discord server](https://discord.gg/5hHSBRHvJE) and is not automatically activated by a GitHub Sponsors subscription.
 
 The service includes:
 - Hosting of the bot process on MSK Scripts' servers (managed via PM2)
