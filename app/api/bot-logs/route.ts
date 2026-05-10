@@ -2,7 +2,7 @@ import { cookies }               from 'next/headers';
 import { NextResponse }          from 'next/server';
 import { exec }                  from 'child_process';
 import { promisify }             from 'util';
-import { stat, open }            from 'fs/promises';
+import { open }                   from 'fs/promises';
 import { parseDashboardSession } from '@/lib/dashboardSession';
 import { queryOne }              from '@/lib/db';
 
@@ -40,16 +40,17 @@ async function assertHosted(guildId: string): Promise<boolean> {
 }
 
 // Reads the last MAX_READ_BYTES of a file without loading the whole file.
-// Uses fs.open + handle.read so no shell command is involved.
+// Uses fs.open + handle.stat + handle.read on the same file descriptor to
+// eliminate the TOCTOU race condition (CWE-367) between stat() and open().
 async function readTail(filePath: string): Promise<string[]> {
-  const { size } = await stat(filePath);
-  if (size === 0) return [];
-
-  const readLen   = Math.min(size, MAX_READ_BYTES);
-  const readStart = size - readLen;
-
   const fh = await open(filePath, 'r');
   try {
+    const { size } = await fh.stat();
+    if (size === 0) return [];
+
+    const readLen   = Math.min(size, MAX_READ_BYTES);
+    const readStart = size - readLen;
+
     const buf = Buffer.alloc(readLen);
     await fh.read(buf, 0, readLen, readStart);
     const raw = buf.toString('utf-8');

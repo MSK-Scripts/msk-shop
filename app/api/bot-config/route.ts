@@ -4,6 +4,7 @@ import { parseDashboardSession }  from '@/lib/dashboardSession';
 import { queryOne }               from '@/lib/db';
 import { readFile, writeFile, copyFile } from 'fs/promises';
 import { join, resolve }          from 'path';
+import { parse as parseJsonc, type ParseError } from 'jsonc-parser';
 
 // Explicit mapping: URL parameter → actual filename on disk.
 // The filename NEVER comes from user input — only the key is user-supplied,
@@ -105,6 +106,26 @@ export async function PUT(req: NextRequest) {
     const content = (body as { content: string }).content;
     if (content.length > 1_000_000) {
       return NextResponse.json({ error: 'Datei überschreitet 1 MB Limit' }, { status: 413 });
+    }
+
+    // Server-side content validation — prevents writing syntactically broken files
+    // and satisfies static analysis (network data is validated before filesystem write).
+    if (fileKey === 'config' || fileKey === 'snippet') {
+      const errors: ParseError[] = [];
+      parseJsonc(content, errors, { allowTrailingComma: true });
+      if (errors.length > 0) {
+        return NextResponse.json({ error: 'Syntaxfehler in der JSONC-Datei' }, { status: 400 });
+      }
+    } else if (fileKey === 'env') {
+      // Each line must be empty, a comment, or KEY=VALUE (env file format).
+      const invalid = content.split('\n').some(line => {
+        const trimmed = line.trim();
+        if (!trimmed || trimmed.startsWith('#')) return false;
+        return !/^[A-Za-z_][A-Za-z0-9_]*=/.test(trimmed);
+      });
+      if (invalid) {
+        return NextResponse.json({ error: 'Ungültiges .env Format (erwartet KEY=VALUE)' }, { status: 400 });
+      }
     }
 
     const filePath = buildFilePath(guildId, fileKey);
