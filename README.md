@@ -42,6 +42,7 @@ A headless storefront for [MSK Scripts](https://msk-scripts.de) — built with *
 - 🌍 Custom domain support per guild with DNS validation and Let's Encrypt SSL
 - 💰 GitHub Sponsors webhook — auto-assigns tiers on sponsorship events
 - 📊 Dashboard page for managing API keys, domains and transcripts
+- 🤖 Hosted bot management — config editor (config.jsonc, snippets.jsonc, .env), bot control (start / stop / restart / update via git pull) and live log console for `is_hosted` customers
 - 🔒 Security headers, rate limiting, path traversal protection, signed session cookies
 - 🌐 Apache2 reverse proxy with CSP, HSTS and security headers
 - 🔧 Maintenance page included (`public/maintenance.html`)
@@ -71,6 +72,10 @@ app/                        Next.js App Router pages & API routes
 ├── api/verify/             Verify status & completion
 ├── api/webhook/
 │   └── github-sponsors/    GitHub Sponsors webhook handler
+├── api/bot-config/         Read & write hosted bot config files (config.jsonc, snippets.jsonc, .env)
+├── api/bot-control/        Start / stop / restart / update bot via PM2
+├── api/bot-logs/           Fetch last 100 lines of PM2 error log (one-shot)
+├── api/bot-logs-stream/    Server-Sent Events — real-time PM2 log stream via tail -F
 ├── api/debug/              Debug route (returns 404 in production)
 ├── account/                User account page
 ├── auth/discord/           Discord OAuth callback handler (purchase flow)
@@ -92,6 +97,7 @@ components/
 ├── layout/                 Navbar, Footer
 ├── legal/                  LegalContent (language switcher)
 ├── packages/               PackageCard, AddToCartButton, PackagePrice
+├── BotConfigEditor.tsx     Hosted bot dashboard — config editor, bot control, live log console
 ├── SalePriceFetcher.tsx    Client component — pre-fetches sale prices on mount
 └── ui/                     DiscordButton, NewsPopup
 
@@ -150,7 +156,7 @@ Tables created by `database/schema.sql`:
 
 | Table | Purpose |
 |---|---|
-| `ticketbot_guilds` | Guild registrations, API keys, tier, custom domain status |
+| `ticketbot_guilds` | Guild registrations, API keys, tier, custom domain status, `is_hosted` flag |
 | `ticketbot_transcripts` | Ticket transcript metadata + expiry |
 | `ticketbot_attachments` | File attachments for Premium transcripts |
 | `ticketbot_rate_limits` | Per-API-key request rate limiting (hourly window) |
@@ -318,6 +324,9 @@ TRANSCRIPT_BASE_PATH=/var/www/html/transcripts
 # DNS validation & SSL
 SERVER_PUBLIC_IP=your.server.ip
 ADMIN_EMAIL=info@msk-scripts.de
+
+# Hosted bot management (is_hosted customers)
+BOT_CONFIG_BASE_PATH=/home/musiker15/bots
 ```
 
 > ⚠️ Never commit `.env.local` — it is listed in `.gitignore`.
