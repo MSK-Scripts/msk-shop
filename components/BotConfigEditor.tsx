@@ -363,6 +363,9 @@ export default function BotConfigEditor({ lang }: { lang: Lang }) {
   return (
     <div className="flex flex-col gap-4">
 
+      {/* ── Bot Control + Live Logs — side by side ────────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+
       {/* ── Bot Control Card ──────────────────────────────────────────────── */}
       <div className="bg-surface border border-borderlt rounded-xl p-6">
         <div className="flex items-center gap-2 mb-1">
@@ -478,6 +481,8 @@ export default function BotConfigEditor({ lang }: { lang: Lang }) {
         {updateMsg && <div className="mt-3"><Banner msg={updateMsg} onClose={() => setUpdateMsg(null)} /></div>}
       </div>
 
+      </div>{/* end grid */}
+
       {/* ── Config Editor Card ────────────────────────────────────────────── */}
       <div className="bg-surface border border-borderlt rounded-xl p-6">
         <div className="flex items-center gap-2 mb-1">
@@ -522,7 +527,7 @@ export default function BotConfigEditor({ lang }: { lang: Lang }) {
             </div>
           ) : (
             <CodeMirror
-              value={content} height="650px"
+              value={content} height="700px"
               extensions={activeFile !== 'env' ? [json(), mskTheme] : [mskTheme]}
               theme="dark"
               onChange={(val) => { setContent(val); setEditorMsg(null) }}
