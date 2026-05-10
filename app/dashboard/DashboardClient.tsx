@@ -165,7 +165,7 @@ export default function DashboardClient({ guild, serverIp }: Props) {
 
   return (
     <div className="min-h-screen px-4 py-16">
-      <div className="max-w-xl mx-auto">
+      <div className="max-w-5xl mx-auto">
 
         {/* Header */}
         <div className="flex items-start justify-between mb-8">
