@@ -74,10 +74,16 @@ export async function GET() {
   }
 
   const encoder = new TextEncoder();
-  let tail: ChildProcess | null = null;
+  let tail:      ChildProcess | null = null;
+  let keepalive: ReturnType<typeof setInterval> | null = null;
 
   const stream = new ReadableStream({
     start(controller) {
+      const send = (data: string) => {
+        try { controller.enqueue(encoder.encode(data)); }
+        catch { /* stream already closed by client disconnect */ }
+      };
+
       // -n 50: show last 50 lines on connect; -F: follow and retry on rotation.
       tail = spawn('tail', ['-n', '50', '-F', ...logFiles]);
 
@@ -85,11 +91,7 @@ export async function GET() {
         const lines = chunk.toString('utf-8').split('\n');
         for (const line of lines) {
           const clean = stripAnsi(line);
-          if (clean.trim()) {
-            try {
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify(clean)}\n\n`));
-            } catch { /* stream already closed by client disconnect */ }
-          }
+          if (clean.trim()) send(`data: ${JSON.stringify(clean)}\n\n`);
         }
       });
 
@@ -97,11 +99,17 @@ export async function GET() {
       tail.stderr?.on('data', () => { /* intentionally empty */ });
 
       tail.on('close', () => {
+        clearInterval(keepalive ?? undefined);
         try { controller.close(); } catch { /* already closed */ }
       });
+
+      // Send an SSE comment every 20 s to prevent Apache/proxy from closing
+      // an idle connection due to its keep-alive or proxy timeout settings.
+      keepalive = setInterval(() => send(': ping\n\n'), 20_000);
     },
     cancel() {
-      // Called when the client disconnects — kill the tail process immediately.
+      // Called when the client disconnects — clean up immediately.
+      clearInterval(keepalive ?? undefined);
       tail?.kill('SIGTERM');
     },
   });
