@@ -481,7 +481,60 @@ export default function BotConfigEditor({ lang }: { lang: Lang }) {
         {updateMsg && <div className="mt-3"><Banner msg={updateMsg} onClose={() => setUpdateMsg(null)} /></div>}
       </div>
 
-      </div>{/* end grid */}
+      {/* ── Live Log Console Card ─────────────────────────────────────────── */}
+      <div className="bg-surface border border-borderlt rounded-xl p-6">
+        <div className="flex items-center justify-between mb-1">
+          <div className="flex items-center gap-2">
+            <Activity size={18} className="text-accent" />
+            <h2 className="text-white font-bold text-base">{t.bot_live_logs_title}</h2>
+            {liveStatus === 'connected' && (
+              <span className="flex items-center gap-1.5 text-xs font-semibold text-accent">
+                <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse inline-block" />
+                {t.bot_live_connected}
+              </span>
+            )}
+            {liveStatus === 'error' && (
+              <span className="text-xs text-danger font-semibold">{t.bot_live_reconnecting}</span>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            {liveOpen && liveLines.length > 0 && (
+              <button
+                onClick={() => setLiveLines([])}
+                className="text-xs text-dim hover:text-muted transition-colors px-2 py-1"
+              >
+                {t.bot_live_clear}
+              </button>
+            )}
+            <button
+              onClick={toggleLiveLogs}
+              className={`msk-btn-ghost text-sm ${liveOpen ? 'text-danger border-danger/30 hover:bg-danger/10 hover:text-danger' : ''}`}
+            >
+              {liveOpen ? t.bot_live_disconnect : t.bot_live_connect}
+            </button>
+          </div>
+        </div>
+        <p className="text-muted text-sm mb-4">{t.bot_live_logs_desc}</p>
+
+        {liveOpen && (
+          <div
+            ref={liveScrollRef}
+            className="bg-bg border border-borderlt rounded-lg p-3 h-80 overflow-y-auto font-mono"
+          >
+            {liveLines.length === 0 ? (
+              <span className="text-xs text-dim">{t.bot_live_empty}</span>
+            ) : (
+              liveLines.map((line, i) => (
+                <div key={i} className="text-[11px] text-green-400/80 whitespace-pre-wrap break-all leading-relaxed">
+                  {line}
+                </div>
+              ))
+            )}
+          </div>
+        )}
+      </div>
+
+      </div>{/* end grid: Bot Control + Live Logs */}
 
       {/* ── Config Editor Card ────────────────────────────────────────────── */}
       <div className="bg-surface border border-borderlt rounded-xl p-6">
@@ -550,59 +603,6 @@ export default function BotConfigEditor({ lang }: { lang: Lang }) {
             }
           </button>
         </div>
-      </div>
-
-      {/* ── Live Log Console Card ─────────────────────────────────────────── */}
-      <div className="bg-surface border border-borderlt rounded-xl p-6">
-        <div className="flex items-center justify-between mb-1">
-          <div className="flex items-center gap-2">
-            <Activity size={18} className="text-accent" />
-            <h2 className="text-white font-bold text-base">{t.bot_live_logs_title}</h2>
-            {liveStatus === 'connected' && (
-              <span className="flex items-center gap-1.5 text-xs font-semibold text-accent">
-                <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse inline-block" />
-                {t.bot_live_connected}
-              </span>
-            )}
-            {liveStatus === 'error' && (
-              <span className="text-xs text-danger font-semibold">{t.bot_live_reconnecting}</span>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            {liveOpen && liveLines.length > 0 && (
-              <button
-                onClick={() => setLiveLines([])}
-                className="text-xs text-dim hover:text-muted transition-colors px-2 py-1"
-              >
-                {t.bot_live_clear}
-              </button>
-            )}
-            <button
-              onClick={toggleLiveLogs}
-              className={`msk-btn-ghost text-sm ${liveOpen ? 'text-danger border-danger/30 hover:bg-danger/10 hover:text-danger' : ''}`}
-            >
-              {liveOpen ? t.bot_live_disconnect : t.bot_live_connect}
-            </button>
-          </div>
-        </div>
-        <p className="text-muted text-sm mb-4">{t.bot_live_logs_desc}</p>
-
-        {liveOpen && (
-          <div
-            ref={liveScrollRef}
-            className="bg-bg border border-borderlt rounded-lg p-3 h-80 overflow-y-auto font-mono"
-          >
-            {liveLines.length === 0 ? (
-              <span className="text-xs text-dim">{t.bot_live_empty}</span>
-            ) : (
-              liveLines.map((line, i) => (
-                <div key={i} className="text-[11px] text-green-400/80 whitespace-pre-wrap break-all leading-relaxed">
-                  {line}
-                </div>
-              ))
-            )}
-          </div>
-        )}
       </div>
 
     </div>
