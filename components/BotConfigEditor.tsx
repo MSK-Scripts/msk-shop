@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import CodeMirror from '@uiw/react-codemirror'
 import { json } from '@codemirror/lang-json'
 import { EditorView } from '@codemirror/view'
 import { parse, type ParseError } from 'jsonc-parser'
 import {
   Save, FileText, AlertCircle, CheckCircle, Info, Loader2, RefreshCw,
-  Play, Square, RotateCcw, Terminal, Download, X, ScrollText,
+  Play, Square, RotateCcw, Terminal, Download, X, ScrollText, Activity,
 } from 'lucide-react'
 import { dashboardTranslations, type Lang } from '@/lib/i18n'
 
@@ -152,10 +152,17 @@ export default function BotConfigEditor({ lang }: { lang: Lang }) {
   const [updateLoading, setUpdateLoading]   = useState(false)
   const [updateMsg, setUpdateMsg]           = useState<Msg | null>(null)
 
-  // Logs
+  // Logs (static error log)
   const [logs, setLogs]               = useState<string[] | null>(null)
   const [logsLoading, setLogsLoading] = useState(false)
   const [showLogs, setShowLogs]       = useState(false)
+
+  // Live log console
+  const [liveOpen, setLiveOpen]             = useState(false)
+  const [liveLines, setLiveLines]           = useState<string[]>([])
+  const [liveStatus, setLiveStatus]         = useState<'disconnected' | 'connected' | 'error'>('disconnected')
+  const liveScrollRef = useRef<HTMLDivElement>(null)
+  const esRef         = useRef<EventSource | null>(null)
 
   const isDirty = content !== savedContent
 
@@ -231,6 +238,60 @@ export default function BotConfigEditor({ lang }: { lang: Lang }) {
   }, [])
 
   useEffect(() => { fetchStatus() }, [fetchStatus])
+
+  // ── Live logs ──────────────────────────────────────────────────────────────
+
+  const connectLiveLogs = useCallback(() => {
+    esRef.current?.close()
+    setLiveLines([])
+    setLiveStatus('disconnected')
+
+    const es = new EventSource('/api/bot-logs-stream')
+    esRef.current = es
+
+    es.onopen = () => setLiveStatus('connected')
+
+    es.onmessage = (e: MessageEvent<string>) => {
+      const line = JSON.parse(e.data) as string
+      setLiveLines(prev => {
+        const next = [...prev, line]
+        return next.length > 500 ? next.slice(-500) : next
+      })
+    }
+
+    es.onerror = () => {
+      setLiveStatus('error')
+      es.close()
+      esRef.current = null
+    }
+  }, [])
+
+  const disconnectLiveLogs = useCallback(() => {
+    esRef.current?.close()
+    esRef.current = null
+    setLiveStatus('disconnected')
+  }, [])
+
+  // Auto-scroll to bottom when new lines arrive
+  useEffect(() => {
+    if (liveScrollRef.current) {
+      liveScrollRef.current.scrollTop = liveScrollRef.current.scrollHeight
+    }
+  }, [liveLines])
+
+  // Cleanup EventSource on unmount
+  useEffect(() => () => { esRef.current?.close() }, [])
+
+  const toggleLiveLogs = () => {
+    if (!liveOpen) {
+      setLiveOpen(true)
+      connectLiveLogs()
+    } else {
+      setLiveOpen(false)
+      disconnectLiveLogs()
+      setLiveLines([])
+    }
+  }
 
   const handleAction = async (action: 'start' | 'stop' | 'restart') => {
     setActionLoading(action); setControlMsg(null); setShowLogs(false); setLogs(null)
@@ -484,6 +545,59 @@ export default function BotConfigEditor({ lang }: { lang: Lang }) {
             }
           </button>
         </div>
+      </div>
+
+      {/* ── Live Log Console Card ─────────────────────────────────────────── */}
+      <div className="bg-surface border border-borderlt rounded-xl p-6">
+        <div className="flex items-center justify-between mb-1">
+          <div className="flex items-center gap-2">
+            <Activity size={18} className="text-accent" />
+            <h2 className="text-white font-bold text-base">{t.bot_live_logs_title}</h2>
+            {liveStatus === 'connected' && (
+              <span className="flex items-center gap-1.5 text-xs font-semibold text-accent">
+                <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse inline-block" />
+                {t.bot_live_connected}
+              </span>
+            )}
+            {liveStatus === 'error' && (
+              <span className="text-xs text-danger font-semibold">{t.bot_live_reconnecting}</span>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            {liveOpen && liveLines.length > 0 && (
+              <button
+                onClick={() => setLiveLines([])}
+                className="text-xs text-dim hover:text-muted transition-colors px-2 py-1"
+              >
+                {t.bot_live_clear}
+              </button>
+            )}
+            <button
+              onClick={toggleLiveLogs}
+              className={`msk-btn-ghost text-sm ${liveOpen ? 'text-danger border-danger/30 hover:bg-danger/10 hover:text-danger' : ''}`}
+            >
+              {liveOpen ? t.bot_live_disconnect : t.bot_live_connect}
+            </button>
+          </div>
+        </div>
+        <p className="text-muted text-sm mb-4">{t.bot_live_logs_desc}</p>
+
+        {liveOpen && (
+          <div
+            ref={liveScrollRef}
+            className="bg-bg border border-borderlt rounded-lg p-3 h-80 overflow-y-auto font-mono"
+          >
+            {liveLines.length === 0 ? (
+              <span className="text-xs text-dim">{t.bot_live_empty}</span>
+            ) : (
+              liveLines.map((line, i) => (
+                <div key={i} className="text-[11px] text-green-400/80 whitespace-pre-wrap break-all leading-relaxed">
+                  {line}
+                </div>
+              ))
+            )}
+          </div>
+        )}
       </div>
 
     </div>

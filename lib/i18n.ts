@@ -278,6 +278,16 @@ export const dashboardTranslations = {
     bot_update_latest:      'The bot is already up to date.',
     bot_update_done:        'Update complete. Restart the bot to load the new version.',
     bot_update_err_network: 'Network error during update',
+
+    // Live Log Console
+    bot_live_logs_title:   'Live Logs',
+    bot_live_logs_desc:    'Real-time stream of the bot\'s output. Connect to see log entries as they happen.',
+    bot_live_connect:      'Connect',
+    bot_live_disconnect:   'Disconnect',
+    bot_live_connected:    'Live',
+    bot_live_clear:        'Clear',
+    bot_live_empty:        'Waiting for log entries…',
+    bot_live_reconnecting: 'Connection lost — reconnecting…',
   },
   de: {
     label:            'Ticket Bot',
@@ -361,5 +371,15 @@ export const dashboardTranslations = {
     bot_update_latest:      'Der Bot ist bereits auf dem neuesten Stand.',
     bot_update_done:        'Update abgeschlossen. Starte den Bot neu, um die neue Version zu laden.',
     bot_update_err_network: 'Netzwerkfehler beim Update',
+
+    // Live Log Console
+    bot_live_logs_title:   'Live Logs',
+    bot_live_logs_desc:    'Echtzeit-Stream der Bot-Ausgabe. Verbinde dich, um Einträge live zu sehen.',
+    bot_live_connect:      'Verbinden',
+    bot_live_disconnect:   'Trennen',
+    bot_live_connected:    'Live',
+    bot_live_clear:        'Leeren',
+    bot_live_empty:        'Warte auf Log-Einträge…',
+    bot_live_reconnecting: 'Verbindung unterbrochen — wird neu verbunden…',
   },
 } as const;
