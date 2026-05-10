@@ -263,8 +263,6 @@ export default function BotConfigEditor({ lang }: { lang: Lang }) {
     const es = new EventSource('/api/bot-logs-stream')
     esRef.current = es
 
-    es.onopen = () => setLiveStatus('connected')
-
     es.onmessage = (e: MessageEvent<string>) => {
       const line = JSON.parse(e.data) as string
       setLiveLines(prev => {
@@ -274,10 +272,17 @@ export default function BotConfigEditor({ lang }: { lang: Lang }) {
     }
 
     es.onerror = () => {
-      setLiveStatus('error')
-      es.close()
-      esRef.current = null
+      // readyState CONNECTING (0) = browser is auto-reconnecting — don't interfere.
+      // readyState CLOSED (2)     = permanent failure (e.g. 401/403) — clean up.
+      if (es.readyState === EventSource.CLOSED) {
+        setLiveStatus('error')
+        esRef.current = null
+      } else {
+        setLiveStatus('error') // show "reconnecting" label while browser retries
+      }
     }
+
+    es.onopen = () => setLiveStatus('connected')
   }, [])
 
   const disconnectLiveLogs = useCallback(() => {
