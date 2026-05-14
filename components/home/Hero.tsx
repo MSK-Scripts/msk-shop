@@ -22,10 +22,10 @@ export function Hero() {
       <div className="relative z-10">
         <h1 className="text-4xl md:text-5xl font-extrabold mb-3">
           <span className="text-accent">MSK</span>{' '}
-          <span className="text-white">Scripts Shop</span>
+          <span className="text-white">Scripts</span>
         </h1>
         <p className="text-muted text-sm md:text-base max-w-md mx-auto leading-relaxed mb-6">
-          High quality FiveM resources &amp; Discord bots for your server
+          High quality FiveM resources, Tools & Discord bots for your community. All our products are developed in-house and come with dedicated support.
         </p>
         <div className="flex justify-center gap-3">
           <a

@@ -136,7 +136,7 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
     id: 'kanbanly',
     name: 'Kanbanly',
     description: 'Workspaces, Board, Karten mit Labels, Fälligkeiten und Zuweisungen. Gemacht für dich und dein Team.',
-    image: 'kanbanly.png',
+    image: 'kanbanly-banner.png',
     link: 'https://kanbanly.de/',
     linkLabel: 'View LIVE',
     secondaryLink: 'https://github.com/cmdscripts/kanbanly.de',
