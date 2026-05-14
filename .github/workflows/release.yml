@@ -7,9 +7,19 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Bestehender Tag, der released werden soll (z. B. v1.2.3)'
+        description: 'Tag, der released werden soll (z. B. v1.2.3)'
         required: true
         type: string
+      create_tag:
+        description: 'Neuen Tag erstellen, falls er noch nicht existiert'
+        required: false
+        type: boolean
+        default: false
+      ref:
+        description: 'Branch/Commit für den neuen Tag (nur falls oben aktiviert)'
+        required: false
+        type: string
+        default: main
 
 # Verhindert, dass sich zwei Release-Läufe für denselben Tag überschneiden
 concurrency:
@@ -39,20 +49,38 @@ jobs:
           fi
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
+      # Checkout des Tags (falls vorhanden) bzw. des angegebenen Branches (für neue Tags).
+      # fetch-depth: 0 holt komplette History + alle Tags.
       - name: Checkout
         uses: actions/checkout@v6
         with:
-          ref: ${{ steps.tag.outputs.tag }}
-          fetch-depth: 0   # Komplette Git-History + Tags für Diff
+          ref: ${{ inputs.ref || github.ref }}
+          fetch-depth: 0
 
-      # Stellt sicher, dass der Tag wirklich existiert (klare Fehlermeldung statt kaputtem Output)
-      - name: Tag-Existenz prüfen
+      # Prüft, ob der Tag existiert. Falls nicht:
+      #   - create_tag aktiviert  → Tag wird aus 'ref' erstellt und gepusht
+      #   - create_tag deaktiviert → Abbruch mit Hinweis
+      - name: Tag prüfen & ggf. erstellen
         run: |
           set -euo pipefail
-          if ! git rev-parse -q --verify "refs/tags/${{ steps.tag.outputs.tag }}" >/dev/null; then
-            echo "::error::Tag '${{ steps.tag.outputs.tag }}' existiert nicht. Bitte den Tag zuerst pushen."
+          TAG="${{ steps.tag.outputs.tag }}"
+
+          if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+            echo "✅ Tag '$TAG' existiert bereits."
+            exit 0
+          fi
+
+          if [ "${{ inputs.create_tag }}" != "true" ]; then
+            echo "::error::Tag '$TAG' existiert nicht. Workflow erneut ausführen und die Option 'Neuen Tag erstellen' aktivieren — der Tag wird dann aus '${{ inputs.ref }}' erstellt."
             exit 1
           fi
+
+          echo "🏷️  Tag '$TAG' existiert nicht — wird aus '${{ inputs.ref }}' erstellt."
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$TAG" -m "Release $TAG"
+          git push origin "refs/tags/$TAG"
+          echo "✅ Tag '$TAG' erstellt und gepusht."
 
       - name: Modified files & Commits ermitteln
         run: |
