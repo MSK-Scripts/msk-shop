@@ -18,11 +18,18 @@ const inter = Inter({
 import { NewsPopup } from '@/components/ui/NewsPopup'
 
 export const metadata: Metadata = {
-  title: 'MSK Scripts Shop',
-  description: 'High quality FiveM resources & Discord bots for your server',
-  applicationName: 'MSK Scripts Shop',
-  authors: [{ name: 'Musiker15', url: 'https://www.musiker15.de' }, { name: 'MSK Scripts', url: 'https://www.msk-scripts.de' }],
-  keywords: ['FiveM Resources', 'Discord Bots', 'MSK', 'MSK Scripts', 'msk-scripts.de'],
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL ?? 'https://www.msk-scripts.de'),
+  title: {
+    default:  'MSK Scripts – Website & Shop',
+    template: '%s | MSK Scripts',
+  },
+  description: 'High quality FiveM resources, Tools & Discord bots for your server',
+  applicationName: 'MSK Scripts',
+  authors: [
+    { name: 'Musiker15',   url: 'https://www.musiker15.de' },
+    { name: 'MSK Scripts', url: 'https://www.msk-scripts.de' },
+  ],
+  keywords: ['FiveM Resources', 'Discord Bots', 'Tools', 'MSK', 'MSK Scripts', 'msk-scripts.de'],
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },
@@ -37,10 +44,10 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type:        'website',
-    siteName:    'MSK Scripts Shop',
-    title:       'MSK Scripts Shop – High Quality FiveM Resources',
-    description: 'High quality FiveM resources & Discord bots for your server',
-    images:      ['/logo.png'],
+    siteName:    'MSK Scripts',
+    title:       'MSK Scripts – Website & Shop',
+    description: 'High quality FiveM resources, Tools & Discord bots for your server',
+    images:      ['/msk_scripts_fivem_more_banner.png'],
   },
 }
 
