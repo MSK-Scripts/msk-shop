@@ -11,13 +11,16 @@
 //    id          → unique string (anything you want, e.g. "discord-bot-1")
 //    name        → package name shown on the card
 //    description → short description (1-2 sentences)
-//    price       → price as string, e.g. "€9.99" or "Free"
-//    isFree      → set to true if the package is free
+//    price       → (optional) price as string, e.g. "€9.99" or "Free"
+//    isFree      → (optional) set to true if the package is free
 //    image       → URL to a preview image (or leave empty "")
-//    link        → where the button points (GitHub, Discord, website...)
-//    linkLabel   → label of the button, e.g. "View on GitHub" / "Get Bot"
+//    link        → where the primary button points (GitHub, Discord, website...)
+//    linkLabel   → label of the primary button, e.g. "View on GitHub" / "Get Bot"
+//    secondaryLink      → (optional) where the secondary button points
+//    secondaryLinkLabel → (optional) label of the secondary button
+//                  Both secondary fields must be set for the second button to appear.
 //    badges      → list of badges to show (label + variant)
-//                  variants: "esx" | "qb" | "standalone" | "js" | "lua" | "py" | "discord" | "fivem"
+//                  variants: "esx" | "qb" | "standalone" | "js" | "ts" | "lua" | "py" | "discord" | "fivem"
 //                  Add as many badges as you want, or leave the array empty []
 //    tags        → list of tags to show (e.g. ['Installation', 'Configuration'])
 //
@@ -27,12 +30,14 @@ export interface CustomPackage {
   id: string
   name: string
   description: string
-  price: string
-  isFree: boolean
+  price?: string
+  isFree?: boolean
   image: string
   link: string
   linkLabel: string
-  badges: { label: string; variant: 'esx' | 'qb' | 'standalone' | 'js' | 'lua' | 'py' | 'discord' | 'fivem' }[]
+  secondaryLink?: string
+  secondaryLinkLabel?: string
+  badges: { label: string; variant: 'esx' | 'qb' | 'standalone' | 'js' | 'ts' | 'lua' | 'py' | 'discord' | 'fivem' }[]
   tags: string[]
 }
 
@@ -100,21 +105,46 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
     tags: ['Library for MSK Scripts', 'Utilities'],
   },
   {
-    id: 'msk-enginetoggle',
-    name: 'MSK EngineToggle',
-    description: 'A simple resource to toggle the engine of a vehicle in FiveM. Compatible with various vehiclekey scripts.',
-    price: 'Free',
-    isFree: true,
-    image: 'msk_enginetoggle.png',
-    link: 'https://github.com/MSK-Scripts/msk_enginetoggle',
-    linkLabel: 'View on GitHub',
+    id: 'msk-paste',
+    name: 'MSK Paste',
+    description: 'A simple paste tool for sharing code snippets with your team.',
+    image: 'msk_paste.png',
+    link: 'https://paste.msk-scripts.de/',
+    linkLabel: 'View LIVE',
+    secondaryLink: 'https://github.com/MSK-Scripts/msk-paste',
+    secondaryLinkLabel: 'GitHub',
     badges: [
-      { label: 'FiveM', variant: 'fivem' },
-      { label: 'Lua', variant: 'lua' },
-      { label: 'ESX', variant: 'esx' },
-      { label: 'QBCore', variant: 'qb' },
+      { label: 'TypeScript', variant: 'ts' },
     ],
-    tags: ['Vehicle', 'EngineToggle', 'MSK Vehiclekeys'],
+    tags: ['Code Sharing', 'Collaboration', 'Syntax Highlighting'],
+  },
+  {
+    id: 'msk-shortener',
+    name: 'MSK Shortener',
+    description: 'Fast, privacy-friendly URL shortener. No cookies, no trackers, no signup.',
+    image: 'msk_shortener.png',
+    link: 'https://s.msk-scripts.de/',
+    linkLabel: 'View LIVE',
+    secondaryLink: 'https://github.com/MSK-Scripts/msk-shortener',
+    secondaryLinkLabel: 'GitHub',
+    badges: [
+      { label: 'TypeScript', variant: 'ts' },
+    ],
+    tags: ['URL Shortening', 'Privacy-Friendly'],
+  },
+  {
+    id: 'kanbanly',
+    name: 'Kanbanly',
+    description: 'Workspaces, Board, Karten mit Labels, Fälligkeiten und Zuweisungen. Gemacht für dich und dein Team.',
+    image: 'kanbanly.png',
+    link: 'https://kanbanly.de/',
+    linkLabel: 'View LIVE',
+    secondaryLink: 'https://github.com/cmdscripts/kanbanly.de',
+    secondaryLinkLabel: 'GitHub',
+    badges: [
+      { label: 'TypeScript', variant: 'ts' },
+    ],
+    tags: ['Kanban Board', 'Task Management', 'Collaboration'],
   },
 
 ]
@@ -123,4 +153,4 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
 //  SECTION TITLE
 //  Change the title of the custom packages section
 // ═══════════════════════════════════════════════════════════════
-export const CUSTOM_PACKAGES_TITLE = 'Discord Bots & More'
+export const CUSTOM_PACKAGES_TITLE = 'Tools, Bots & More'

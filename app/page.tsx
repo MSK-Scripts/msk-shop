@@ -12,6 +12,7 @@ const badgeStyles = {
   esx:        'bg-[#F7941D]/10 text-[#F7941D] border border-[#F7941D]/25',
   qb:         'bg-purple-500/10 text-purple-400 border border-purple-500/25',
   js:         'bg-yellow-500/10 text-yellow-400 border border-yellow-500/25',
+  ts:         'bg-[#3178C6]/10 text-[#5b9fe3] border border-[#3178C6]/30',
   standalone: 'bg-accent/10 text-accent border border-accent/25',
   lua:        'bg-blue-500/10 text-blue-400 border border-blue-500/25',
   py:         'bg-sky-500/10 text-sky-400 border border-sky-500/25',
@@ -99,9 +100,11 @@ export default async function HomePage() {
                 <div className="flex flex-col flex-1 p-4 gap-2.5">
                   <div className="flex items-start justify-between gap-2">
                     <h3 className="text-[15px] font-bold text-white leading-tight">{pkg.name}</h3>
-                    <span className={`text-[15px] font-bold shrink-0 ${pkg.isFree ? 'text-muted' : 'text-accent'}`}>
-                      {pkg.price}
-                    </span>
+                    {pkg.price && (
+                      <span className={`text-[15px] font-bold shrink-0 ${pkg.isFree ? 'text-muted' : 'text-accent'}`}>
+                        {pkg.price}
+                      </span>
+                    )}
                   </div>
                   <p className="text-xs text-muted leading-relaxed">{pkg.description}</p>
                   {pkg.tags && pkg.tags.length > 0 && (
@@ -112,16 +115,27 @@ export default async function HomePage() {
                     </div>
                   )}
                   <div className="flex-1" />
-                  <div className="pt-2 border-t border-borderlt">
+                  <div className="pt-2 border-t border-borderlt flex gap-2">
                     <a
                       href={pkg.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="msk-btn-primary w-full justify-center text-xs py-2.5"
+                      className="msk-btn-primary flex-[2] min-w-0 justify-center text-xs py-2.5"
                     >
                       <ExternalLink size={13} />
                       {pkg.linkLabel}
                     </a>
+                    {pkg.secondaryLink && pkg.secondaryLinkLabel && (
+                      <a
+                        href={pkg.secondaryLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="msk-btn-ghost flex-1 min-w-0 justify-center text-xs py-2.5"
+                      >
+                        <ExternalLink size={13} />
+                        {pkg.secondaryLinkLabel}
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>

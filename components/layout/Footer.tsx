@@ -3,6 +3,11 @@ import Image from 'next/image'
 import styles from './Footer.module.css'
 
 const footerLinks = {
+  Ecosystem: [
+    { label: 'Kanbanly', href: 'https://kanbanly.de/', external: true },
+    { label: 'MSK Paste', href: 'https://paste.msk-scripts.de/', external: true },
+    { label: 'MSK Shortener', href: 'https://s.msk-scripts.de/', external: true },
+  ],
   Ticketbot: [
     { label: 'Statistics', href: '/stats', external: false },
     { label: 'Verify', href: '/verify', external: false },

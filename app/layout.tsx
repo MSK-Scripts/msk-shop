@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   description: 'High quality FiveM resources & Discord bots for your server',
   applicationName: 'MSK Scripts Shop',
   authors: [{ name: 'Musiker15', url: 'https://www.musiker15.de' }, { name: 'MSK Scripts', url: 'https://www.msk-scripts.de' }],
-  keywords: ['FiveM Resources', 'Discord Bots', 'MSK', 'msk-scripts.de'],
+  keywords: ['FiveM Resources', 'Discord Bots', 'MSK', 'MSK Scripts', 'msk-scripts.de'],
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },
