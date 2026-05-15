@@ -4,7 +4,7 @@ import { useState }  from 'react'
 import dynamic        from 'next/dynamic'
 import {
   Globe, CheckCircle, AlertCircle, Clock, Trash2,
-  ExternalLink, RefreshCw, Loader2, Info,
+  ExternalLink, RefreshCw, Loader2, Info, LogOut,
 } from 'lucide-react'
 import { dashboardTranslations, type Lang } from '@/lib/i18n'
 import type { Tier } from '@/lib/tiers'
@@ -163,6 +163,16 @@ export default function DashboardClient({ guild, serverIp }: Props) {
     setTimeout(() => setCopied(false), 2000)
   }
 
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/dashboard/logout', { method: 'POST' })
+    } catch {
+      // Even on network errors we want to leave the dashboard — the cookie
+      // may already be invalid, and /verify will re-issue a fresh session.
+    }
+    window.location.href = '/verify'
+  }
+
   return (
     <div className="min-h-screen px-4 py-16">
       <div className="max-w-5xl mx-auto">
@@ -209,6 +219,14 @@ export default function DashboardClient({ guild, serverIp }: Props) {
               <ExternalLink size={14} />
               {t.docs}
             </a>
+            <button
+              onClick={handleLogout}
+              title={t.logout_title}
+              className="msk-btn-ghost text-sm hover:text-danger hover:border-danger/40"
+            >
+              <LogOut size={14} />
+              {t.logout}
+            </button>
           </div>
         </div>
 
