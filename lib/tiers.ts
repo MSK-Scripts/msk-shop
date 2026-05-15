@@ -26,7 +26,7 @@ export const TIER_CONFIG: Record<Tier, TierConfig> = {
     storageDays:         30,
     customDomain:        false,
     attachments:         false,
-    uploadsPerHour:      60,
+    uploadsPerHour:      30,
   },
   premium: {
     transcriptMaxBytes:  100 * 1024 * 1024,   // 100 MB
@@ -34,12 +34,12 @@ export const TIER_CONFIG: Record<Tier, TierConfig> = {
     storageDays:         60,
     customDomain:        true,
     attachments:         true,
-    uploadsPerHour:      120,
+    uploadsPerHour:      60,
   },
   premium_plus: {
     transcriptMaxBytes:  250 * 1024 * 1024,   // 250 MB
     attachmentMaxBytes:  500 * 1024 * 1024,   // 500 MB
-    storageDays:         90,
+    storageDays:         120,
     customDomain:        true,
     attachments:         true,
     uploadsPerHour:      300,
