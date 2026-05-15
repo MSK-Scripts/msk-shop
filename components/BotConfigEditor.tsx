@@ -13,13 +13,23 @@ import { dashboardTranslations, type Lang } from '@/lib/i18n'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
-const FILES = ['config', 'snippet', 'env'] as const
+const FILES = ['config', 'snippet', 'env', 'locale'] as const
 type ConfigFile = typeof FILES[number]
 
 const FILE_LABEL: Record<ConfigFile, string> = {
   config:  'config.jsonc',
   snippet: 'snippets.jsonc',
   env:     '.env',
+  locale:  'locale.json', // placeholder — overridden by server response
+}
+
+type LocaleReason = 'missing' | 'no_lang' | 'invalid_lang' | 'config_parse_error' | 'config_missing'
+
+interface LocaleMeta {
+  filename:  string
+  fallback:  boolean
+  reason?:   LocaleReason
+  requested?: string
 }
 
 type BotStatus = 'online' | 'stopped' | 'stopping' | 'launching' | 'errored' | 'not_found' | 'unknown'
@@ -71,8 +81,23 @@ function validateEnv(content: string, lang: Lang): string | null {
   return `Invalid .env format on ${where}. Allowed: KEY=VALUE, empty lines and # comments.`
 }
 
-const validate = (file: ConfigFile, content: string, lang: Lang) =>
-  file === 'env' ? validateEnv(content, lang) : validateJsonc(content, lang)
+function validateJsonStrict(content: string, lang: Lang): string | null {
+  try {
+    JSON.parse(content)
+    return null
+  } catch (e) {
+    const detail = e instanceof Error ? e.message : 'parse error'
+    return lang === 'de'
+      ? `JSON-Syntaxfehler: ${detail}. Locale-Dateien erlauben keine Kommentare.`
+      : `JSON syntax error: ${detail}. Locale files do not allow comments.`
+  }
+}
+
+const validate = (file: ConfigFile, content: string, lang: Lang) => {
+  if (file === 'env')    return validateEnv(content, lang)
+  if (file === 'locale') return validateJsonStrict(content, lang)
+  return validateJsonc(content, lang)
+}
 
 // ── Log line styling ───────────────────────────────────────────────────────────
 
@@ -155,6 +180,7 @@ export default function BotConfigEditor({ lang }: { lang: Lang }) {
   const [loadingGet, setLoadingGet]     = useState(false)
   const [loadingSave, setLoadingSave]   = useState(false)
   const [editorMsg, setEditorMsg]       = useState<Msg | null>(null)
+  const [localeMeta, setLocaleMeta]     = useState<LocaleMeta | null>(null)
 
   // Bot control
   const [botStatus, setBotStatus]           = useState<BotStatus | null>(null)
@@ -185,14 +211,26 @@ export default function BotConfigEditor({ lang }: { lang: Lang }) {
   const loadFile = useCallback(async (file: ConfigFile) => {
     setLoadingGet(true)
     setEditorMsg(null)
+    if (file === 'locale') setLocaleMeta(null)
     try {
       const res  = await fetch(`/api/bot-config?file=${file}`)
-      const data = await res.json() as { content?: string; error?: string }
+      const data = await res.json() as {
+        content?: string; error?: string;
+        filename?: string; fallback?: boolean; reason?: LocaleReason; requested?: string;
+      }
       if (!res.ok) {
         setEditorMsg({ type: 'error', text: data.error ?? t.bot_err_load })
         setContent(''); setSavedContent(''); return
       }
       setContent(data.content ?? ''); setSavedContent(data.content ?? '')
+      if (file === 'locale' && data.filename) {
+        setLocaleMeta({
+          filename:  data.filename,
+          fallback:  !!data.fallback,
+          reason:    data.reason,
+          requested: data.requested,
+        })
+      }
     } catch {
       setEditorMsg({ type: 'error', text: t.bot_err_network_load })
     } finally { setLoadingGet(false) }
@@ -219,7 +257,14 @@ export default function BotConfigEditor({ lang }: { lang: Lang }) {
       const data = await res.json() as { ok?: boolean; error?: string }
       if (!res.ok) { setEditorMsg({ type: 'error', text: data.error ?? t.bot_err_load }); return }
       setSavedContent(content)
-      setEditorMsg({ type: 'success', text: `${FILE_LABEL[activeFile]} ${t.bot_saved_msg}` })
+      const fileLabel = activeFile === 'locale' && localeMeta?.filename
+        ? localeMeta.filename
+        : FILE_LABEL[activeFile]
+      setEditorMsg({ type: 'success', text: `${fileLabel} ${t.bot_saved_msg}` })
+      // After saving a fallback file, refresh meta so the banner disappears.
+      if (activeFile === 'locale' && localeMeta?.fallback) {
+        void loadFile('locale')
+      }
     } catch {
       setEditorMsg({ type: 'error', text: t.bot_err_network_save })
     } finally { setLoadingSave(false) }
@@ -565,15 +610,21 @@ export default function BotConfigEditor({ lang }: { lang: Lang }) {
 
         {/* Tabs */}
         <div className="flex gap-1 bg-surface2 border border-borderlt rounded-lg p-1 mb-4 w-fit">
-          {FILES.map(f => (
-            <button key={f} onClick={() => handleTabSwitch(f)}
-              className={`px-3 py-1.5 rounded text-xs font-mono font-semibold transition-colors ${
-                f === activeFile ? 'bg-accent text-black' : 'text-muted hover:text-white'
-              }`}
-            >
-              {FILE_LABEL[f]}
-            </button>
-          ))}
+          {FILES.map(f => {
+            const isLocale = f === 'locale'
+            const label = isLocale && localeMeta?.filename
+              ? (localeMeta.fallback ? `${localeMeta.filename} (fallback)` : localeMeta.filename)
+              : FILE_LABEL[f]
+            return (
+              <button key={f} onClick={() => handleTabSwitch(f)}
+                className={`px-3 py-1.5 rounded text-xs font-mono font-semibold transition-colors ${
+                  f === activeFile ? 'bg-accent text-black' : 'text-muted hover:text-white'
+                }`}
+              >
+                {label}
+              </button>
+            )
+          })}
           <button onClick={() => loadFile(activeFile)} disabled={loadingGet}
             className="ml-1 px-2 py-1.5 rounded text-dim hover:text-muted transition-colors" title={t.bot_reload}
           >
@@ -588,6 +639,26 @@ export default function BotConfigEditor({ lang }: { lang: Lang }) {
             <span>{t.bot_env_warning}</span>
           </div>
         )}
+
+        {/* Locale fallback banner */}
+        {activeFile === 'locale' && localeMeta?.fallback && (() => {
+          const fname = localeMeta.filename
+          const req   = localeMeta.requested ?? fname
+          const text =
+            localeMeta.reason === 'missing'
+              ? t.bot_locale_fb_missing.replace('{requested}', req).replace('{filename}', fname)
+              : localeMeta.reason === 'no_lang'
+                ? t.bot_locale_fb_no_lang
+                : localeMeta.reason === 'invalid_lang'
+                  ? t.bot_locale_fb_invalid
+                  : t.bot_locale_fb_cfg_err // config_missing / config_parse_error
+          return (
+            <div className="flex items-start gap-2 bg-yellow-500/10 border border-yellow-500/30 rounded-lg px-3 py-2.5 mb-4 text-xs text-yellow-400">
+              <Info size={14} className="shrink-0 mt-0.5" />
+              <span>{text}</span>
+            </div>
+          )
+        })()}
 
         {editorMsg && <div className="mb-3"><Banner msg={editorMsg} onClose={() => setEditorMsg(null)} /></div>}
 

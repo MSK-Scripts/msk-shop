@@ -2,40 +2,152 @@ import { cookies }                from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import { parseDashboardSession }  from '@/lib/dashboardSession';
 import { queryOne }               from '@/lib/db';
-import { readFile, writeFile, copyFile } from 'fs/promises';
+import { readFile, writeFile, copyFile, access } from 'fs/promises';
 import { join, resolve }          from 'path';
 import { parse as parseJsonc, type ParseError } from 'jsonc-parser';
 
 // Explicit mapping: URL parameter → actual filename on disk.
 // The filename NEVER comes from user input — only the key is user-supplied,
 // and it is validated against this fixed map before any filesystem access.
-const FILE_MAP: Record<string, string> = {
+// 'locale' is handled separately because the filename is resolved at runtime
+// from the bot's config.jsonc (with fallback to en.json).
+const STATIC_FILE_MAP: Record<string, string> = {
   config:  'config/config.jsonc',
   snippet: 'config/snippets.jsonc',
   env:     '.env',
 };
 
+const VALID_KEYS = new Set([...Object.keys(STATIC_FILE_MAP), 'locale']);
+
 // Discord snowflakes are 17–20 digit numbers.
 // Consistent with bot-control and bot-logs routes — defense in depth.
 const GUILD_ID_RE = /^\d{17,20}$/;
 
+// Whitelist for the "lang" value extracted from config.jsonc.
+// Accepts ISO-639-1 codes (en, de) and optional ISO-3166 region suffix (pt-br).
+const LANG_RE = /^[a-z]{2}(-[a-z]{2})?$/i;
+
+// Whitelist for resolved locale filenames before any filesystem access.
+const LOCALE_FILENAME_RE = /^[a-z]{2}(-[a-z]{2})?\.json$/i;
+
 interface GuildRow { is_hosted: number }
 
-function buildFilePath(guildId: string, fileKey: string): string {
+// ── Path builders ──────────────────────────────────────────────────────────────
+
+function getBase(): string {
   const base = process.env.BOT_CONFIG_BASE_PATH;
   if (!base) throw new Error('BOT_CONFIG_BASE_PATH not configured');
+  return base;
+}
 
-  const filename = FILE_MAP[fileKey]; // already validated — cannot be undefined here
-  const fullPath    = join(base, guildId, filename);
-  const resolved    = resolve(fullPath);
+function assertWithinBase(resolved: string, base: string): void {
   const resolvedBase = resolve(base);
-
-  // Belt-and-suspenders: ensure the resolved path stays inside the base dir
   if (!resolved.startsWith(resolvedBase + '/') && !resolved.startsWith(resolvedBase + '\\')) {
     throw new Error('Path traversal detected');
   }
+}
+
+function buildStaticFilePath(guildId: string, fileKey: keyof typeof STATIC_FILE_MAP | string): string {
+  const base = getBase();
+  const filename = STATIC_FILE_MAP[fileKey]; // already validated — cannot be undefined here
+  const resolved = resolve(join(base, guildId, filename));
+  assertWithinBase(resolved, base);
   return resolved;
 }
+
+function buildLocalePath(guildId: string, filename: string): string {
+  if (!LOCALE_FILENAME_RE.test(filename)) {
+    throw new Error('Invalid locale filename');
+  }
+  const base = getBase();
+  const resolved = resolve(join(base, guildId, 'locales', filename));
+  assertWithinBase(resolved, base);
+  return resolved;
+}
+
+// ── Locale resolution ──────────────────────────────────────────────────────────
+
+type LocaleReason = 'missing' | 'no_lang' | 'invalid_lang' | 'config_parse_error' | 'config_missing';
+
+interface LocaleResolution {
+  /** Filename to display in the tab and to write to on save (e.g. 'de.json'). */
+  filename:       string;
+  /** Filename to read content from for the editor (e.g. 'en.json' on fallback). */
+  sourceFilename: string;
+  /** True when the source differs from the target (= template-based editing). */
+  fallback:       boolean;
+  /** Reason for the fallback (undefined when fallback is false). */
+  reason?:        LocaleReason;
+  /** What the user originally requested via "lang" (only set for reason='missing'). */
+  requested?:     string;
+}
+
+/**
+ * Resolves which locale file to edit, based on the bot's config.jsonc.
+ * Falls back to en.json on any error (missing config, bad syntax, missing lang).
+ */
+async function resolveLocaleFile(guildId: string): Promise<LocaleResolution> {
+  const base       = getBase();
+  const configPath = resolve(join(base, guildId, 'config/config.jsonc'));
+  const localesDir = resolve(join(base, guildId, 'locales'));
+  assertWithinBase(configPath, base);
+  assertWithinBase(localesDir, base);
+
+  const fallback = (reason: LocaleReason): LocaleResolution => ({
+    filename:       'en.json',
+    sourceFilename: 'en.json',
+    fallback:       true,
+    reason,
+  });
+
+  // 1. Read config.jsonc
+  let configContent: string;
+  try {
+    configContent = await readFile(configPath, 'utf-8');
+  } catch {
+    return fallback('config_missing');
+  }
+
+  // 2. Parse + validate "lang"
+  const errors: ParseError[] = [];
+  const parsed = parseJsonc(configContent, errors, { allowTrailingComma: true });
+  if (errors.length > 0 || typeof parsed !== 'object' || parsed === null) {
+    return fallback('config_parse_error');
+  }
+  const langValue = (parsed as Record<string, unknown>).lang;
+  if (typeof langValue !== 'string' || langValue.length === 0) {
+    return fallback('no_lang');
+  }
+  if (!LANG_RE.test(langValue)) {
+    return fallback('invalid_lang');
+  }
+
+  // 3. Normalize and check existence
+  const lang          = langValue.toLowerCase();
+  const requestedFile = `${lang}.json`;
+
+  if (!LOCALE_FILENAME_RE.test(requestedFile)) {
+    // Defense in depth — should never happen after LANG_RE passes
+    return fallback('invalid_lang');
+  }
+
+  const requestedPath = join(localesDir, requestedFile);
+  try {
+    await access(requestedPath);
+    return { filename: requestedFile, sourceFilename: requestedFile, fallback: false };
+  } catch {
+    // Target file doesn't exist — edit en.json as template, save target stays requested file.
+    return {
+      filename:       requestedFile,
+      sourceFilename: 'en.json',
+      fallback:       true,
+      reason:         'missing',
+      requested:      requestedFile,
+    };
+  }
+}
+
+// ── Auth helpers ───────────────────────────────────────────────────────────────
 
 async function getSession(): Promise<string | null> {
   const cookieStore = await cookies();
@@ -52,6 +164,8 @@ async function assertHosted(guildId: string): Promise<boolean> {
   return !!guild?.is_hosted;
 }
 
+// ── GET ────────────────────────────────────────────────────────────────────────
+
 export async function GET(req: NextRequest) {
   try {
     const guildId = await getSession();
@@ -59,7 +173,7 @@ export async function GET(req: NextRequest) {
     if (!GUILD_ID_RE.test(guildId)) return NextResponse.json({ error: 'Invalid session' }, { status: 400 });
 
     const fileKey = req.nextUrl.searchParams.get('file');
-    if (!fileKey || !(fileKey in FILE_MAP)) {
+    if (!fileKey || !VALID_KEYS.has(fileKey)) {
       return NextResponse.json({ error: 'Invalid file parameter' }, { status: 400 });
     }
 
@@ -67,7 +181,32 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Not available for this account' }, { status: 403 });
     }
 
-    const filePath = buildFilePath(guildId, fileKey);
+    if (fileKey === 'locale') {
+      const resolution = await resolveLocaleFile(guildId);
+      const sourcePath = buildLocalePath(guildId, resolution.sourceFilename);
+      let content: string;
+      try {
+        content = await readFile(sourcePath, 'utf-8');
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : '';
+        if (msg.includes('ENOENT')) {
+          return NextResponse.json(
+            { error: 'Keine Locale-Datei gefunden (auch kein en.json-Fallback vorhanden).' },
+            { status: 404 },
+          );
+        }
+        throw err;
+      }
+      return NextResponse.json({
+        content,
+        filename: resolution.filename,
+        fallback: resolution.fallback,
+        ...(resolution.reason    ? { reason:    resolution.reason    } : {}),
+        ...(resolution.requested ? { requested: resolution.requested } : {}),
+      });
+    }
+
+    const filePath = buildStaticFilePath(guildId, fileKey);
     const content  = await readFile(filePath, 'utf-8');
     return NextResponse.json({ content });
   } catch (err: unknown) {
@@ -79,6 +218,8 @@ export async function GET(req: NextRequest) {
   }
 }
 
+// ── PUT ────────────────────────────────────────────────────────────────────────
+
 export async function PUT(req: NextRequest) {
   try {
     const guildId = await getSession();
@@ -86,7 +227,7 @@ export async function PUT(req: NextRequest) {
     if (!GUILD_ID_RE.test(guildId)) return NextResponse.json({ error: 'Invalid session' }, { status: 400 });
 
     const fileKey = req.nextUrl.searchParams.get('file');
-    if (!fileKey || !(fileKey in FILE_MAP)) {
+    if (!fileKey || !VALID_KEYS.has(fileKey)) {
       return NextResponse.json({ error: 'Invalid file parameter' }, { status: 400 });
     }
 
@@ -108,8 +249,7 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: 'Datei überschreitet 1 MB Limit' }, { status: 413 });
     }
 
-    // Server-side content validation — prevents writing syntactically broken files
-    // and satisfies static analysis (network data is validated before filesystem write).
+    // ── Content validation per file type ─────────────────────────────────────
     if (fileKey === 'config' || fileKey === 'snippet') {
       const errors: ParseError[] = [];
       parseJsonc(content, errors, { allowTrailingComma: true });
@@ -117,7 +257,6 @@ export async function PUT(req: NextRequest) {
         return NextResponse.json({ error: 'Syntaxfehler in der JSONC-Datei' }, { status: 400 });
       }
     } else if (fileKey === 'env') {
-      // Each line must be empty, a comment, or KEY=VALUE (env file format).
       const invalid = content.split('\n').some(line => {
         const trimmed = line.trim();
         if (!trimmed || trimmed.startsWith('#')) return false;
@@ -126,9 +265,26 @@ export async function PUT(req: NextRequest) {
       if (invalid) {
         return NextResponse.json({ error: 'Ungültiges .env Format (erwartet KEY=VALUE)' }, { status: 400 });
       }
+    } else if (fileKey === 'locale') {
+      // Strict JSON — no comments, no trailing commas
+      try {
+        JSON.parse(content);
+      } catch {
+        return NextResponse.json(
+          { error: 'Ungültige JSON-Syntax (Locale-Dateien erlauben keine Kommentare)' },
+          { status: 400 },
+        );
+      }
     }
 
-    const filePath = buildFilePath(guildId, fileKey);
+    // ── Resolve target path ──────────────────────────────────────────────────
+    let filePath: string;
+    if (fileKey === 'locale') {
+      const resolution = await resolveLocaleFile(guildId);
+      filePath         = buildLocalePath(guildId, resolution.filename);
+    } else {
+      filePath = buildStaticFilePath(guildId, fileKey);
+    }
 
     // Backup before overwriting (silent if the file does not exist yet)
     try { await copyFile(filePath, `${filePath}.bak`); } catch { /* intentionally empty */ }
