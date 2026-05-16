@@ -1,9 +1,8 @@
 # MSK Scripts Shop
 
-A headless storefront for [MSK Scripts](https://msk-scripts.de) — built with **Next.js 15**, **React 19**, **TypeScript**, **Tailwind CSS** and the **Tebex Headless API**.
+A headless storefront for [MSK Scripts](https://www.msk-scripts.de) — built with **Next.js 15**, **React 19**, **TypeScript**, **Tailwind CSS** and the **Tebex Headless API**.
 
 > **Live:** [msk-scripts.de](https://www.msk-scripts.de)
-> **Version:** `1.2.0`
 
 ---
 
