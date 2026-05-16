@@ -1,8 +1,9 @@
 # MSK Scripts Shop
 
-A headless storefront for [MSK Scripts](https://msk-scripts.de) — built with **Next.js 15**, **TypeScript**, **Tailwind CSS** and the **Tebex Headless API**.
+A headless storefront for [MSK Scripts](https://msk-scripts.de) — built with **Next.js 15**, **React 19**, **TypeScript**, **Tailwind CSS** and the **Tebex Headless API**.
 
 > **Live:** [msk-scripts.de](https://www.msk-scripts.de)
+> **Version:** `1.2.0`
 
 ---
 
@@ -11,16 +12,22 @@ A headless storefront for [MSK Scripts](https://msk-scripts.de) — built with *
 | | |
 |---|---|
 | Framework | Next.js 15.5 (App Router) |
-| Language | TypeScript 5 |
-| Styling | Tailwind CSS 3 |
+| Language | TypeScript 5.8 (strict mode) |
+| UI | React 19.2 |
+| Styling | Tailwind CSS 3.4 |
 | Fonts | Inter (self-hosted via next/font) |
 | State | Zustand 5 (persisted to localStorage) |
 | Data Fetching | SWR 2 |
 | Database | MariaDB / MySQL (via mysql2) |
 | Payments | Tebex Headless API |
+| Editor | CodeMirror (`@uiw/react-codemirror`) — Bot-Config editor |
+| JSONC parsing | `jsonc-parser` |
+| Icons | `lucide-react` |
+| Cookies (client) | `js-cookie` |
 | Auth | CFX.re (FiveM) + Discord OAuth via Tebex |
-| Verify Flow | Discord OAuth + GitHub OAuth + Session cookies |
+| Verify Flow | Discord OAuth + GitHub OAuth + signed session cookies |
 | Server | Debian + Apache2 reverse proxy + systemd |
+| Bot process manager | PM2 (`pm2-musiker15.service`) |
 | CI/CD | GitHub Actions (auto-deploy on push to `main`) |
 
 ---
@@ -37,12 +44,17 @@ A headless storefront for [MSK Scripts](https://msk-scripts.de) — built with *
 - 📄 Markdown-based legal pages in English & German (editable without code)
 - 🟢 Live Discord online member count
 - 📰 News popup with optional coupon code display (configurable, shown on every page load)
+- 📊 Public Ticket Bot statistics page (`/stats`) — with allowlist via `STATS_IGNORED_API_KEYS`
 - 🎟️ Ticket Bot verify flow — Discord + GitHub OAuth, API key issuance, tier management
 - 🗂️ Ticket transcript hosting with attachment support (MariaDB-backed)
 - 🌍 Custom domain support per guild with DNS validation and Let's Encrypt SSL
 - 💰 GitHub Sponsors webhook — auto-assigns tiers on sponsorship events
 - 📊 Dashboard page for managing API keys, domains and transcripts
-- 🤖 Hosted bot management — config editor (config.jsonc, snippets.jsonc, .env), bot control (start / stop / restart / update via git pull) and live log console for `is_hosted` customers
+- 🤖 Hosted bot management for `is_hosted` customers:
+  - Config editor for `config.jsonc`, `snippets.jsonc`, `.env` **and the active locale file** (`locales/<lang>.json`, with `en.json` fallback)
+  - Bot control: start / stop / restart / update (git pull) via PM2
+  - Live log console with Server-Sent Events streaming PM2 error logs (`tail -F`)
+- 🚪 Dashboard logout endpoint to switch between bots
 - 🔒 Security headers, rate limiting, path traversal protection, signed session cookies
 - 🌐 Apache2 reverse proxy with CSP, HSTS and security headers
 - 🔧 Maintenance page included (`public/maintenance.html`)
@@ -55,36 +67,45 @@ A headless storefront for [MSK Scripts](https://msk-scripts.de) — built with *
 ```
 app/                        Next.js App Router pages & API routes
 ├── api/auth/
-│   ├── discord-verify/     Discord OAuth for the verify flow
+│   ├── discord-verify/     Discord OAuth for the verify flow (scopes: identify, guilds)
 │   │   └── callback/
 │   └── github/             GitHub OAuth for sponsor tier detection
 │       └── callback/
 ├── api/basket/             Tebex basket API proxy (private key stays server-side)
+│   ├── auth.ts             Shared auth helper for basket routes
+│   ├── route.ts            Create basket
 │   └── [ident]/
-│       ├── auth/           Auth provider URLs
+│       ├── auth/           Auth provider URLs (CFX.re / Discord)
 │       ├── coupons/        Apply & remove coupons
 │       │   └── [code]/     Remove specific coupon
-│       └── packages/       Add & remove packages
-├── api/discord/            Discord online member count (cached 60s)
-├── api/domain/             Custom domain set / remove / validate
-├── api/packages/           Package list endpoint
-├── api/transcript/upload/  Ticket transcript upload (authenticated via API key)
-├── api/verify/             Verify status & completion
-├── api/webhook/
-│   └── github-sponsors/    GitHub Sponsors webhook handler
-├── api/bot-config/         Read & write hosted bot config files (config.jsonc, snippets.jsonc, .env)
+│       ├── packages/       Add & remove packages (+ remove/)
+│       └── route.ts        Fetch basket
+├── api/bot-config/         Read & write hosted bot configs (config.jsonc, snippets.jsonc, .env, locales/<lang>.json)
 ├── api/bot-control/        Start / stop / restart / update bot via PM2
 ├── api/bot-logs/           Fetch last 100 lines of PM2 error log (one-shot)
 ├── api/bot-logs-stream/    Server-Sent Events — real-time PM2 log stream via tail -F
+├── api/dashboard/
+│   └── logout/             Clear dashboard session cookie (switch bot)
 ├── api/debug/              Debug route (returns 404 in production)
+├── api/discord/            Discord online member count (cached 60s)
+│   └── health/             Discord API health check
+├── api/domain/             Custom domain set / remove / validate
+├── api/packages/           Package list endpoint
+├── api/stats/              Public Ticket Bot statistics
+├── api/transcript/upload/  Ticket transcript upload (authenticated via API key)
+├── api/verify/             Verify status / complete / check-guild / redirect-dashboard
+├── api/webhook/
+│   └── github-sponsors/    GitHub Sponsors webhook handler (HMAC-SHA256 verified)
 ├── account/                User account page
 ├── auth/discord/           Discord OAuth callback handler (purchase flow)
 ├── cart/                   Cart page
-├── categories/[id]/        Category pages
+├── categories/[id]/        Category pages (+ loading.tsx)
 ├── checkout/               Post-payment redirect handler
-├── dashboard/              API key & domain management dashboard
+├── dashboard/              API key, domain & hosted-bot management
 ├── login/                  Login page
-├── packages/[id]/          Package detail pages
+├── packages/               Full package list page
+│   └── [id]/               Package detail pages (+ loading.tsx)
+├── stats/                  Public Ticket Bot statistics page
 ├── verify/                 Ticket Bot verify flow
 └── terms/                  Legal pages
     ├── imprint/            Imprint (EN + DE)
@@ -97,7 +118,7 @@ components/
 ├── layout/                 Navbar, Footer
 ├── legal/                  LegalContent (language switcher)
 ├── packages/               PackageCard, AddToCartButton, PackagePrice
-├── BotConfigEditor.tsx     Hosted bot dashboard — config editor, bot control, live log console
+├── BotConfigEditor.tsx     Hosted-bot dashboard — config editor (incl. locale tab), bot control, live log console
 ├── SalePriceFetcher.tsx    Client component — pre-fetches sale prices on mount
 └── ui/                     DiscordButton, NewsPopup
 
@@ -112,20 +133,21 @@ database/
 └── schema.sql              MariaDB schema — run once on a fresh database
 
 lib/
-├── auth.ts                 Auth helpers (session validation, Discord/GitHub OAuth)
+├── auth.ts                 Auth URL helpers (basket auth providers)
 ├── config.ts               All shop configuration (packages, badges, news popup, etc.)
-├── dashboardSession.ts     Session helpers for the dashboard
-├── db.ts                   mysql2 connection pool
-├── i18n.ts                 Language helpers
+├── dashboardSession.ts     Signed dashboard session cookies (guildId)
+├── db.ts                   mysql2 connection pool (singleton) + query/queryOne wrappers
+├── i18n.ts                 Language helpers (EN / DE)
 ├── markdown.ts             Markdown → HTML renderer (tables, lists, links, code)
-├── rateLimit.ts            In-memory rate limiter for API routes
-├── session.ts              Signed session cookie utilities
-├── tebex.ts                Tebex API client (read-only calls)
-├── tiers.ts                Tier definitions (basic / premium / premium_plus)
+├── rateLimit.ts            In-memory rate limiter for API routes (per IP)
+├── session.ts              Signed verify session cookies (HMAC-SHA256) + OAuth state
+├── statsIgnore.ts          API keys excluded from /stats
+├── tebex.ts                Tebex API client (read-only direct, mutations via /api/basket)
+├── tiers.ts                Tier definitions (basic / premium / premium_plus) + limits
 └── useCart.ts              Cart hook (auth flow, basket management)
 
 store/
-├── cart.ts                 Zustand store (persisted to localStorage)
+├── cart.ts                 Zustand store (persisted to localStorage, key: "msk-cart")
 └── salePrices.ts           Sale price store (Zustand)
 
 public/
@@ -135,10 +157,27 @@ public/
 └── *.png                   Custom package banner images
 
 scripts/
-├── cleanup.js              Housekeeping script (expired transcripts etc.)
-├── vhost-create.sh         Apache2 vhost + SSL setup for custom domains
+├── cleanup.js              Housekeeping script (expired transcripts etc.) — daily cron
+├── vhost-create.sh         Apache2 vhost + Let's-Encrypt SSL setup for custom domains
 └── vhost-delete.sh         Remove Apache2 vhost for custom domains
 ```
+
+---
+
+## Tiers (`lib/tiers.ts`)
+
+Single source of truth for all limits. Tiers: `basic` · `premium` · `premium_plus`.
+
+| Limit | basic | premium | premium_plus |
+|---|---|---|---|
+| Transcript max. | 10 MB | 100 MB | 250 MB |
+| Attachments max. | — | 150 MB | 500 MB |
+| Storage retention | 30 days | 60 days | 120 days |
+| Custom domain | ✗ | ✓ | ✓ |
+| Attachment downloads | ✗ | ✓ | ✓ |
+| Uploads / hour | 30 | 60 | 300 |
+
+`getExpiresAt(tier)` derives the expiry date from `storageDays`.
 
 ---
 
@@ -162,6 +201,9 @@ Tables created by `database/schema.sql`:
 | `ticketbot_rate_limits` | Per-API-key request rate limiting (hourly window) |
 | `ticketbot_sponsors` | GitHub Sponsors mirror (written by webhook, read during verify) |
 
+> Migration for existing databases:
+> `ALTER TABLE ticketbot_guilds ADD COLUMN is_hosted TINYINT(1) NOT NULL DEFAULT 0;`
+
 ---
 
 ## Configuration
@@ -173,7 +215,7 @@ All shop configuration lives in **`lib/config.ts`**:
 export const FEATURED_PACKAGE_IDS = [5301828, 6446947, 6372865]
 
 // Multiple badges per package
-// Variants: 'esx' | 'qb' | 'standalone' | 'js' | 'lua' | 'py' | 'discord' | 'fivem'
+// Variants: 'esx' | 'qb' | 'standalone' | 'js' | 'ts' | 'lua' | 'py' | 'discord' | 'fivem'
 export const PACKAGE_BADGES: Record<number, Badge[]> = {
   5301828: [{ label: 'ESX', variant: 'esx' }, { label: 'Lua', variant: 'lua' }],
   6446947: [{ label: 'ESX', variant: 'esx' }, { label: 'QBCore', variant: 'qb' }, { label: 'Lua', variant: 'lua' }],
@@ -217,28 +259,34 @@ export const SITE_CONFIG = {
 
 ## CI/CD — Auto Deploy
 
-Pushing to `main` automatically deploys via GitHub Actions:
+Pushing to `main` automatically deploys via GitHub Actions (`.github/workflows/deploy.yml`):
 
-1. Install dependencies (`npm ci`)
-2. Build (`npm run build` with secrets injected)
-3. Transfer build output + `content/` to server via SCP
-4. Write `.env.local` from GitHub Secrets
-5. Install production deps, fix permissions, reload systemd service
+1. Checkout + Node.js 20 setup
+2. Install dependencies (`npm ci`)
+3. Build (`npm run build` with `NEXT_PUBLIC_*` + `TEBEX_PRIVATE_KEY` injected at build time)
+4. Transfer build output + runtime files to server via SCP
+   (`.next/`, `public/`, `content/`, `package.json`, `package-lock.json`, `next.config.js`, `msk-shop.service`)
+5. SSH script on server: stop service → wipe `node_modules` → `npm ci --omit=dev` → set permissions
+   (`chown musiker15:musiker15`, `chmod u+w .next/`) → `systemctl daemon-reload` → `systemctl restart msk-shop`
 
 > **Authentication:** The workflow uses an **SSH private key** (`SSH_PRIVATE_KEY`), not a password.
+> Server-side secrets (DB, OAuth, webhook) live exclusively in `/opt/msk-shop/.env.local` and are **not** managed by the workflow.
 
 ### Required GitHub Secrets
 
 | Secret | Value |
 |--------|-------|
 | `FTP_SERVER` | Server IP or hostname |
-| `FTP_USERNAME` | SSH username (e.g. `root`) |
-| `SSH_PRIVATE_KEY` | Private key for SSH authentication |
+| `FTP_USERNAME` | SSH username |
 | `FTP_PORT` | SSH port (e.g. `22`) |
+| `SSH_PRIVATE_KEY` | Private key for SSH authentication |
 | `NEXT_PUBLIC_TEBEX_PUBLIC_TOKEN` | Tebex public token |
 | `NEXT_PUBLIC_TEBEX_PROJECT_ID` | Tebex project ID |
 | `NEXT_PUBLIC_BASE_URL` | `https://www.msk-scripts.de` |
 | `TEBEX_PRIVATE_KEY` | Tebex private key |
+
+**Additional workflows:** `codeql.yml` (code scanning), `eslint.yml` (lint), `release.yml`,
+`dependency-review.yml`, `secret-scan.yml`.
 
 ---
 
@@ -252,6 +300,7 @@ Pushing to `main` automatically deploys via GitHub Actions:
 - Apache2 with `mod_proxy`, `mod_ssl`, `mod_rewrite`, `mod_headers`
 - Let's Encrypt SSL certificate (Certbot)
 - Debian / Ubuntu with systemd
+- PM2 (only required for hosted bot management)
 
 ### Steps
 
@@ -273,8 +322,8 @@ mysql -u root -p msk_shop < database/schema.sql
 npm ci
 npm run build
 
-# 5. Permissions
-chown -R www-data:www-data /opt/msk-shop
+# 5. Permissions (service runs as user "musiker15" on port 3005)
+chown -R musiker15:musiker15 /opt/msk-shop
 chmod -R u+w /opt/msk-shop/.next
 
 # 6. systemd service
@@ -307,7 +356,7 @@ DB_NAME=msk_shop
 # Session
 SESSION_SECRET=<openssl rand -hex 32>
 
-# Discord OAuth (verify flow)
+# Discord OAuth (verify flow — scopes: identify, guilds)
 DISCORD_VERIFY_CLIENT_ID=your_client_id
 DISCORD_VERIFY_CLIENT_SECRET=your_client_secret
 
@@ -318,7 +367,7 @@ GITHUB_CLIENT_SECRET=your_client_secret
 # GitHub Sponsors webhook
 GITHUB_SPONSORS_WEBHOOK_SECRET=your_webhook_secret
 
-# Transcripts
+# Transcripts (served by Apache under /transcripts)
 TRANSCRIPT_BASE_PATH=/var/www/html/transcripts
 
 # DNS validation & SSL
@@ -326,7 +375,11 @@ SERVER_PUBLIC_IP=your.server.ip
 ADMIN_EMAIL=info@msk-scripts.de
 
 # Hosted bot management (is_hosted customers)
-BOT_CONFIG_BASE_PATH=/home/musiker15/bots
+# Each guild has its own subfolder: {BOT_CONFIG_BASE_PATH}/{guild_id}/
+BOT_CONFIG_BASE_PATH=/opt/customer_ticketbots
+
+# Public stats — comma-separated API keys to exclude from /stats
+STATS_IGNORED_API_KEYS=key1,key2,key3
 ```
 
 > ⚠️ Never commit `.env.local` — it is listed in `.gitignore`.
@@ -340,7 +393,7 @@ cd /opt/msk-shop
 git pull
 npm ci
 npm run build
-chown -R www-data:www-data /opt/msk-shop
+chown -R musiker15:musiker15 /opt/msk-shop
 chmod -R u+w /opt/msk-shop/.next
 systemctl restart msk-shop
 ```
@@ -361,12 +414,16 @@ systemctl restart msk-shop
 systemctl reload apache2
 
 # Fix permission errors (EACCES on .next/)
-chown -R www-data:www-data /opt/msk-shop
+chown -R musiker15:musiker15 /opt/msk-shop
 chmod -R u+w /opt/msk-shop/.next
 systemctl restart msk-shop
 
 # Test database connection
 mysql -u your_db_user -p msk_shop -e "SHOW TABLES;"
+
+# Hosted bot PM2 status
+systemctl status pm2-musiker15
+sudo -u musiker15 pm2 list
 ```
 
 ---
@@ -374,13 +431,35 @@ mysql -u your_db_user -p msk_shop -e "SHOW TABLES;"
 ## Security
 
 - **Private key** (`TEBEX_PRIVATE_KEY`) is never exposed to the client — all mutations go through Next.js API routes
-- **Session cookies** are signed with `SESSION_SECRET` and are `HttpOnly` + `Secure`
-- **Rate limiting** on basket creation and API key endpoints (in-memory, per IP)
+- **Session cookies** are signed with `SESSION_SECRET` (HMAC-SHA256) and are `HttpOnly` + `Secure`
+- **Rate limiting** on basket creation and API key endpoints — in-memory per IP (`lib/rateLimit.ts`),
+  plus database-side per-API-key limiting in `ticketbot_rate_limits`
 - **Path traversal protection** on markdown file reads (allowlist)
 - **URL validation** — redirect URLs are always constructed server-side from `NEXT_PUBLIC_BASE_URL`
-- **CSP headers** restrict script, style, font and connect sources
+- **CSP / Security Headers** in `next.config.js`: CSP, HSTS (2 years, preload),
+  `X-Content-Type-Options`, `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy`, `Permissions-Policy`
 - **Debug route** (`/api/debug`) returns 404 in production
 - **GitHub Sponsors webhook** is verified via HMAC-SHA256 signature
+- **OAuth flows** use a random `state` token (CSRF protection)
+
+---
+
+## Design / Styling
+
+Tailwind palette (`tailwind.config.ts`) — dark-themed with green accent:
+
+| Token | Value | Token | Value |
+|---|---|---|---|
+| `bg` | `#1b1b1d` | `text` | `#e3e3e3` |
+| `surface` | `#242526` | `muted` | `#8d9096` |
+| `surface2` | `#2a2b2e` | `dim` | `#5c6370` |
+| `border` | `#3d3d3f` | `accent` | `#5eb131` |
+| `borderlt` | `#2e2f31` | `accenthov` | `#4e9827` |
+| `danger` | `#e05c4b` | `discord` | `#5865F2` |
+
+**Font:** Inter (self-hosted, `--font-inter`).
+**Utility classes** in `app/globals.css` (`@layer components`):
+`msk-btn-primary`, `msk-btn-ghost`, `msk-btn-discord`, `msk-card`, `msk-input`, `msk-badge`, `msk-label`, `msk-section-title`.
 
 ---
 
@@ -390,6 +469,5 @@ mysql -u your_db_user -p msk_shop -e "SHOW TABLES;"
 - 📖 [Documentation](https://docu.msk-scripts.de)
 - 💬 [Discord](https://discord.gg/5hHSBRHvJE)
 - 🐙 [GitHub / MSK-Scripts](https://github.com/MSK-Scripts)
-
 
 ---
