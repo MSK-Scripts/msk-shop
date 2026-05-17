@@ -301,7 +301,7 @@ export default function DashboardClient({ guild, serverIp }: Props) {
                     </div>
                     <div className="bg-surface border border-borderlt rounded p-2">
                       <div className="text-dim mb-1">{t.dns_name}</div>
-                      <div className="text-white font-mono font-semibold">@</div>
+                      <div className="text-white font-mono font-semibold">@ or subdomain (www, transcript, etc.)</div>
                     </div>
                     <div className="bg-surface border border-borderlt rounded p-2 cursor-pointer hover:border-accent/50" onClick={copyIp}>
                       <div className="text-dim mb-1">{t.dns_target}</div>
