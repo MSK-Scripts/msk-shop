@@ -13,6 +13,8 @@ Ihre Daten werden zum einen dadurch erhoben, dass Sie uns diese mitteilen. Ander
 ### Welche Rechte haben Sie bezüglich Ihrer Daten?
 Sie haben jederzeit das Recht auf unentgeltliche Auskunft über Herkunft, Empfänger und Zweck Ihrer gespeicherten personenbezogenen Daten sowie ein Recht auf Berichtigung oder Löschung dieser Daten. Hierzu sowie zu weiteren Fragen können Sie sich jederzeit an uns wenden.
 
+---
+
 ## Hosting
 Wir hosten die Inhalte unserer Website bei folgendem Anbieter:
 
@@ -28,6 +30,8 @@ Weitere Informationen: [netcup Datenschutzerklärung](https://www.netcup.com/de/
 
 ### Auftragsverarbeitung
 Wir haben einen Vertrag über Auftragsverarbeitung (AVV) zur Nutzung des oben genannten Dienstes geschlossen.
+
+---
 
 ## Allgemeine Hinweise und Pflichtinformationen
 
