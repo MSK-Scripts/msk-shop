@@ -13,6 +13,8 @@ Your data is collected on the one hand by you providing it to us. Other data is 
 ### What rights do you have regarding your data?
 You have the right at any time to obtain information free of charge about the origin, recipients, and purpose of your stored personal data, as well as the right to have this data corrected or deleted. You can contact us at any time regarding this and other questions.
 
+---
+
 ## Hosting
 We host the contents of our website with the following provider:
 
@@ -28,6 +30,8 @@ Further information: [netcup Privacy Policy](https://www.netcup.com/en/contact/d
 
 ### Data Processing Agreement
 We have concluded a data processing agreement (DPA) for the use of the service mentioned above.
+
+---
 
 ## General Information and Mandatory Information
 
