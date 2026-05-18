@@ -14,7 +14,7 @@ E-Mail: [info@msk-scripts.de](mailto:info@msk-scripts.de)
 **Umsatzsteuer-Identifikationsnummer gem. § 27a UStG:**  
 DE364543992
 
-**Hinweis nach § 19 UStG:**
+**Hinweis nach § 19 UStG:**  
 Gemäß § 19 UStG wird keine Umsatzsteuer erhoben und ausgewiesen (Kleinunternehmerregelung).
 
 ---
