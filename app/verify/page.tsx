@@ -1,6 +1,7 @@
-import { cookies }       from 'next/headers';
-import { parseSession }  from '@/lib/session';
-import VerifyClient      from './VerifyClient';
+import { cookies, headers } from 'next/headers';
+import { parseSession }     from '@/lib/session';
+import { LANG_COOKIE_NAME, resolveLang } from '@/lib/lang';
+import VerifyClient         from './VerifyClient';
 
 export const metadata = {
   title: 'Verify Server – MSK Scripts',
@@ -14,14 +15,20 @@ export default async function VerifyPage({
 }) {
   const params      = await searchParams;
   const cookieStore = await cookies();
+  const headerStore = await headers();
   const sessionRaw  = cookieStore.get('msk_verify_session')?.value;
   const session     = sessionRaw ? parseSession(sessionRaw) : null;
+  const initialLang = resolveLang(
+    cookieStore.get(LANG_COOKIE_NAME)?.value,
+    headerStore.get('accept-language'),
+  );
 
   return (
     <VerifyClient
       session={session}
       step={params.step ?? null}
       errorCode={params.error ?? null}
+      initialLang={initialLang}
     />
   )
 }

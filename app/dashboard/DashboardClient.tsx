@@ -1,12 +1,13 @@
 'use client'
 
-import { useState }  from 'react'
+import { useEffect, useState } from 'react'
 import dynamic        from 'next/dynamic'
 import {
   Globe, CheckCircle, AlertCircle, Clock, Trash2,
   ExternalLink, RefreshCw, Loader2, Info, LogOut,
 } from 'lucide-react'
 import { dashboardTranslations, type Lang } from '@/lib/i18n'
+import { setLangCookie } from '@/lib/lang'
 import type { Tier } from '@/lib/tiers'
 
 const BotConfigEditor = dynamic(() => import('@/components/BotConfigEditor'), { ssr: false })
@@ -41,8 +42,9 @@ interface Guild {
 }
 
 interface Props {
-  guild:    Guild
-  serverIp: string
+  guild:       Guild
+  serverIp:    string
+  initialLang: Lang
 }
 
 // ── Language Toggle ────────────────────────────────────────────────────────────
@@ -84,9 +86,12 @@ function StatusBadge({ status, t }: { status: Guild['domain_status']; t: { activ
 
 // ── Main Component ─────────────────────────────────────────────────────────────
 
-export default function DashboardClient({ guild, serverIp }: Props) {
-  const [lang, setLang]                               = useState<Lang>('en')
+export default function DashboardClient({ guild, serverIp, initialLang }: Props) {
+  const [lang, setLang]                               = useState<Lang>(initialLang)
   const t                                             = dashboardTranslations[lang]
+
+  useEffect(() => { setLangCookie(lang) }, [lang])
+
   const hasPremium                                    = guild.tier === 'premium' || guild.tier === 'premium_plus'
   const [domain, setDomain]                           = useState(guild.custom_domain ?? '')
   const [domainStatus, setDomainStatus]               = useState<Guild['domain_status']>(guild.domain_status)

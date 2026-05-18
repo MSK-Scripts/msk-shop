@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { CheckCircle, Github, Copy, Check, AlertCircle, Loader2, ExternalLink, Globe, RefreshCw, LayoutDashboard } from 'lucide-react'
 import type { DiscordGuild, VerifySession } from '@/lib/session'
 import { translations, type Lang } from '@/lib/i18n'
+import { setLangCookie } from '@/lib/lang'
 import type { Tier } from '@/lib/tiers'
 
 // ── Language Toggle ────────────────────────────────────────────────────────────
@@ -105,9 +106,10 @@ function ErrorBanner({ message }: { message: string }) {
 // ── Main Component ─────────────────────────────────────────────────────────────
 
 interface Props {
-  session:   VerifySession | null
-  step:      string | null
-  errorCode: string | null
+  session:     VerifySession | null
+  step:        string | null
+  errorCode:   string | null
+  initialLang: Lang
 }
 
 const TIER_LABELS: Record<string, { en: string; de: string }> = {
@@ -116,10 +118,13 @@ const TIER_LABELS: Record<string, { en: string; de: string }> = {
   premium_plus: { en: 'Premium+',      de: 'Premium+' },
 }
 
-export default function VerifyClient({ session, step: _step, errorCode }: Props) {
+export default function VerifyClient({ session, step: _step, errorCode, initialLang }: Props) {
   const router                                  = useRouter()
-  const [lang, setLang]                         = useState<Lang>('en')
+  const [lang, setLang]                         = useState<Lang>(initialLang)
   const t                                       = translations[lang]
+
+  useEffect(() => { setLangCookie(lang) }, [lang])
+
   const [selectedGuildId, setSelectedGuildId]   = useState<string>('')
   const [loading, setLoading]                   = useState(false)
   const [dashboardLoading, setDashboardLoading] = useState(false)

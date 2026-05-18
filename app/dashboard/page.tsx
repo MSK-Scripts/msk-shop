@@ -1,7 +1,8 @@
-import { cookies }              from 'next/headers';
+import { cookies, headers }     from 'next/headers';
 import { redirect }             from 'next/navigation';
 import { parseDashboardSession } from '@/lib/dashboardSession';
 import { queryOne }              from '@/lib/db';
+import { LANG_COOKIE_NAME, resolveLang } from '@/lib/lang';
 import DashboardClient          from './DashboardClient';
 import type { Tier }            from '@/lib/tiers';
 
@@ -20,6 +21,7 @@ interface GuildRow {
 
 export default async function DashboardPage() {
   const cookieStore = await cookies();
+  const headerStore = await headers();
   const token       = cookieStore.get('msk_dashboard_session')?.value;
   const session     = token ? parseDashboardSession(token) : null;
 
@@ -37,12 +39,17 @@ export default async function DashboardPage() {
     redirect('/verify');
   }
 
-  const serverIp = process.env.SERVER_PUBLIC_IP ?? '';
+  const serverIp    = process.env.SERVER_PUBLIC_IP ?? '';
+  const initialLang = resolveLang(
+    cookieStore.get(LANG_COOKIE_NAME)?.value,
+    headerStore.get('accept-language'),
+  );
 
   return (
     <DashboardClient
       guild={guild}
       serverIp={serverIp}
+      initialLang={initialLang}
     />
   );
 }

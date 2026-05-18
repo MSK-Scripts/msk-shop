@@ -1,14 +1,17 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { ChevronDown } from 'lucide-react'
+import { setLangCookie } from '@/lib/lang'
+import type { Lang } from '@/lib/i18n'
 
 interface Props {
   htmlEn: string
   htmlDe: string
   breadcrumb: string
   href: string
+  initialLang: Lang
 }
 
 const languages = [
@@ -16,9 +19,11 @@ const languages = [
   { code: 'de', label: 'Deutsch', flag: '🇩🇪' },
 ]
 
-export function LegalContent({ htmlEn, htmlDe, breadcrumb, href }: Props) {
-  const [lang, setLang] = useState<'en' | 'de'>('en')
+export function LegalContent({ htmlEn, htmlDe, breadcrumb, href, initialLang }: Props) {
+  const [lang, setLang] = useState<Lang>(initialLang)
   const [open, setOpen] = useState(false)
+
+  useEffect(() => { setLangCookie(lang) }, [lang])
 
   const html = lang === 'en' ? htmlEn : htmlDe
   const current = languages.find(l => l.code === lang)!
@@ -52,7 +57,7 @@ export function LegalContent({ htmlEn, htmlDe, breadcrumb, href }: Props) {
                 {languages.map(l => (
                   <button
                     key={l.code}
-                    onClick={() => { setLang(l.code as 'en' | 'de'); setOpen(false) }}
+                    onClick={() => { setLang(l.code as Lang); setOpen(false) }}
                     className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs transition-colors ${
                       lang === l.code
                         ? 'text-accent bg-accent/10'

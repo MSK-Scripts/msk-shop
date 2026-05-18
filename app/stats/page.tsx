@@ -1,5 +1,7 @@
+import { cookies, headers }   from 'next/headers'
 import { query, queryOne }    from '@/lib/db'
 import { getIgnoredApiKeys } from '@/lib/statsIgnore'
+import { LANG_COOKIE_NAME, resolveLang } from '@/lib/lang'
 import StatsClient            from './StatsClient'
 import type { Stats }         from './StatsClient'
 
@@ -71,6 +73,14 @@ async function loadStats(): Promise<Stats> {
 }
 
 export default async function StatsPage() {
-  const stats = await loadStats()
-  return <StatsClient stats={stats} />
+  const [stats, cookieStore, headerStore] = await Promise.all([
+    loadStats(),
+    cookies(),
+    headers(),
+  ])
+  const initialLang = resolveLang(
+    cookieStore.get(LANG_COOKIE_NAME)?.value,
+    headerStore.get('accept-language'),
+  )
+  return <StatsClient stats={stats} initialLang={initialLang} />
 }

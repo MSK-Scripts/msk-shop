@@ -174,6 +174,18 @@ The browser's **localStorage** is used to store the basket identifier. This data
 
 **sessionStorage** is used to temporarily store FiveM and Discord authentication status during the Tebex checkout flow. The data is automatically deleted when the browser tab is closed.
 
+### Language Preference Cookie
+
+On the pages **/terms** (legal texts), **/stats**, **/verify**, and **/dashboard**, a technically necessary cookie is set to remember your chosen display language (German or English) across pages:
+
+| Cookie name | Purpose | Duration |
+|---|---|---|
+| `msk_lang` | Stores the selected display language (`en` or `de`) | 1 year |
+
+On your first visit, the language is detected automatically from your browser's `Accept-Language` header. As soon as you switch the language manually, your choice is stored in this cookie. The cookie is `SameSite=Lax` and is transmitted exclusively over HTTPS (`Secure`). It is **not httpOnly**, so the selection can be toggled directly in the browser without an additional server round-trip.
+
+**Legal basis:** Art. 6(1)(f) GDPR — legitimate interest in providing a consistent language presentation (technically necessary preference cookie, no tracking function).
+
 ### Tracking and Analytics
 
 This website uses **no** tracking cookies, analytics tools (e.g. Google Analytics), or advertising technologies. A cookie consent banner is not required, as no non-essential cookies are set.
@@ -309,6 +321,7 @@ Our homepage displays the current online member count of our Discord server. The
 | OAuth state cookie | 10 minutes |
 | Verify session cookie | 1 hour |
 | Dashboard session cookie | 30 days |
+| Language preference cookie (`msk_lang`) | 1 year (or until cleared by the user) |
 | Ticket Bot account data (guild_id, api_key, github_username, discord_user_id, tier) | Until deletion request |
 | Rate limiting data | 1 hour (rolling window) |
 | Transcript HTML files | 30 days (Basic) / 60 days (Premium) / 120 days (Premium+) |

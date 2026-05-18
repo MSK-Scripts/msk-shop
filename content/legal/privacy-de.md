@@ -174,6 +174,18 @@ Der **localStorage** des Browsers wird zur Speicherung der Warenkorb-Kennung ver
 
 Der **sessionStorage** wird zur vorübergehenden Speicherung des FiveM- und Discord-Authentifizierungsstatus während des Tebex-Checkout-Ablaufs verwendet. Die Daten werden beim Schließen des Browser-Tabs automatisch gelöscht.
 
+### Sprachpräferenz-Cookie
+
+Auf den Seiten **/terms** (Rechtstexte), **/stats**, **/verify** und **/dashboard** wird ein technisch notwendiges Cookie gesetzt, um Ihre gewählte Anzeigesprache (Deutsch oder Englisch) seitenübergreifend zu speichern:
+
+| Cookie-Name | Zweck | Dauer |
+|---|---|---|
+| `msk_lang` | Speichert die gewählte Anzeigesprache (`en` oder `de`) | 1 Jahr |
+
+Beim ersten Besuch wird die Sprache anhand des `Accept-Language`-Headers Ihres Browsers automatisch erkannt. Sobald Sie die Sprache manuell umschalten, wird Ihre Auswahl in diesem Cookie gespeichert. Das Cookie ist `SameSite=Lax` und wird ausschließlich über HTTPS übertragen (`Secure`). Es ist **nicht httpOnly**, damit die Auswahl direkt im Browser ohne zusätzlichen Server-Roundtrip umgeschaltet werden kann.
+
+**Rechtsgrundlage:** Art. 6 Abs. 1 lit. f DSGVO — berechtigtes Interesse an einer konsistenten Sprachdarstellung (technisch notwendiges Präferenz-Cookie, keine Tracking-Funktion).
+
 ### Tracking und Analyse
 
 Diese Website verwendet **keine** Tracking-Cookies, Analysewerkzeuge (z.B. Google Analytics) oder Werbetechnologien. Ein Cookie-Hinweis-Banner ist nicht erforderlich, da keine nicht notwendigen Cookies gesetzt werden.
@@ -309,6 +321,7 @@ Unsere Startseite zeigt die aktuelle Online-Mitgliederzahl unseres Discord-Serve
 | OAuth-State-Cookie | 10 Minuten |
 | Verify-Session-Cookie | 1 Stunde |
 | Dashboard-Session-Cookie | 30 Tage |
+| Sprachpräferenz-Cookie (`msk_lang`) | 1 Jahr (oder bis zur Löschung durch den Nutzer) |
 | Ticket Bot Kontodaten (guild_id, api_key, github_username, discord_user_id, tier) | Bis zur Löschanfrage |
 | Rate-Limiting-Daten | 1 Stunde (gleitendes Fenster) |
 | Transkript-HTML-Dateien | 30 Tage (Basic) / 60 Tage (Premium) / 120 Tage (Premium+) |

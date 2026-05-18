@@ -1,8 +1,9 @@
 'use client'
 
-import { useState }            from 'react'
+import { useEffect, useState }  from 'react'
 import { FileText, Key, HardDrive, Paperclip, Github, BarChart3 } from 'lucide-react'
 import { statsTranslations, type Lang } from '@/lib/i18n'
+import { setLangCookie }         from '@/lib/lang'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -130,9 +131,11 @@ function TierBreakdown({ tiers, total, label, lang }: {
 
 // ── Main Component ─────────────────────────────────────────────────────────────
 
-export default function StatsClient({ stats }: { stats: Stats }) {
-  const [lang, setLang] = useState<Lang>('en')
+export default function StatsClient({ stats, initialLang }: { stats: Stats; initialLang: Lang }) {
+  const [lang, setLang] = useState<Lang>(initialLang)
   const t = statsTranslations[lang]
+
+  useEffect(() => { setLangCookie(lang) }, [lang])
 
   const cards = [
     { icon: FileText,  label: t.card_transcripts,    value: formatNum(stats.transcripts, lang),        sub: t.card_transcripts_sub,    accent: true  },
