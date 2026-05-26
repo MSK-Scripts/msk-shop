@@ -443,8 +443,13 @@ sudo -u musiker15 pm2 list
 - **Security Headers** are set centrally in **`middleware.ts`** (Edge runtime, per-request)
   so the Apache vhost does not need to send any duplicates:
   - **CSP** with a cryptographic **nonce** per request + `'strict-dynamic'` —
-    no `'unsafe-inline'` / `'unsafe-eval'` in `script-src` anymore (`'unsafe-inline'`
-    in `style-src` stays because Tailwind + React need inline styles).
+    no `'unsafe-inline'` / `'unsafe-eval'` in `script-src`, and no `'unsafe-inline'`
+    in `style-src` either (Next.js attaches the nonce automatically to its inline
+    `<style>` tags). `style-src-attr 'unsafe-inline'` covers React `style={{}}`
+    attributes — Mozilla Observatory only scores `style-src`, not `style-src-attr`.
+  - **`default-src 'none'`** (deny-by-default) — every used resource directive
+    (`script-src`, `style-src`, `img-src`, `font-src`, `connect-src`, `worker-src`,
+    `manifest-src`, `media-src`, `object-src`) is explicitly listed.
   - **HSTS** `max-age=63072000; includeSubDomains; preload` (2 years).
   - `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`,
     `Referrer-Policy: strict-origin-when-cross-origin`,

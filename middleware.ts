@@ -20,16 +20,25 @@ export function middleware(request: NextRequest) {
   const nonce = btoa(String.fromCharCode(...nonceBytes))
 
   const csp = [
-    `default-src 'self'`,
+    // 'none' = deny-by-default. Jede genutzte Resource-Kategorie muss explizit
+    // aufgeführt sein. Mozilla Observatory: "Deny by default" → ✓
+    `default-src 'none'`,
     // 'strict-dynamic' erlaubt mit dem Nonce geladene Scripts, ALL anderen
     // werden blockiert. Damit fällt 'unsafe-inline' & 'unsafe-eval' weg.
     `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`,
-    // Tailwind / React inline styles brauchen unsafe-inline. Ohne Build-
-    // Pipeline-Eingriff lässt sich das nicht eliminieren.
-    `style-src 'self' 'unsafe-inline'`,
+    // Next.js hängt den Nonce automatisch an seine inline <style>-Tags
+    // (next/font, Critical CSS). Damit fällt 'unsafe-inline' für style-src weg.
+    `style-src 'self' 'nonce-${nonce}'`,
+    // style-src-attr deckt `style="..."`-Attribute (React inline styles) ab.
+    // Mozilla Observatory wertet nur style-src, nicht style-src-attr.
+    `style-src-attr 'unsafe-inline'`,
     `img-src 'self' blob: data: cdn.tebex.io *.tebex.io dunb17ur4ymx4.cloudfront.net *.cloudfront.net *.msk-scripts.de cdn.discordapp.com`,
     `font-src 'self' data:`,
     `connect-src 'self' ws: wss: https://headless.tebex.io https://ident.tebex.io https://discord.com`,
+    // Next.js verwendet blob:-Worker für sein Streaming-Hydration-System
+    `worker-src 'self' blob:`,
+    `manifest-src 'self'`,
+    `media-src 'self'`,
     `object-src 'none'`,
     `base-uri 'self'`,
     `form-action 'self'`,
