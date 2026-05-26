@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import { headers } from 'next/headers'
 import './globals.css'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
@@ -51,7 +52,13 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // headers() opt-in zu Dynamic Rendering — Voraussetzung dafür, dass Next.js
+  // den Nonce aus middleware.ts in seine internen Hydration-Scripts injiziert.
+  // Ohne diesen Aufruf bliebe das Root-Layout statisch und die CSP würde alle
+  // Next.js-Scripts blockieren.
+  await headers()
+
   return (
     <html lang="en" className={inter.variable}>
       <body className="flex flex-col min-h-screen">
