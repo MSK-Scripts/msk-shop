@@ -57,7 +57,7 @@ A headless storefront for [MSK Scripts](https://www.msk-scripts.de) — built wi
 - 🔒 Security headers, rate limiting, path traversal protection, signed session cookies
 - 🛡️ Nonce-based CSP via Edge middleware (`'strict-dynamic'`, no `unsafe-inline`/`unsafe-eval` in `script-src`)
 - 🌐 Apache2 reverse proxy with HSTS (2 years + preload) and centralized security headers
-- 🔧 Maintenance page included (`public/maintenance.html`)
+- 🔧 Apache fallback page for 502/503 errors (`under-construction.html`, server-only)
 - 🚀 Auto-deploy via GitHub Actions on push to `main`
 
 ---
@@ -137,7 +137,8 @@ lib/
 ├── config.ts               All shop configuration (packages, badges, news popup, etc.)
 ├── dashboardSession.ts     Signed dashboard session cookies (guildId)
 ├── db.ts                   mysql2 connection pool (singleton) + query/queryOne wrappers
-├── i18n.ts                 Language helpers (EN / DE)
+├── i18n.ts                 Language helpers (EN / DE) + translation tables
+├── lang.ts                 Language detection (cookie + Accept-Language) + setLangCookie helper
 ├── markdown.ts             Markdown → HTML renderer (tables, lists, links, code)
 ├── rateLimit.ts            In-memory rate limiter for API routes (per IP)
 ├── session.ts              Signed verify session cookies (HMAC-SHA256) + OAuth state
@@ -153,8 +154,10 @@ store/
 public/
 ├── logo.png                Shop logo
 ├── favicon.ico
-├── maintenance.html        Maintenance page (serve via Apache when needed)
 └── *.png                   Custom package banner images
+
+types/
+└── tebex.ts                TypeScript types for the Tebex API (Category, Package, Basket)
 
 scripts/
 ├── cleanup.js              Housekeeping script (expired transcripts etc.) — daily cron
@@ -469,45 +472,31 @@ sudo -u musiker15 pm2 list
 
 ## Design / Styling
 
-Tailwind palette (`tailwind.config.ts`) — dark-themed with MSK green + cool teal accent
-(frontend overhaul 2026-05):
+Tailwind palette (`tailwind.config.ts`) — dark theme with MSK green accent:
 
-| Token | Value | Purpose |
-|---|---|---|
-| `bg` | `#101113` | Page background (cool undertone) |
-| `surface` | `#17191c` | Navbar, footer, cards |
-| `surface2` | `#1e2125` | Inputs, inner surfaces |
-| `elevated` | `#26292e` | Dropdowns, popovers, hover |
-| `border` | `#313439` | Default border |
-| `borderlt` | `#232529` | Subtle border |
-| `accent` | `#5eb131` | **MSK green — brand**, primary CTAs |
-| `accenthov` | `#4e9827` | Primary button hover BG |
-| `accent2` | `#34d399` | Teal — glow shadows, gradients (used sparingly) |
-| `text` | `#ecedee` | Primary text |
-| `muted` | `#9a9ca3` | Secondary text |
-| `dim` | `#62656d` | Tertiary text / captions |
-| `danger` | `#e05c4b` | Errors, sale badges |
-| `discord` | `#5865F2` | Discord button |
+| Token | Value | Token | Value |
+|---|---|---|---|
+| `bg` | `#1b1b1d` | `text` | `#e3e3e3` |
+| `surface` | `#242526` | `muted` | `#8d9096` |
+| `surface2` | `#2a2b2e` | `dim` | `#5c6370` |
+| `border` | `#3d3d3f` | `accent` | `#5eb131` |
+| `borderlt` | `#2e2f31` | `accenthov` | `#4e9827` |
+| `danger` | `#e05c4b` | `discord` | `#5865F2` |
 
-**Fonts:** Inter (`--font-inter`) for body/UI, Space Mono (`--font-space-mono`)
-for `.msk-label`, `.msk-chip`, prices, code — both self-hosted via `next/font/google`.
-
-**Breakpoints:** Tailwind defaults + `xs: 480px` for finer phone granularity.
-
-**Shadows:** `shadow-soft` (soft card shadow), `shadow-glow` (green glow for
-active/hover accent buttons).
-
-**Animations:** `animate-fade-up`, `animate-slide-in`, `animate-pop` —
-respect `prefers-reduced-motion`.
+**Font:** Inter (`--font-inter`), self-hosted via `next/font/google` — see
+`app/layout.tsx`. Tailwind uses it as the `font-sans` default.
 
 **Utility classes** in `app/globals.css` (`@layer components`):
 - Buttons: `msk-btn-primary`, `msk-btn-ghost`, `msk-btn-discord`
-- Surfaces: `msk-card`, `msk-panel`, `msk-panel-grad`
+- Surface: `msk-card`
 - Form: `msk-input`
-- Labels: `msk-label`, `msk-chip` / `msk-badge`, `msk-eyebrow`
-- Headings: `msk-section-title`
+- Labels: `msk-badge`, `msk-label`
+- Heading: `msk-section-title`
 
-All buttons use `min-h-[44px]` for proper mobile tap targets.
+Theme-specific styles also in `globals.css`:
+- `.tebex-description` — renders Tebex HTML (`dangerouslySetInnerHTML`) readable
+- `.legal-content` — renders the Markdown legal pages (h1–h3, lists, tables, code)
+- CodeMirror overrides for the Bot Config editor (`.cm-editor`, `.cm-scroller`)
 
 ---
 
