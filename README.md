@@ -55,7 +55,8 @@ A headless storefront for [MSK Scripts](https://www.msk-scripts.de) — built wi
   - Live log console with Server-Sent Events streaming PM2 error logs (`tail -F`)
 - 🚪 Dashboard logout endpoint to switch between bots
 - 🔒 Security headers, rate limiting, path traversal protection, signed session cookies
-- 🌐 Apache2 reverse proxy with CSP, HSTS and security headers
+- 🛡️ Nonce-based CSP via Edge middleware (`'strict-dynamic'`, no `unsafe-inline`/`unsafe-eval` in `script-src`)
+- 🌐 Apache2 reverse proxy with HSTS (2 years + preload) and centralized security headers
 - 🔧 Maintenance page included (`public/maintenance.html`)
 - 🚀 Auto-deploy via GitHub Actions on push to `main`
 
@@ -159,6 +160,10 @@ scripts/
 ├── cleanup.js              Housekeeping script (expired transcripts etc.) — daily cron
 ├── vhost-create.sh         Apache2 vhost + Let's-Encrypt SSL setup for custom domains
 └── vhost-delete.sh         Remove Apache2 vhost for custom domains
+
+middleware.ts               Edge middleware — generates a per-request nonce
+                            and sets all security headers (CSP with
+                            'strict-dynamic', HSTS, COOP, CORP, etc.)
 ```
 
 ---
@@ -435,8 +440,22 @@ sudo -u musiker15 pm2 list
   plus database-side per-API-key limiting in `ticketbot_rate_limits`
 - **Path traversal protection** on markdown file reads (allowlist)
 - **URL validation** — redirect URLs are always constructed server-side from `NEXT_PUBLIC_BASE_URL`
-- **CSP / Security Headers** in `next.config.js`: CSP, HSTS (2 years, preload),
-  `X-Content-Type-Options`, `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy`, `Permissions-Policy`
+- **Security Headers** are set centrally in **`middleware.ts`** (Edge runtime, per-request)
+  so the Apache vhost does not need to send any duplicates:
+  - **CSP** with a cryptographic **nonce** per request + `'strict-dynamic'` —
+    no `'unsafe-inline'` / `'unsafe-eval'` in `script-src` anymore (`'unsafe-inline'`
+    in `style-src` stays because Tailwind + React need inline styles).
+  - **HSTS** `max-age=63072000; includeSubDomains; preload` (2 years).
+  - `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`,
+    `Referrer-Policy: strict-origin-when-cross-origin`,
+    `Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()`,
+    `Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Resource-Policy: same-origin`,
+    `X-DNS-Prefetch-Control: on`.
+  - The Apache vhost must `Header always unset` any duplicates from
+    `/etc/apache2/conf-enabled/security.conf` — otherwise headers arrive twice
+    at the client and Mozilla Observatory will refuse to parse them.
+  - The root layout (`app/layout.tsx`) opts into Dynamic Rendering via
+    `await headers()` so Next.js can inject the nonce into its hydration scripts.
 - **Debug route** (`/api/debug`) returns 404 in production
 - **GitHub Sponsors webhook** is verified via HMAC-SHA256 signature
 - **OAuth flows** use a random `state` token (CSRF protection)
@@ -445,20 +464,45 @@ sudo -u musiker15 pm2 list
 
 ## Design / Styling
 
-Tailwind palette (`tailwind.config.ts`) — dark-themed with green accent:
+Tailwind palette (`tailwind.config.ts`) — dark-themed with MSK green + cool teal accent
+(frontend overhaul 2026-05):
 
-| Token | Value | Token | Value |
-|---|---|---|---|
-| `bg` | `#1b1b1d` | `text` | `#e3e3e3` |
-| `surface` | `#242526` | `muted` | `#8d9096` |
-| `surface2` | `#2a2b2e` | `dim` | `#5c6370` |
-| `border` | `#3d3d3f` | `accent` | `#5eb131` |
-| `borderlt` | `#2e2f31` | `accenthov` | `#4e9827` |
-| `danger` | `#e05c4b` | `discord` | `#5865F2` |
+| Token | Value | Purpose |
+|---|---|---|
+| `bg` | `#101113` | Page background (cool undertone) |
+| `surface` | `#17191c` | Navbar, footer, cards |
+| `surface2` | `#1e2125` | Inputs, inner surfaces |
+| `elevated` | `#26292e` | Dropdowns, popovers, hover |
+| `border` | `#313439` | Default border |
+| `borderlt` | `#232529` | Subtle border |
+| `accent` | `#5eb131` | **MSK green — brand**, primary CTAs |
+| `accenthov` | `#4e9827` | Primary button hover BG |
+| `accent2` | `#34d399` | Teal — glow shadows, gradients (used sparingly) |
+| `text` | `#ecedee` | Primary text |
+| `muted` | `#9a9ca3` | Secondary text |
+| `dim` | `#62656d` | Tertiary text / captions |
+| `danger` | `#e05c4b` | Errors, sale badges |
+| `discord` | `#5865F2` | Discord button |
 
-**Font:** Inter (self-hosted, `--font-inter`).
+**Fonts:** Inter (`--font-inter`) for body/UI, Space Mono (`--font-space-mono`)
+for `.msk-label`, `.msk-chip`, prices, code — both self-hosted via `next/font/google`.
+
+**Breakpoints:** Tailwind defaults + `xs: 480px` for finer phone granularity.
+
+**Shadows:** `shadow-soft` (soft card shadow), `shadow-glow` (green glow for
+active/hover accent buttons).
+
+**Animations:** `animate-fade-up`, `animate-slide-in`, `animate-pop` —
+respect `prefers-reduced-motion`.
+
 **Utility classes** in `app/globals.css` (`@layer components`):
-`msk-btn-primary`, `msk-btn-ghost`, `msk-btn-discord`, `msk-card`, `msk-input`, `msk-badge`, `msk-label`, `msk-section-title`.
+- Buttons: `msk-btn-primary`, `msk-btn-ghost`, `msk-btn-discord`
+- Surfaces: `msk-card`, `msk-panel`, `msk-panel-grad`
+- Form: `msk-input`
+- Labels: `msk-label`, `msk-chip` / `msk-badge`, `msk-eyebrow`
+- Headings: `msk-section-title`
+
+All buttons use `min-h-[44px]` for proper mobile tap targets.
 
 ---
 
