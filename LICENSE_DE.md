@@ -5,9 +5,10 @@
 
 Diese Lizenz regelt die Nutzung, den Zugriff und die Weitergabe des gesamten Quellcodes, des Designs, der Grafiken, der Benutzeroberflächen, der Logik und aller sonstigen Bestandteile der folgenden Projekte (nachfolgend „das Projekt"):
 
-- MSK Website
-- MSK Shop
-- MSK Ticketbot (einschließlich Verify-System und Dashboard)
+- MSK Shop/Website
+- MSK Documentation
+- MSK Ticketbot (lediglich das Verify/Transcript System)
+- Musiker15 Website
 - Alle zugehörigen Konfigurationsdateien, Skripte und Assets
 
 Durch den Zugriff auf dieses Repository – ob durch Klonen, Forken, Lesen oder anderweitig – erklärst du dich mit den nachfolgenden Bedingungen einverstanden.
