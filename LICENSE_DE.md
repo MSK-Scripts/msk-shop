@@ -3,15 +3,16 @@
 
 > **Copyright (c) 2026 MSK Scripts — Alle Rechte vorbehalten.**
 
-Diese Lizenz regelt die Nutzung, den Zugriff und die Weitergabe des gesamten Quellcodes, des Designs, der Grafiken, der Benutzeroberflächen, der Logik und aller sonstigen Bestandteile der folgenden Projekte (nachfolgend „das Projekt"):
+Diese Lizenz regelt die Nutzung, den Zugriff und die Weitergabe des gesamten Quellcodes, des Designs, der Grafiken, der Benutzeroberflächen, der Logik und aller sonstigen Bestandteile jedes Projekts (nachfolgend „das Projekt"), das unter der **MSK-Scripts GitHub-Organisation** ([github.com/MSK-Scripts](https://github.com/MSK-Scripts)) oder vom Urheber unter den Namen *musiker15* / *Moritz Kohm* veröffentlicht wird — **es sei denn, das jeweilige Repository enthält ausdrücklich eine andere Lizenzdatei (`LICENSE`, `LICENSE.md` oder vergleichbar); in diesem Fall hat die im Repository hinterlegte Lizenz Vorrang vor dieser Lizenz.**
 
-- MSK Shop/Website
+Hierzu zählen — beispielhaft und nicht abschließend — insbesondere die folgenden, aktuell gepflegten Projekte:
+
+- MSK Shop / MSK Website
 - MSK Documentation
-- MSK Ticketbot (lediglich das Verify/Transcript System)
-- Musiker15 Website
+- MSK Ticketbot (lediglich das Verify- / Transcript-System)
 - Alle zugehörigen Konfigurationsdateien, Skripte und Assets
 
-Durch den Zugriff auf dieses Repository – ob durch Klonen, Forken, Lesen oder anderweitig – erklärst du dich mit den nachfolgenden Bedingungen einverstanden.
+Durch den Zugriff auf ein von dieser Lizenz erfasstes Repository — ob durch Klonen, Forken, Lesen oder anderweitig — erklärst du dich mit den nachfolgenden Bedingungen einverstanden.
 
 📄 [License (EN)](LICENSE.md) · [License (DE)](LICENSE_DE.md)
 
