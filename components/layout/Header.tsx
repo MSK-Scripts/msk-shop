@@ -22,14 +22,11 @@ interface NavItem {
 }
 
 const NAV_ITEMS_PRIMARY: NavItem[] = [
-  { label: 'Home',     href: '/' },
-  //{ label: 'Packages', href: '/packages' },
+  { label: 'Home', href: '/' },
 ]
 
 const NAV_ITEMS_SECONDARY: NavItem[] = [
-  //{ label: 'Stats',     href: '/stats' },
-  //{ label: 'Verify',    href: '/verify' },
-  { label: 'Dashboard', href: '/dashboard' },
+  { label: 'Ticket Bot', href: '/ticketbot' },
 ]
 
 function HeaderInner() {
