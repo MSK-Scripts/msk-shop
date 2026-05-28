@@ -8,7 +8,7 @@ const KPIS: Kpi[] = [
   { number: '500', emphasis: '+', label: 'Customers' },
   { number: '20',  emphasis: '+', label: 'Resources' },
   { number: '24/7',             label: 'Discord Support' },
-  { number: 'ESX · QB · ox',    label: 'All Frameworks' },
+  { number: 'ESX · QB',    label: 'Frameworks' },
 ]
 
 export function TrustBar() {
