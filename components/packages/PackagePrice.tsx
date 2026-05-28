@@ -26,13 +26,13 @@ export function PackagePrice({ packageId, basePrice, totalPrice, currency }: Pro
     <div className="flex flex-wrap items-baseline gap-2">
       {hasDiscount && (
         <span className="font-mono text-sm text-[var(--color-muted-foreground)] line-through">
-          €{effectiveBase.toFixed(2)}
+          {effectiveBase.toFixed(2)}€
         </span>
       )}
       <span
         className={`font-mono text-3xl font-bold tracking-tight ${isFree ? 'text-[var(--color-muted-foreground)]' : 'text-[var(--color-primary)]'}`}
       >
-        {isFree ? 'Free' : `€${effectiveTotal.toFixed(2)}`}
+        {isFree ? 'Free' : `${effectiveTotal.toFixed(2)}€`}
       </span>
       <span className="text-xs text-[var(--color-muted-foreground)]">{currency}</span>
       {hasDiscount && <Badge variant="sale">Sale −{discountPct}%</Badge>}
