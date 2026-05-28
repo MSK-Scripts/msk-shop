@@ -151,7 +151,7 @@ export function SearchDialog({ open, onClose }: Props) {
                       <div className="min-w-0 flex-1">
                         <div className="truncate text-sm font-semibold">{pkg.name}</div>
                         <div className="font-mono text-xs text-[var(--color-primary)]">
-                          {isFree ? 'Free' : `€${totalPrice.toFixed(2)}`}
+                          {isFree ? 'Free' : `${totalPrice.toFixed(2)}€`}
                         </div>
                       </div>
                       <ArrowRight className="h-3.5 w-3.5 shrink-0 text-[var(--color-muted-foreground)]" />

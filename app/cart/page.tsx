@@ -37,7 +37,7 @@ export default function CartPage() {
 
   function formatPrice(price: number | undefined | null): string {
     const p = price ?? 0
-    return p === 0 ? 'Free' : `€${p.toFixed(2)}`
+    return p === 0 ? 'Free' : `${p.toFixed(2)}€`
   }
 
   return (
@@ -106,7 +106,7 @@ export default function CartPage() {
                     </p>
                     {itemHasDiscount && (
                       <p className="mt-0.5 font-mono text-xs text-[var(--color-muted-foreground)] line-through">
-                        €{basePrice.toFixed(2)}
+                        {basePrice.toFixed(2)}€
                       </p>
                     )}
                   </div>
@@ -186,13 +186,13 @@ export default function CartPage() {
                     <div className="flex justify-between text-xs">
                       <span className="text-[var(--color-muted-foreground)]">Subtotal</span>
                       <span className="font-mono text-[var(--color-muted-foreground)] line-through">
-                        €{effectiveSubtotal.toFixed(2)}
+                        {effectiveSubtotal.toFixed(2)}€
                       </span>
                     </div>
                     <div className="flex justify-between text-xs">
                       <span className="text-[var(--color-primary)]">Coupon</span>
                       <span className="font-mono font-semibold text-[var(--color-primary)]">
-                        −€{discount.toFixed(2)}
+                        −{discount.toFixed(2)}€
                       </span>
                     </div>
                   </>
@@ -200,7 +200,7 @@ export default function CartPage() {
                 <div className="mt-1 flex items-center justify-between">
                   <span className="font-bold">Total</span>
                   <span className="font-mono text-2xl font-bold tracking-tight text-[var(--color-primary)]">
-                    €{finalTotal.toFixed(2)} <span className="text-xs text-[var(--color-muted-foreground)]">{currency}</span>
+                    {finalTotal.toFixed(2)}€ <span className="text-xs text-[var(--color-muted-foreground)]">{currency}</span>
                   </span>
                 </div>
               </div>

@@ -136,7 +136,7 @@ export function CartDrawer() {
                         )
                       })()}
                       <p className="mt-0.5 font-mono text-xs font-bold text-[var(--color-primary)]">
-                        {itemPrice === 0 ? 'Free' : `€${itemPrice.toFixed(2)}`}
+                        {itemPrice === 0 ? 'Free' : `${itemPrice.toFixed(2)}€`}
                       </p>
                     </div>
                     <Button
@@ -233,7 +233,7 @@ export function CartDrawer() {
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-[var(--color-muted-foreground)]">Subtotal</span>
                     <span className="font-mono text-[var(--color-muted-foreground)] line-through">
-                      €{effectiveSubtotal.toFixed(2)}
+                      {effectiveSubtotal.toFixed(2)}€
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-xs">
@@ -241,7 +241,7 @@ export function CartDrawer() {
                       <Tag className="h-2.5 w-2.5" aria-hidden="true" /> Coupon
                     </span>
                     <span className="font-mono font-semibold text-[var(--color-primary)]">
-                      −€{discount.toFixed(2)}
+                      −{discount.toFixed(2)}€
                     </span>
                   </div>
                 </>
@@ -249,7 +249,7 @@ export function CartDrawer() {
               <div className="flex items-center justify-between">
                 <span className="text-sm font-semibold">Total</span>
                 <span className="font-mono text-lg font-bold text-[var(--color-primary)]">
-                  €{finalTotal.toFixed(2)} <span className="text-xs text-[var(--color-muted-foreground)]">{currency}</span>
+                  {finalTotal.toFixed(2)}€ <span className="text-xs text-[var(--color-muted-foreground)]">{currency}</span>
                 </span>
               </div>
             </div>

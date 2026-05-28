@@ -105,6 +105,20 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
     tags: ['Library for MSK Scripts', 'Utilities'],
   },
   {
+    id: 'mskanban',
+    name: 'MSKanban',
+    description: 'Zero-knowledge encryption, real-time collaboration, offline-first — open source under AGPL-3.0.',
+    image: 'msk_kanban.png',
+    link: 'https://mskanban.msk-scripts.de/',
+    linkLabel: 'View LIVE',
+    secondaryLink: 'https://github.com/MSK-Scripts/mskanban',
+    secondaryLinkLabel: 'GitHub',
+    badges: [
+      { label: 'TypeScript', variant: 'ts' },
+    ],
+    tags: ['Kanban Board', 'Task Management', 'Collaboration'],
+  },
+  {
     id: 'msk-paste',
     name: 'MSK Paste',
     description: 'A simple paste tool for sharing code snippets with your team.',
@@ -131,20 +145,6 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
       { label: 'TypeScript', variant: 'ts' },
     ],
     tags: ['URL Shortening', 'Privacy-Friendly'],
-  },
-  {
-    id: 'kanbanly',
-    name: 'Kanbanly',
-    description: 'Workspaces, Board, Karten mit Labels, Fälligkeiten und Zuweisungen. Gemacht für dich und dein Team.',
-    image: 'kanbanly-banner.png',
-    link: 'https://kanbanly.de/',
-    linkLabel: 'View LIVE',
-    secondaryLink: 'https://github.com/cmdscripts/kanbanly.de',
-    secondaryLinkLabel: 'GitHub',
-    badges: [
-      { label: 'TypeScript', variant: 'ts' },
-    ],
-    tags: ['Kanban Board', 'Task Management', 'Collaboration'],
   },
 
 ]

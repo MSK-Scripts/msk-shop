@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import {
   CheckCircle, Github, Copy, Check, AlertCircle, Loader2,
   ExternalLink, Globe, RefreshCw, LayoutDashboard,
@@ -108,11 +109,12 @@ function DiscordIcon({ size = 20 }: { size?: number }) {
 
 function GuildIcon({ guild }: { guild: DiscordGuild }) {
   if (guild.icon) {
-    // eslint-disable-next-line @next/next/no-img-element
     return (
-      <img
+      <Image
         src={`https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png?size=64`}
         alt={guild.name}
+        width={40}
+        height={40}
         className="h-10 w-10 rounded-full object-cover"
       />
     )

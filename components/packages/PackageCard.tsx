@@ -96,11 +96,11 @@ export function PackageCard({ pkg, tags, badges, description }: Props) {
           <div className="flex flex-col leading-none">
             {hasDiscount && (
               <span className="font-mono text-xs text-[var(--color-muted-foreground)] line-through">
-                €{basePrice.toFixed(2)}
+                {basePrice.toFixed(2)}€
               </span>
             )}
             <span className={`font-mono font-bold tracking-tight ${isFree ? 'text-xl text-[var(--color-muted-foreground)]' : 'text-2xl text-[var(--color-primary)]'}`}>
-              {isFree ? 'Free' : `€${totalPrice.toFixed(2)}`}
+              {isFree ? 'Free' : `${totalPrice.toFixed(2)}€`}
             </span>
           </div>
 
