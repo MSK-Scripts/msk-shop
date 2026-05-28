@@ -69,13 +69,13 @@ export function Hero() {
                 <span className="font-semibold text-[var(--color-info)]">[INFO]</span>{' '}
                 <span>ESX bridge connected</span>{'\n'}
                 <span className="font-semibold text-[var(--color-info)]">[INFO]</span>{' '}
-                <span>msk_garage loaded </span>
+                <span>msk_handcuffs loaded </span>
                 <span className="text-[var(--color-success)]">✓</span>{'\n'}
                 <span className="font-semibold text-[var(--color-info)]">[INFO]</span>{' '}
                 <span>msk_banking loaded </span>
                 <span className="text-[var(--color-success)]">✓</span>{'\n'}
                 <span className="font-semibold text-[var(--color-info)]">[INFO]</span>{' '}
-                <span>msk_jobs loaded </span>
+                <span>msk_vehiclekeys loaded </span>
                 <span className="text-[var(--color-success)]">✓</span>{'\n\n'}
                 <span className="text-[var(--color-muted-foreground)]">{'> 12 vehicles indexed in 42 ms'}</span>{'\n'}
                 <span className="text-[var(--color-muted-foreground)]">{'> NUI rendered'}</span>{'\n\n'}
