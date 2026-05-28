@@ -381,9 +381,9 @@ export default function TicketBotPage() {
               }
             >
               {card.badge && (
-                <Badge variant="primary" className="absolute -top-3 left-1/2 -translate-x-1/2">
+                <span className="absolute -top-3 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-full bg-[var(--color-primary)] px-3 py-1 text-[0.625rem] font-bold uppercase tracking-wider text-[var(--color-primary-foreground)] shadow-sm">
                   {card.badge}
-                </Badge>
+                </span>
               )}
 
               <h3 className="text-lg font-bold tracking-tight">{card.name}</h3>
