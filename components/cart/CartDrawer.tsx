@@ -4,16 +4,20 @@ import { useEffect, useState } from 'react'
 import { X, ShoppingBag, Trash2, Tag, Loader2, ChevronDown } from 'lucide-react'
 import { useCartStore } from '@/store/cart'
 import { useCart } from '@/lib/useCart'
+import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
 
 export function CartDrawer() {
   const { isOpen, closeCart, basket } = useCartStore()
-  const { removePackage, applyCode, removeCode, isLoading, total, subtotal, currency, checkoutUrl, itemCount, giftRecipients } = useCart()
+  const {
+    removePackage, applyCode, removeCode, isLoading,
+    total, subtotal, currency, checkoutUrl, itemCount, giftRecipients,
+  } = useCart()
   const [couponInput, setCouponInput] = useState('')
   const [couponLoading, setCouponLoading] = useState(false)
   const [couponError, setCouponError] = useState('')
   const [showCoupon, setShowCoupon] = useState(false)
 
-  // Coupons derived early — available in handlers too
   const coupons = basket?.coupons ?? []
 
   useEffect(() => {
@@ -52,7 +56,6 @@ export function CartDrawer() {
 
   if (!isOpen) return null
 
-  // Price breakdown
   const finalTotal = basket?.total_price ?? total
   const hasCoupon = coupons.length > 0
   const effectiveSubtotal = subtotal ?? finalTotal
@@ -61,76 +64,91 @@ export function CartDrawer() {
 
   return (
     <>
-      <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" onClick={closeCart} />
+      <div
+        className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+        onClick={closeCart}
+        aria-hidden="true"
+      />
 
-      <div className="fixed top-0 right-0 z-50 h-full w-full max-w-sm bg-surface border-l border-borderlt flex flex-col shadow-2xl">
-
+      <aside
+        className="fixed right-0 top-0 z-50 flex h-full w-full max-w-sm flex-col border-l border-[var(--color-border)] bg-[var(--color-card)] shadow-2xl"
+        role="dialog"
+        aria-label="Shopping cart"
+      >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-borderlt shrink-0">
+        <div className="flex shrink-0 items-center justify-between border-b border-[var(--color-border)] px-5 py-4">
           <div className="flex items-center gap-2">
-            <ShoppingBag size={18} className="text-accent" />
-            <h2 className="text-white font-bold">Cart</h2>
+            <ShoppingBag className="h-4 w-4 text-[var(--color-primary)]" aria-hidden="true" />
+            <h2 className="font-bold">Cart</h2>
             {itemCount > 0 && (
-              <span className="bg-accent text-white text-[10px] font-bold rounded-full px-2 py-0.5">
+              <span className="rounded-full bg-[var(--color-primary)] px-2 py-0.5 text-[0.625rem] font-bold leading-none text-[var(--color-primary-foreground)]">
                 {itemCount}
               </span>
             )}
           </div>
-          <button onClick={closeCart} className="text-muted hover:text-text transition-colors p-1">
-            <X size={20} />
-          </button>
+          <Button variant="ghost" size="icon" onClick={closeCart} aria-label="Close cart" className="h-8 w-8">
+            <X className="h-4 w-4" />
+          </Button>
         </div>
 
         {/* Items */}
         <div className="flex-1 overflow-y-auto px-5 py-4">
           {!basket?.packages || basket.packages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full gap-3 text-center">
-              <ShoppingBag size={40} className="text-dim opacity-50" />
-              <p className="text-dim text-sm">Your cart is empty</p>
-              <button onClick={closeCart} className="msk-btn-primary text-xs px-4 py-2">
-                Browse Packages
-              </button>
+            <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
+              <ShoppingBag className="h-10 w-10 text-[var(--color-muted-foreground)] opacity-50" aria-hidden="true" />
+              <p className="text-sm text-[var(--color-muted-foreground)]">Your cart is empty</p>
+              <Button onClick={closeCart} size="sm">Browse Packages</Button>
             </div>
           ) : (
             <div className="flex flex-col gap-3">
-              {basket.packages.map((item) => {
+              {basket.packages.map(item => {
                 const itemPrice = item.paid_price ?? item.in_basket?.price ?? 0
                 return (
-                  <div key={item.id} className="flex items-center gap-3 p-3 bg-surface2 rounded-lg border border-borderlt">
+                  <div
+                    key={item.id}
+                    className="flex items-center gap-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)] p-3"
+                  >
                     {item.image && (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={item.image} alt={item.name} className="w-12 h-12 rounded object-cover shrink-0" />
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="h-12 w-12 shrink-0 rounded-md object-cover"
+                      />
                     )}
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-white truncate">{item.name}</p>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold">{item.name}</p>
                       {(item.in_basket?.gift_username || item.in_basket?.gift_username_id || giftRecipients[item.id]) && (() => {
                         const gift = giftRecipients[item.id]
                         const name = item.in_basket?.gift_username ?? item.in_basket?.gift_username_id ?? gift?.username
                         const dId = gift?.discordId
                         return (
                           <div className="mt-0.5">
-                            <p className="text-[10px] text-[#5865F2] font-medium">
+                            <p className="text-[0.625rem] font-medium text-[var(--color-discord)]">
                               🎁 Gift for {name}
                             </p>
                             {dId && (
-                              <p className="text-[10px] text-dim font-mono">
+                              <p className="font-mono text-[0.625rem] text-[var(--color-muted-foreground)]">
                                 Discord: {dId}
                               </p>
                             )}
                           </div>
                         )
                       })()}
-                      <p className="text-xs text-accent font-bold mt-0.5">
+                      <p className="mt-0.5 font-mono text-xs font-bold text-[var(--color-primary)]">
                         {itemPrice === 0 ? 'Free' : `€${itemPrice.toFixed(2)}`}
                       </p>
                     </div>
-                    <button
+                    <Button
+                      variant="ghost"
+                      size="icon"
                       onClick={() => removePackage(item.id)}
                       disabled={isLoading}
-                      className="text-dim hover:text-danger transition-colors p-1 shrink-0"
+                      className="h-8 w-8 text-[var(--color-muted-foreground)] hover:text-[var(--color-danger)]"
+                      aria-label={`Remove ${item.name}`}
                     >
-                      <Trash2 size={15} />
-                    </button>
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
                   </div>
                 )
               })}
@@ -140,111 +158,115 @@ export function CartDrawer() {
 
         {/* Footer */}
         {basket?.packages && basket.packages.length > 0 && (
-          <div className="border-t border-borderlt px-5 py-4 flex flex-col gap-3 shrink-0">
+          <div className="flex shrink-0 flex-col gap-3 border-t border-[var(--color-border)] px-5 py-4">
 
             {/* Active coupons */}
             {hasCoupon && (
               <div className="flex flex-col gap-1.5">
-                {coupons.map((c) => {
+                {coupons.map(c => {
                   const code = c.code ?? c.coupon_code ?? ''
                   return (
-                    <div key={code} className="flex items-center justify-between bg-accent/10 border border-accent/20 rounded-lg px-3 py-2">
+                    <div
+                      key={code}
+                      className="flex items-center justify-between rounded-lg border border-[color-mix(in_oklab,var(--color-primary)_30%,var(--color-border))] bg-[color-mix(in_oklab,var(--color-primary)_8%,transparent)] px-3 py-2"
+                    >
                       <div className="flex items-center gap-2">
-                        <Tag size={12} className="text-accent" />
-                        <span className="text-xs text-accent font-mono font-bold">{code}</span>
+                        <Tag className="h-3 w-3 text-[var(--color-primary)]" aria-hidden="true" />
+                        <span className="font-mono text-xs font-bold text-[var(--color-primary)]">{code}</span>
                       </div>
                       <button
-                      onClick={() => removeCode(code)}
+                        onClick={() => removeCode(code)}
                         disabled={isLoading}
-                      title="Remove coupon"
-                      className="text-dim hover:text-danger transition-colors disabled:opacity-50"
+                        title="Remove coupon"
+                        className="text-[var(--color-muted-foreground)] transition-colors hover:text-[var(--color-danger)] disabled:opacity-50"
                       >
-                      {isLoading ? <Loader2 size={12} className="animate-spin" /> : <X size={12} />}
+                        {isLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <X className="h-3 w-3" />}
                       </button>
                     </div>
                   )
                 })}
-                {/* Info note removed — coupon can now be removed directly */}
               </div>
             )}
 
-            {/* Coupon input — only show if no coupon active */}
+            {/* Coupon input — nur wenn kein Coupon aktiv */}
             {!hasCoupon && (
               <>
                 <button
                   onClick={() => { setShowCoupon(!showCoupon); setCouponError('') }}
-                  className="flex items-center gap-2 text-xs text-muted hover:text-text transition-colors"
+                  className="flex items-center gap-2 text-xs text-[var(--color-muted-foreground)] transition-colors hover:text-[var(--color-foreground)]"
                 >
-                  <Tag size={13} />
+                  <Tag className="h-3 w-3" aria-hidden="true" />
                   Have a coupon code?
-                  <ChevronDown size={12} className={`ml-auto transition-transform ${showCoupon ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`ml-auto h-3 w-3 transition-transform ${showCoupon ? 'rotate-180' : ''}`} />
                 </button>
 
                 {showCoupon && (
                   <form onSubmit={handleApplyCoupon} className="flex gap-2">
-                    <input
+                    <Input
                       type="text"
                       value={couponInput}
                       onChange={e => { setCouponInput(e.target.value); setCouponError('') }}
-                      placeholder="Enter coupon code..."
-                      className="msk-input text-xs flex-1 py-2"
+                      placeholder="Enter coupon code…"
+                      className="flex-1 py-2 text-xs"
                       autoFocus
                     />
-                    <button
+                    <Button
                       type="submit"
+                      size="sm"
                       disabled={couponLoading || !couponInput.trim()}
-                      className="msk-btn-primary px-3 text-xs py-2 shrink-0"
                     >
-                      {couponLoading ? <Loader2 size={12} className="animate-spin" /> : 'Apply'}
-                    </button>
+                      {couponLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : 'Apply'}
+                    </Button>
                   </form>
                 )}
               </>
             )}
 
             {couponError && (
-              <p className="text-danger text-xs -mt-1">{couponError}</p>
+              <p className="-mt-1 text-xs text-[var(--color-danger)]">{couponError}</p>
             )}
 
-            {/* Price breakdown */}
-            <div className="border-t border-borderlt pt-3 flex flex-col gap-1.5">
+            {/* Price-Breakdown */}
+            <div className="flex flex-col gap-1.5 border-t border-[var(--color-border)] pt-3">
               {hasDiscount && (
                 <>
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted text-xs">Subtotal</span>
-                    <span className="text-muted text-xs line-through">€{effectiveSubtotal.toFixed(2)}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-accent text-xs flex items-center gap-1">
-                      <Tag size={10} /> Coupon
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-[var(--color-muted-foreground)]">Subtotal</span>
+                    <span className="font-mono text-[var(--color-muted-foreground)] line-through">
+                      €{effectiveSubtotal.toFixed(2)}
                     </span>
-                    <span className="text-accent text-xs font-semibold">-€{discount.toFixed(2)}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="flex items-center gap-1 text-[var(--color-primary)]">
+                      <Tag className="h-2.5 w-2.5" aria-hidden="true" /> Coupon
+                    </span>
+                    <span className="font-mono font-semibold text-[var(--color-primary)]">
+                      −€{discount.toFixed(2)}
+                    </span>
                   </div>
                 </>
               )}
               <div className="flex items-center justify-between">
-                <span className="text-white text-sm font-semibold">Total</span>
-                <span className="text-accent font-bold text-lg">
-                  €{finalTotal.toFixed(2)} {currency}
+                <span className="text-sm font-semibold">Total</span>
+                <span className="font-mono text-lg font-bold text-[var(--color-primary)]">
+                  €{finalTotal.toFixed(2)} <span className="text-xs text-[var(--color-muted-foreground)]">{currency}</span>
                 </span>
               </div>
             </div>
 
             {checkoutUrl ? (
-              <a
-                href={checkoutUrl}
-                className="msk-btn-primary w-full justify-center"
-              >
-                Proceed to Checkout
-              </a>
+              <Button asChild className="w-full">
+                <a href={checkoutUrl}>Proceed to Checkout</a>
+              </Button>
             ) : (
-              <button disabled className="msk-btn-primary w-full justify-center opacity-50 cursor-not-allowed">
-                Loading checkout...
-              </button>
+              <Button disabled className="w-full">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Loading checkout…
+              </Button>
             )}
           </div>
         )}
-      </div>
+      </aside>
     </>
   )
 }

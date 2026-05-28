@@ -1,184 +1,525 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
+/* Dark-Mode via class-Variant — wird vom ThemeProvider (next-themes) gesetzt */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ============================================================================
+   MSK Shop — Design-Tokens (Tailwind v4 CSS-First Config)
+   ============================================================================
+   Light-Mode-Tokens sind Default; .dark-Scope (siehe @layer base) überschreibt sie.
+   Inspiriert von GitHub-Dark im Dark-Mode + MSK-Grün als Brand-Accent.
+   ============================================================================ */
+@theme {
+  /* Typografie — 100% lokal über @fontsource-variable */
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+
+  /* Farben — Light-Mode (Default) */
+  --color-background:         #ffffff;
+  --color-foreground:         #0a0a0a;
+  --color-muted:              #f4f4f5;
+  --color-muted-foreground:   #71717a;
+  --color-border:             #e4e4e7;
+  --color-input:              #e4e4e7;
+  --color-ring:               #4ea426;
+  --color-card:               #ffffff;
+  --color-card-foreground:    #0a0a0a;
+
+  /* Brand: MSK-Grün */
+  --color-primary:            #4ea426;   /* etwas tiefer für Light-Mode */
+  --color-primary-foreground: #ffffff;
+  --color-accent:             #5eb131;   /* klassisches MSK-Grün als Highlight */
+  --color-accent-foreground:  #0a0a0a;
+  --color-secondary:          #f4f4f5;
+  --color-secondary-foreground: #18181b;
+
+  /* Funktional */
+  --color-success:            #16a34a;
+  --color-success-foreground: #ffffff;
+  --color-warning:            #f59e0b;
+  --color-warning-foreground: #ffffff;
+  --color-danger:             #dc2626;
+  --color-danger-foreground:  #ffffff;
+  --color-info:               #0284c7;
+  --color-info-foreground:    #ffffff;
+  --color-discord:            #5865F2;
+
+  /* Radien */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+
+  /* Schatten */
+  --shadow-card:       0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-card-hover: 0 8px 24px -8px rgb(0 0 0 / 0.12);
+
+  /* Animationen */
+  --animate-fade-in:    fadeIn 0.2s ease-out;
+  --animate-slide-up:   slideUp 0.3s ease-out;
+  --animate-slide-down: slideDown 0.3s ease-out;
+  --animate-pulse-dot:  pulseDot 2s ease-in-out infinite;
+}
+
+/* ============================================================================
+   Dark-Mode-Tokens — GitHub-Dark inspiriert + MSK-Grün
+   ============================================================================ */
 @layer base {
-  html { scroll-behavior: smooth; }
+  .dark {
+    --color-background:         #0d1117;
+    --color-foreground:         #e6edf3;
+    --color-muted:              #161b22;
+    --color-muted-foreground:   #8b949e;
+    --color-border:             #30363d;
+    --color-input:              #30363d;
+    --color-ring:               #5eb131;
+    --color-card:               #161b22;
+    --color-card-foreground:    #e6edf3;
+
+    --color-primary:            #5eb131;
+    --color-primary-foreground: #ffffff;
+    --color-accent:             #79e84a;
+    --color-accent-foreground:  #0d1117;
+    --color-secondary:          #21262d;
+    --color-secondary-foreground: #e6edf3;
+
+    --color-danger:             #f87171;
+    --color-success:            #4ade80;
+    --color-info:               #38bdf8;
+
+    --shadow-card:       0 1px 2px 0 rgb(0 0 0 / 0.4);
+    --shadow-card-hover: 0 12px 32px -8px rgb(0 0 0 / 0.6);
+  }
+
+  *, *::before, *::after {
+    border-color: var(--color-border);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
 
   body {
-    @apply bg-bg text-text font-sans antialiased;
-    min-height: 100vh;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
   ::selection {
-    background: rgba(94, 177, 49, 0.35);
-    color: #fff;
+    background-color: color-mix(in oklab, var(--color-primary) 35%, transparent);
+    color: var(--color-foreground);
   }
 
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { @apply bg-bg; }
-  ::-webkit-scrollbar-thumb { @apply bg-border rounded; }
-  ::-webkit-scrollbar-thumb:hover { @apply bg-accent; }
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  :target {
+    scroll-margin-top: 5rem;
+  }
 }
 
+/* ============================================================================
+   Keyframes
+   ============================================================================ */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.5; transform: scale(0.85); }
+}
+
+/* ============================================================================
+   Utilities — Container, Eyebrow, Hero-Decor
+   ============================================================================ */
+@utility container-page {
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+@media (min-width: 768px) {
+  .container-page { padding-inline: 2rem; }
+}
+
+@utility container-prose {
+  max-width: 65ch;
+  margin-inline: auto;
+}
+
+/* Eyebrow-Label (kleine MSK-grüne Mono-Akzente über Section-Headlines) */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+.eyebrow::before {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 1px;
+  background: var(--color-primary);
+}
+
+/* Hero-Background — radialer Akzent-Gradient (CSP-konform, keine inline-styles) */
+.hero-decor-gradient {
+  background: radial-gradient(
+    ellipse 60% 50% at 30% 20%,
+    color-mix(in oklab, var(--color-primary) 12%, transparent),
+    transparent 70%
+  );
+}
+
+/* Pulsing dot (Live-Indicator) */
+.pulse-dot {
+  animation: var(--animate-pulse-dot);
+}
+
+/* Skip-Link */
+.skip-link {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 0.5rem 1rem;
+  background: var(--color-background);
+  color: var(--color-foreground);
+  border: 1px solid var(--color-border);
+  transform: translateY(-200%);
+  transition: transform 0.2s;
+  z-index: 100;
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+/* ============================================================================
+   Scrollbars
+   ============================================================================ */
+@media (pointer: fine) {
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: var(--color-muted); }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 5px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-muted-foreground);
+  }
+}
+
+/* ============================================================================
+   Reduced Motion
+   ============================================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================================
+   Tebex-Description Renderer (rendert HTML aus `dangerouslySetInnerHTML`)
+   ============================================================================ */
 @layer components {
-  /* Package description HTML from Tebex — styled without @tailwindcss/typography */
   .tebex-description {
-    @apply text-sm text-muted leading-relaxed;
+    font-size: 0.875rem;
+    color: var(--color-muted-foreground);
+    line-height: 1.7;
   }
-  .tebex-description p {
-    @apply my-3;
+  .tebex-description p { margin-top: 0.75rem; margin-bottom: 0.75rem; }
+  .tebex-description ul { list-style: disc; padding-left: 1.25rem; margin-top: 0.75rem; margin-bottom: 0.75rem; }
+  .tebex-description ol { list-style: decimal; padding-left: 1.25rem; margin-top: 0.75rem; margin-bottom: 0.75rem; }
+  .tebex-description li { margin-bottom: 0.375rem; color: var(--color-muted-foreground); }
+  .tebex-description h1,
+  .tebex-description h2,
+  .tebex-description h3 {
+    color: var(--color-foreground);
+    font-weight: 700;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
   }
-  .tebex-description ul {
-    @apply list-disc pl-5 my-3 space-y-1.5;
-  }
-  .tebex-description ol {
-    @apply list-decimal pl-5 my-3 space-y-1.5;
-  }
-  .tebex-description li {
-    @apply text-muted;
-  }
-  .tebex-description h1, .tebex-description h2, .tebex-description h3 {
-    @apply text-white font-bold mt-6 mb-2;
-  }
-  .tebex-description h1 { @apply text-xl; }
-  .tebex-description h2 { @apply text-lg; }
-  .tebex-description h3 { @apply text-base; }
-  .tebex-description strong {
-    @apply text-white font-semibold;
-  }
-  .tebex-description em {
-    @apply italic text-dim;
-  }
-  .tebex-description a {
-    @apply text-accent hover:underline;
-  }
+  .tebex-description h1 { font-size: 1.25rem; }
+  .tebex-description h2 { font-size: 1.125rem; }
+  .tebex-description h3 { font-size: 1rem; }
+  .tebex-description strong { color: var(--color-foreground); font-weight: 600; }
+  .tebex-description em { font-style: italic; color: var(--color-muted-foreground); }
+  .tebex-description a { color: var(--color-primary); }
+  .tebex-description a:hover { text-decoration: underline; }
   .tebex-description code {
-    @apply bg-surface2 border border-borderlt text-accent text-xs font-mono px-1.5 py-0.5 rounded;
+    background-color: var(--color-muted);
+    border: 1px solid var(--color-border);
+    color: var(--color-primary);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    padding: 0.125rem 0.375rem;
+    border-radius: var(--radius-sm);
   }
   .tebex-description table {
-    @apply w-full text-xs border-collapse my-3;
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.75rem 0;
+    font-size: 0.75rem;
   }
-  .tebex-description table td, .tebex-description table th {
-    @apply border border-borderlt px-3 py-1.5 text-muted;
+  .tebex-description table td,
+  .tebex-description table th {
+    border: 1px solid var(--color-border);
+    padding: 0.375rem 0.75rem;
+    color: var(--color-muted-foreground);
   }
-  .tebex-description table tr:first-child td { @apply text-dim; }
 }
 
+/* ============================================================================
+   Legal-Content Renderer (Markdown-Rechtstexte)
+   ============================================================================ */
 @layer components {
-  /* Legal pages markdown renderer — styled via CSS class, not Tailwind utilities in dynamic HTML */
   .legal-content {
-    @apply text-muted leading-relaxed;
+    color: var(--color-muted-foreground);
+    line-height: 1.7;
   }
   .legal-content h1 {
-    @apply text-3xl font-extrabold text-white mb-4;
+    font-size: 1.875rem;
+    font-weight: 800;
+    color: var(--color-foreground);
+    margin-bottom: 1rem;
   }
   .legal-content h2 {
-    @apply text-white text-lg font-bold mt-10 mb-3 pt-2;
+    color: var(--color-foreground);
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
+    padding-top: 0.5rem;
   }
   .legal-content h3 {
-    @apply text-white font-semibold mt-5 mb-2;
+    color: var(--color-foreground);
+    font-weight: 600;
+    margin-top: 1.25rem;
+    margin-bottom: 0.5rem;
   }
-  .legal-content p {
-    @apply mt-3 mb-5 leading-relaxed;
-  }
-  .legal-content ul {
-    list-style-type: disc;
-    @apply pl-6 mt-3 mb-5;
-  }
-  .legal-content ol {
-    list-style-type: decimal;
-    @apply pl-6 mt-3 mb-5;
-  }
-  .legal-content li {
-    @apply mb-1.5 leading-relaxed;
-  }
-  .legal-content strong {
-    @apply text-white font-semibold;
-  }
-  .legal-content em {
-    @apply italic;
-  }
-  .legal-content a {
-    @apply text-accent hover:underline;
-  }
+  .legal-content p { margin-top: 0.75rem; margin-bottom: 1.25rem; }
+  .legal-content ul { list-style: disc; padding-left: 1.5rem; margin-top: 0.75rem; margin-bottom: 1.25rem; }
+  .legal-content ol { list-style: decimal; padding-left: 1.5rem; margin-top: 0.75rem; margin-bottom: 1.25rem; }
+  .legal-content li { margin-bottom: 0.375rem; line-height: 1.7; }
+  .legal-content strong { color: var(--color-foreground); font-weight: 600; }
+  .legal-content em { font-style: italic; }
+  .legal-content a { color: var(--color-primary); }
+  .legal-content a:hover { text-decoration: underline; }
   .legal-content code {
-    @apply bg-surface2 text-accent text-xs font-mono px-1.5 py-0.5 rounded;
+    background-color: var(--color-muted);
+    color: var(--color-primary);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    padding: 0.125rem 0.375rem;
+    border-radius: var(--radius-sm);
   }
   .legal-content hr {
-    @apply border-borderlt my-6;
+    border-color: var(--color-border);
+    margin: 1.5rem 0;
   }
-  /* Remove top margin from headings that directly follow hr */
-  .legal-content hr + h2 {
-    @apply mt-4;
-  }
-  /* Tables */
+  .legal-content hr + h2 { margin-top: 1rem; }
   .legal-content table {
-    @apply w-full border-collapse my-5 text-sm;
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.25rem 0;
+    font-size: 0.875rem;
   }
-  .legal-content thead tr {
-    @apply bg-surface2;
-  }
+  .legal-content thead tr { background: var(--color-muted); }
   .legal-content th {
-    @apply text-left px-4 py-2.5 text-xs font-bold text-white uppercase tracking-wide;
+    text-align: left;
+    padding: 0.625rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--color-foreground);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
   .legal-content td {
-    @apply px-4 py-2.5 text-xs text-muted border-t border-borderlt;
+    padding: 0.625rem 1rem;
+    font-size: 0.75rem;
+    color: var(--color-muted-foreground);
+    border-top: 1px solid var(--color-border);
   }
   .legal-content tbody tr:nth-child(even) {
-    background: rgba(42, 43, 46, 0.4);
+    background: color-mix(in oklab, var(--color-muted) 40%, transparent);
   }
   .legal-content .table-wrap {
-    @apply overflow-x-auto rounded-lg border border-borderlt my-5;
+    overflow-x: auto;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    margin: 1.25rem 0;
   }
 }
 
-/* ── CodeMirror Editor — MSK theme overrides ─────────────────────────────── */
+/* ============================================================================
+   CodeMirror Editor — MSK theme overrides (Dashboard Bot-Config-Editor)
+   ============================================================================ */
 .cm-editor {
-  background-color: #1b1b1d !important;
+  background-color: var(--color-card) !important;
 }
 .cm-editor.cm-focused {
   outline: none !important;
 }
 .cm-editor .cm-scroller {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--font-mono);
 }
-/* Scrollbar inside editor */
 .cm-scroller::-webkit-scrollbar       { width: 6px; height: 6px; }
-.cm-scroller::-webkit-scrollbar-track { background: #1b1b1d; }
-.cm-scroller::-webkit-scrollbar-thumb { background: #3d3d3f; border-radius: 3px; }
-.cm-scroller::-webkit-scrollbar-thumb:hover { background: #5eb131; }
+.cm-scroller::-webkit-scrollbar-track { background: var(--color-card); }
+.cm-scroller::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+.cm-scroller::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
 
+/* ============================================================================
+   Legacy msk-* Utility-Klassen — Rückwärtskompatibilität
+   ----------------------------------------------------------------------------
+   Werden in nicht-migrierten Komponenten noch verwendet (Cart-Drawer,
+   Dashboard, Stats, …). Nach erfolgreichem Refactor schrittweise entfernen.
+   Mappen intern jetzt auf die neuen Tokens.
+   ============================================================================ */
 @layer components {
   .msk-btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-accent text-white font-bold text-sm px-4 py-2.5 transition-all hover:bg-accenthov active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: var(--radius-md);
+    background-color: var(--color-primary);
+    color: var(--color-primary-foreground);
+    font-weight: 600;
+    font-size: 0.875rem;
+    padding: 0.625rem 1rem;
+    transition: filter 0.15s ease, transform 0.1s ease;
   }
+  .msk-btn-primary:hover { filter: brightness(1.08); }
+  .msk-btn-primary:active { transform: scale(0.97); }
+  .msk-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
   .msk-btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-border text-muted font-medium text-sm px-4 py-2.5 transition-all hover:bg-surface2 hover:text-text;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    color: var(--color-foreground);
+    background: transparent;
+    font-weight: 500;
+    font-size: 0.875rem;
+    padding: 0.625rem 1rem;
+    transition: background-color 0.15s ease;
   }
+  .msk-btn-ghost:hover { background-color: var(--color-muted); }
 
   .msk-btn-discord {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-discord text-white font-bold text-sm px-4 py-2.5 transition-all hover:opacity-90;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: var(--radius-md);
+    background-color: var(--color-discord);
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.875rem;
+    padding: 0.625rem 1rem;
+    transition: filter 0.15s ease;
   }
+  .msk-btn-discord:hover { filter: brightness(1.08); }
 
   .msk-card {
-    @apply bg-surface border border-borderlt rounded-xl overflow-hidden transition-colors hover:border-accent/30;
+    background-color: var(--color-card);
+    color: var(--color-card-foreground);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .msk-card:hover {
+    border-color: color-mix(in oklab, var(--color-primary) 30%, var(--color-border));
   }
 
   .msk-input {
-    @apply w-full bg-surface2 border border-border rounded-lg text-text text-sm px-3 py-2.5 placeholder-dim outline-none transition-all focus:border-accent focus:ring-2 focus:ring-accent/20;
+    width: 100%;
+    background-color: var(--color-muted);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-foreground);
+    font-size: 0.875rem;
+    padding: 0.625rem 0.75rem;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .msk-input::placeholder { color: var(--color-muted-foreground); }
+  .msk-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary) 25%, transparent);
   }
 
   .msk-badge {
-    @apply inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded;
+    display: inline-block;
+    font-size: 0.625rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.125rem 0.5rem;
+    border-radius: var(--radius-sm);
   }
 
   .msk-label {
-    @apply text-[11px] font-bold uppercase tracking-widest text-accent;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--color-primary);
   }
 
   .msk-section-title {
-    @apply text-xl font-extrabold text-white;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--color-foreground);
   }
+}
+
+/* ============================================================================
+   Legacy Token-Aliases (bg-bg, text-text, …)
+   ----------------------------------------------------------------------------
+   Tailwind v3 hatte die Tokens via theme.extend.colors registriert. Damit
+   bestehende Komponenten weiter rendern, mappen wir die alten Token-Namen
+   auf die neuen CSS-Variablen. Nach Migration aller Komponenten entfernen.
+   ============================================================================ */
+@theme {
+  --color-bg:        var(--color-background);
+  --color-surface:   var(--color-card);
+  --color-surface2:  var(--color-muted);
+  --color-borderlt:  var(--color-border);
+  --color-text:      var(--color-foreground);
+  --color-accenthov: var(--color-accent);
+  --color-dim:       var(--color-muted-foreground);
 }

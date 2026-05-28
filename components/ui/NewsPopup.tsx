@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { X, Copy, Check } from 'lucide-react'
 import { NEWS_POPUP } from '@/lib/config'
+import { Button } from '@/components/ui/Button'
+import { cn } from '@/lib/utils'
 
 export function NewsPopup() {
   const [visible, setVisible] = useState(false)
@@ -17,11 +19,8 @@ export function NewsPopup() {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  // Show on every full page load (not on client-side navigation)
-  // We use a sessionStorage flag that's set per-navigation to distinguish
   useEffect(() => {
     if (!NEWS_POPUP.enabled) return
-    // Use a timestamp so it resets on each hard load but not on tab switches
     const key = 'news-popup-closed'
     const closed = sessionStorage.getItem(key)
     if (!closed) setVisible(true)
@@ -35,25 +34,25 @@ export function NewsPopup() {
   if (!visible || !NEWS_POPUP.enabled) return null
 
   return (
-    <div className="fixed bottom-5 right-5 z-50 w-80 bg-surface border border-borderlt rounded-xl shadow-2xl shadow-black/60 overflow-hidden animate-in">
+    <div className="fixed bottom-5 right-5 z-50 w-80 overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] shadow-2xl">
       {/* Accent top border */}
-      <div className="h-0.5 w-full bg-gradient-to-r from-accent/60 via-accent to-accent/60" />
+      <div className="h-0.5 w-full bg-gradient-to-r from-[var(--color-primary)]/40 via-[var(--color-primary)] to-[var(--color-primary)]/40" />
 
       <div className="p-4">
         {/* Header */}
-        <div className="flex items-start justify-between gap-2 mb-2.5">
-          <p className="text-white font-bold text-sm leading-snug">{NEWS_POPUP.title}</p>
+        <div className="mb-2.5 flex items-start justify-between gap-2">
+          <p className="text-sm font-bold leading-snug">{NEWS_POPUP.title}</p>
           <button
             onClick={close}
-            className="text-dim hover:text-text transition-colors shrink-0 mt-0.5"
+            className="mt-0.5 shrink-0 text-[var(--color-muted-foreground)] transition-colors hover:text-[var(--color-foreground)]"
             aria-label="Close"
           >
-            <X size={15} />
+            <X className="h-3.5 w-3.5" />
           </button>
         </div>
 
         {/* Text */}
-        <p className="text-muted text-xs leading-relaxed mb-3.5">
+        <p className="mb-3.5 text-xs leading-relaxed text-[var(--color-muted-foreground)]">
           {NEWS_POPUP.text}
         </p>
 
@@ -63,28 +62,29 @@ export function NewsPopup() {
             onClick={copyCode}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
-            className="mb-3.5 rounded-lg overflow-hidden border border-borderlt cursor-pointer select-none"
+            className="mb-3.5 cursor-pointer select-none overflow-hidden rounded-lg border border-[var(--color-border)]"
             title="Click to copy"
           >
-            {/* Code row */}
-            <div className="bg-surface2 px-3 py-2 flex items-center justify-between gap-2">
-              <span className="text-white font-bold text-sm tracking-widest font-mono">
+            <div className="flex items-center justify-between gap-2 bg-[var(--color-muted)] px-3 py-2">
+              <span className="font-mono text-sm font-bold tracking-widest">
                 {NEWS_POPUP.coupon}
               </span>
               {copied
-                ? <Check size={13} className="text-accent shrink-0" />
-                : <Copy size={13} className="text-dim shrink-0" />
+                ? <Check className="h-3 w-3 shrink-0 text-[var(--color-primary)]" />
+                : <Copy className="h-3 w-3 shrink-0 text-[var(--color-muted-foreground)]" />
               }
             </div>
-            {/* Copy button row */}
             <div
-              className="px-3 py-1.5 flex items-center justify-center transition-colors duration-150"
-              style={{ backgroundColor: copied ? '#4e9827' : hovered ? '#5eb131' : '#3a3b3e' }}
+              className={cn(
+                'flex items-center justify-center px-3 py-1.5 transition-colors duration-150',
+                copied
+                  ? 'bg-[var(--color-primary)] text-[var(--color-primary-foreground)]'
+                  : hovered
+                    ? 'bg-[var(--color-primary)] text-[var(--color-primary-foreground)]'
+                    : 'bg-[var(--color-muted)] text-[var(--color-muted-foreground)]',
+              )}
             >
-              <span
-                className="text-[10px] font-bold tracking-widest uppercase transition-colors duration-150"
-                style={{ color: copied || hovered ? '#ffffff' : '#8d9096' }}
-              >
+              <span className="text-[0.625rem] font-bold uppercase tracking-widest">
                 {copied ? 'Copied!' : 'Click to Copy'}
               </span>
             </div>
@@ -95,22 +95,18 @@ export function NewsPopup() {
         {(NEWS_POPUP.button || NEWS_POPUP.secondButton) && (
           <div className="flex gap-2">
             {NEWS_POPUP.button && (
-              <Link
-                href={NEWS_POPUP.button.href}
-                onClick={close}
-                className="msk-btn-primary flex-1 justify-center text-xs py-2"
-              >
-                {NEWS_POPUP.button.label}
-              </Link>
+              <Button asChild size="sm" className="flex-1">
+                <Link href={NEWS_POPUP.button.href} onClick={close}>
+                  {NEWS_POPUP.button.label}
+                </Link>
+              </Button>
             )}
             {NEWS_POPUP.secondButton && (
-              <Link
-                href={NEWS_POPUP.secondButton.href}
-                onClick={close}
-                className="msk-btn-ghost flex-1 justify-center text-xs py-2"
-              >
-                {NEWS_POPUP.secondButton.label}
-              </Link>
+              <Button asChild variant="outline" size="sm" className="flex-1">
+                <Link href={NEWS_POPUP.secondButton.href} onClick={close}>
+                  {NEWS_POPUP.secondButton.label}
+                </Link>
+              </Button>
             )}
           </div>
         )}

@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
+import { Card } from '@/components/ui/Card'
 
 // Discord callback page — receives discord_id from Tebex OAuth redirect
 // URL format: /auth/discord?discord_id=123&discord_tag=user%230&signature=...
@@ -17,12 +18,10 @@ function DiscordCallback() {
 
     console.log('[discord/callback] discord_id:', discordId, '| tag:', discordTag)
 
-    // Get the return path stored before Discord auth
     const returnPath = sessionStorage.getItem('discordReturnPath') || '/'
 
     if (discordId) {
       setMessage(`Discord connected as ${discordTag || discordId}! Returning to shop...`)
-      // Pass discord_id via URL — more reliable than sessionStorage timing
       setTimeout(() => {
         router.push(`${returnPath}?discordLinked=true&discord_id=${encodeURIComponent(discordId)}`)
       }, 600)
@@ -35,23 +34,25 @@ function DiscordCallback() {
   }, [searchParams, router])
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="bg-surface border border-borderlt rounded-xl p-8 max-w-sm w-full text-center">
-        <Loader2 size={32} className="animate-spin text-accent mx-auto mb-4" />
-        <p className="text-white font-semibold mb-2">Connecting Discord...</p>
-        <p className="text-muted text-sm">{message}</p>
-      </div>
+    <div className="container-page flex min-h-[calc(100vh-4rem-12rem)] items-center justify-center py-12">
+      <Card className="w-full max-w-sm p-8 text-center">
+        <Loader2 className="mx-auto mb-4 h-8 w-8 animate-spin text-[var(--color-primary)]" />
+        <p className="mb-2 font-semibold">Connecting Discord…</p>
+        <p className="text-sm text-[var(--color-muted-foreground)]">{message}</p>
+      </Card>
     </div>
   )
 }
 
 export default function DiscordCallbackPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 size={32} className="animate-spin text-accent" />
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="container-page flex min-h-[calc(100vh-4rem-12rem)] items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-[var(--color-primary)]" />
+        </div>
+      }
+    >
       <DiscordCallback />
     </Suspense>
   )

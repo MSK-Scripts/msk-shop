@@ -1,6 +1,7 @@
 'use client'
 
 import { useSalePricesStore } from '@/store/salePrices'
+import { Badge } from '@/components/ui/Badge'
 
 interface Props {
   packageId: number
@@ -17,23 +18,24 @@ export function PackagePrice({ packageId, basePrice, totalPrice, currency }: Pro
   const effectiveTotal = saleData?.total_price ?? totalPrice
   const hasDiscount = effectiveTotal < effectiveBase && effectiveBase > 0
   const isFree = effectiveBase === 0
+  const discountPct = hasDiscount && effectiveBase > 0
+    ? Math.round(((effectiveBase - effectiveTotal) / effectiveBase) * 100)
+    : 0
 
   return (
-    <div className="flex items-baseline gap-2 flex-wrap">
+    <div className="flex flex-wrap items-baseline gap-2">
       {hasDiscount && (
-        <span className="text-dim line-through text-sm">
+        <span className="font-mono text-sm text-[var(--color-muted-foreground)] line-through">
           €{effectiveBase.toFixed(2)}
         </span>
       )}
-      <span className={`text-2xl font-extrabold ${isFree ? 'text-muted' : 'text-accent'}`}>
+      <span
+        className={`font-mono text-3xl font-bold tracking-tight ${isFree ? 'text-[var(--color-muted-foreground)]' : 'text-[var(--color-primary)]'}`}
+      >
         {isFree ? 'Free' : `€${effectiveTotal.toFixed(2)}`}
       </span>
-      <span className="text-dim text-xs">{currency}</span>
-      {hasDiscount && (
-        <span className="msk-badge bg-danger/10 text-danger border border-danger/25 text-xs">
-          Sale
-        </span>
-      )}
+      <span className="text-xs text-[var(--color-muted-foreground)]">{currency}</span>
+      {hasDiscount && <Badge variant="sale">Sale −{discountPct}%</Badge>}
     </div>
   )
 }

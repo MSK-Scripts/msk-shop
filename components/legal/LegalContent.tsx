@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { ChevronDown } from 'lucide-react'
+import { ChevronDown, ChevronRight, Check } from 'lucide-react'
 import { setLangCookie } from '@/lib/lang'
 import type { Lang } from '@/lib/i18n'
+import { Button } from '@/components/ui/Button'
+import { cn } from '@/lib/utils'
 
 interface Props {
   htmlEn: string
@@ -17,7 +19,7 @@ interface Props {
 const languages = [
   { code: 'en', label: 'English', flag: '🇬🇧' },
   { code: 'de', label: 'Deutsch', flag: '🇩🇪' },
-]
+] as const
 
 export function LegalContent({ htmlEn, htmlDe, breadcrumb, href, initialLang }: Props) {
   const [lang, setLang] = useState<Lang>(initialLang)
@@ -29,57 +31,68 @@ export function LegalContent({ htmlEn, htmlDe, breadcrumb, href, initialLang }: 
   const current = languages.find(l => l.code === lang)!
 
   return (
-    <div className="max-w-3xl mx-auto px-6 py-12">
-      {/* Breadcrumb + language switcher */}
-      <div className="flex items-center justify-between mb-8">
-        <nav className="flex items-center gap-2 text-xs text-dim">
-          <Link href="/" className="hover:text-muted transition-colors">Home</Link>
-          <span>/</span>
-          <Link href={href} className="text-muted hover:text-text transition-colors">{breadcrumb}</Link>
-        </nav>
+    <div className="container-page py-10 md:py-14">
+      <div className="mx-auto max-w-3xl">
+        {/* Breadcrumb + Sprach-Switcher */}
+        <div className="mb-8 flex items-center justify-between">
+          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-[var(--color-muted-foreground)]">
+            <Link href="/" className="transition-colors hover:text-[var(--color-foreground)]">Home</Link>
+            <ChevronRight className="h-3 w-3" />
+            <Link href={href} className="text-[var(--color-foreground)] transition-colors hover:underline">
+              {breadcrumb}
+            </Link>
+          </nav>
 
-        {/* Language dropdown */}
-        <div className="relative">
-          <button
-            onClick={() => setOpen(!open)}
-            className="flex items-center gap-2 bg-surface border border-borderlt hover:border-accent/40 rounded-lg px-3 py-1.5 text-xs text-muted hover:text-text transition-all"
-          >
-            <span>{current.flag}</span>
-            <span className="font-medium">{current.label}</span>
-            <ChevronDown size={12} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
-          </button>
+          {/* Language Dropdown */}
+          <div className="relative">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setOpen(v => !v)}
+              aria-haspopup="menu"
+              aria-expanded={open}
+            >
+              <span>{current.flag}</span>
+              <span className="font-medium">{current.label}</span>
+              <ChevronDown className={cn('h-3 w-3 transition-transform', open && 'rotate-180')} />
+            </Button>
 
-          {open && (
-            <>
-              {/* Click-outside backdrop */}
-              <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-              <div className="absolute right-0 top-full mt-1 w-36 bg-surface2 border border-borderlt rounded-xl shadow-xl py-1 z-50">
-                {languages.map(l => (
-                  <button
-                    key={l.code}
-                    onClick={() => { setLang(l.code as Lang); setOpen(false) }}
-                    className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs transition-colors ${
-                      lang === l.code
-                        ? 'text-accent bg-accent/10'
-                        : 'text-muted hover:text-text hover:bg-border/20'
-                    }`}
-                  >
-                    <span>{l.flag}</span>
-                    <span>{l.label}</span>
-                    {lang === l.code && <span className="ml-auto text-accent">✓</span>}
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
+            {open && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} aria-hidden="true" />
+                <div
+                  role="menu"
+                  className="absolute right-0 top-full z-50 mt-1 w-36 overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] p-1 shadow-xl"
+                >
+                  {languages.map(l => (
+                    <button
+                      key={l.code}
+                      onClick={() => { setLang(l.code); setOpen(false) }}
+                      role="menuitem"
+                      className={cn(
+                        'flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-xs transition-colors',
+                        lang === l.code
+                          ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)]'
+                          : 'text-[var(--color-muted-foreground)] hover:bg-[var(--color-muted)] hover:text-[var(--color-foreground)]',
+                      )}
+                    >
+                      <span>{l.flag}</span>
+                      <span>{l.label}</span>
+                      {lang === l.code && <Check className="ml-auto h-3 w-3 text-[var(--color-primary)]" />}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* Rendered markdown */}
-      <div
-        className="legal-content"
-        dangerouslySetInnerHTML={{ __html: html }}
-      />
+        {/* Rendered Markdown */}
+        <article
+          className="legal-content"
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
+      </div>
     </div>
   )
 }
