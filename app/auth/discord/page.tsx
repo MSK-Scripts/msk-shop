@@ -16,8 +16,6 @@ function DiscordCallback() {
     const discordId = searchParams.get('discord_id') || searchParams.get('discordId') || searchParams.get('id') || ''
     const discordTag = searchParams.get('discord_tag') || ''
 
-    console.log('[discord/callback] discord_id:', discordId, '| tag:', discordTag)
-
     const returnPath = sessionStorage.getItem('discordReturnPath') || '/'
 
     if (discordId) {

@@ -2,7 +2,7 @@ import { NextResponse }       from 'next/server'
 import { query, queryOne }   from '@/lib/db'
 import { getIgnoredApiKeys } from '@/lib/statsIgnore'
 
-export const dynamic = 'force-dynamic' // 5-Minuten-Cache
+export const dynamic = 'force-dynamic' // always recompute — no caching of live stats
 
 interface CountRow  { total: number }
 interface AvgRow    { avg_bytes: number | null }

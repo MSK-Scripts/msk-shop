@@ -98,6 +98,13 @@ export async function GET() {
       // Ignore tail's own stderr (e.g. "file truncated" messages on log rotation).
       tail.stderr?.on('data', () => { /* intentionally empty */ });
 
+      // Handle spawn failures (e.g. tail not on PATH) — an unhandled 'error'
+      // event on a ChildProcess would otherwise crash the Node process.
+      tail.on('error', () => {
+        clearInterval(keepalive ?? undefined);
+        try { controller.close(); } catch { /* already closed */ }
+      });
+
       tail.on('close', () => {
         clearInterval(keepalive ?? undefined);
         try { controller.close(); } catch { /* already closed */ }

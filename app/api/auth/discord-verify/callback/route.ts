@@ -72,8 +72,14 @@ export async function GET(req: Request) {
     ]);
     const discordUser = await userRes.json();
     rawGuilds         = await guildsRes.json();
-    discordUserId     = discordUser.id;
+    discordUserId     = discordUser?.id;
   } catch {
+    return NextResponse.redirect(`${baseUrl}/verify?error=discord_guilds_failed`);
+  }
+
+  // Discord may return an error object (e.g. 429 rate limit, missing scope)
+  // instead of the expected array/user — guard before using array methods.
+  if (!Array.isArray(rawGuilds) || !discordUserId) {
     return NextResponse.redirect(`${baseUrl}/verify?error=discord_guilds_failed`);
   }
 

@@ -57,10 +57,12 @@ export function useCart() {
     const discordId = sessionStorage.getItem('discordId')
     const wantDiscord = sessionStorage.getItem('wantDiscordAuth')
 
-    if (!pendingIdent && !wantDiscord) return
+    // Every meaningful path below needs the basket ident; without it there is
+    // nothing to resume (avoids calling getBasket(null) on a stale wantDiscord flag).
+    if (!pendingIdent) return
 
     try {
-      const authBasket = await getBasket(pendingIdent!)
+      const authBasket = await getBasket(pendingIdent)
       if (!authBasket.username) return
 
       setBasket(authBasket)

@@ -309,7 +309,12 @@ export default function BotConfigEditor({ lang }: { lang: Lang }) {
     esRef.current = es
 
     es.onmessage = (e: MessageEvent<string>) => {
-      const line = JSON.parse(e.data) as string
+      let line: string
+      try {
+        line = JSON.parse(e.data) as string
+      } catch {
+        return // ignore malformed/partial frames instead of breaking the console
+      }
       setLiveLines(prev => {
         const next = [...prev, line]
         return next.length > 500 ? next.slice(-500) : next

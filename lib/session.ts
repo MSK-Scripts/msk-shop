@@ -1,4 +1,4 @@
-import { createHmac, randomBytes } from 'crypto';
+import { createHmac, randomBytes, timingSafeEqual } from 'crypto';
 
 const SECRET = process.env.SESSION_SECRET ?? 'change-me-in-production';
 
@@ -34,7 +34,10 @@ export function parseSession(token: string): VerifySession | null {
   const payload  = token.substring(0, dot);
   const sig      = token.substring(dot + 1);
   const expected = createHmac('sha256', SECRET).update(payload).digest('base64url');
-  if (expected !== sig) return null;
+  // Constant-time comparison to avoid signature-forgery timing side channels.
+  const sigBuf = Buffer.from(sig);
+  const expBuf = Buffer.from(expected);
+  if (sigBuf.length !== expBuf.length || !timingSafeEqual(sigBuf, expBuf)) return null;
   try {
     return JSON.parse(Buffer.from(payload, 'base64url').toString()) as VerifySession;
   } catch {
