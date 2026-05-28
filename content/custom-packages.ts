@@ -108,7 +108,7 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
     id: 'mskanban',
     name: 'MSKanban',
     description: 'Zero-knowledge encryption, real-time collaboration, offline-first — open source under AGPL-3.0.',
-    image: 'msk_kanban.png',
+    image: 'mskanban.png',
     link: 'https://mskanban.msk-scripts.de/',
     linkLabel: 'View LIVE',
     secondaryLink: 'https://github.com/MSK-Scripts/mskanban',
