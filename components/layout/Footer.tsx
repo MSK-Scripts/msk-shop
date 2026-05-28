@@ -5,19 +5,20 @@ import { Button } from '@/components/ui/Button'
 
 const SHOP_LINKS = [
   { label: 'All Packages', href: '/packages' },
-  { label: 'Cart',     href: '/cart' },
+  { label: 'Github', href: 'https://github.com/MSK-Scripts', external: true },
+  { label: 'Documentation', href: 'https://docu.msk-scripts.de/', external: true },
 ] as const
 
 const ECOSYSTEM_LINKS = [
-  { label: 'MSKanban',       href: 'https://mskanban.msk-scripts.de/',          external: true },
-  { label: 'MSK Paste',      href: 'https://paste.msk-scripts.de/', external: true },
-  { label: 'MSK Shortener',  href: 'https://s.msk-scripts.de/',     external: true },
+  { label: 'MSKanban',       href: 'https://mskanban.msk-scripts.de/',  external: true },
+  { label: 'MSK Paste',      href: 'https://paste.msk-scripts.de/',     external: true },
+  { label: 'MSK Shortener',  href: 'https://s.msk-scripts.de/',         external: true },
 ] as const
 
 const TICKETBOT_LINKS = [
-  { label: 'Stats',     href: '/stats' },
-  { label: 'Verify',    href: '/verify' },
-  { label: 'Dashboard', href: '/dashboard' },
+  { label: 'Statistics',    href: '/stats' },
+  { label: 'Verify',        href: '/verify' },
+  { label: 'Dashboard',     href: '/dashboard' },
 ] as const
 
 const LEGAL_LINKS = [
