@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useSearchParams, usePathname } from 'next/navigation'
 import {
-  ShoppingCart, Menu, X, User, LogOut, Loader2, ChevronDown, Search, ArrowRight,
+  ShoppingCart, Menu, X, User, LogOut, Loader2, ChevronDown, Search, ArrowRight, ExternalLink,
 } from 'lucide-react'
 import { useCartStore } from '@/store/cart'
 import { useCart } from '@/lib/useCart'
@@ -19,6 +19,12 @@ import { cn } from '@/lib/utils'
 interface NavItem {
   label: string
   href: string
+  /**
+   * Externe Links werden anhand der `href` automatisch erkannt (http/https)
+   * und öffnen in einem neuen Tab (target="_blank"). `external` kann gesetzt
+   * werden, um das Verhalten explizit zu erzwingen.
+   */
+  external?: boolean
 }
 
 const NAV_ITEMS_PRIMARY: NavItem[] = [
@@ -27,6 +33,7 @@ const NAV_ITEMS_PRIMARY: NavItem[] = [
 
 const NAV_ITEMS_SECONDARY: NavItem[] = [
   { label: 'Ticket Bot', href: '/ticketbot' },
+  { label: 'Documentation', href: 'https://docu.msk-scripts.de' },
 ]
 
 function HeaderInner() {
@@ -150,6 +157,34 @@ function HeaderInner() {
       : 'text-[var(--color-muted-foreground)] hover:bg-[var(--color-muted)] hover:text-[var(--color-foreground)]',
   )
 
+  // Externe Links (http/https) öffnen in einem neuen Tab; interne Routen
+  // laufen über next/link inkl. Prefetch.
+  const isNavItemExternal = (item: NavItem) =>
+    item.external ?? /^https?:\/\//i.test(item.href)
+
+  const renderNavItem = (item: NavItem) =>
+    isNavItemExternal(item) ? (
+      <a
+        key={item.href}
+        href={item.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={cn(navLinkClasses(false), 'inline-flex items-center gap-1')}
+      >
+        {item.label}
+        <ExternalLink className="h-3 w-3 opacity-70" aria-hidden />
+      </a>
+    ) : (
+      <Link
+        key={item.href}
+        href={item.href}
+        prefetch
+        className={navLinkClasses(isActive(item.href))}
+      >
+        {item.label}
+      </Link>
+    )
+
   return (
     <>
       <header className="sticky top-0 z-50 border-b border-[var(--color-border)] bg-[color-mix(in_oklab,var(--color-background)_85%,transparent)] backdrop-blur-md">
@@ -174,16 +209,7 @@ function HeaderInner() {
 
           {/* Desktop-Nav */}
           <nav className="ml-4 hidden flex-1 items-center gap-1 md:flex" aria-label="Primary">
-            {NAV_ITEMS_PRIMARY.map(item => (
-              <Link
-                key={item.href}
-                href={item.href}
-                prefetch={true}
-                className={navLinkClasses(isActive(item.href))}
-              >
-                {item.label}
-              </Link>
-            ))}
+            {NAV_ITEMS_PRIMARY.map(renderNavItem)}
 
             {/* Categories-Dropdown — manuelles useState-Dropdown */}
             <div className="relative" ref={catRef}>
@@ -261,16 +287,7 @@ function HeaderInner() {
               )}
             </div>
 
-            {NAV_ITEMS_SECONDARY.map(item => (
-              <Link
-                key={item.href}
-                href={item.href}
-                prefetch={true}
-                className={navLinkClasses(isActive(item.href))}
-              >
-                {item.label}
-              </Link>
-            ))}
+            {NAV_ITEMS_SECONDARY.map(renderNavItem)}
           </nav>
           <div className="flex-1 md:hidden" />
 
@@ -374,16 +391,7 @@ function HeaderInner() {
         {mobileOpen && (
           <div className="border-t border-[var(--color-border)] bg-[var(--color-background)] md:hidden">
             <nav className="flex flex-col gap-1 px-4 py-3" aria-label="Mobile">
-              {NAV_ITEMS_PRIMARY.map(item => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  prefetch={true}
-                  className={navLinkClasses(isActive(item.href))}
-                >
-                  {item.label}
-                </Link>
-              ))}
+              {NAV_ITEMS_PRIMARY.map(renderNavItem)}
 
               {hasCategories && (
                 <div className="mt-2">
@@ -406,16 +414,7 @@ function HeaderInner() {
 
               <div className="mt-2 h-px bg-[var(--color-border)]" />
 
-              {NAV_ITEMS_SECONDARY.map(item => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  prefetch={true}
-                  className={navLinkClasses(isActive(item.href))}
-                >
-                  {item.label}
-                </Link>
-              ))}
+              {NAV_ITEMS_SECONDARY.map(renderNavItem)}
 
               <button
                 onClick={() => { setSearchOpen(true); setMobileOpen(false) }}

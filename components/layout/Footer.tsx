@@ -32,7 +32,10 @@ const GITHUB_URL = 'https://github.com/MSK-Scripts'
 
 function FooterLink({ href, external, children }: { href: string; external?: boolean; children: React.ReactNode }) {
   const cls = 'block py-1 text-sm text-[var(--color-muted-foreground)] transition-colors hover:text-[var(--color-foreground)]'
-  if (external) {
+  // Externe Links (http/https) werden automatisch erkannt und öffnen in einem
+  // neuen Tab; `external` kann das Verhalten zusätzlich erzwingen.
+  const isExternal = external ?? /^https?:\/\//i.test(href)
+  if (isExternal) {
     return <a href={href} target="_blank" rel="noopener noreferrer" className={cls}>{children}</a>
   }
   return <Link href={href} className={cls}>{children}</Link>
