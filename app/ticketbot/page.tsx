@@ -112,8 +112,8 @@ interface TierCard {
 
 const TIER_CARDS: TierCard[] = [
   { key: 'basic',        name: 'Basic',    price: 'Free', priceSub: 'forever',  badge: null,            accent: false, hosted: false, variant: 'outline', cta: 'Get API Key',         href: '/verify' },
-  { key: 'premium',      name: 'Premium',  price: '€5',   priceSub: '/ month',  badge: 'Most popular',  accent: true,  hosted: true,  variant: 'primary', cta: 'Become a Sponsor',    href: SPONSORS_URL },
-  { key: 'premium_plus', name: 'Premium+', price: '€10',  priceSub: '/ month',  badge: null,            accent: false, hosted: true,  variant: 'outline', cta: 'Become a Sponsor',    href: SPONSORS_URL },
+  { key: 'premium',      name: 'Premium',  price: '5€',   priceSub: '/ month',  badge: 'Most popular',  accent: true,  hosted: true,  variant: 'primary', cta: 'Become a Sponsor',    href: SPONSORS_URL },
+  { key: 'premium_plus', name: 'Premium+', price: '10€',  priceSub: '/ month',  badge: null,            accent: false, hosted: true,  variant: 'outline', cta: 'Become a Sponsor',    href: SPONSORS_URL },
 ]
 
 function tierFeatures(card: TierCard) {
@@ -121,7 +121,7 @@ function tierFeatures(card: TierCard) {
   return [
     { label: 'Transcript hosting & links',                    ok: true },
     { label: `Up to ${mb(c.transcriptMaxBytes)} per transcript`, ok: true },
-    { label: c.attachments ? `Attachments up to ${mb(c.attachmentMaxBytes)}` : 'File attachments', ok: c.attachments },
+    { label: c.attachments ? `Attachments up to ${mb(c.attachmentMaxBytes)} per ticket` : 'File attachments', ok: c.attachments },
     { label: 'Custom domain',                                 ok: c.customDomain },
     { label: `${c.storageDays} days storage`,                 ok: true },
     { label: `${c.uploadsPerHour} uploads / hour`,            ok: true },

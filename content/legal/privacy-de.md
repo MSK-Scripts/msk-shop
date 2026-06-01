@@ -114,7 +114,7 @@ Diese Website betreibt zwei eigenständige Dienste mit jeweils eigener Datenvera
 - **Abo-Tier** — ermittelt anhand des GitHub-Sponsors-Status (Basic, Premium, Premium+)
 - **API Key** — zufällig generiertes Token, in unserer Datenbank gespeichert, zur Authentifizierung von Transcript-Uploads
 - **Eigene Domain** (optional, Premium und Premium+) — gespeichert, wenn eine Custom Domain konfiguriert wird
-- **Ticket-Transkriptinhalt** — HTML-Dateien, vom Bot generiert und auf unseren Server hochgeladen; je nach Tier 30–120 Tage gespeichert
+- **Ticket-Transkriptinhalt** — HTML-Dateien, vom Bot generiert und auf unseren Server hochgeladen; je nach Tier 30–365 Tage gespeichert
 - **Ticket-Anhänge** (Premium und Premium+) — im Ticket verschickte Dateien, neben dem Transkript gespeichert
 - **Rate-Limiting-Daten** — Anfragezähler pro API Key pro Stunde zur Missbrauchsverhinderung
 - **GitHub-Sponsoring-Daten** — über GitHub Sponsors Webhook empfangen (GitHub-Nutzername und Tier); zur Aktivierung oder Aktualisierung des Abos verarbeitet
@@ -225,7 +225,7 @@ Wenn ein Ticket auf einem selbst-gehosteten Bot mit gültigem API Key geschlosse
 - Die **HTML-Datei** des Transkripts im Dateisystem unseres Servers
 - Metadaten in unserer Datenbank: Upload-Zeitstempel, Dateigröße, Ablaufdatum, Server-Referenz
 
-Transkripte werden nach Ablauf der für Ihr Tier geltenden Aufbewahrungsfrist (30, 60 oder 120 Tage) automatisch gelöscht. Transkripte sind über ihre eindeutige URL (mit zufälliger UUID) öffentlich abrufbar, werden jedoch nicht indiziert oder verlinkt.
+Transkripte werden nach Ablauf der für Ihr Tier geltenden Aufbewahrungsfrist (30, 180 oder 365 Tage) automatisch gelöscht. Transkripte sind über ihre eindeutige URL (mit zufälliger UUID) öffentlich abrufbar, werden jedoch nicht indiziert oder verlinkt.
 
 ### Anhangsspeicherung (Premium und Premium+)
 
@@ -328,7 +328,7 @@ Unsere Startseite zeigt die aktuelle Online-Mitgliederzahl unseres Discord-Serve
 | Sprachpräferenz-Cookie (`msk_lang`) | 1 Jahr (oder bis zur Löschung durch den Nutzer) |
 | Ticket Bot Kontodaten (guild_id, api_key, github_username, discord_user_id, tier) | Bis zur Löschanfrage |
 | Rate-Limiting-Daten | 1 Stunde (gleitendes Fenster) |
-| Transkript-HTML-Dateien | 30 Tage (Basic) / 60 Tage (Premium) / 120 Tage (Premium+) |
+| Transkript-HTML-Dateien | 30 Tage (Basic) / 180 Tage (Premium) / 365 Tage (Premium+) |
 | Anhangsdateien | Wie Transkript |
 | GitHub-Sponsoring-Daten | Bis zur Kontolöschung |
 | Hosted Bot Konfigurationsdateien (`config.jsonc`, `snippets.jsonc`, `.env`) | Bis zur Beendigung des Hostings + 14 Tage |
