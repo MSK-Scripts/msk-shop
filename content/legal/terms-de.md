@@ -138,7 +138,7 @@ Der Hosted Bot Management Service ermöglicht Premium- und Premium+-Kunden, ihre
 
 Der Dienst umfasst:
 - Hosting des Bot-Prozesses auf MSK Scripts-Servern (verwaltet über PM2)
-- Zugang zu einem webbasierten Management-Panel unter **www.msk-scripts.de/dashboard** zum Bearbeiten von Konfigurationsdateien (`config.jsonc`, `snippets.jsonc`, `.env`), zur Bot-Steuerung (Starten / Stoppen / Neustart / Update) sowie zur Anzeige der Live-Log-Ausgabe
+- Zugang zu einem webbasierten Management-Panel unter **www.msk-scripts.de/dashboard** zum Bearbeiten von Konfigurationsdateien (`config.jsonc`, `snippets.jsonc`, `.env` sowie der aktiven Sprachdatei `locales/<lang>.json`), zur Bot-Steuerung (Starten / Stoppen / Neustart / Update) sowie zur Anzeige der Live-Log-Ausgabe
 
 ### 8.2 Zugang zu Konfigurationsdaten und Zugangsdaten
 

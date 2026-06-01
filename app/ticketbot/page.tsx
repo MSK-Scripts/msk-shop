@@ -49,7 +49,7 @@ const HUB_CARDS: HubCard[] = [
     icon:    LayoutDashboard,
     eyebrow: 'Manage',
     title:   'Dashboard',
-    text:    'Set up a custom domain for your transcripts and — on Premium — fully manage a hosted bot: edit config, snippets & .env, start / stop / restart, one-click update and stream live logs.',
+    text:    'Set up a custom domain for your transcripts and — on Premium — fully manage a hosted bot: edit config, snippets, .env & language files, start / stop / restart, one-click update and stream live logs.',
     href:    '/dashboard',
     cta:     'Open Dashboard',
     variant: 'outline',
@@ -334,7 +334,7 @@ export default function TicketBotPage() {
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               {[
-                { icon: Terminal,   title: 'Config Editor',    text: 'Edit config.jsonc, snippets & .env in the browser with syntax highlighting.' },
+                { icon: Terminal,   title: 'Config Editor',    text: 'Edit config.jsonc, snippets, .env & the active language file in the browser with syntax highlighting.' },
                 { icon: ServerCog,  title: 'Bot Control',      text: 'Start, stop and restart the bot with a single click.' },
                 { icon: RefreshCw,  title: 'One-click Update', text: 'Pull the latest version, install deps and restart — no terminal.' },
                 { icon: FileText,   title: 'Live Log Console', text: 'Real-time stream of the bot output right in the dashboard.' },
