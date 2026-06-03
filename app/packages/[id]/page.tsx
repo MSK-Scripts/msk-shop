@@ -1,9 +1,9 @@
 import { notFound } from 'next/navigation'
-import Image from 'next/image'
 import Link from 'next/link'
 import { ChevronRight, ArrowLeft } from 'lucide-react'
 import { getPackage, getPackages } from '@/lib/tebex'
 import { AddToCartButton } from '@/components/packages/AddToCartButton'
+import { PackageGallery } from '@/components/packages/PackageGallery'
 import { PackagePrice } from '@/components/packages/PackagePrice'
 import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
@@ -64,32 +64,20 @@ export default async function PackageDetailPage({
         {/* Left: Hero-Image + Description */}
         <div className="lg:col-span-2">
           <Card className="overflow-hidden">
-            <div className="relative h-64 bg-gradient-to-br from-[color-mix(in_oklab,var(--color-primary)_8%,var(--color-card))] to-[color-mix(in_oklab,var(--color-primary)_2%,var(--color-card))] md:h-80">
-              {pkg.image ? (
-                <Image
-                  src={pkg.image}
-                  alt={pkg.name}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 1024px) 100vw, 66vw"
-                  priority
-                />
-              ) : (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="font-mono text-2xl font-semibold tracking-wider text-[color-mix(in_oklab,var(--color-foreground)_18%,transparent)]">
-                    {pkg.name.toLowerCase().replace(/\s+/g, '_')}
-                  </span>
-                </div>
-              )}
-              {/* Badges over image */}
-              {configBadges && configBadges.length > 0 && (
-                <div className="absolute bottom-4 left-4 z-10 flex flex-wrap gap-1.5">
-                  {configBadges.map(b => (
-                    <Badge key={b.label} variant={b.variant as BadgeVariant}>{b.label}</Badge>
-                  ))}
-                </div>
-              )}
-            </div>
+            <PackageGallery
+              media={pkg.media}
+              image={pkg.image}
+              alt={pkg.name}
+              overlay={
+                configBadges && configBadges.length > 0 ? (
+                  <div className="absolute bottom-4 left-4 z-20 flex flex-wrap gap-1.5">
+                    {configBadges.map(b => (
+                      <Badge key={b.label} variant={b.variant as BadgeVariant}>{b.label}</Badge>
+                    ))}
+                  </div>
+                ) : null
+              }
+            />
 
             <div className="p-6 md:p-8">
               <div className="mb-2 flex flex-wrap items-center gap-2">
