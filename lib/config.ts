@@ -6,7 +6,7 @@
 export const FEATURED_PACKAGE_IDS: number[] = [
   5301828,
   6446947,
-  6372865,
+  5732588,
 ]
 
 // ── Package Badges ────────────────────────────────────────────
