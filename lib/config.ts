@@ -44,8 +44,8 @@ export const PACKAGE_BADGES: Record<number, Badge[]> = {
 // Keep it short — 1 to 2 sentences max.
 
 export const PACKAGE_DESCRIPTIONS: Record<number, string> = {
-  5732587: 'Advanced garage & impound system with support for multiple vehicle key scripts.', // MSK Garage - E
-  5732588: 'Advanced garage & impound system with support for multiple vehicle key scripts.', // MSK Garage - S
+  5732587: 'A complete, server-authoritative garage and impound system for ESX with a modern React UI and a security-first backend.', // MSK Garage - E
+  5732588: 'A complete, server-authoritative garage and impound system for ESX with a modern React UI and a security-first backend.', // MSK Garage - S
   5159927: 'Realistic handcuffs with animations, props, drag, headbag, tape and ankle tracker.', // MSK Handcuffs - E
   5301828: 'Realistic handcuffs with animations, props, drag, headbag, tape and ankle tracker.', // MSK Handcuffs - S
   6372773: 'Flexible storage system with support for ox_inventory and Chezza Inventory.', // MSK Storage - E
