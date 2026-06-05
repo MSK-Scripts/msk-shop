@@ -33,6 +33,7 @@ const NAV_ITEMS_PRIMARY: NavItem[] = [
 
 const NAV_ITEMS_SECONDARY: NavItem[] = [
   { label: 'Ticket Bot', href: '/ticketbot' },
+  { label: 'Giveaway Bot', href: '/giveaway' },
   { label: 'Documentation', href: 'https://docu.msk-scripts.de' },
 ]
 
