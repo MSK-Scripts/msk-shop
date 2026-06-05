@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import {
   Gift, Sparkles, RefreshCw, Globe, Palette, Layers,
@@ -10,10 +11,32 @@ import { Badge } from '@/components/ui/Badge'
 import { Card } from '@/components/ui/Card'
 import { SITE_CONFIG } from '@/lib/config'
 
-export const metadata = {
-  title:       'Discord Giveaway Bot – MSK Scripts',
+export const metadata: Metadata = {
+  title: { absolute: 'Discord Giveaway Bot – Restart-Safe & Multilingual | MSK Scripts' },
   description:
-    'A multilingual, per-guild configurable Discord giveaway bot built on Discord.js v14. Restart-safe scheduling, weighted bonus entries, eligibility rules, templates and pause/resume — invite the official instance in one click.',
+    'Free Discord giveaway bot built on Discord.js v14. Button entry, restart-safe scheduling, weighted bonus entries, eligibility rules, templates, reroll and pause/resume. Invite the official instance in one click.',
+  keywords: [
+    'Discord giveaway bot', 'Discord giveaway', 'giveaway bot', 'button entry giveaway',
+    'Discord.js giveaway', 'multilingual giveaway bot', 'free giveaway bot',
+    'weighted giveaway entries', 'MSK Scripts',
+  ],
+  alternates: { canonical: '/giveaway' },
+  openGraph: {
+    type:        'website',
+    siteName:    'MSK Scripts',
+    url:         '/giveaway',
+    title:       'Discord Giveaway Bot – Restart-Safe & Multilingual',
+    description:
+      'Free Discord giveaway bot: button entry, restart-safe scheduling, weighted bonus entries, eligibility rules, templates, reroll and pause/resume.',
+    images: [{ url: '/msk_multibot_banner.png', alt: 'MSK Discord Giveaway Bot' }],
+  },
+  twitter: {
+    card:        'summary_large_image',
+    title:       'Discord Giveaway Bot – Restart-Safe & Multilingual',
+    description:
+      'Free Discord giveaway bot built on Discord.js v14 — button entry, weighted entries, eligibility rules, templates and reroll.',
+    images: ['/msk_multibot_banner.png'],
+  },
 }
 
 const INVITE_URL =

@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import {
   ArrowRight, KeyRound, LayoutDashboard, BarChart3, Ticket, ClipboardList,
@@ -11,10 +12,32 @@ import { Card } from '@/components/ui/Card'
 import { SITE_CONFIG } from '@/lib/config'
 import { TIER_CONFIG, type Tier } from '@/lib/tiers'
 
-export const metadata = {
-  title:       'Discord Ticket Bot – MSK Scripts',
+export const metadata: Metadata = {
+  title: { absolute: 'Discord Ticket Bot – Self-Hosted Support Tickets | MSK Scripts' },
   description:
-    'A modern, self-hosted Discord ticket bot built on Discord.js v14 and SQLite — no external database, no telemetry, full feature set out of the box. Get your API key, manage your bot and track live stats.',
+    'Free, self-hosted Discord ticket bot built on Discord.js v14 & SQLite. Custom ticket types, claim system, HTML transcripts, ratings, auto-close and a hosted dashboard. Get your API key in minutes.',
+  keywords: [
+    'Discord ticket bot', 'Discord support bot', 'self-hosted ticket bot',
+    'Discord.js ticket system', 'ticket transcripts', 'open source ticket bot',
+    'free ticket bot', 'Discord tickets', 'MSK Scripts',
+  ],
+  alternates: { canonical: '/ticketbot' },
+  openGraph: {
+    type:        'website',
+    siteName:    'MSK Scripts',
+    url:         '/ticketbot',
+    title:       'Discord Ticket Bot – Self-Hosted Support Tickets',
+    description:
+      'Free, self-hosted Discord ticket bot: custom ticket types, claim system, HTML transcripts, ratings, auto-close and a hosted management dashboard.',
+    images: [{ url: '/discord_ticketbot_banner.png', alt: 'MSK Discord Ticket Bot' }],
+  },
+  twitter: {
+    card:        'summary_large_image',
+    title:       'Discord Ticket Bot – Self-Hosted Support Tickets',
+    description:
+      'Free, self-hosted Discord ticket bot built on Discord.js v14 & SQLite — tickets, transcripts, ratings and a hosted dashboard.',
+    images: ['/discord_ticketbot_banner.png'],
+  },
 }
 
 const SPONSORS_URL = 'https://github.com/sponsors/MSK-Scripts'
