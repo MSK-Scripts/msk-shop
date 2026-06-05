@@ -40,7 +40,7 @@ export const metadata: Metadata = {
 }
 
 const INVITE_URL =
-  'https://discord.com/oauth2/authorize?client_id=1512397062652690502&scope=bot+applications.commands&permissions=478208'
+  'https://discord.com/oauth2/authorize?client_id=1512465732179329065&scope=bot+applications.commands&permissions=478208'
 const GITHUB_URL = 'https://github.com/MSK-Scripts/discord_giveawaybot'
 
 const HIGHLIGHTS = ['Free to invite', 'Restart-safe', 'Multilingual', 'Discord.js v14', 'No privileged intents']
