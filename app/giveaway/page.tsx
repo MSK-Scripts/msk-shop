@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import {
-  ArrowRight, Gift, Sparkles, RefreshCw, Globe, Palette, Layers,
+  Gift, Sparkles, RefreshCw, Globe, Palette, Layers,
   Shield, Users, PauseCircle, ScrollText, ClipboardList, Star,
   Check, MessageSquare, FileText, Github, Terminal, UserCheck,
   CalendarClock, ListChecks, BarChart3,
