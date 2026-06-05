@@ -3,7 +3,7 @@ import {
   ArrowRight, Gift, Sparkles, RefreshCw, Globe, Palette, Layers,
   Shield, Users, PauseCircle, ScrollText, ClipboardList, Star,
   Check, MessageSquare, FileText, Github, Terminal, UserCheck,
-  CalendarClock, ListChecks,
+  CalendarClock, ListChecks, BarChart3,
 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
@@ -129,6 +129,12 @@ export default function GiveawayBotPage() {
                 <FileText className="h-4 w-4" />
                 Documentation
               </a>
+            </Button>
+            <Button asChild size="lg" variant="outline">
+              <Link href="/giveaway/stats">
+                <BarChart3 className="h-4 w-4" />
+                Live Stats
+              </Link>
             </Button>
             <Button asChild size="lg" variant="outline">
               <a href={SITE_CONFIG.discord} target="_blank" rel="noopener noreferrer">

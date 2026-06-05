@@ -25,6 +25,12 @@ interface NavItem {
    * werden, um das Verhalten explizit zu erzwingen.
    */
   external?: boolean
+  /**
+   * Unterpunkte. Ist dies gesetzt, wird der Eintrag auf dem Desktop beim
+   * Hovern (oder per Tastatur-Fokus) zu einem Dropdown — der Haupt-Link
+   * bleibt klickbar. Auf Mobile werden die Unterpunkte eingerückt gelistet.
+   */
+  children?: NavItem[]
 }
 
 const NAV_ITEMS_PRIMARY: NavItem[] = [
@@ -32,8 +38,22 @@ const NAV_ITEMS_PRIMARY: NavItem[] = [
 ]
 
 const NAV_ITEMS_SECONDARY: NavItem[] = [
-  { label: 'Ticket Bot', href: '/ticketbot' },
-  { label: 'Giveaway Bot', href: '/giveaway' },
+  {
+    label: 'Ticket Bot',
+    href: '/ticketbot',
+    children: [
+      { label: 'Verify',    href: '/verify' },
+      { label: 'Dashboard', href: '/dashboard' },
+      { label: 'Stats',     href: '/stats' },
+    ],
+  },
+  {
+    label: 'Giveaway Bot',
+    href: '/giveaway',
+    children: [
+      { label: 'Stats', href: '/giveaway/stats' },
+    ],
+  },
   { label: 'Documentation', href: 'https://docu.msk-scripts.de' },
 ]
 
@@ -186,6 +206,80 @@ function HeaderInner() {
       </Link>
     )
 
+  // Desktop: Einträge mit `children` werden zu einem Hover-Dropdown (rein per
+  // CSS via group-hover/group-focus-within — kein State, kein Hydration-Risiko).
+  // Der Haupt-Link bleibt klickbar; das `pt-2` überbrückt die Lücke zum Panel,
+  // damit das Menü beim Mauswechsel nicht zuklappt.
+  const renderDesktopNavItem = (item: NavItem) => {
+    if (!item.children?.length) return renderNavItem(item)
+    const active = isActive(item.href) || item.children.some(c => isActive(c.href))
+    return (
+      <div key={item.href} className="group relative">
+        <Link
+          href={item.href}
+          prefetch
+          className={cn(navLinkClasses(active), 'inline-flex items-center gap-1')}
+          aria-haspopup="menu"
+        >
+          {item.label}
+          <ChevronDown className="h-3.5 w-3.5 transition-transform duration-150 group-hover:rotate-180" />
+        </Link>
+        <div
+          role="menu"
+          className="invisible absolute left-0 top-full z-[60] pt-2 opacity-0 transition-all duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100"
+        >
+          <div className="min-w-[200px] overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] p-1.5 shadow-xl">
+            {item.children.map(child => (
+              <Link
+                key={child.href}
+                href={child.href}
+                prefetch
+                role="menuitem"
+                className={cn(
+                  'flex items-center gap-2.5 rounded-md px-3 py-2 text-sm outline-none transition-colors',
+                  isActive(child.href)
+                    ? 'bg-[var(--color-muted)] text-[var(--color-foreground)]'
+                    : 'text-[var(--color-muted-foreground)] hover:bg-[var(--color-muted)] hover:text-[var(--color-foreground)]',
+                )}
+              >
+                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-primary)]" />
+                {child.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Mobile: kein Hover — Haupt-Link plus eingerückte Unterpunkte.
+  const renderMobileNavItem = (item: NavItem) => {
+    if (!item.children?.length) return renderNavItem(item)
+    return (
+      <div key={item.href}>
+        {renderNavItem(item)}
+        <div className="ml-3 mt-1 flex flex-col gap-0.5 border-l border-[var(--color-border)] pl-2">
+          {item.children.map(child => (
+            <Link
+              key={child.href}
+              href={child.href}
+              prefetch
+              className={cn(
+                'flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors',
+                isActive(child.href)
+                  ? 'bg-[var(--color-muted)] text-[var(--color-foreground)]'
+                  : 'text-[var(--color-muted-foreground)] hover:bg-[var(--color-muted)] hover:text-[var(--color-foreground)]',
+              )}
+            >
+              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-primary)]" />
+              {child.label}
+            </Link>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <>
       <header className="sticky top-0 z-50 border-b border-[var(--color-border)] bg-[color-mix(in_oklab,var(--color-background)_85%,transparent)] backdrop-blur-md">
@@ -210,7 +304,7 @@ function HeaderInner() {
 
           {/* Desktop-Nav */}
           <nav className="ml-4 hidden flex-1 items-center gap-1 md:flex" aria-label="Primary">
-            {NAV_ITEMS_PRIMARY.map(renderNavItem)}
+            {NAV_ITEMS_PRIMARY.map(renderDesktopNavItem)}
 
             {/* Categories-Dropdown — manuelles useState-Dropdown */}
             <div className="relative" ref={catRef}>
@@ -288,7 +382,7 @@ function HeaderInner() {
               )}
             </div>
 
-            {NAV_ITEMS_SECONDARY.map(renderNavItem)}
+            {NAV_ITEMS_SECONDARY.map(renderDesktopNavItem)}
           </nav>
           <div className="flex-1 md:hidden" />
 
@@ -392,7 +486,7 @@ function HeaderInner() {
         {mobileOpen && (
           <div className="border-t border-[var(--color-border)] bg-[var(--color-background)] md:hidden">
             <nav className="flex flex-col gap-1 px-4 py-3" aria-label="Mobile">
-              {NAV_ITEMS_PRIMARY.map(renderNavItem)}
+              {NAV_ITEMS_PRIMARY.map(renderMobileNavItem)}
 
               {hasCategories && (
                 <div className="mt-2">
@@ -415,7 +509,7 @@ function HeaderInner() {
 
               <div className="mt-2 h-px bg-[var(--color-border)]" />
 
-              {NAV_ITEMS_SECONDARY.map(renderNavItem)}
+              {NAV_ITEMS_SECONDARY.map(renderMobileNavItem)}
 
               <button
                 onClick={() => { setSearchOpen(true); setMobileOpen(false) }}
