@@ -291,7 +291,7 @@ When a member leaves a giveaway before it ends (by pressing the button again), t
 
 ### Retention
 
-Giveaway data is retained for the operation of the service — so that commands such as `/ginfo` and `/greroll` continue to work — and is **not subject to an automatic deletion schedule**. Per-server settings persist until they are changed. You may request erasure of your data at any time (see "Your Rights Under the GDPR" below); server administrators can also remove the bot from their server.
+Giveaway data is retained only while the bot is a member of your server, so that commands such as `/ginfo` and `/greroll` continue to work. **When the bot is removed from a server, all of that server's data — per-server settings, giveaways, entries, winners and templates — is deleted immediately and automatically.** While the bot remains on the server, per-server settings persist until they are changed. You may also request erasure of your data at any time (see "Your Rights Under the GDPR" below).
 
 ### Public Statistics Page
 
@@ -376,8 +376,8 @@ Our homepage displays the current online member count of our Discord server. The
 | GitHub sponsorship data | Until account deletion |
 | Hosted bot configuration files (`config.jsonc`, `snippets.jsonc`, `.env`) | Until hosting is terminated + 14 days |
 | Hosted bot log output | Not persistently stored (live buffer only) |
-| Giveaway Bot — per-server settings | Until changed or erasure request |
-| Giveaway Bot — giveaway, entry and winner records (Discord user IDs) | Until erasure request (no automatic deletion); participant entries removed on leave |
+| Giveaway Bot — per-server settings | Deleted immediately when the bot is removed from the server; otherwise until changed or erasure request |
+| Giveaway Bot — giveaway, entry and winner records (Discord user IDs) | Deleted immediately when the bot is removed from the server, or on erasure request; participant entries removed on leave |
 
 ---
 
