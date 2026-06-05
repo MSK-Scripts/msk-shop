@@ -1,6 +1,6 @@
 # Nutzungsbedingungen
 
-*Stand: Mai 2026*
+*Stand: Juni 2026*
 
 ## 1. Geltungsbereich
 
@@ -9,8 +9,9 @@ Diese Nutzungsbedingungen gelten für die Nutzung aller MSK Scripts-Dienste unte
 - **MSK Scripts Shop** — Kauf digitaler Produkte (FiveM-Ressourcen und Discord-Bots) über Tebex
 - **MSK Ticket Bot Transcript Service** — ein optionaler, abonnementbasierter Hosting-Dienst für Nutzer, die den MSK Ticket Bot selbst betreiben
 - **Hosted Bot Management** — ein optionaler, vollständig verwalteter Hosting-Dienst für den MSK Ticket Bot, der Premium- und Premium+-Kunden auf individuelle Anfrage zur Verfügung steht
+- **MSK Giveaway Bot** — ein kostenloser, als offizielle öffentliche Instanz betriebener Discord-Bot, den Sie zu Ihrem eigenen Discord-Server hinzufügen können, um Giveaways durchzuführen
 
-Mit dem Abschluss eines Kaufs oder der Registrierung für einen dieser Dienste stimmen Sie diesen Bedingungen zu.
+Mit dem Abschluss eines Kaufs, der Registrierung für einen dieser Dienste oder dem Einladen des Giveaway Bots auf Ihren Discord-Server stimmen Sie diesen Bedingungen zu.
 
 ---
 
@@ -176,7 +177,36 @@ Beide Parteien können das Hosting-Arrangement jederzeit mit angemessener Frist 
 
 ---
 
-## 9. Haftungsbeschränkung
+## 9. Discord Giveaway Bot
+
+### 9.1 Leistungsbeschreibung
+
+Der MSK Giveaway Bot ist ein **kostenloser** Discord-Bot, der von MSK Scripts als offizielle öffentliche Instanz betrieben wird. Sie fügen ihn über den offiziellen Einladungslink zu Ihrem eigenen Discord-Server hinzu und nutzen ihn zum Erstellen und Durchführen von Giveaways. Für die Nutzung sind kein Abonnement, keine Zahlung und kein Konto erforderlich.
+
+Ein Selbst-Hosting des Bots ist weder erforderlich noch wird es unterstützt; der veröffentlichte Quellcode dient ausschließlich der Transparenz.
+
+### 9.2 Zulässige Nutzung
+
+Bei der Nutzung des Giveaway Bots verpflichten Sie sich, ihn nicht zu verwenden, um:
+- Giveaways durchzuführen, die gegen die **Discord-Nutzungsbedingungen** oder Community-Richtlinien verstoßen
+- unzulässige Lotterien, Glücksspiele oder Gewinnspiele zu veranstalten, sofern diese verboten sind oder eine Genehmigung erfordern, die Sie nicht besitzen
+- Spam zu versenden oder die Discord-Infrastruktur anderweitig zu missbrauchen
+- illegale Inhalte oder Preise zu verbreiten, die rechtswidrig sind oder Rechte Dritter verletzen
+
+### 9.3 Ihre Verantwortung als Server-Betreiber
+
+Sie sind allein verantwortlich für die auf Ihrem Server durchgeführten Giveaways, einschließlich:
+- der **Rechtmäßigkeit** jedes Giveaways (Preise, Teilnahmebedingungen sowie etwaiges anwendbares Gewinnspiel-, Preisausschreiben- oder Verbraucherschutzrecht)
+- der Aushändigung etwaiger angebotener Preise — MSK Scripts ist nicht Partei Ihrer Giveaways und stellt keine Preise bereit
+- der Information Ihrer Server-Mitglieder darüber, dass ein Drittanbieter (MSK Scripts) den Bot betreibt und Discord-Kennungen wie in unserer [Datenschutzerklärung](/terms/privacy) beschrieben verarbeitet
+
+### 9.4 Verfügbarkeit und Änderungen
+
+Der Giveaway Bot wird kostenlos und **ohne garantierte Verfügbarkeit oder SLA** bereitgestellt. Wir können den Bot jederzeit und ohne Vorankündigung ändern, aussetzen oder einstellen — oder ihn bei Missbrauch von einzelnen Servern entfernen. Für Giveaways, die aufgrund von Ausfallzeiten, Wartung oder Einstellung des Dienstes unterbrochen, verzögert oder verloren gehen, übernehmen wir keine Haftung.
+
+---
+
+## 10. Haftungsbeschränkung
 
 MSK Scripts übernimmt keine Haftung für Schäden, die durch die Nutzung unserer Produkte oder Dienste entstehen, es sei denn, diese sind auf grobe Fahrlässigkeit oder Vorsatz zurückzuführen.
 
@@ -189,13 +219,13 @@ Insbesondere übernehmen wir keine Haftung für:
 
 ---
 
-## 10. Support
+## 11. Support
 
 Support für Shop-Produkte und den Transcript Service wird über unseren Discord-Server bereitgestellt. Wir bemühen uns um zeitnahe Antworten, können jedoch keine garantierten Reaktionszeiten zusichern.
 
 ---
 
-## 11. Änderungen der Nutzungsbedingungen
+## 12. Änderungen der Nutzungsbedingungen
 
 Wir behalten uns das Recht vor, diese Nutzungsbedingungen jederzeit zu aktualisieren. Änderungen werden auf dieser Seite mit aktualisiertem Datum veröffentlicht. Die fortgesetzte Nutzung unserer Dienste nach Veröffentlichung der Änderungen gilt als Zustimmung zu den aktualisierten Bedingungen.
 
@@ -203,6 +233,6 @@ Bei wesentlichen Änderungen der Abo-Bedingungen für den Transcript Service wer
 
 ---
 
-## 12. Anwendbares Recht
+## 13. Anwendbares Recht
 
 Diese Nutzungsbedingungen unterliegen dem Recht der **Bundesrepublik Deutschland**. Gerichtsstand für alle Streitigkeiten aus oder im Zusammenhang mit diesen Nutzungsbedingungen ist, soweit gesetzlich zulässig, der Sitz des Lizenzgebers.

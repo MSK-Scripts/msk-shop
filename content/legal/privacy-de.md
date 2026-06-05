@@ -90,13 +90,15 @@ Diese Seite nutzt aus Sicherheitsgründen eine SSL- bzw. TLS-Verschlüsselung. E
 
 ## Datenerfassung auf dieser Website
 
-Diese Website betreibt zwei eigenständige Dienste mit jeweils eigener Datenverarbeitung:
+Diese Website betreibt die folgenden eigenständigen Dienste mit jeweils eigener Datenverarbeitung:
 
 **a) MSK Scripts Shop** — zum Kauf von FiveM-Ressourcen und Discord-Bots über Tebex.
 
 **b) MSK Ticket Bot Transcript Service** — ein optionaler gehosteter Dienst für Nutzer, die den MSK Ticket Bot selbst betreiben. Er speichert Ticket-Transkripte online und stellt öffentliche Links bereit. Nutzer authentifizieren sich über GitHub und Discord OAuth, um einen API Key zu erhalten.
 
 **c) Hosted Bot Management** — ein optionaler, vollständig verwalteter Hosting-Dienst für Premium- und Premium+-Kunden. Der Bot läuft auf den Servern von MSK Scripts; die Verwaltung erfolgt über das Web-Dashboard.
+
+**d) MSK Giveaway Bot** — ein kostenloser, von MSK Scripts als offizielle öffentliche Instanz betriebener Discord-Bot. Auf deinen Discord-Server eingeladen, ermöglicht er das Erstellen und Durchführen von Giveaways. Er verarbeitet Discord-Kennungen (Server-, Channel-, Rollen- und Nutzer-IDs), um Teilnahmen zu verwalten und Gewinner zu ziehen. Eine öffentliche, anonyme Statistikseite ist unter **www.msk-scripts.de/giveaway/stats** verfügbar.
 
 ### Vom Shop erhobene Daten
 
@@ -126,6 +128,21 @@ Diese Website betreibt zwei eigenständige Dienste mit jeweils eigener Datenvera
 - **PM2-Log-Ausgabe** — Laufzeitausgabe des Bot-Prozesses; über das Dashboard live abrufbar, wird nicht dauerhaft gespeichert
 - **Discord-Server-ID (Guild-ID)** — zur Identifikation der gehosteten Bot-Instanz; verknüpft mit dem bestehenden Transcript Service-Konto
 
+### Vom Giveaway Bot erhobene Daten
+
+Wenn die offizielle Giveaway-Bot-Instanz zu einem Discord-Server hinzugefügt wird, werden folgende Daten in ihrer Datenbank gespeichert:
+
+- **Discord-Server-ID (Guild-ID)** — zur Speicherung der Giveaway-Einstellungen des Servers und zur Zuordnung von Giveaways zum richtigen Server
+- **Discord-Channel- und Nachrichten-IDs** — um die Giveaway-Nachricht und ihren Teilnahme-Button zu finden
+- **Discord-Rollen-IDs** — ausschließlich zur Serverkonfiguration (Manager-/Notify-Rolle, Whitelist-/Blacklist-Rollen, Bonus-Lose-Rollen)
+- **Discord-Nutzer-ID des Erstellers** — das Mitglied, das das Giveaway erstellt hat
+- **Discord-Nutzer-IDs der Teilnehmer** — gespeichert, wenn ein Mitglied per Button teilnimmt; wird sofort wieder entfernt, wenn es vor Ende wieder austritt
+- **Discord-Nutzer-IDs der Gewinner** — gespeichert, sobald Gewinner gezogen werden (inkl. Reroll)
+- **Giveaway-Inhalt** — Titel, Beschreibung, Dauer, Anzahl der Gewinner und Status
+- **Server-Einstellungen** — Sprache, Embed-Farbe, Button-Stil und -Emoji sowie die konfigurierten Teilnahmebedingungen (Mindest-Account-/Mitgliedschaftsalter)
+
+Über den Giveaway Bot erheben wir **keine** Nachrichteninhalte, E-Mail-Adressen, Nutzernamen oder sonstige Discord-Profildaten.
+
 ### Nicht erhobene Daten
 
 - Wir erheben keine Zahlungsdaten für den Shop. Die Zahlungsabwicklung erfolgt ausschließlich durch **Tebex Limited**.
@@ -146,6 +163,8 @@ Diese Website betreibt zwei eigenständige Dienste mit jeweils eigener Datenvera
 | Rate Limiting | Art. 6 Abs. 1 lit. f DSGVO — berechtigte Interessen (Missbrauchsschutz) |
 | Hosted Bot Management — Speicherung von Konfigurationsdateien und Zugangsdaten | Art. 6 Abs. 1 lit. b DSGVO — Vertragserfüllung |
 | Hosted Bot Management — Bot-Prozess-Logs | Art. 6 Abs. 1 lit. b DSGVO — Vertragserfüllung |
+| Giveaway Bot — Server-Einstellungen, Giveaway-Verwaltung, Teilnahmen und Gewinner | Art. 6 Abs. 1 lit. f DSGVO — berechtigte Interessen (Bereitstellung der angeforderten Bot-Funktionalität) |
+| Giveaway Bot — anonyme aggregierte Statistiken | Art. 6 Abs. 1 lit. f DSGVO — berechtigte Interessen (es werden keine personenbezogenen Daten angezeigt) |
 
 ---
 
@@ -180,7 +199,7 @@ Der **sessionStorage** wird zur vorübergehenden Speicherung des FiveM- und Disc
 
 ### Sprachpräferenz-Cookie
 
-Auf den Seiten **/terms** (Rechtstexte), **/stats**, **/verify** und **/dashboard** wird ein technisch notwendiges Cookie gesetzt, um Ihre gewählte Anzeigesprache (Deutsch oder Englisch) seitenübergreifend zu speichern:
+Auf den Seiten **/terms** (Rechtstexte), **/stats**, **/giveaway/stats**, **/verify** und **/dashboard** wird ein technisch notwendiges Cookie gesetzt, um Ihre gewählte Anzeigesprache (Deutsch oder Englisch) seitenübergreifend zu speichern:
 
 | Cookie-Name | Zweck | Dauer |
 |---|---|---|
@@ -258,6 +277,30 @@ Für Premium- und Premium+-Kunden, die den Hosted Bot Management Service nutzen,
 
 **Zugriffskontrolle:** Auf die Konfigurationsdateien können ausschließlich der Dienstbetreiber (MSK Scripts) und Sie über das authentifizierte Dashboard unter **www.msk-scripts.de/dashboard** zugreifen.
 
+---
+
+## Giveaway Bot — Detaillierte Verarbeitung
+
+MSK Scripts betreibt die offizielle öffentliche Instanz des Giveaway Bots. Lädt ein Server-Administrator den Bot auf seinen Discord-Server ein, ist MSK Scripts Verantwortlicher für die Daten, die der Bot in seiner Datenbank speichert.
+
+### Was gespeichert wird und warum
+
+Der Bot speichert serverbezogene Einstellungen sowie pro Giveaway den Giveaway-Inhalt zusammen mit den Discord-Nutzer-IDs des Erstellers, der Teilnehmer und der Gewinner. Teilnehmer-IDs sind erforderlich, um Mehrfachteilnahmen zu verhindern, die konfigurierten Teilnahmebedingungen anzuwenden und Gewinner zu ziehen. Gewinner-IDs werden gespeichert, damit Ergebnisse sichtbar bleiben und Rerolls möglich sind.
+
+Tritt ein Mitglied vor Ende eines Giveaways wieder aus (durch erneutes Drücken des Buttons), wird seine Teilnahme **sofort gelöscht**.
+
+### Aufbewahrung
+
+Giveaway-Daten werden zum Betrieb des Dienstes aufbewahrt — damit Befehle wie `/ginfo` und `/greroll` weiterhin funktionieren — und unterliegen **keiner automatischen Löschfrist**. Server-Einstellungen bleiben bestehen, bis sie geändert werden. Sie können jederzeit die Löschung Ihrer Daten verlangen (siehe „Ihre Rechte nach der DSGVO" unten); Server-Administratoren können den Bot zudem von ihrem Server entfernen.
+
+### Öffentliche Statistikseite
+
+Die Seite unter **www.msk-scripts.de/giveaway/stats** zeigt ausschließlich **anonyme, aggregierte Summen** — etwa die Anzahl der Server mit dem Bot, die Gesamtzahl der Giveaways, Teilnahmen und Gewinner sowie die Verteilung nach Sprache und Status. Sie enthält **keine** Server-IDs, Nutzer-IDs, Nutzernamen oder sonstige personenbezogene Daten.
+
+### Verantwortung der Server-Administratoren
+
+Wenn Sie den Bot auf einen von Ihnen verwalteten Server einladen, sind Sie für die dort durchgeführten Giveaways verantwortlich — einschließlich ihrer Rechtmäßigkeit (Preise, Teilnahmeberechtigung, anwendbares Gewinnspielrecht) und dafür, Ihre Mitglieder darüber zu informieren, dass ein Drittanbieter (MSK Scripts) den Bot betreibt.
+
 Bei Beendigung des Hosting-Arrangements werden alle Dateien in Ihrem Bot-Verzeichnis (einschließlich der `.env`-Datei) innerhalb von **14 Tagen** von unseren Servern gelöscht.
 
 ### Eigene Domain (Premium und Premium+)
@@ -333,6 +376,8 @@ Unsere Startseite zeigt die aktuelle Online-Mitgliederzahl unseres Discord-Serve
 | GitHub-Sponsoring-Daten | Bis zur Kontolöschung |
 | Hosted Bot Konfigurationsdateien (`config.jsonc`, `snippets.jsonc`, `.env`) | Bis zur Beendigung des Hostings + 14 Tage |
 | Hosted Bot Log-Ausgabe | Nicht dauerhaft gespeichert (nur Live-Puffer) |
+| Giveaway Bot — Server-Einstellungen | Bis zur Änderung oder Löschanfrage |
+| Giveaway Bot — Giveaway-, Teilnahme- und Gewinner-Datensätze (Discord-Nutzer-IDs) | Bis zur Löschanfrage (keine automatische Löschung); Teilnahmen werden bei Austritt entfernt |
 
 ---
 

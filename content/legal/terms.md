@@ -1,6 +1,6 @@
 # Terms & Conditions
 
-*Last updated: May 2026*
+*Last updated: June 2026*
 
 ## 1. Scope
 
@@ -9,8 +9,9 @@ These Terms & Conditions apply to all use of the MSK Scripts services available 
 - **MSK Scripts Shop** — purchase of digital products (FiveM resources and Discord bots) via Tebex
 - **MSK Ticket Bot Transcript Service** — an optional subscription-based hosted service for users who self-host the MSK Ticket Bot
 - **Hosted Bot Management** — an optional fully managed hosting service for the MSK Ticket Bot, available to Premium and Premium+ customers by individual arrangement
+- **MSK Giveaway Bot** — a free Discord bot, operated as an official public instance, that you can add to your own Discord server to run giveaways
 
-By completing a purchase or registering for any of these services, you agree to these terms.
+By completing a purchase, registering for any of these services, or inviting the Giveaway Bot to your Discord server, you agree to these terms.
 
 ---
 
@@ -176,7 +177,36 @@ Either party may terminate the hosting arrangement at any time with reasonable n
 
 ---
 
-## 9. Limitation of Liability
+## 9. Discord Giveaway Bot
+
+### 9.1 Service Description
+
+The MSK Giveaway Bot is a **free** Discord bot operated by MSK Scripts as an official public instance. You add it to your own Discord server via the official invite link and use it to create and run giveaways. There is no subscription, payment, or account required to use it.
+
+Self-hosting of the bot is neither required nor supported; the published source code is provided for transparency only.
+
+### 9.2 Acceptable Use
+
+When using the Giveaway Bot, you agree that you will not use it to:
+- Run giveaways that violate **Discord's Terms of Service** or Community Guidelines
+- Conduct unlawful lotteries, gambling, or promotions where these are prohibited or require a licence you do not hold
+- Send spam or otherwise abuse Discord's infrastructure
+- Distribute illegal content, or prizes that are illegal or infringe third-party rights
+
+### 9.3 Your Responsibility as a Server Operator
+
+You are solely responsible for the giveaways you run on your server, including:
+- The **legality** of each giveaway (prizes, eligibility conditions, and any applicable promotion, sweepstakes, or consumer-protection law)
+- Delivering any prizes you offer — MSK Scripts is not a party to your giveaways and provides no prizes
+- Informing your server members that a third-party service (MSK Scripts) operates the bot and processes Discord identifiers as described in our [Privacy Policy](/terms/privacy)
+
+### 9.4 Service Availability and Changes
+
+The Giveaway Bot is provided free of charge and **without any guaranteed uptime or SLA**. We may modify, suspend, or discontinue the bot — or remove it from individual servers in cases of abuse — at any time and without notice. We accept no liability for giveaways that are interrupted, delayed, or lost due to downtime, maintenance, or discontinuation of the service.
+
+---
+
+## 10. Limitation of Liability
 
 MSK Scripts accepts no liability for damages arising from the use of our products or services, unless caused by gross negligence or willful misconduct.
 
@@ -189,13 +219,13 @@ In particular, we accept no liability for:
 
 ---
 
-## 10. Support
+## 11. Support
 
 Support for shop products and the Transcript Service is provided via our Discord server. We aim to respond promptly but cannot guarantee specific response times.
 
 ---
 
-## 11. Changes to Terms
+## 12. Changes to Terms
 
 We reserve the right to update these Terms & Conditions at any time. Changes will be published on this page with an updated date. Continued use of our services after changes are published constitutes acceptance of the updated terms.
 
@@ -203,6 +233,6 @@ For material changes to the Transcript Service subscription terms, we will make 
 
 ---
 
-## 12. Governing Law
+## 13. Governing Law
 
 These Terms are governed by the laws of the **Federal Republic of Germany**. To the extent permitted by law, the exclusive place of jurisdiction for all disputes arising from or in connection with these Terms is the licensor's place of business.
