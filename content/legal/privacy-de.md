@@ -134,7 +134,7 @@ Wenn die offizielle Giveaway-Bot-Instanz zu einem Discord-Server hinzugefügt wi
 
 - **Discord-Server-ID (Guild-ID)** — zur Speicherung der Giveaway-Einstellungen des Servers und zur Zuordnung von Giveaways zum richtigen Server
 - **Discord-Channel- und Nachrichten-IDs** — um die Giveaway-Nachricht und ihren Teilnahme-Button zu finden
-- **Discord-Rollen-IDs** — ausschließlich zur Serverkonfiguration (Manager-/Notify-Rolle, Whitelist-/Blacklist-Rollen, Bonus-Lose-Rollen)
+- **Discord-Rollen-IDs** — zur serverweiten und Giveaway-spezifischen Konfiguration (Manager-/Notify-Rolle, Whitelist-/Blacklist-Rollen, Bonus-Lose-Rollen)
 - **Discord-Nutzer-ID des Erstellers** — das Mitglied, das das Giveaway erstellt hat
 - **Discord-Nutzer-IDs der Teilnehmer** — gespeichert, wenn ein Mitglied per Button teilnimmt; wird sofort wieder entfernt, wenn es vor Ende wieder austritt
 - **Discord-Nutzer-IDs der Gewinner** — gespeichert, sobald Gewinner gezogen werden (inkl. Reroll)

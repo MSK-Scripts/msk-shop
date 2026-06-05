@@ -134,7 +134,7 @@ When the official Giveaway Bot instance is added to a Discord server, the follow
 
 - **Discord server ID (guild ID)** — to store the server's giveaway settings and assign giveaways to the correct server
 - **Discord channel and message IDs** — to locate the giveaway message and its entry button
-- **Discord role IDs** — server configuration only (manager / notify role, whitelist / blacklist roles, bonus-entry roles)
+- **Discord role IDs** — server-wide and per-giveaway configuration (manager / notify role, whitelist / blacklist roles, bonus-entry roles)
 - **Discord user ID of the giveaway host** — the member who created the giveaway
 - **Discord user IDs of participants** — stored when a member joins a giveaway via the button; removed again immediately if they leave before it ends
 - **Discord user IDs of winners** — stored when winners are drawn (including rerolls)
