@@ -4,7 +4,7 @@ import {
   Gift, Sparkles, RefreshCw, Globe, Palette, Layers,
   Shield, Users, PauseCircle, ScrollText, ClipboardList, Star,
   Check, MessageSquare, FileText, Github, Terminal, UserCheck,
-  CalendarClock, ListChecks, BarChart3,
+  CalendarClock, ListChecks, BarChart3, Mail, Bell, Pencil,
 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
@@ -54,7 +54,10 @@ const FEATURES = [
   { icon: Shield,       title: 'Eligibility Rules',   text: 'Whitelist / blacklist roles — server-wide or scoped to a single giveaway — plus minimum account age and server membership.' },
   { icon: PauseCircle,  title: 'Pause & Resume',      text: 'Freeze the timer mid-giveaway if something goes wrong, then resume seamlessly where you left off.' },
   { icon: Layers,       title: 'Templates',           text: 'Save and reuse giveaway configurations — perfect for recurring weekly or event giveaways.' },
-  { icon: Sparkles,     title: 'Reroll Winners',      text: 'Draw fresh winners for any ended giveaway with one command, respecting your blacklist.' },
+  { icon: Sparkles,     title: 'Reroll Winners',      text: 'Redraw all winners — or replace a single winner — for any ended giveaway.' },
+  { icon: Mail,         title: 'Winner DMs',          text: 'Winners get a DM with the prize, your claim instructions and a link to the giveaway.' },
+  { icon: Bell,         title: 'Ending-Soon Reminders', text: 'Automatically remind your members a configurable time before a giveaway ends.' },
+  { icon: Pencil,       title: 'Edit & Extend',       text: 'Adjust a running giveaway or extend its end time on the fly — no need to recreate it.' },
   { icon: Globe,        title: 'Multilingual',        text: 'English, German, French and Spanish built in — pick the language per server.' },
   { icon: Palette,      title: 'Per-Guild Branding',  text: 'Custom embed colour, button emoji and style so every giveaway matches your community.' },
   { icon: ScrollText,   title: 'Audit Logging',       text: 'Optional log channel records every giveaway event — created, ended, rerolled and more.' },
@@ -72,8 +75,10 @@ interface CommandRow {
 
 const COMMANDS: CommandRow[] = [
   { cmd: '/gcreate',          who: 'Manager',     text: 'Open a modal and create a giveaway in the current channel.' },
+  { cmd: '/gedit <id>',       who: 'Manager',     text: 'Edit a running giveaway (title, description, winners, prize).' },
+  { cmd: '/gextend <id>',     who: 'Manager',     text: "Extend a running giveaway's end time." },
   { cmd: '/gend <id>',        who: 'Manager',     text: 'End a giveaway immediately and draw the winners.' },
-  { cmd: '/greroll <id>',     who: 'Manager',     text: 'Draw new winners for an ended giveaway.' },
+  { cmd: '/greroll <id>',     who: 'Manager',     text: 'Redraw all winners, or replace a single winner with the optional user option.' },
   { cmd: '/gcancel <id>',     who: 'Manager',     text: 'Cancel an active giveaway without drawing a winner.' },
   { cmd: '/gpause <id>',      who: 'Manager',     text: 'Pause a giveaway and freeze its timer.' },
   { cmd: '/gresume <id>',     who: 'Manager',     text: 'Resume a paused giveaway.' },
@@ -81,6 +86,7 @@ const COMMANDS: CommandRow[] = [
   { cmd: '/gsettings',        who: 'Manage Server', text: 'Show, set or remove per-server settings — and per-giveaway role rules.' },
   { cmd: '/glist',            who: 'Everyone',    text: 'List the active giveaways in the server.' },
   { cmd: '/ginfo <id>',       who: 'Everyone',    text: 'Show details about a specific giveaway.' },
+  { cmd: '/gstats',           who: 'Everyone',    text: "Show this server's giveaway statistics." },
   { cmd: '/ghelp',            who: 'Everyone',    text: 'Overview of every command.' },
   { cmd: '/ginvite',          who: 'Everyone',    text: 'Get the invite link for the bot.' },
 ]
