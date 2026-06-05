@@ -50,8 +50,8 @@ const HIGHLIGHTS = ['Free to invite', 'Restart-safe', 'Multilingual', 'Discord.j
 const FEATURES = [
   { icon: Gift,         title: 'Button Entry',        text: 'Members join with a single click — no reactions, no spam. Customisable emoji, label and button style.' },
   { icon: RefreshCw,    title: 'Restart-Safe',        text: 'A poll-based scheduler means no giveaway is ever lost or orphaned, even after a full server reboot.' },
-  { icon: Users,        title: 'Weighted Bonus Entries', text: 'Grant specific roles extra entries (0–100) for a fairer or reward-driven draw.' },
-  { icon: Shield,       title: 'Eligibility Rules',   text: 'Whitelist / blacklist roles, minimum account age and minimum server membership — all per server.' },
+  { icon: Users,        title: 'Weighted Bonus Entries', text: 'Grant specific roles extra entries (up to 100) for a fairer or reward-driven draw.' },
+  { icon: Shield,       title: 'Eligibility Rules',   text: 'Whitelist / blacklist roles — server-wide or scoped to a single giveaway — plus minimum account age and server membership.' },
   { icon: PauseCircle,  title: 'Pause & Resume',      text: 'Freeze the timer mid-giveaway if something goes wrong, then resume seamlessly where you left off.' },
   { icon: Layers,       title: 'Templates',           text: 'Save and reuse giveaway configurations — perfect for recurring weekly or event giveaways.' },
   { icon: Sparkles,     title: 'Reroll Winners',      text: 'Draw fresh winners for any ended giveaway with one command, respecting your blacklist.' },
@@ -78,7 +78,7 @@ const COMMANDS: CommandRow[] = [
   { cmd: '/gpause <id>',      who: 'Manager',     text: 'Pause a giveaway and freeze its timer.' },
   { cmd: '/gresume <id>',     who: 'Manager',     text: 'Resume a paused giveaway.' },
   { cmd: '/gtemplate',        who: 'Manager',     text: 'Save, list, delete or use giveaway templates.' },
-  { cmd: '/gsettings',        who: 'Manage Server', text: 'Show or configure all per-server settings.' },
+  { cmd: '/gsettings',        who: 'Manage Server', text: 'Show, set or remove per-server settings — and per-giveaway role rules.' },
   { cmd: '/glist',            who: 'Everyone',    text: 'List the active giveaways in the server.' },
   { cmd: '/ginfo <id>',       who: 'Everyone',    text: 'Show details about a specific giveaway.' },
   { cmd: '/ghelp',            who: 'Everyone',    text: 'Overview of every command.' },
@@ -98,7 +98,7 @@ const STEPS = [
 const SETTINGS = [
   { icon: Palette,       title: 'Appearance',  text: 'Embed colour, button emoji and button style (Primary / Secondary / Success / Danger).' },
   { icon: Globe,         title: 'Language',    text: 'Switch the bot UI between English, German, French and Spanish.' },
-  { icon: ListChecks,    title: 'Eligibility', text: 'Whitelist & blacklist roles, bonus entries, minimum account and membership age.' },
+  { icon: ListChecks,    title: 'Eligibility', text: 'Whitelist & blacklist roles (server-wide or per giveaway), bonus entries, minimum account and membership age.' },
   { icon: CalendarClock, title: 'Roles & Logs', text: 'Manager role, notify role to ping on creation and an optional audit log channel.' },
 ]
 
