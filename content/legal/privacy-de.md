@@ -291,7 +291,7 @@ Tritt ein Mitglied vor Ende eines Giveaways wieder aus (durch erneutes Drücken 
 
 ### Aufbewahrung
 
-Giveaway-Daten werden zum Betrieb des Dienstes aufbewahrt — damit Befehle wie `/ginfo` und `/greroll` weiterhin funktionieren — und unterliegen **keiner automatischen Löschfrist**. Server-Einstellungen bleiben bestehen, bis sie geändert werden. Sie können jederzeit die Löschung Ihrer Daten verlangen (siehe „Ihre Rechte nach der DSGVO" unten); Server-Administratoren können den Bot zudem von ihrem Server entfernen.
+Giveaway-Daten werden nur aufbewahrt, solange der Bot Mitglied Ihres Servers ist — damit Befehle wie `/ginfo` und `/greroll` weiterhin funktionieren. **Wird der Bot von einem Server entfernt, werden sämtliche Daten dieses Servers — Server-Einstellungen, Giveaways, Teilnahmen, Gewinner und Vorlagen — umgehend und automatisch gelöscht.** Solange der Bot auf dem Server verbleibt, bestehen die Server-Einstellungen, bis sie geändert werden. Sie können darüber hinaus jederzeit die Löschung Ihrer Daten verlangen (siehe „Ihre Rechte nach der DSGVO" unten).
 
 ### Öffentliche Statistikseite
 
@@ -376,8 +376,8 @@ Unsere Startseite zeigt die aktuelle Online-Mitgliederzahl unseres Discord-Serve
 | GitHub-Sponsoring-Daten | Bis zur Kontolöschung |
 | Hosted Bot Konfigurationsdateien (`config.jsonc`, `snippets.jsonc`, `.env`) | Bis zur Beendigung des Hostings + 14 Tage |
 | Hosted Bot Log-Ausgabe | Nicht dauerhaft gespeichert (nur Live-Puffer) |
-| Giveaway Bot — Server-Einstellungen | Bis zur Änderung oder Löschanfrage |
-| Giveaway Bot — Giveaway-, Teilnahme- und Gewinner-Datensätze (Discord-Nutzer-IDs) | Bis zur Löschanfrage (keine automatische Löschung); Teilnahmen werden bei Austritt entfernt |
+| Giveaway Bot — Server-Einstellungen | Werden beim Entfernen des Bots vom Server umgehend gelöscht; andernfalls bis zur Änderung oder Löschanfrage |
+| Giveaway Bot — Giveaway-, Teilnahme- und Gewinner-Datensätze (Discord-Nutzer-IDs) | Werden beim Entfernen des Bots vom Server umgehend gelöscht oder auf Löschanfrage; Teilnahmen werden bei Austritt entfernt |
 
 ---
 
