@@ -94,6 +94,11 @@ printf 'command="/opt/msk-shop/scripts/deploy.sh",no-agent-forwarding,no-port-fo
   ```bash
   ssh-keyscan -t ed25519 -p <port> <host>     # Output → DEPLOY_HOST_FINGERPRINT
   ```
+> ⚠️ **`PermitRootLogin` muss Key-Login für root erlauben** — `prohibit-password`
+> (empfohlen, blockt nur Passwörter) oder `yes`. **NICHT** `forced-commands-only`:
+> das erlaubt nur noch Forced-Command-Keys und sperrt deinen normalen interaktiven
+> Root-Login aus. Der Deploy-Key funktioniert unter `prohibit-password`/`yes` ohnehin.
+> Nach Änderung: `sshd -t && systemctl reload ssh`, Login aus zweitem Terminal prüfen.
 
 ### 6. Workflows pushen
 Erst **jetzt** die geänderten `.github/workflows/ci.yml`, `deploy.yml`, `scripts/deploy.sh`
