@@ -103,12 +103,19 @@ async function checkRateLimit(apiKey: string, maxPerHour: number): Promise<boole
   return true;
 }
 
-/** Validate a filename – strip path traversal and dangerous characters. */
-function sanitizeFilename(name: string): string {
-  return path
-    .basename(name)
-    .replace(/[^a-zA-Z0-9._\-]/g, '_')
-    .substring(0, 200);
+/** Allow-listed attachment extensions — mirrors the Apache FilesMatch allowlist,
+ *  minus html/svg (which can carry active content). The on-disk filename is
+ *  rebuilt as `<uuid>.<ext>`, so an attacker-controlled name such as "x.php.png"
+ *  (legacy AddHandler bypass), "../x" or a null-byte trick can never reach the
+ *  web root — defense in depth, independent of the Apache config. */
+const ALLOWED_ATTACHMENT_EXTS = new Set([
+  'png', 'jpg', 'jpeg', 'gif', 'webp', 'pdf', 'mp4', 'mp3', 'zip', 'txt',
+]);
+
+/** Return a lowercased, allow-listed file extension, or null if not allowed. */
+function safeAttachmentExt(name: string): string | null {
+  const ext = path.extname(name).slice(1).toLowerCase();
+  return ALLOWED_ATTACHMENT_EXTS.has(ext) ? ext : null;
 }
 
 /** Validate MIME type for attachments – block executables. */
@@ -185,6 +192,12 @@ export async function POST(req: Request): Promise<NextResponse> {
       if (!isAllowedMime(att.mimeType ?? '')) {
         return NextResponse.json({ error: `Attachment type not allowed: ${att.mimeType}` }, { status: 400 });
       }
+      // Allow-list the file EXTENSION (not just the client-supplied MIME, which is
+      // a trivially-spoofable blocklist). This is the control that blocks
+      // executable/active types (.php/.html/.svg/…) from reaching the web root.
+      if (!safeAttachmentExt(att.name)) {
+        return NextResponse.json({ error: `Attachment file type not allowed: ${path.extname(att.name) || '(none)'}` }, { status: 400 });
+      }
       const sizeBytes = Math.ceil(att.data.length * 3 / 4); // approx. base64 decoded size
       totalAttachmentBytes += sizeBytes;
     }
@@ -228,15 +241,18 @@ export async function POST(req: Request): Promise<NextResponse> {
 
     for (const att of attachments) {
       const attId       = randomUUID();
-      const safeName    = sanitizeFilename(att.name);
-      const attFilePath = path.join(attachmentsDir, `${attId}-${safeName}`);
+      const ext         = safeAttachmentExt(att.name)!;   // allow-listed in step 6
+      const storedName  = `${attId}.${ext}`;
+      const attFilePath = path.join(attachmentsDir, storedName);
       const buffer      = Buffer.from(att.data, 'base64');
 
-      // Path is safe: attachmentsDir uses server-generated UUIDs; filename is sanitized.
-      // Content is base64-decoded attachment — intentional by design. MIME + size validated above.
-      await writeFile(attFilePath, buffer); // lgtm[js/http-to-file-access]
+      // Path is fully server-controlled: server-generated directories + a UUID
+      // filename with an allow-listed extension. The attacker-controlled name is
+      // NOT used on disk, so script/multi-extensions and traversal cannot reach
+      // the web root. Content is the uploaded file (intended by design).
+      await writeFile(attFilePath, buffer);
 
-      const downloadUrl = `${urlPrefix}/${transcriptId}/attachments/${attId}-${safeName}`;
+      const downloadUrl = `${urlPrefix}/${transcriptId}/attachments/${storedName}`;
       savedAttachments.push({
         id:           attId,
         originalName: att.name,
