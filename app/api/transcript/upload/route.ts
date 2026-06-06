@@ -2,6 +2,7 @@ import { NextResponse }               from 'next/server';
 import { randomUUID }                  from 'crypto';
 import { writeFile, mkdir }            from 'fs/promises';
 import path                            from 'path';
+import sharp                           from 'sharp';
 import { query, queryOne }             from '@/lib/db';
 import { TIER_CONFIG, getExpiresAt }   from '@/lib/tiers';
 import type { Tier }                   from '@/lib/tiers';
@@ -116,6 +117,26 @@ const ALLOWED_ATTACHMENT_EXTS = new Set([
 function safeAttachmentExt(name: string): string | null {
   const ext = path.extname(name).slice(1).toLowerCase();
   return ALLOWED_ATTACHMENT_EXTS.has(ext) ? ext : null;
+}
+
+/** Image extensions we re-encode through sharp — strips embedded payloads /
+ *  polyglots / metadata and proves the bytes are a real image. Non-image
+ *  allow-listed types (pdf/mp4/mp3/zip/txt) are stored as-is. */
+const IMAGE_EXTS = new Set(['png', 'jpg', 'jpeg', 'webp', 'gif']);
+
+/** Re-encode an image attachment. Throws if the bytes are not a decodable image
+ *  → the caller rejects the upload. */
+async function reencodeImage(ext: string, raw: Buffer): Promise<Buffer> {
+  const animated = ext === 'gif' || ext === 'webp';
+  const img = sharp(raw, { animated });
+  switch (ext) {
+    case 'png':  return img.png().toBuffer();
+    case 'jpg':
+    case 'jpeg': return img.jpeg().toBuffer();
+    case 'webp': return img.webp().toBuffer();
+    case 'gif':  return img.gif().toBuffer();
+    default:     return raw;
+  }
 }
 
 /** Validate MIME type for attachments – block executables. */
@@ -244,13 +265,24 @@ export async function POST(req: Request): Promise<NextResponse> {
       const ext         = safeAttachmentExt(att.name)!;   // allow-listed in step 6
       const storedName  = `${attId}.${ext}`;
       const attFilePath = path.join(attachmentsDir, storedName);
-      const buffer      = Buffer.from(att.data, 'base64');
+      const raw         = Buffer.from(att.data, 'base64');
 
-      // Path is fully server-controlled: server-generated directories + a UUID
-      // filename with an allow-listed extension. The attacker-controlled name is
-      // NOT used on disk, so script/multi-extensions and traversal cannot reach
-      // the web root. Content is the uploaded file (intended by design).
-      await writeFile(attFilePath, buffer);
+      // Image attachments are re-encoded through sharp (strips polyglots/payloads/
+      // metadata and confirms it's a real image); non-image allow-listed types are
+      // stored as-is. The on-disk path is fully server-controlled (UUID + allow-
+      // listed extension), so the attacker-controlled name never reaches the web root.
+      let data: Buffer;
+      if (IMAGE_EXTS.has(ext)) {
+        try {
+          data = await reencodeImage(ext, raw);
+        } catch {
+          return NextResponse.json({ error: `Attachment is not a valid ${ext} image.` }, { status: 400 });
+        }
+      } else {
+        data = raw;
+      }
+
+      await writeFile(attFilePath, data);
 
       const downloadUrl = `${urlPrefix}/${transcriptId}/attachments/${storedName}`;
       savedAttachments.push({
@@ -258,7 +290,7 @@ export async function POST(req: Request): Promise<NextResponse> {
         originalName: att.name,
         filePath:     attFilePath,
         downloadUrl,
-        sizeBytes:    buffer.length,
+        sizeBytes:    data.length,
         mimeType:     att.mimeType,
       });
     }
