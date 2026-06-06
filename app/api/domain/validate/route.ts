@@ -60,7 +60,7 @@ export async function POST(_req: Request): Promise<NextResponse> {
   if (guild.domain_status !== 'active') {
     try {
       await execFileAsync('sudo', [
-        '/opt/msk-scripts/vhost-create.sh',
+        '/opt/msk-shop/scripts/vhost-create.sh',
         guild.custom_domain,
         session.guildId,
         process.env.ADMIN_EMAIL ?? 'info@msk-scripts.de',

@@ -89,17 +89,20 @@ run_as_app_user 'npm ci'
 #    TEBEX_PRIVATE_KEY müssen dort stehen).
 run_as_app_user 'npm run build'
 
-# 5. Berechtigungen: App-Files dem App-User, .git/ bleibt root (git läuft als
-#    root), scripts/deploy.sh bleibt root-owned + 755 (wird als root aufgerufen;
-#    chmod ist auch ein Sicherheitsnetz, falls Git das x-Bit verliert).
+# 5. Berechtigungen.
+#    App-Files → App-User. .git/ und scripts/ bleiben ROOT-OWNED.
+#    scripts/ MUSS root-owned + nicht app-user-beschreibbar sein: vhost-*.sh
+#    werden vom App-User per NOPASSWD-sudo als root ausgeführt — lägen sie in
+#    einem vom App-User beschreibbaren Verzeichnis, könnte er sie (bzw. via
+#    Verzeichnis-Schreibrecht die ganze Datei) austauschen → Privilege
+#    Escalation. deploy.sh läuft als root und aktualisiert scripts/ via git
+#    trotzdem problemlos.
 find "$REPO_DIR" -mindepth 1 -maxdepth 1 \
   ! -name '.git' ! -name 'scripts' \
   -exec chown -R "$APP_USER:$APP_USER" {} +
-chown -R "$APP_USER:$APP_USER" "$REPO_DIR/scripts"
-if [[ -f "$REPO_DIR/scripts/deploy.sh" ]]; then
-  chown root:root "$REPO_DIR/scripts/deploy.sh"
-  chmod 755 "$REPO_DIR/scripts/deploy.sh"
-fi
+chown -R root:root "$REPO_DIR/scripts"
+chmod 755 "$REPO_DIR/scripts"
+find "$REPO_DIR/scripts" -name '*.sh' -exec chmod 755 {} +
 
 # 6. systemd-Unit aktualisieren, falls geändert.
 if ! cmp -s "$REPO_DIR/msk-shop.service" /etc/systemd/system/msk-shop.service 2>/dev/null; then

@@ -116,12 +116,19 @@ nach `main` pushen. CI läuft → bei Grün triggert der Deploy automatisch.
 
 ## Hinweise
 
-- **vhost-Skripte** (`vhost-create.sh`/`vhost-delete.sh`) bleiben **manuell** unter
-  `/opt/msk-scripts/` (root:root + sudoers) — die App ruft sie dort hartkodiert auf.
-  Der Repo-Clone unter `/opt/msk-shop/scripts/` ist die versionierte Quelle; Änderungen
-  müssen weiterhin manuell nach `/opt/msk-scripts/` übernommen werden.
-- **`cleanup.js`-Cron** kann jetzt auf `/opt/msk-shop/scripts/cleanup.js` zeigen
-  (wird mit jedem Deploy aktualisiert) — Env-Load + `NODE_PATH` weiterhin nötig.
+- **vhost-Skripte** (`vhost-create.sh`/`vhost-delete.sh`) liegen jetzt **versioniert im
+  Repo** unter `/opt/msk-shop/scripts/` und deployen automatisch mit. Die App ruft sie
+  dort auf (`app/api/domain/*`).
+  - **Sicherheit:** `deploy.sh` lässt `scripts/` **`root:root`** (nicht vom App-User
+    beschreibbar) — sonst wäre die NOPASSWD-sudo-Ausführung der vhost-Skripte eine
+    Privilege Escalation. `git`/`deploy.sh` (als root) aktualisieren sie trotzdem.
+  - **sudoers anpassen** (`/etc/sudoers.d/msk-vhost`) auf den neuen Pfad:
+    ```
+    musiker15 ALL=(root) NOPASSWD: /opt/msk-shop/scripts/vhost-create.sh, /opt/msk-shop/scripts/vhost-delete.sh
+    ```
+    Danach `sudo visudo -c`. Das alte `/opt/msk-scripts/` kann anschließend entfernt werden.
+- **`cleanup.js`-Cron** auf `/opt/msk-shop/scripts/cleanup.js` zeigen lassen (wird mit jedem
+  Deploy aktualisiert) — Env-Load + `NODE_PATH` weiterhin nötig (siehe Datei-Header).
 - **DB:** msk-shop nutzt rohes `database/schema.sql` (kein Prisma) — `deploy.sh` führt
   **keine** Migrationen aus. Schema-Änderungen manuell einspielen.
 - **Audit-Log** des Deploys: `/var/log/msk-shop-deploy.log`.

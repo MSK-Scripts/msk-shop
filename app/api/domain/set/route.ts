@@ -79,7 +79,7 @@ export async function POST(req: Request): Promise<NextResponse> {
   // If domain changed and there was an old active domain → remove old VHost
   if (guild.custom_domain && guild.custom_domain !== domain && guild.domain_status === 'active') {
     try {
-      await execFileAsync('sudo', ['/opt/msk-scripts/vhost-delete.sh', guild.custom_domain]);
+      await execFileAsync('sudo', ['/opt/msk-shop/scripts/vhost-delete.sh', guild.custom_domain]);
     } catch (err) {
       console.error('[domain/set] Failed to delete old VHost:', err);
     }
@@ -106,7 +106,7 @@ export async function POST(req: Request): Promise<NextResponse> {
   // DNS is OK → create VHost + SSL
   try {
     await execFileAsync('sudo', [
-      '/opt/msk-scripts/vhost-create.sh',
+      '/opt/msk-shop/scripts/vhost-create.sh',
       domain,
       session.guildId,
       process.env.ADMIN_EMAIL ?? 'info@msk-scripts.de',

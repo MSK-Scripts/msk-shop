@@ -33,7 +33,7 @@ export async function POST(): Promise<NextResponse> {
   // Remove VHost if active
   if (guild.domain_status === 'active') {
     try {
-      await execFileAsync('sudo', ['/opt/msk-scripts/vhost-delete.sh', guild.custom_domain]);
+      await execFileAsync('sudo', ['/opt/msk-shop/scripts/vhost-delete.sh', guild.custom_domain]);
     } catch (err) {
       console.error('[domain/remove] VHost deletion failed:', err);
       // Continue anyway — update DB regardless
