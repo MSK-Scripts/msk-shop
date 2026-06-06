@@ -1,2 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Shell-Skripte immer mit LF auschecken — sonst bricht der Shebang auf dem
+# Linux-Server (`/bin/bash^M: bad interpreter`), egal mit welchem OS committet.
+*.sh text eol=lf

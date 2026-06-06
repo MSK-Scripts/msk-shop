@@ -1,99 +1,79 @@
-name: Deploy MSK Shop
+name: Deploy
+
+# Auto-Deploy auf den Produktiv-Server (server-side git checkout + Build via
+# scripts/deploy.sh).
+#
+# Löst aus, sobald der CI-Workflow auf `main` erfolgreich war (workflow_run).
+# Zusätzlich manuell triggerbar via "Run workflow" — optional mit einem
+# Commit-SHA zum Zurückrollen (workflow_dispatch.commit_sha).
+#
+# Benötigte GitHub-Secrets:
+#   - DEPLOY_SSH_KEY           Private-Key des Action-Keys (ed25519).
+#   - DEPLOY_HOST              Zielhost, z. B. msk-scripts.de bzw. Server-IP.
+#   - DEPLOY_HOST_FINGERPRINT  Output von `ssh-keyscan -t ed25519 [-p <port>] <host>`.
+#   - DEPLOY_USER (optional)   SSH-Benutzer (Default: root).
+#   - DEPLOY_PORT (optional)   SSH-Port (Default: 22).
+#
+# Der Action-Key in authorized_keys ist per ForceCommand auf
+# `/opt/msk-shop/scripts/deploy.sh` festgenagelt — selbst bei Key-Leak kann nur
+# deploy.sh laufen. Der SHA kommt via $SSH_ORIGINAL_COMMAND an.
 
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: ['CI']
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      commit_sha:
+        description: 'Optionaler Commit-SHA (Rollback). Leer = letzter main-Stand.'
+        required: false
+        default: ''
 
 permissions:
   contents: read
 
+# Nur einen Deploy gleichzeitig — laufende Deploys nicht abbrechen.
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
 jobs:
   deploy:
-    name: Build & Deploy
+    name: Deploy auf Produktion
     runs-on: ubuntu-latest
-
+    # Auf workflow_run nur deployen, wenn die CI grün war. workflow_dispatch
+    # umgeht das absichtlich (z. B. Rollback bei rotem CI).
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    environment:
+      name: production
+      url: https://www.msk-scripts.de/
     steps:
-      # ── 1. Checkout ──────────────────────────────────────────
-      - name: ⬇️ Checkout repository
+      - name: Checkout (nur für den Workflow-Code)
         uses: actions/checkout@v6
+
+      - name: SSH-Agent mit Action-Key laden
+        uses: webfactory/ssh-agent@v0.10.0
         with:
-          fetch-depth: 1
+          ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
 
-      # ── 2. Node.js ───────────────────────────────────────────
-      - name: ⚙️ Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: '22'
-          cache: npm
+      - name: Server-Fingerprint in known_hosts schreiben
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          # Strict Host-Key-Prüfung: kein StrictHostKeyChecking=no.
+          echo "${{ secrets.DEPLOY_HOST_FINGERPRINT }}" >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
 
-      # ── 3. Install ───────────────────────────────────────────
-      - name: 📦 Install dependencies
-        run: npm ci
-
-      # ── 4. Build ─────────────────────────────────────────────
-      # NEXT_PUBLIC_* vars must be available at build time.
-      - name: 🏗️ Build
+      - name: Deploy-Skript auslösen
         env:
-          NEXT_PUBLIC_TEBEX_PUBLIC_TOKEN: ${{ secrets.NEXT_PUBLIC_TEBEX_PUBLIC_TOKEN }}
-          NEXT_PUBLIC_TEBEX_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_TEBEX_PROJECT_ID }}
-          NEXT_PUBLIC_BASE_URL: ${{ secrets.NEXT_PUBLIC_BASE_URL }}
-          TEBEX_PRIVATE_KEY: ${{ secrets.TEBEX_PRIVATE_KEY }}
-        run: npm run build
-
-      # ── 5. Deploy via SCP ────────────────────────────────────
-      # Transfers build output + runtime files to the server.
-      # Source must be comma-separated (not YAML block scalar).
-      - name: 🚀 Deploy to server
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.FTP_PORT }}
-          source: ".next/,public/,content/,package.json,package-lock.json,next.config.js,msk-shop.service"
-          target: /opt/msk-shop/
-
-      # ── 6. Server setup ──────────────────────────────────────
-      # Secrets are passed via env: (not interpolated into script text)
-      # and written to .env.local using printf for safe handling.
-      - name: 🛠️ Install production deps, set permissions & restart
-        uses: appleboy/ssh-action@v1.2.5
-        env:
-          TEBEX_PUBLIC_TOKEN: ${{ secrets.NEXT_PUBLIC_TEBEX_PUBLIC_TOKEN }}
-          TEBEX_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_TEBEX_PROJECT_ID }}
-          BASE_URL: ${{ secrets.NEXT_PUBLIC_BASE_URL }}
-          TEBEX_PRIVATE: ${{ secrets.TEBEX_PRIVATE_KEY }}
-        with:
-          host: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.FTP_PORT }}
-          envs: TEBEX_PUBLIC_TOKEN,TEBEX_PROJECT_ID,BASE_URL,TEBEX_PRIVATE
-          script: |
-            cd /opt/msk-shop
-
-            # Stop the service before touching node_modules to avoid ENOTEMPTY
-            systemctl stop msk-shop || true
-
-            # Fix npm cache permissions for www-data (uid 33)
-            mkdir -p /var/www/.npm
-            chown -R 33:33 /var/www/.npm
-
-            # Clean node_modules to ensure a fresh install (avoids ENOTEMPTY on npm ci)
-            rm -rf /opt/msk-shop/node_modules
-
-            # Install only production dependencies
-            npm ci --omit=dev
-
-            # Fix all permissions — must run after npm ci and before restart
-            chown -R musiker15:musiker15 /opt/msk-shop/
-            chmod -R u+w /opt/msk-shop/.next/
-
-            # Reload service file if it changed
-            cp /opt/msk-shop/msk-shop.service /etc/systemd/system/msk-shop.service
-            systemctl daemon-reload
-
-            # Restart the shop
-            systemctl restart msk-shop
-            systemctl status msk-shop --no-pager
+          # workflow_run: der vom CI getestete Commit. workflow_dispatch:
+          # optional vom Bediener gesetzt. Fallback: github.sha.
+          COMMIT_SHA: ${{ github.event.inputs.commit_sha || github.event.workflow_run.head_sha || github.sha }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER || 'root' }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT || '22' }}
+        run: |
+          set -euo pipefail
+          echo "Deploy commit $COMMIT_SHA an $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PORT"
+          ssh -p "$DEPLOY_PORT" -o BatchMode=yes "$DEPLOY_USER@$DEPLOY_HOST" \
+            "/opt/msk-shop/scripts/deploy.sh $COMMIT_SHA"

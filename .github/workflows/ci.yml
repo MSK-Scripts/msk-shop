@@ -1,0 +1,62 @@
+name: CI
+
+# Lint, Typecheck und Production-Build bei jedem Push auf main sowie bei PRs.
+# Der Deploy-Workflow (deploy.yml) triggert erst, wenn dieser Workflow auf main
+# erfolgreich war (workflow_run). Ersetzt den alten eslint.yml.
+
+on:
+  push:
+    branches: ['main']
+  pull_request:
+    branches: ['main']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+
+  typecheck:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    # NEXT_PUBLIC_* werden zur Build-Zeit ins Bundle inlined; ohne sie würde der
+    # Build mit Platzhaltern durchlaufen. Gleiche Secrets wie beim Server-Build.
+    env:
+      NEXT_PUBLIC_TEBEX_PUBLIC_TOKEN: ${{ secrets.NEXT_PUBLIC_TEBEX_PUBLIC_TOKEN }}
+      NEXT_PUBLIC_TEBEX_PROJECT_ID:   ${{ secrets.NEXT_PUBLIC_TEBEX_PROJECT_ID }}
+      NEXT_PUBLIC_BASE_URL:           ${{ secrets.NEXT_PUBLIC_BASE_URL }}
+      TEBEX_PRIVATE_KEY:              ${{ secrets.TEBEX_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
