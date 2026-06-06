@@ -13,7 +13,7 @@ export async function GET(req: Request) {
   const storedState  = cookieStore.get('msk_oauth_state')?.value;
 
   if (!code || !state || state !== storedState) {
-    return NextResponse.redirect(`${baseUrl}/verify?error=invalid_state`);
+    return NextResponse.redirect(`${baseUrl}/ticketbot/verify?error=invalid_state`);
   }
 
   // Exchange code for access token
@@ -30,11 +30,11 @@ export async function GET(req: Request) {
     });
     tokenData = await tokenRes.json();
   } catch {
-    return NextResponse.redirect(`${baseUrl}/verify?error=github_token_failed`);
+    return NextResponse.redirect(`${baseUrl}/ticketbot/verify?error=github_token_failed`);
   }
 
   if (!tokenData.access_token) {
-    return NextResponse.redirect(`${baseUrl}/verify?error=github_token_failed`);
+    return NextResponse.redirect(`${baseUrl}/ticketbot/verify?error=github_token_failed`);
   }
 
   // Fetch GitHub user info
@@ -48,16 +48,16 @@ export async function GET(req: Request) {
     });
     githubUser = await userRes.json();
   } catch {
-    return NextResponse.redirect(`${baseUrl}/verify?error=github_user_failed`);
+    return NextResponse.redirect(`${baseUrl}/ticketbot/verify?error=github_user_failed`);
   }
 
   if (!githubUser.login) {
-    return NextResponse.redirect(`${baseUrl}/verify?error=github_user_failed`);
+    return NextResponse.redirect(`${baseUrl}/ticketbot/verify?error=github_user_failed`);
   }
 
   // Set signed session cookie and redirect to next step
   const session = signSession({ githubUsername: githubUser.login });
-  const res     = NextResponse.redirect(`${baseUrl}/verify?step=discord`);
+  const res     = NextResponse.redirect(`${baseUrl}/ticketbot/verify?step=discord`);
 
   res.cookies.set('msk_verify_session', session, {
     httpOnly: true,

@@ -16,9 +16,9 @@ const ECOSYSTEM_LINKS = [
 ] as const
 
 const TICKETBOT_LINKS = [
-  { label: 'Statistics',    href: '/stats' },
-  { label: 'Verify',        href: '/verify' },
-  { label: 'Dashboard',     href: '/dashboard' },
+  { label: 'Statistics',    href: '/ticketbot/stats' },
+  { label: 'Verify',        href: '/ticketbot/verify' },
+  { label: 'Dashboard',     href: '/ticketbot/dashboard' },
 ] as const
 
 const LEGAL_LINKS = [

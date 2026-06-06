@@ -43,7 +43,7 @@ A headless storefront for [MSK Scripts](https://www.msk-scripts.de) — built wi
 - 📄 Markdown-based legal pages in English & German (editable without code)
 - 🟢 Live Discord online member count
 - 📰 News popup with optional coupon code display (configurable, shown on every page load)
-- 📊 Public Ticket Bot statistics page (`/stats`) — with allowlist via `STATS_IGNORED_API_KEYS`
+- 📊 Public Ticket Bot statistics page (`/ticketbot/stats`) — with allowlist via `STATS_IGNORED_API_KEYS`
 - 🎟️ Ticket Bot verify flow — Discord + GitHub OAuth, API key issuance, tier management
 - 🗂️ Ticket transcript hosting with attachment support (MariaDB-backed)
 - 🌍 Custom domain support per guild with DNS validation and Let's Encrypt SSL
@@ -243,8 +243,8 @@ export const NEWS_POPUP = {
   enabled: true,
   title: 'Discord Ticket Bot',
   text: 'Get your API Key now and create a ticket system for your community!',
-  button: { label: 'Get API Key', href: '/verify' },
-  secondButton: { label: 'Dashboard', href: '/dashboard' },
+  button: { label: 'Get API Key', href: '/ticketbot/verify' },
+  secondButton: { label: 'Dashboard', href: '/ticketbot/dashboard' },
   coupon: null, // or e.g. 'NEWSHOP20' — renders a copyable coupon field
 }
 

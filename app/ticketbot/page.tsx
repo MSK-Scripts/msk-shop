@@ -63,7 +63,7 @@ const HUB_CARDS: HubCard[] = [
     eyebrow: 'Step 1',
     title:   'Verify',
     text:    'Sign in with GitHub, connect your Discord account and select your server. Your personal API key is generated instantly and unlocks the MSK transcript service for your bot.',
-    href:    '/verify',
+    href:    '/ticketbot/verify',
     cta:     'Get API Key',
     variant: 'primary',
     accent:  true,
@@ -73,7 +73,7 @@ const HUB_CARDS: HubCard[] = [
     eyebrow: 'Manage',
     title:   'Dashboard',
     text:    'Set up a custom domain for your transcripts and — on Premium — fully manage a hosted bot: edit config, snippets, .env & language files, start / stop / restart, one-click update and stream live logs.',
-    href:    '/dashboard',
+    href:    '/ticketbot/dashboard',
     cta:     'Open Dashboard',
     variant: 'outline',
     accent:  false,
@@ -83,7 +83,7 @@ const HUB_CARDS: HubCard[] = [
     eyebrow: 'Insights',
     title:   'Stats',
     text:    'Browse anonymous live statistics of the MSK Ticket Bot across all servers — hosted transcripts, active API keys, tier distribution and storage usage.',
-    href:    '/stats',
+    href:    '/ticketbot/stats',
     cta:     'View Stats',
     variant: 'outline',
     accent:  false,
@@ -134,7 +134,7 @@ interface TierCard {
 }
 
 const TIER_CARDS: TierCard[] = [
-  { key: 'basic',        name: 'Basic',    price: 'Free', priceSub: 'forever',  badge: null,            accent: false, hosted: false, variant: 'outline', cta: 'Get API Key',         href: '/verify' },
+  { key: 'basic',        name: 'Basic',    price: 'Free', priceSub: 'forever',  badge: null,            accent: false, hosted: false, variant: 'outline', cta: 'Get API Key',         href: '/ticketbot/verify' },
   { key: 'premium',      name: 'Premium',  price: '5€',   priceSub: '/ month',  badge: 'Most popular',  accent: true,  hosted: true,  variant: 'primary', cta: 'Become a Sponsor',    href: SPONSORS_URL },
   { key: 'premium_plus', name: 'Premium+', price: '10€',  priceSub: '/ month',  badge: null,            accent: false, hosted: true,  variant: 'outline', cta: 'Become a Sponsor',    href: SPONSORS_URL },
 ]
@@ -192,7 +192,7 @@ export default function TicketBotPage() {
 
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Button asChild size="lg">
-              <Link href="/verify">
+              <Link href="/ticketbot/verify">
                 Get API Key
                 <ArrowRight className="h-4 w-4" />
               </Link>
@@ -317,7 +317,7 @@ export default function TicketBotPage() {
 
         <div className="mt-8 text-center">
           <Button asChild size="lg">
-            <Link href="/verify">
+            <Link href="/ticketbot/verify">
               Start verification
               <ArrowRight className="h-4 w-4" />
             </Link>
@@ -341,7 +341,7 @@ export default function TicketBotPage() {
               </p>
               <div className="mt-7 flex flex-wrap gap-3">
                 <Button asChild>
-                  <Link href="/dashboard">
+                  <Link href="/ticketbot/dashboard">
                     <LayoutDashboard className="h-4 w-4" />
                     Open Dashboard
                   </Link>
@@ -461,7 +461,7 @@ export default function TicketBotPage() {
             </p>
             <div className="mt-7 flex flex-wrap justify-center gap-3">
               <Button asChild size="lg">
-                <Link href="/verify">
+                <Link href="/ticketbot/verify">
                   Get API Key
                   <ArrowRight className="h-4 w-4" />
                 </Link>

@@ -177,7 +177,7 @@ export default function DashboardClient({ guild, serverIp, initialLang }: Props)
     } catch {
       // siehe Hinweis im Original — auch bei Netzwerkfehler verlassen
     }
-    window.location.href = '/verify'
+    window.location.href = '/ticketbot/verify'
   }
 
   return (
@@ -219,7 +219,7 @@ export default function DashboardClient({ guild, serverIp, initialLang }: Props)
           </div>
           <div className="flex gap-2">
             <Button asChild variant="outline" size="sm">
-              <a href="/verify">{t.new_api_key}</a>
+              <a href="/ticketbot/verify">{t.new_api_key}</a>
             </Button>
             <Button asChild variant="outline" size="sm">
               <a

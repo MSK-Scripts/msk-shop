@@ -42,9 +42,9 @@ const NAV_ITEMS_SECONDARY: NavItem[] = [
     label: 'Ticket Bot',
     href: '/ticketbot',
     children: [
-      { label: 'Verify',    href: '/verify' },
-      { label: 'Dashboard', href: '/dashboard' },
-      { label: 'Stats',     href: '/stats' },
+      { label: 'Verify',    href: '/ticketbot/verify' },
+      { label: 'Dashboard', href: '/ticketbot/dashboard' },
+      { label: 'Stats',     href: '/ticketbot/stats' },
     ],
   },
   {

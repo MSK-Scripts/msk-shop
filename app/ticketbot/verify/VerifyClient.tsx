@@ -233,7 +233,7 @@ export default function VerifyClient({ session, step: _step, errorCode, initialL
       })
       const data = await res.json()
       if (!res.ok) { setCompleteError(data.error ?? 'Error'); return }
-      router.push('/dashboard')
+      router.push('/ticketbot/dashboard')
     } catch { setCompleteError('Network error. Please try again.') }
     finally   { setDashboardLoading(false) }
   }
@@ -532,7 +532,7 @@ export default function VerifyClient({ session, step: _step, errorCode, initialL
               </Button>
 
               <Button asChild className="w-full">
-                <a href="/dashboard">
+                <a href="/ticketbot/dashboard">
                   <Globe className="h-3.5 w-3.5" />
                   {t.done_dashboard}
                 </a>

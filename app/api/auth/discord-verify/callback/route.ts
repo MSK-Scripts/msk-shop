@@ -28,11 +28,11 @@ export async function GET(req: Request) {
   const session      = sessionRaw ? parseSession(sessionRaw) : null;
 
   if (!code || !state || state !== storedState) {
-    return NextResponse.redirect(`${baseUrl}/verify?error=invalid_state`);
+    return NextResponse.redirect(`${baseUrl}/ticketbot/verify?error=invalid_state`);
   }
 
   if (!session?.githubUsername) {
-    return NextResponse.redirect(`${baseUrl}/verify?error=github_required`);
+    return NextResponse.redirect(`${baseUrl}/ticketbot/verify?error=github_required`);
   }
 
   // Exchange code for access token
@@ -51,11 +51,11 @@ export async function GET(req: Request) {
     });
     tokenData = await tokenRes.json();
   } catch {
-    return NextResponse.redirect(`${baseUrl}/verify?error=discord_token_failed`);
+    return NextResponse.redirect(`${baseUrl}/ticketbot/verify?error=discord_token_failed`);
   }
 
   if (!tokenData.access_token) {
-    return NextResponse.redirect(`${baseUrl}/verify?error=discord_token_failed`);
+    return NextResponse.redirect(`${baseUrl}/ticketbot/verify?error=discord_token_failed`);
   }
 
   // Fetch Discord user ID and guild list in parallel
@@ -74,13 +74,13 @@ export async function GET(req: Request) {
     rawGuilds         = await guildsRes.json();
     discordUserId     = discordUser?.id;
   } catch {
-    return NextResponse.redirect(`${baseUrl}/verify?error=discord_guilds_failed`);
+    return NextResponse.redirect(`${baseUrl}/ticketbot/verify?error=discord_guilds_failed`);
   }
 
   // Discord may return an error object (e.g. 429 rate limit, missing scope)
   // instead of the expected array/user — guard before using array methods.
   if (!Array.isArray(rawGuilds) || !discordUserId) {
-    return NextResponse.redirect(`${baseUrl}/verify?error=discord_guilds_failed`);
+    return NextResponse.redirect(`${baseUrl}/ticketbot/verify?error=discord_guilds_failed`);
   }
 
   // Only show guilds where the user is admin or owner
@@ -90,7 +90,7 @@ export async function GET(req: Request) {
 
   // Update session with guild list + Discord user ID, redirect to guild selection
   const updatedSession = signSession({ githubUsername: session.githubUsername, discordUserId, guilds: adminGuilds });
-  const res            = NextResponse.redirect(`${baseUrl}/verify?step=select`);
+  const res            = NextResponse.redirect(`${baseUrl}/ticketbot/verify?step=select`);
 
   res.cookies.set('msk_verify_session', updatedSession, {
     httpOnly: true,

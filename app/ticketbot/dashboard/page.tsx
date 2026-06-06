@@ -26,7 +26,7 @@ export default async function DashboardPage() {
   const session     = token ? parseDashboardSession(token) : null;
 
   if (!session?.guildId) {
-    redirect('/verify');
+    redirect('/ticketbot/verify');
   }
 
   const guild = await queryOne<GuildRow>(
@@ -36,7 +36,7 @@ export default async function DashboardPage() {
   );
 
   if (!guild) {
-    redirect('/verify');
+    redirect('/ticketbot/verify');
   }
 
   const serverIp    = process.env.SERVER_PUBLIC_IP ?? '';

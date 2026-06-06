@@ -11,7 +11,7 @@ export async function GET() {
   const session     = sessionRaw ? parseSession(sessionRaw) : null;
 
   if (!session?.githubUsername) {
-    return NextResponse.redirect(`${baseUrl}/verify?error=github_required`);
+    return NextResponse.redirect(`${baseUrl}/ticketbot/verify?error=github_required`);
   }
 
   const state   = generateState();

@@ -85,14 +85,14 @@ export const NEWS_POPUP = {
   //button: null as { label: string; href: string } | null,
   button: {
     label: 'Get API Key',
-    href: '/verify',
+    href: '/ticketbot/verify',
   } as { label: string; href: string } | null,
 
   // Optional second button — set to null to hide it
   //secondButton: null as { label: string; href: string } | null,
   secondButton: {
     label: 'Dashboard',
-    href: '/dashboard',
+    href: '/ticketbot/dashboard',
   } as { label: string; href: string } | null,
 
   // Optional coupon code — set to null to hide it
