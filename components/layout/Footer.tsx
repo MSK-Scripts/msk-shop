@@ -15,12 +15,6 @@ const ECOSYSTEM_LINKS = [
   { label: 'MSK Shortener',  href: 'https://s.msk-scripts.de/',         external: true },
 ] as const
 
-const TICKETBOT_LINKS = [
-  { label: 'Statistics',    href: '/ticketbot/stats' },
-  { label: 'Verify',        href: '/ticketbot/verify' },
-  { label: 'Dashboard',     href: '/ticketbot/dashboard' },
-] as const
-
 const LEGAL_LINKS = [
   { label: 'Imprint',          href: '/terms/imprint' },
   { label: 'Privacy Policy',   href: '/terms/privacy' },
@@ -53,10 +47,10 @@ export function Footer() {
   return (
     <footer className="mt-16 border-t border-[var(--color-border)] bg-[color-mix(in_oklab,var(--color-muted)_40%,var(--color-background))]">
       <div className="container-page py-12">
-        <div className="grid grid-cols-2 gap-10 md:grid-cols-5">
+        <div className="flex flex-col gap-10 lg:flex-row lg:justify-between">
 
           {/* Brand-Spalte */}
-          <div className="col-span-2">
+          <div className="max-w-sm">
             <Link href="/" className="flex items-center gap-2 font-bold">
               <Image src="/logo.png" alt="" width={32} height={32} className="h-8 w-8 rounded-lg object-contain" />
               <span>MSK Scripts</span>
@@ -80,6 +74,9 @@ export function Footer() {
             </div>
           </div>
 
+          {/* Link-Spalten — Anzahl passt sich automatisch an (Flex ab lg, darunter umbrechendes Grid) */}
+          <div className="grid grid-cols-2 gap-10 sm:grid-cols-3 lg:flex lg:gap-16">
+
           {/* Shop */}
           <div>
             <ColumnTitle>Shop</ColumnTitle>
@@ -96,19 +93,15 @@ export function Footer() {
             ))}
           </div>
 
-          {/* Ticketbot + Legal */}
+          {/* Legal */}
           <div>
-            <ColumnTitle>Ticketbot</ColumnTitle>
-            {TICKETBOT_LINKS.map(l => (
+            <ColumnTitle>Legal</ColumnTitle>
+            {LEGAL_LINKS.map(l => (
               <FooterLink key={l.href} href={l.href}>{l.label}</FooterLink>
             ))}
-            <div className="mt-6">
-              <ColumnTitle>Legal</ColumnTitle>
-              {LEGAL_LINKS.map(l => (
-                <FooterLink key={l.href} href={l.href}>{l.label}</FooterLink>
-              ))}
-            </div>
           </div>
+
+          </div>{/* /Link-Spalten */}
         </div>
 
         <div className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--color-border)] pt-6">

@@ -3,16 +3,41 @@
 import { useState }   from 'react';
 import { useRouter }  from 'next/navigation';
 import { Gift, LogIn, ShieldCheck } from 'lucide-react';
+import { giveawayDashboardTranslations, type Lang } from '@/lib/i18n';
+import { setLangCookie } from '@/lib/lang';
 import { Card }       from '@/components/ui/Card';
 import { Button }     from '@/components/ui/Button';
 import { cn }         from '@/lib/utils';
 
 interface Guild { id: string; name: string; icon: string | null }
 
-export default function VerifyClient({ step, guilds }: { step: 'login' | 'select'; guilds: Guild[] }) {
+function LanguageToggle({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => void }) {
+  return (
+    <div className="flex items-center gap-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)] p-1 text-xs font-semibold">
+      {(['en', 'de'] as const).map((l) => (
+        <button
+          key={l}
+          onClick={() => { setLang(l); setLangCookie(l); }}
+          className={cn(
+            'rounded px-2.5 py-1 uppercase transition-colors',
+            lang === l
+              ? 'bg-[var(--color-primary)] text-[var(--color-primary-foreground)]'
+              : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]',
+          )}
+        >
+          {l}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+export default function VerifyClient({ step, guilds, initialLang }: { step: 'login' | 'select'; guilds: Guild[]; initialLang: Lang }) {
   const router = useRouter();
+  const [lang, setLang] = useState<Lang>(initialLang);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const t = giveawayDashboardTranslations[lang];
 
   async function select(guildId: string) {
     setBusy(guildId);
@@ -23,29 +48,32 @@ export default function VerifyClient({ step, guilds }: { step: 'login' | 'select
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ guildId }),
       });
-      const data = await res.json().catch(() => null);
-      if (!res.ok) {
-        setError(data?.error ?? 'Something went wrong.');
-        setBusy(null);
-        return;
-      }
-      router.push('/giveaway/dashboard');
+      if (res.ok) { router.push('/giveaway/dashboard'); return; }
+      setError(
+        res.status === 401 ? t.v_err_unauthorized :
+        res.status === 403 ? t.v_err_forbidden :
+        res.status === 404 ? t.v_err_not_found :
+        t.v_err_generic,
+      );
+      setBusy(null);
     } catch {
-      setError('Network error. Please try again.');
+      setError(t.v_err_network);
       setBusy(null);
     }
   }
 
   return (
     <main className="mx-auto flex min-h-[70vh] w-full max-w-2xl flex-col items-center justify-center px-4 py-16">
+      <div className="mb-6 flex w-full justify-end">
+        <LanguageToggle lang={lang} setLang={setLang} />
+      </div>
+
       <div className="mb-8 flex flex-col items-center text-center">
         <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--color-primary)]/15 text-[var(--color-primary)]">
           <Gift className="h-6 w-6" />
         </div>
-        <h1 className="text-2xl font-bold tracking-tight">Giveaway Dashboard</h1>
-        <p className="mt-2 text-sm text-[var(--color-muted-foreground)]">
-          Manage your giveaways from the browser. Log in with Discord to continue.
-        </p>
+        <h1 className="text-2xl font-bold tracking-tight">{t.dashboard_title}</h1>
+        <p className="mt-2 text-sm text-[var(--color-muted-foreground)]">{t.v_subtitle}</p>
       </div>
 
       {error && (
@@ -57,7 +85,7 @@ export default function VerifyClient({ step, guilds }: { step: 'login' | 'select
       {step === 'login' && (
         <Button variant="discord" size="lg" asChild>
           <a href="/api/giveaway/auth">
-            <LogIn className="mr-2 h-4 w-4" /> Continue with Discord
+            <LogIn className="mr-2 h-4 w-4" /> {t.v_login_btn}
           </a>
         </Button>
       )}
@@ -67,17 +95,15 @@ export default function VerifyClient({ step, guilds }: { step: 'login' | 'select
           {guilds.length === 0 ? (
             <Card className="flex flex-col items-center gap-3 p-8 text-center">
               <ShieldCheck className="h-8 w-8 text-[var(--color-muted-foreground)]" />
-              <p className="text-sm text-[var(--color-muted-foreground)]">
-                None of the servers you manage have the giveaway bot yet. Invite the bot, then come back.
-              </p>
+              <p className="text-sm text-[var(--color-muted-foreground)]">{t.v_no_guilds}</p>
               <Button variant="outline" asChild>
-                <a href="/giveaway">Back to giveaway page</a>
+                <a href="/giveaway">{t.v_back}</a>
               </Button>
             </Card>
           ) : (
             <div className="flex flex-col gap-2">
               <p className="mb-1 font-mono text-[0.6875rem] font-bold uppercase tracking-widest text-[var(--color-muted-foreground)]">
-                Select a server
+                {t.v_select_server}
               </p>
               {guilds.map((g) => (
                 <button

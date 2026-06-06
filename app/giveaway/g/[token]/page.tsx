@@ -4,6 +4,8 @@ import { Trophy, Gift, Users, CalendarClock } from 'lucide-react';
 import { queryOne }     from '@/lib/db';
 import { Card }         from '@/components/ui/Card';
 import { LANG_COOKIE_NAME, resolveLang } from '@/lib/lang';
+import { giveawayResultTranslations } from '@/lib/i18n';
+import LangToggle       from './LangToggle';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,11 +14,6 @@ interface ResultRow {
   winners_count: number; entry_count: number; winners: unknown; ended_at: string | Date;
 }
 interface Winner { username: string }
-
-const T = {
-  en: { results: 'Giveaway Results', winners: 'Winners', prize: 'Prize', entries: 'Participants', ended: 'Ended', none: 'No winners were drawn.', footer: 'Hosted by MSK Scripts' },
-  de: { results: 'Giveaway-Ergebnis', winners: 'Gewinner', prize: 'Preis', entries: 'Teilnehmer', ended: 'Beendet', none: 'Es wurden keine Gewinner gezogen.', footer: 'Gehostet von MSK Scripts' },
-} as const;
 
 function parseWinners(raw: unknown): Winner[] {
   let arr: unknown = raw;
@@ -27,11 +24,13 @@ function parseWinners(raw: unknown): Winner[] {
     .map((w) => ({ username: String(w.username) }));
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ token: string }> }) {
-  const { token } = await params;
-  const row = await queryOne<ResultRow>('SELECT title FROM giveaway_results WHERE token = ?', [token]);
-  return { title: row ? `${row.title} – Giveaway Results – MSK Scripts` : 'Giveaway Results – MSK Scripts' };
-}
+// Bewusst KEINE SEO/OpenGraph für die Ergebnis-Seiten: nicht indexieren und
+// keine Link-Vorschau. (In Discord wird die Vorschau zusätzlich bot-seitig per
+// SuppressEmbeds unterdrückt.)
+export const metadata = {
+  title: 'Giveaway Results',
+  robots: { index: false, follow: false },
+};
 
 export default async function GiveawayResultPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
@@ -45,12 +44,15 @@ export default async function GiveawayResultPage({ params }: { params: Promise<{
   if (!row) notFound();
 
   const lang = resolveLang(cookieStore.get(LANG_COOKIE_NAME)?.value, headerStore.get('accept-language'));
-  const t = T[lang];
+  const t = giveawayResultTranslations[lang];
   const winners = parseWinners(row.winners);
   const endedAt = new Date(row.ended_at);
 
   return (
     <main className="mx-auto w-full max-w-xl px-4 py-16">
+      <div className="mb-6 flex justify-end">
+        <LangToggle lang={lang} />
+      </div>
       <div className="mb-8 flex flex-col items-center text-center">
         <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--color-primary)]/15 text-[var(--color-primary)]">
           <Gift className="h-7 w-7" />
