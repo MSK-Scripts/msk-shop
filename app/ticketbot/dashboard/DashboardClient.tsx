@@ -333,6 +333,10 @@ export default function DashboardClient({ guild, serverIp, initialLang }: Props)
                     </button>
                   </div>
                   <p className="mb-3 text-xs text-[var(--color-muted-foreground)]">{t.dns_note}</p>
+                  <p className="mb-3 flex items-start gap-1.5 rounded-lg border border-yellow-500/30 bg-yellow-500/10 px-2.5 py-2 text-xs text-yellow-600 dark:text-yellow-500">
+                    <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                    <span>{t.dns_cloudflare}</span>
+                  </p>
                   <Button
                     onClick={handleValidate}
                     disabled={validateLoading}
@@ -379,7 +383,9 @@ export default function DashboardClient({ guild, serverIp, initialLang }: Props)
               <p className="text-xs text-[var(--color-muted-foreground)]">
                 {lang === 'en' ? 'Make sure the A-Record points to ' : 'Stelle sicher, dass der A-Record auf '}
                 <strong className="text-[var(--color-foreground)]">{serverIp}</strong>
-                {lang === 'en' ? ' before activating.' : ' zeigt bevor du die Domain aktivierst.'}
+                {lang === 'en'
+                  ? ' before activating — set to “DNS only”, without a Cloudflare/other proxy.'
+                  : ' zeigt bevor du die Domain aktivierst — als „DNS only“, ohne Cloudflare-/anderen Proxy.'}
               </p>
             </>
           )}
