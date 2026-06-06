@@ -9,9 +9,11 @@ import type { Tier }                   from '@/lib/tiers';
 // ── Types ──────────────────────────────────────────────────────────────────────
 
 interface GuildRow {
-  guild_id: string;
-  tier:     Tier;
-  active:   number;
+  guild_id:      string;
+  tier:          Tier;
+  active:        number;
+  custom_domain: string | null;
+  domain_status: string;
 }
 
 interface RateLimitRow {
@@ -49,9 +51,22 @@ function transcriptBasePath(): string {
   return process.env.TRANSCRIPT_BASE_PATH ?? '/var/www/html/transcripts';
 }
 
-/** Derive the public base URL for transcript links. */
-function transcriptBaseUrl(): string {
-  return (process.env.NEXT_PUBLIC_BASE_URL ?? 'https://www.msk-scripts.de') + '/transcripts';
+/**
+ * Build the public URL prefix for a guild's transcript files.
+ *
+ * With an ACTIVE custom domain, the Apache vhost (vhost-create.sh) serves the
+ * guild's transcript directory directly as its DocumentRoot, so files live at
+ *   https://<custom_domain>/<transcriptId>/...
+ * Without a custom domain they're served from the main site under
+ *   <BASE_URL>/transcripts/<guild_id>/<transcriptId>/...
+ * The returned prefix has NO trailing slash — callers append `/<transcriptId>/...`.
+ */
+function transcriptUrlPrefix(guild: GuildRow): string {
+  if (guild.domain_status === 'active' && guild.custom_domain) {
+    return `https://${guild.custom_domain}`;
+  }
+  const base = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://www.msk-scripts.de';
+  return `${base}/transcripts/${guild.guild_id}`;
 }
 
 /** Enforce rate limiting – max N uploads per rolling 60-minute window per API key. */
@@ -120,7 +135,7 @@ export async function POST(req: Request): Promise<NextResponse> {
 
     // 2. Look up the guild – guild_id comes ONLY from DB, never from the request body
     const guild = await queryOne<GuildRow>(
-      `SELECT guild_id, tier, active FROM ticketbot_guilds WHERE api_key = ?`,
+      `SELECT guild_id, tier, active, custom_domain, domain_status FROM ticketbot_guilds WHERE api_key = ?`,
       [apiKey],
     );
     if (!isValidGuild(guild)) {
@@ -182,6 +197,7 @@ export async function POST(req: Request): Promise<NextResponse> {
 
     // 7. Prepare filesystem paths
     const transcriptId    = randomUUID();
+    const urlPrefix       = transcriptUrlPrefix(guild);
     const guildDir        = path.join(transcriptBasePath(), guild.guild_id);
     const transcriptDir   = path.join(guildDir, transcriptId);
     const htmlFilename    = 'transcript.html';
@@ -220,7 +236,7 @@ export async function POST(req: Request): Promise<NextResponse> {
       // Content is base64-decoded attachment — intentional by design. MIME + size validated above.
       await writeFile(attFilePath, buffer); // lgtm[js/http-to-file-access]
 
-      const downloadUrl = `${transcriptBaseUrl()}/${guild.guild_id}/${transcriptId}/attachments/${attId}-${safeName}`;
+      const downloadUrl = `${urlPrefix}/${transcriptId}/attachments/${attId}-${safeName}`;
       savedAttachments.push({
         id:           attId,
         originalName: att.name,
@@ -233,7 +249,7 @@ export async function POST(req: Request): Promise<NextResponse> {
 
     // 10. Persist to DB
     const expiresAt      = getExpiresAt(guild.tier);
-    const transcriptUrl  = `${transcriptBaseUrl()}/${guild.guild_id}/${transcriptId}/${htmlFilename}`;
+    const transcriptUrl  = `${urlPrefix}/${transcriptId}/${htmlFilename}`;
 
     await query(
       `INSERT INTO ticketbot_transcripts
