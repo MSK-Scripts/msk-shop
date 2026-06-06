@@ -1,7 +1,17 @@
 #!/usr/bin/env node
 /**
  * cleanup.js — deletes expired transcripts and attachments from disk and DB.
- * Run daily via cron:  0 3 * * *  node /var/www/msk-shop/scripts/cleanup.js
+ *
+ * NOT shipped by the deploy (not in deploy.yml's SCP source). Place it manually
+ * on the server (e.g. /opt/msk-scripts/cleanup.js) and run it daily via cron.
+ *
+ * It reads DB_* from the environment but does NOT load dotenv itself, and it
+ * requires mysql2 — so the cron must source .env.local and point NODE_PATH at
+ * the app's node_modules:
+ *
+ *   0 3 * * * set -a; . /opt/msk-shop/.env.local; set +a; \
+ *     NODE_PATH=/opt/msk-shop/node_modules /usr/bin/node /opt/msk-scripts/cleanup.js \
+ *     >> /var/log/msk-cleanup.log 2>&1
  */
 
 const { rm } = require('fs/promises');
