@@ -5,6 +5,7 @@ import {
   Shield, Users, PauseCircle, ScrollText, ClipboardList, Star,
   Check, MessageSquare, FileText, Github, Terminal, UserCheck,
   CalendarClock, ListChecks, BarChart3, Mail, Bell, Pencil,
+  LayoutDashboard, Trophy,
 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
@@ -58,6 +59,8 @@ const FEATURES = [
   { icon: Mail,         title: 'Winner DMs',          text: 'Winners get a DM with the prize, your claim instructions and a link to the giveaway.' },
   { icon: Bell,         title: 'Ending-Soon Reminders', text: 'Automatically remind your members a configurable time before a giveaway ends.' },
   { icon: Pencil,       title: 'Edit & Extend',       text: 'Adjust a running giveaway or extend its end time on the fly — no need to recreate it.' },
+  { icon: LayoutDashboard, title: 'Web Dashboard',    text: 'Create and fully manage your giveaways and settings from the browser — log in with Discord, no commands required.' },
+  { icon: Trophy,       title: 'Public Results Pages', text: 'Every finished giveaway gets a clean, shareable results page showing the winners and the participant count.' },
   { icon: Globe,        title: 'Multilingual',        text: 'English, German, French and Spanish built in — pick the language per server.' },
   { icon: Palette,      title: 'Per-Guild Branding',  text: 'Custom embed colour, button emoji and style so every giveaway matches your community.' },
   { icon: ScrollText,   title: 'Audit Logging',       text: 'Optional log channel records every giveaway event — created, ended, rerolled and more.' },
@@ -158,6 +161,12 @@ export default function GiveawayBotPage() {
                 <FileText className="h-4 w-4" />
                 Documentation
               </a>
+            </Button>
+            <Button asChild size="lg" variant="outline">
+              <Link href="/giveaway/dashboard">
+                <LayoutDashboard className="h-4 w-4" />
+                Dashboard
+              </Link>
             </Button>
             <Button asChild size="lg" variant="outline">
               <Link href="/giveaway/stats">

@@ -98,7 +98,7 @@ Diese Website betreibt die folgenden eigenständigen Dienste mit jeweils eigener
 
 **c) Hosted Bot Management** — ein optionaler, vollständig verwalteter Hosting-Dienst für Premium- und Premium+-Kunden. Der Bot läuft auf den Servern von MSK Scripts; die Verwaltung erfolgt über das Web-Dashboard.
 
-**d) MSK Giveaway Bot** — ein kostenloser, von MSK Scripts als offizielle öffentliche Instanz betriebener Discord-Bot. Auf deinen Discord-Server eingeladen, ermöglicht er das Erstellen und Durchführen von Giveaways. Er verarbeitet Discord-Kennungen (Server-, Channel-, Rollen- und Nutzer-IDs), um Teilnahmen zu verwalten und Gewinner zu ziehen. Eine öffentliche, anonyme Statistikseite ist unter **www.msk-scripts.de/giveaway/stats** verfügbar.
+**d) MSK Giveaway Bot** — ein kostenloser, von MSK Scripts als offizielle öffentliche Instanz betriebener Discord-Bot. Auf deinen Discord-Server eingeladen, ermöglicht er das Erstellen und Durchführen von Giveaways. Er verarbeitet Discord-Kennungen (Server-, Channel-, Rollen- und Nutzer-IDs), um Teilnahmen zu verwalten und Gewinner zu ziehen. Eine öffentliche, anonyme Statistikseite ist unter **www.msk-scripts.de/giveaway/stats** verfügbar. Server-Administratoren können ihre Giveaways optional über ein Web-Dashboard (Discord-Login) verwalten; nach Ende eines Giveaways wird zudem eine öffentliche Ergebnisseite mit den **Gewinnern** und der **anonymen Teilnehmerzahl** unter **www.msk-scripts.de/giveaway/g/…** gehostet.
 
 ### Vom Shop erhobene Daten
 
@@ -141,7 +141,7 @@ Wenn die offizielle Giveaway-Bot-Instanz zu einem Discord-Server hinzugefügt wi
 - **Giveaway-Inhalt** — Titel, Beschreibung, Dauer, Anzahl der Gewinner und Status
 - **Server-Einstellungen** — Sprache, Embed-Farbe, Button-Stil und -Emoji sowie die konfigurierten Teilnahmebedingungen (Mindest-Account-/Mitgliedschaftsalter)
 
-Über den Giveaway Bot erheben wir **keine** Nachrichteninhalte, E-Mail-Adressen, Nutzernamen oder sonstige Discord-Profildaten.
+Nach Ende eines Giveaways werden die **Nutzernamen der Gewinner** einmalig aufgelöst und auf der öffentlichen Ergebnisseite des Giveaways veröffentlicht (zusammen mit der anonymen Teilnehmerzahl — niemals die Teilnehmerliste). Darüber hinaus erheben wir über den Giveaway Bot **keine** Nachrichteninhalte, E-Mail-Adressen, Nutzernamen oder sonstige Discord-Profildaten.
 
 ### Nicht erhobene Daten
 
@@ -296,6 +296,14 @@ Giveaway-Daten werden nur aufbewahrt, solange der Bot Mitglied Ihres Servers ist
 ### Öffentliche Statistikseite
 
 Die Seite unter **www.msk-scripts.de/giveaway/stats** zeigt ausschließlich **anonyme, aggregierte Summen** — etwa die Anzahl der Server mit dem Bot, die Gesamtzahl der Giveaways, Teilnahmen und Gewinner sowie die Verteilung nach Sprache und Status. Sie enthält **keine** Server-IDs, Nutzer-IDs, Nutzernamen oder sonstige personenbezogene Daten.
+
+### Öffentliche Ergebnisseiten
+
+Nach Ende eines Giveaways veröffentlicht der Bot eine öffentliche Ergebnisseite unter **www.msk-scripts.de/giveaway/g/{token}** (der Token ist eine zufällige, nicht erratbare Zeichenfolge). Diese Seite zeigt Titel und Preis des Giveaways, die **Nutzernamen der Gewinner** sowie die **anonyme Teilnehmerzahl**. Sie listet bewusst **nicht** die Teilnehmer auf. Der Link wird in der Discord-Ergebnisnachricht und in den Gewinner-Benachrichtigungen geteilt. Die Seite wird entfernt, wenn der Bot vom Server entfernt wird (Löschung der Serverdaten).
+
+### Web-Dashboard
+
+Server-Administratoren können ihre Giveaways unter **www.msk-scripts.de/giveaway/dashboard** verwalten. Der Zugriff erfordert eine Discord-Anmeldung (OAuth-Scopes `identify` und `guilds`); diese nutzen wir ausschließlich, um festzustellen, welche Server Sie administrieren und ob der Bot dort vorhanden ist. Ein signiertes, httpOnly-Session-Cookie (`msk_giveaway_session`) autorisiert anschließend Verwaltungsaktionen für diesen Server. Verwaltungsaktionen werden über einen serverinternen, geheim-authentifizierten localhost-Kanal an den Bot weitergeleitet.
 
 ### Verantwortung der Server-Administratoren
 

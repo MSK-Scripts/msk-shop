@@ -98,7 +98,7 @@ This website operates the following distinct services, each with its own data pr
 
 **c) Hosted Bot Management** — an optional, fully managed hosting service for Premium and Premium+ customers. The bot runs on MSK Scripts' servers; management is performed via the web dashboard.
 
-**d) MSK Giveaway Bot** — a free Discord bot operated by MSK Scripts as an official public instance. Once invited to your Discord server, it lets you create and run giveaways. It processes Discord identifiers (server, channel, role and user IDs) to manage entries and draw winners. A public, anonymous statistics page is available at **www.msk-scripts.de/giveaway/stats**.
+**d) MSK Giveaway Bot** — a free Discord bot operated by MSK Scripts as an official public instance. Once invited to your Discord server, it lets you create and run giveaways. It processes Discord identifiers (server, channel, role and user IDs) to manage entries and draw winners. A public, anonymous statistics page is available at **www.msk-scripts.de/giveaway/stats**. Server administrators can optionally manage their giveaways through a web dashboard (Discord login), and when a giveaway ends a public results page showing the **winners** and the **anonymous participant count** is hosted under **www.msk-scripts.de/giveaway/g/…**.
 
 ### Data Collected by the Shop
 
@@ -141,7 +141,7 @@ When the official Giveaway Bot instance is added to a Discord server, the follow
 - **Giveaway content** — title, description, duration, number of winners and status
 - **Per-server settings** — language, embed colour, button style and emoji, and the configured eligibility rules (minimum account / membership age)
 
-We do **not** collect message content, email addresses, usernames or any other Discord profile data through the Giveaway Bot.
+When a giveaway ends, the **usernames of the winners** are resolved once and published on that giveaway's public results page (together with the anonymous participant count — never the participant list). Apart from this, we do **not** collect message content, email addresses, usernames or any other Discord profile data through the Giveaway Bot.
 
 ### Data We Do NOT Collect
 
@@ -296,6 +296,14 @@ Giveaway data is retained only while the bot is a member of your server, so that
 ### Public Statistics Page
 
 The page at **www.msk-scripts.de/giveaway/stats** displays only **anonymous, aggregated totals** — for example the number of servers using the bot, the total number of giveaways, entries and winners, and the distribution by language and status. It contains **no** server IDs, user IDs, usernames or other personal data.
+
+### Public Results Pages
+
+When a giveaway ends, the bot publishes a public results page at **www.msk-scripts.de/giveaway/g/{token}** (the token is a random, unguessable string). This page shows the giveaway title and prize, the **usernames of the winners**, and the **anonymous number of participants**. It deliberately does **not** list the participants. The link is shared in the Discord results message and in the winner notifications. The page is removed when the bot is removed from the server (server data deletion).
+
+### Web Dashboard
+
+Server administrators may manage their giveaways at **www.msk-scripts.de/giveaway/dashboard**. Access requires logging in with Discord (OAuth scopes `identify` and `guilds`); we use this only to determine which servers you administer and that the bot is present there. A signed, httpOnly session cookie (`msk_giveaway_session`) then authorises management actions for that server. Management actions are forwarded to the bot over a server-internal, secret-authenticated localhost channel.
 
 ### Responsibility of Server Administrators
 

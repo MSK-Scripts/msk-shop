@@ -1,6 +1,60 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 // =============================================================================
+// Rate-Limiting + Body-Limit (In-Memory, Fixed-Window)
+// =============================================================================
+// msk-shop läuft self-hosted als EIN Node-Prozess (systemd `next start`), daher
+// persistiert dieser Modul-State zuverlässig über Requests hinweg. Bei mehreren
+// Workern/Instanzen gilt das Limit pro Worker (akzeptable Degradierung).
+//
+// Client-IP kommt hinter Apache via X-Forwarded-For (mod_proxy setzt den Header).
+
+interface RateRule { prefix: string; limit: number; windowMs: number }
+
+// Greift die ERSTE passende Regel (Reihenfolge = Priorität). NUR echte
+// Public-Flächen — die bot-authentifizierten /api/giveaway-result/* Routen
+// werden bewusst NICHT IP-limitiert (der Bot ruft sie als einzelne Server-IP
+// auf; ein IP-Limit würde ihn bei vielen gleichzeitig endenden Giveaways selbst
+// aussperren — Schutz dort übernimmt der Bearer-Secret + das Body-Limit).
+const RATE_RULES: RateRule[] = [
+  { prefix: '/api/giveaway/auth', limit: 10, windowMs: 5 * 60_000 }, // OAuth-Spam bremsen
+  { prefix: '/giveaway/g/',       limit: 60, windowMs: 60_000 },     // öffentliche Ergebnis-Seiten
+]
+
+// Explizites Body-Limit (Content-Length) für Giveaway-POST/-Mutationsrouten.
+const MAX_BODY_BYTES = 64 * 1024
+const BODY_LIMIT_PREFIXES = ['/api/giveaway/', '/api/giveaway-result/']
+
+interface Bucket { count: number; reset: number }
+const buckets = new Map<string, Bucket>()
+let lastSweep = 0
+
+function clientIp(request: NextRequest): string {
+  const xff = request.headers.get('x-forwarded-for')
+  if (xff) return xff.split(',')[0].trim()
+  return request.headers.get('x-real-ip') ?? 'unknown'
+}
+
+/** true = Limit überschritten (blockieren). */
+function isRateLimited(key: string, limit: number, windowMs: number, now: number): boolean {
+  const b = buckets.get(key)
+  if (!b || b.reset <= now) {
+    buckets.set(key, { count: 1, reset: now + windowMs })
+    return false
+  }
+  if (b.count >= limit) return true
+  b.count++
+  return false
+}
+
+/** Abgelaufene Buckets gelegentlich entfernen (kein setInterval im Edge-Runtime). */
+function sweep(now: number): void {
+  if (now - lastSweep < 60_000) return
+  lastSweep = now
+  for (const [k, b] of buckets) if (b.reset <= now) buckets.delete(k)
+}
+
+// =============================================================================
 // Security Middleware — Nonce-basierte Content Security Policy
 // =============================================================================
 // Generiert pro Request einen kryptographisch sicheren Nonce, härtet das CSP
@@ -14,6 +68,37 @@ import { NextRequest, NextResponse } from 'next/server'
 // =============================================================================
 
 export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
+  const now = Date.now()
+  sweep(now)
+
+  // ── Body-Limit: übergroße Mutations-Requests früh abweisen ──────────────────
+  if (request.method !== 'GET' && request.method !== 'HEAD' &&
+      BODY_LIMIT_PREFIXES.some((p) => pathname.startsWith(p))) {
+    const len = Number(request.headers.get('content-length') ?? '0')
+    if (Number.isFinite(len) && len > MAX_BODY_BYTES) {
+      return new NextResponse('Payload Too Large', {
+        status: 413,
+        headers: { 'Content-Type': 'text/plain' },
+      })
+    }
+  }
+
+  // ── Rate-Limiting (pro IP, pro Routen-Präfix) ───────────────────────────────
+  const rule = RATE_RULES.find((r) => pathname.startsWith(r.prefix))
+  if (rule) {
+    const key = `${rule.prefix}:${clientIp(request)}`
+    if (isRateLimited(key, rule.limit, rule.windowMs, now)) {
+      return new NextResponse('Too Many Requests', {
+        status: 429,
+        headers: {
+          'Content-Type': 'text/plain',
+          'Retry-After': String(Math.ceil(rule.windowMs / 1000)),
+        },
+      })
+    }
+  }
+
   // Web-Crypto-API ist im Edge-Runtime verfügbar (Buffer nicht)
   const nonceBytes = new Uint8Array(16)
   crypto.getRandomValues(nonceBytes)
