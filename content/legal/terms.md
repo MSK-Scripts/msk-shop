@@ -183,6 +183,8 @@ Either party may terminate the hosting arrangement at any time with reasonable n
 
 The MSK Giveaway Bot is a **free** Discord bot operated by MSK Scripts as an official public instance. You add it to your own Discord server via the official invite link and use it to create and run giveaways. There is no subscription, payment, or account required to use it.
 
+Server administrators may optionally manage their giveaways through a free web dashboard at **www.msk-scripts.de/giveaway/dashboard** (Discord login). When a giveaway ends, a public results page (showing the winners and the number of participants, but not the participant list) is hosted under **www.msk-scripts.de/giveaway/g/…** and linked from Discord. These features are part of the same free service and processed as described in our [Privacy Policy](/terms/privacy).
+
 Self-hosting of the bot is neither required nor supported; the published source code is provided for transparency only.
 
 ### 9.2 Acceptable Use

@@ -44,14 +44,15 @@ const NAV_ITEMS_SECONDARY: NavItem[] = [
     children: [
       { label: 'Verify',    href: '/ticketbot/verify' },
       { label: 'Dashboard', href: '/ticketbot/dashboard' },
-      { label: 'Stats',     href: '/ticketbot/stats' },
+      { label: 'Statistics',     href: '/ticketbot/stats' },
     ],
   },
   {
     label: 'Giveaway Bot',
     href: '/giveaway',
     children: [
-      { label: 'Stats', href: '/giveaway/stats' },
+      { label: 'Dashboard', href: '/giveaway/dashboard' },
+      { label: 'Statistics', href: '/giveaway/stats' },
     ],
   },
   { label: 'Documentation', href: 'https://docu.msk-scripts.de' },

@@ -183,6 +183,8 @@ Beide Parteien können das Hosting-Arrangement jederzeit mit angemessener Frist 
 
 Der MSK Giveaway Bot ist ein **kostenloser** Discord-Bot, der von MSK Scripts als offizielle öffentliche Instanz betrieben wird. Sie fügen ihn über den offiziellen Einladungslink zu Ihrem eigenen Discord-Server hinzu und nutzen ihn zum Erstellen und Durchführen von Giveaways. Für die Nutzung sind kein Abonnement, keine Zahlung und kein Konto erforderlich.
 
+Server-Administratoren können ihre Giveaways optional über ein kostenloses Web-Dashboard unter **www.msk-scripts.de/giveaway/dashboard** (Discord-Login) verwalten. Nach Ende eines Giveaways wird eine öffentliche Ergebnisseite (mit den Gewinnern und der Teilnehmerzahl, jedoch ohne die Teilnehmerliste) unter **www.msk-scripts.de/giveaway/g/…** gehostet und aus Discord verlinkt. Diese Funktionen sind Teil desselben kostenlosen Dienstes und werden wie in unserer [Datenschutzerklärung](/terms/privacy) beschrieben verarbeitet.
+
 Ein Selbst-Hosting des Bots ist weder erforderlich noch wird es unterstützt; der veröffentlichte Quellcode dient ausschließlich der Transparenz.
 
 ### 9.2 Zulässige Nutzung

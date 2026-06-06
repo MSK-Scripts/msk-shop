@@ -187,6 +187,20 @@ Alle Session-Cookies sind:
 
 **Rechtsgrundlage:** Art. 6 Abs. 1 lit. b DSGVO — technisch notwendig zur Erbringung des Verifizierungsdienstes.
 
+### Session-Cookies (Giveaway-Dashboard)
+
+Bei Nutzung des Giveaway-Dashboards unter **www.msk-scripts.de/giveaway/dashboard** halten folgende **httpOnly Session-Cookies** den Discord-Login und die Server-Auswahl aufrecht:
+
+| Cookie-Name | Zweck | Dauer |
+|---|---|---|
+| `msk_gw_oauth_state` | CSRF-Schutz während des Discord-OAuth-Ablaufs | 10 Minuten |
+| `msk_gw_verify` | Hält Ihre Discord-User-ID und die Liste Ihrer administrierbaren Server während der Server-Auswahl | 1 Stunde |
+| `msk_giveaway_session` | Authentifiziert Sie für den ausgewählten Server im Dashboard | 30 Tage |
+
+Diese Cookies sind **httpOnly**, **Secure** und **SameSite=Lax**, genau wie die Verifizierungs-Cookies oben.
+
+**Rechtsgrundlage:** Art. 6 Abs. 1 lit. b DSGVO — technisch notwendig zur Bereitstellung des Dashboards.
+
 ### Lokaler Speicher (Shop — Warenkorb)
 
 Der **localStorage** des Browsers wird zur Speicherung der Warenkorb-Kennung verwendet. Diese Daten verlassen Ihren Browser nicht und werden nicht an unsere Server übertragen.
@@ -199,7 +213,7 @@ Der **sessionStorage** wird zur vorübergehenden Speicherung des FiveM- und Disc
 
 ### Sprachpräferenz-Cookie
 
-Auf den Seiten **/terms** (Rechtstexte), **/stats**, **/giveaway/stats**, **/verify** und **/dashboard** wird ein technisch notwendiges Cookie gesetzt, um Ihre gewählte Anzeigesprache (Deutsch oder Englisch) seitenübergreifend zu speichern:
+Auf den Seiten **/terms** (Rechtstexte), **/stats**, **/giveaway/stats**, **/giveaway/g/…** (öffentliche Ergebnisse), **/verify** und **/dashboard** wird ein technisch notwendiges Cookie gesetzt, um Ihre gewählte Anzeigesprache (Deutsch oder Englisch) seitenübergreifend zu speichern:
 
 | Cookie-Name | Zweck | Dauer |
 |---|---|---|
@@ -208,6 +222,12 @@ Auf den Seiten **/terms** (Rechtstexte), **/stats**, **/giveaway/stats**, **/ver
 Beim ersten Besuch wird die Sprache anhand des `Accept-Language`-Headers Ihres Browsers automatisch erkannt. Sobald Sie die Sprache manuell umschalten, wird Ihre Auswahl in diesem Cookie gespeichert. Das Cookie ist `SameSite=Lax` und wird ausschließlich über HTTPS übertragen (`Secure`). Es ist **nicht httpOnly**, damit die Auswahl direkt im Browser ohne zusätzlichen Server-Roundtrip umgeschaltet werden kann.
 
 **Rechtsgrundlage:** Art. 6 Abs. 1 lit. f DSGVO — berechtigtes Interesse an einer konsistenten Sprachdarstellung (technisch notwendiges Präferenz-Cookie, keine Tracking-Funktion).
+
+### Missbrauchsschutz (Rate-Limiting)
+
+Zum Schutz der öffentlich erreichbaren Endpunkte — der Giveaway-Ergebnisseiten (`/giveaway/g/…`) und des Dashboard-Logins (`/api/giveaway/auth`) — vor automatisiertem Missbrauch verarbeitet der Server **vorübergehend** Ihre IP-Adresse **im Arbeitsspeicher**, um Anfragen innerhalb eines kurzen Zeitfensters zu zählen. Dieser IP-basierte Zähler wird **in keiner Datenbank gespeichert**, **nicht** zur Profilbildung oder zum Tracking verwendet und nach Ablauf des Zeitfensters automatisch verworfen. (Davon unabhängig führt der Webserver Standard-Zugriffsprotokolle, siehe „Technische Protokolldaten".)
+
+**Rechtsgrundlage:** Art. 6 Abs. 1 lit. f DSGVO — berechtigtes Interesse an Sicherheit, Integrität und Verfügbarkeit des Dienstes.
 
 ### Tracking und Analyse
 

@@ -187,6 +187,20 @@ All session cookies are:
 
 **Legal basis:** Art. 6(1)(b) GDPR — technically necessary to provide the verification service.
 
+### Session Cookies (Giveaway Dashboard)
+
+When you use the giveaway dashboard at **www.msk-scripts.de/giveaway/dashboard**, the following **httpOnly session cookies** maintain the Discord login and server selection:
+
+| Cookie name | Purpose | Duration |
+|---|---|---|
+| `msk_gw_oauth_state` | CSRF protection during the Discord OAuth flow | 10 minutes |
+| `msk_gw_verify` | Holds your Discord user ID and your list of administrable servers during server selection | 1 hour |
+| `msk_giveaway_session` | Authenticates you for the selected server in the dashboard | 30 days |
+
+These cookies are **httpOnly**, **Secure** and **SameSite=Lax**, exactly like the verification cookies above.
+
+**Legal basis:** Art. 6(1)(b) GDPR — technically necessary to provide the dashboard.
+
 ### Local Storage (Shop — Basket)
 
 The browser's **localStorage** is used to store the basket identifier. This data does not leave your browser and is not transmitted to our servers.
@@ -199,7 +213,7 @@ The browser's **localStorage** is used to store the basket identifier. This data
 
 ### Language Preference Cookie
 
-On the pages **/terms** (legal texts), **/stats**, **/giveaway/stats**, **/verify**, and **/dashboard**, a technically necessary cookie is set to remember your chosen display language (German or English) across pages:
+On the pages **/terms** (legal texts), **/stats**, **/giveaway/stats**, **/giveaway/g/…** (public results), **/verify**, and **/dashboard**, a technically necessary cookie is set to remember your chosen display language (German or English) across pages:
 
 | Cookie name | Purpose | Duration |
 |---|---|---|
@@ -208,6 +222,12 @@ On the pages **/terms** (legal texts), **/stats**, **/giveaway/stats**, **/verif
 On your first visit, the language is detected automatically from your browser's `Accept-Language` header. As soon as you switch the language manually, your choice is stored in this cookie. The cookie is `SameSite=Lax` and is transmitted exclusively over HTTPS (`Secure`). It is **not httpOnly**, so the selection can be toggled directly in the browser without an additional server round-trip.
 
 **Legal basis:** Art. 6(1)(f) GDPR — legitimate interest in providing a consistent language presentation (technically necessary preference cookie, no tracking function).
+
+### Abuse Prevention (Rate Limiting)
+
+To protect the publicly reachable endpoints — the giveaway results pages (`/giveaway/g/…`) and the dashboard login (`/api/giveaway/auth`) — from automated abuse, the server **temporarily** processes your IP address **in memory** to count requests within a short time window. This IP-based counter is **not written to any database**, is **not** used for profiling or tracking, and is discarded automatically after the window elapses. (Separately, the web server keeps standard access logs as described under "Technical log data".)
+
+**Legal basis:** Art. 6(1)(f) GDPR — legitimate interest in the security, integrity and availability of the service.
 
 ### Tracking and Analytics
 
