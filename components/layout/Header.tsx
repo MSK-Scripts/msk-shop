@@ -63,6 +63,7 @@ function HeaderInner() {
   const [categories, setCategories] = useState<TebexCategory[]>([])
   const [categoriesLoaded, setCategoriesLoaded] = useState(false)
   const [catOpen, setCatOpen] = useState(false)
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null)
   const [searchOpen, setSearchOpen] = useState(false)
   const [hydrated, setHydrated] = useState(false)
 
@@ -157,6 +158,7 @@ function HeaderInner() {
   useEffect(() => {
     setMobileOpen(false)
     setCatOpen(false)
+    setOpenDropdown(null)
   }, [pathname])
 
   async function handleLogin() {
@@ -206,27 +208,49 @@ function HeaderInner() {
       </Link>
     )
 
-  // Desktop: Einträge mit `children` werden zu einem Hover-Dropdown (rein per
-  // CSS via group-hover/group-focus-within — kein State, kein Hydration-Risiko).
-  // Der Haupt-Link bleibt klickbar; das `pt-2` überbrückt die Lücke zum Panel,
-  // damit das Menü beim Mauswechsel nicht zuklappt.
+  // Desktop: Einträge mit `children` werden zu einem Dropdown. Hover (Maus) bzw.
+  // Fokus (Tastatur) öffnet es, Maus-Verlassen schließt es. Zusätzlich schließt
+  // ein Klick auf einen Unterpunkt sofort (setOpenDropdown(null)) und der
+  // pathname-Effekt schließt bei jedem Routenwechsel — sonst hielte der nach der
+  // Navigation noch fokussierte Link das Menü offen. Der Haupt-Link bleibt
+  // klickbar; das `pt-2` überbrückt die Lücke zum Panel (liegt im Wrapper, daher
+  // kein vorzeitiges mouseLeave).
   const renderDesktopNavItem = (item: NavItem) => {
     if (!item.children?.length) return renderNavItem(item)
     const active = isActive(item.href) || item.children.some(c => isActive(c.href))
+    const open = openDropdown === item.href
     return (
-      <div key={item.href} className="group relative">
+      <div
+        key={item.href}
+        className="relative"
+        onMouseEnter={() => setOpenDropdown(item.href)}
+        onMouseLeave={() => setOpenDropdown(null)}
+        onFocus={() => setOpenDropdown(item.href)}
+        onBlur={e => {
+          if (!e.currentTarget.contains(e.relatedTarget as Node)) setOpenDropdown(null)
+        }}
+      >
         <Link
           href={item.href}
           prefetch
           className={cn(navLinkClasses(active), 'inline-flex items-center gap-1')}
           aria-haspopup="menu"
+          aria-expanded={open}
         >
           {item.label}
-          <ChevronDown className="h-3.5 w-3.5 transition-transform duration-150 group-hover:rotate-180" />
+          <ChevronDown
+            className={cn(
+              'h-3.5 w-3.5 transition-transform duration-150',
+              open && 'rotate-180',
+            )}
+          />
         </Link>
         <div
           role="menu"
-          className="invisible absolute left-0 top-full z-[60] pt-2 opacity-0 transition-all duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100"
+          className={cn(
+            'absolute left-0 top-full z-[60] pt-2 transition-all duration-150',
+            open ? 'visible opacity-100' : 'invisible opacity-0',
+          )}
         >
           <div className="min-w-[200px] overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] p-1.5 shadow-xl">
             {item.children.map(child => (
@@ -235,6 +259,7 @@ function HeaderInner() {
                 href={child.href}
                 prefetch
                 role="menuitem"
+                onClick={() => setOpenDropdown(null)}
                 className={cn(
                   'flex items-center gap-2.5 rounded-md px-3 py-2 text-sm outline-none transition-colors',
                   isActive(child.href)
