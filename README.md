@@ -13,8 +13,9 @@ A headless storefront for [MSK Scripts](https://www.msk-scripts.de) — built wi
 | Framework | Next.js 15.5 (App Router) |
 | Language | TypeScript 5.8 (strict mode) |
 | UI | React 19.2 |
-| Styling | Tailwind CSS 3.4 |
-| Fonts | Inter (self-hosted via next/font) |
+| Styling | Tailwind CSS 4 (CSS-first — `@theme` tokens in `app/globals.css`) |
+| Theming | Light + Dark (default Dark) via `next-themes` |
+| Fonts | Inter + JetBrains Mono — self-hosted via `@fontsource-variable` |
 | State | Zustand 5 (persisted to localStorage) |
 | Data Fetching | SWR 2 |
 | Database | MariaDB / MySQL (via mysql2) |
@@ -22,12 +23,13 @@ A headless storefront for [MSK Scripts](https://www.msk-scripts.de) — built wi
 | Editor | CodeMirror (`@uiw/react-codemirror`) — Bot-Config editor |
 | JSONC parsing | `jsonc-parser` |
 | Icons | `lucide-react` |
+| Image processing | `sharp` — re-encodes uploaded image attachments |
 | Cookies (client) | `js-cookie` |
 | Auth | CFX.re (FiveM) + Discord OAuth via Tebex |
 | Verify Flow | Discord OAuth + GitHub OAuth + signed session cookies |
 | Server | Debian + Apache2 reverse proxy + systemd |
 | Bot process manager | PM2 (`pm2-musiker15.service`) |
-| CI/CD | GitHub Actions (auto-deploy on push to `main`) |
+| CI/CD | GitHub Actions — CI gate + **server-side git deploy** on push to `main` |
 
 ---
 
@@ -45,7 +47,7 @@ A headless storefront for [MSK Scripts](https://www.msk-scripts.de) — built wi
 - 📰 News popup with optional coupon code display (configurable, shown on every page load)
 - 📊 Public Ticket Bot statistics page (`/ticketbot/stats`) — with allowlist via `STATS_IGNORED_API_KEYS`
 - 🎟️ Ticket Bot verify flow — Discord + GitHub OAuth, API key issuance, tier management
-- 🗂️ Ticket transcript hosting with attachment support (MariaDB-backed)
+- 🗂️ Ticket transcript hosting with attachment support (MariaDB-backed) — uploads hardened with an extension allowlist, `<uuid>.<ext>` filenames and `sharp` image re-encoding
 - 🌍 Custom domain support per guild with DNS validation and Let's Encrypt SSL
 - 💰 GitHub Sponsors webhook — auto-assigns tiers on sponsorship events
 - 📊 Dashboard page for managing API keys, domains and transcripts
@@ -55,10 +57,10 @@ A headless storefront for [MSK Scripts](https://www.msk-scripts.de) — built wi
   - Live log console with Server-Sent Events streaming PM2 error logs (`tail -F`)
 - 🚪 Dashboard logout endpoint to switch between bots
 - 🔒 Security headers, rate limiting, path traversal protection, signed session cookies
-- 🛡️ Nonce-based CSP via Edge middleware (`'strict-dynamic'`, no `unsafe-inline`/`unsafe-eval` in `script-src`)
+- 🛡️ Nonce-based CSP via Edge middleware (`'strict-dynamic'`, no `unsafe-inline`/`unsafe-eval` in `script-src` or `style-src`, `default-src 'none'`)
 - 🌐 Apache2 reverse proxy with HSTS (2 years + preload) and centralized security headers
 - 🔧 Apache fallback page for 502/503 errors (`under-construction.html`, server-only)
-- 🚀 Auto-deploy via GitHub Actions on push to `main`
+- 🚀 Server-side git deploy via GitHub Actions on push to `main` (CI-gated, health-checked, rollback-capable — see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md))
 
 ---
 
@@ -90,6 +92,8 @@ app/                        Next.js App Router pages & API routes
 ├── api/discord/            Discord online member count (cached 60s)
 │   └── health/             Discord API health check
 ├── api/domain/             Custom domain set / remove / validate
+├── api/giveaway/auth/      Giveaway dashboard Discord OAuth
+├── api/giveaway-stats/     Live giveaway stats (read-only giveaway_bot DB)
 ├── api/packages/           Package list endpoint
 ├── api/stats/              Public Ticket Bot statistics
 ├── api/transcript/upload/  Ticket transcript upload (authenticated via API key)
@@ -101,12 +105,17 @@ app/                        Next.js App Router pages & API routes
 ├── cart/                   Cart page
 ├── categories/[id]/        Category pages (+ loading.tsx)
 ├── checkout/               Post-payment redirect handler
-├── dashboard/              API key, domain & hosted-bot management
+├── ticketbot/              Ticket Bot hub (landing page)
+│   ├── verify/             Ticket Bot verify flow
+│   ├── dashboard/          API key, domain & hosted-bot management
+│   └── stats/              Public Ticket Bot statistics page
+├── giveaway/               Giveaway Bot hub (landing page)
+│   ├── verify/             Giveaway dashboard login (Discord OAuth)
+│   ├── dashboard/          Giveaway management dashboard
+│   └── stats/              Public giveaway statistics
 ├── login/                  Login page
 ├── packages/               Full package list page
 │   └── [id]/               Package detail pages (+ loading.tsx)
-├── stats/                  Public Ticket Bot statistics page
-├── verify/                 Ticket Bot verify flow
 └── terms/                  Legal pages
     ├── imprint/            Imprint (EN + DE)
     ├── privacy/            Privacy Policy (EN + DE, GDPR compliant)
@@ -142,7 +151,7 @@ lib/
 ├── markdown.ts             Markdown → HTML renderer (tables, lists, links, code)
 ├── rateLimit.ts            In-memory rate limiter for API routes (per IP)
 ├── session.ts              Signed verify session cookies (HMAC-SHA256) + OAuth state
-├── statsIgnore.ts          API keys excluded from /stats
+├── statsIgnore.ts          API keys excluded from /ticketbot/stats
 ├── tebex.ts                Tebex API client (read-only direct, mutations via /api/basket)
 ├── tiers.ts                Tier definitions (basic / premium / premium_plus) + limits
 └── useCart.ts              Cart hook (auth flow, basket management)
@@ -159,10 +168,14 @@ public/
 types/
 └── tebex.ts                TypeScript types for the Tebex API (Category, Package, Basket)
 
-scripts/
+scripts/                    deployed with the repo to /opt/msk-shop/scripts (kept root:root)
+├── deploy.sh               Server-side deploy: git checkout + build + restart + health-check
 ├── cleanup.js              Housekeeping script (expired transcripts etc.) — daily cron
 ├── vhost-create.sh         Apache2 vhost + Let's-Encrypt SSL setup for custom domains
 └── vhost-delete.sh         Remove Apache2 vhost for custom domains
+
+docs/
+└── DEPLOYMENT.md           Server setup + deploy runbook
 
 middleware.ts               Edge middleware — generates a per-request nonce
                             and sets all security headers (CSP with
@@ -266,33 +279,42 @@ export const SITE_CONFIG = {
 
 ## CI/CD — Auto Deploy
 
-Pushing to `main` automatically deploys via GitHub Actions (`.github/workflows/deploy.yml`):
+**Server-side git deploy.** The repo lives as a full git clone at `/opt/msk-shop`,
+and `scripts/deploy.sh` builds and restarts the app **on the server** — no build
+artifacts are transferred. Full setup + runbook: **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**.
 
-1. Checkout + Node.js 20 setup
-2. Install dependencies (`npm ci`)
-3. Build (`npm run build` with `NEXT_PUBLIC_*` + `TEBEX_PRIVATE_KEY` injected at build time)
-4. Transfer build output + runtime files to server via SCP
-   (`.next/`, `public/`, `content/`, `package.json`, `package-lock.json`, `next.config.js`, `msk-shop.service`)
-5. SSH script on server: stop service → wipe `node_modules` → `npm ci --omit=dev` → set permissions
-   (`chown musiker15:musiker15`, `chmod u+w .next/`) → `systemctl daemon-reload` → `systemctl restart msk-shop`
+```
+Push → CI (lint · typecheck · build) ── green ──▶ Deploy (workflow_run)
+                                                  └─ SSH (ForceCommand) ─▶ deploy.sh <sha>
+```
 
-> **Authentication:** The workflow uses an **SSH private key** (`SSH_PRIVATE_KEY`), not a password.
-> Server-side secrets (DB, OAuth, webhook) live exclusively in `/opt/msk-shop/.env.local` and are **not** managed by the workflow.
+1. **CI** (`.github/workflows/ci.yml`, name `CI`): `lint` + `typecheck` (`tsc --noEmit`) + `build` on every push / PR to `main`.
+2. **Deploy** (`.github/workflows/deploy.yml`): triggers via `workflow_run` **only after CI is green** on `main`; also manually via *Run workflow* with an optional `commit_sha` (**rollback**).
+3. The Action SSHes in and runs `deploy.sh`, which on the server does:
+   `git checkout <sha>` → `npm ci` → `npm run build` (loads `/opt/msk-shop/.env.local`) →
+   `systemctl restart msk-shop` → **health-check** (`curl :3005`, aborts on failure) → deploy tag.
+   The script is **self-updating** (pulls the latest `deploy.sh` from `main` before each run).
+
+> **Security:** The Action's SSH key is pinned with `ForceCommand` (can only run `deploy.sh`),
+> with strict known-hosts checking. The **build runs on the server**, so the
+> `NEXT_PUBLIC_*` + `TEBEX_PRIVATE_KEY` values must be present in `/opt/msk-shop/.env.local`
+> (Next.js loads `.env.local` at build time). All other server-side secrets live there too.
 
 ### Required GitHub Secrets
 
 | Secret | Value |
 |--------|-------|
-| `FTP_SERVER` | Server IP or hostname |
-| `FTP_USERNAME` | SSH username |
-| `FTP_PORT` | SSH port (e.g. `22`) |
-| `SSH_PRIVATE_KEY` | Private key for SSH authentication |
-| `NEXT_PUBLIC_TEBEX_PUBLIC_TOKEN` | Tebex public token |
-| `NEXT_PUBLIC_TEBEX_PROJECT_ID` | Tebex project ID |
-| `NEXT_PUBLIC_BASE_URL` | `https://www.msk-scripts.de` |
-| `TEBEX_PRIVATE_KEY` | Tebex private key |
+| `DEPLOY_SSH_KEY` | Private key of the Action deploy key (ed25519) |
+| `DEPLOY_HOST` | Server IP or hostname |
+| `DEPLOY_HOST_FINGERPRINT` | `ssh-keyscan -t ed25519 [-p <port>] <host>` output |
+| `DEPLOY_USER` *(opt, default `root`)* | SSH user |
+| `DEPLOY_PORT` *(opt, default `22`)* | SSH port |
+| `NEXT_PUBLIC_TEBEX_PUBLIC_TOKEN` | Tebex public token (CI build) |
+| `NEXT_PUBLIC_TEBEX_PROJECT_ID` | Tebex project ID (CI build) |
+| `NEXT_PUBLIC_BASE_URL` | `https://www.msk-scripts.de` (CI build) |
+| `TEBEX_PRIVATE_KEY` | Tebex private key (CI build) |
 
-**Additional workflows:** `codeql.yml` (code scanning), `eslint.yml` (lint), `release.yml`,
+**Additional workflows:** `codeql.yml` (code scanning), `release.yml`,
 `dependency-review.yml`, `secret-scan.yml`.
 
 ---
@@ -301,7 +323,7 @@ Pushing to `main` automatically deploys via GitHub Actions (`.github/workflows/d
 
 ### Requirements
 
-- Node.js 20.x
+- Node.js 22.x
 - npm
 - MariaDB or MySQL
 - Apache2 with `mod_proxy`, `mod_ssl`, `mod_rewrite`, `mod_headers`
@@ -395,6 +417,10 @@ STATS_IGNORED_API_KEYS=key1,key2,key3
 
 ## Updating (Manual)
 
+> On the production server this is automated: a push to `main` runs CI and then
+> `scripts/deploy.sh` (see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)). The steps below
+> are the manual fallback / first-time bootstrap and are equivalent to `deploy.sh`.
+
 ```bash
 cd /opt/msk-shop
 git pull
@@ -403,6 +429,7 @@ npm run build
 chown -R musiker15:musiker15 /opt/msk-shop
 chmod -R u+w /opt/msk-shop/.next
 systemctl restart msk-shop
+# or simply: /opt/msk-shop/scripts/deploy.sh
 ```
 
 ---
@@ -442,6 +469,11 @@ sudo -u musiker15 pm2 list
 - **Rate limiting** on basket creation and API key endpoints — in-memory per IP (`lib/rateLimit.ts`),
   plus database-side per-API-key limiting in `ticketbot_rate_limits`
 - **Path traversal protection** on markdown file reads (allowlist)
+- **File uploads** (transcript attachments) — strict extension allowlist (no `html`/`svg`/`php`),
+  files stored as `<uuid>.<ext>` so attacker-controlled names can't reach the web root, and
+  image attachments re-encoded via `sharp` (strips polyglots/payloads, rejects non-images).
+  Custom-domain vhosts serve transcripts locked down (`Options -Indexes`, `Require all denied`
+  by default, `FilesMatch` allowlist, no PHP handler)
 - **URL validation** — redirect URLs are always constructed server-side from `NEXT_PUBLIC_BASE_URL`
 - **Security Headers** are set centrally in **`middleware.ts`** (Edge runtime, per-request)
   so the Apache vhost does not need to send any duplicates:
@@ -472,26 +504,18 @@ sudo -u musiker15 pm2 list
 
 ## Design / Styling
 
-Tailwind palette (`tailwind.config.ts`) — dark theme with MSK green accent:
+**Tailwind CSS v4 (CSS-first).** Design tokens are `@theme` variables (`--color-*`)
+in **`app/globals.css`** — `tailwind.config.ts` only holds the content paths. Light
+mode is the default; the `.dark` scope (set by `next-themes`, GitHub-Dark-inspired)
+overrides the tokens. MSK green (`--color-primary` `#4ea426`) is the brand accent.
 
-| Token | Value | Token | Value |
-|---|---|---|---|
-| `bg` | `#1b1b1d` | `text` | `#e3e3e3` |
-| `surface` | `#242526` | `muted` | `#8d9096` |
-| `surface2` | `#2a2b2e` | `dim` | `#5c6370` |
-| `border` | `#3d3d3f` | `accent` | `#5eb131` |
-| `borderlt` | `#2e2f31` | `accenthov` | `#4e9827` |
-| `danger` | `#e05c4b` | `discord` | `#5865F2` |
+**Fonts:** Inter (`--font-sans`) + JetBrains Mono (`--font-mono`) — 100% self-hosted
+via `@fontsource-variable` (imported in `app/layout.tsx`, **no** `next/font/google`).
 
-**Font:** Inter (`--font-inter`), self-hosted via `next/font/google` — see
-`app/layout.tsx`. Tailwind uses it as the `font-sans` default.
-
-**Utility classes** in `app/globals.css` (`@layer components`):
-- Buttons: `msk-btn-primary`, `msk-btn-ghost`, `msk-btn-discord`
-- Surface: `msk-card`
-- Form: `msk-input`
-- Labels: `msk-badge`, `msk-label`
-- Heading: `msk-section-title`
+A **backward-compat layer** in `globals.css` keeps the legacy `msk-*` utility classes
+(`msk-btn-primary`, `msk-card`, `msk-input`, `msk-badge`, `msk-label`, …) and the old
+token aliases (`bg`, `surface`, `border`, `accent`, `text`, …) mapped onto the new
+`--color-*` tokens, so non-migrated code (e.g. `BotConfigEditor`) still works in both themes.
 
 Theme-specific styles also in `globals.css`:
 - `.tebex-description` — renders Tebex HTML (`dangerouslySetInnerHTML`) readable
