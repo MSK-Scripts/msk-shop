@@ -56,6 +56,10 @@ A headless storefront for [MSK Scripts](https://www.msk-scripts.de) — built wi
   - Bot control: start / stop / restart / update (git pull) via PM2
   - Live log console with Server-Sent Events streaming PM2 error logs (`tail -F`)
 - 🚪 Dashboard logout endpoint to switch between bots
+- 🎉 **Giveaway Bot** — free, invite-based Discord giveaways: button entry (no privileged intents), restart-safe scheduling, weighted bonus entries, eligibility rules (roles / account age / membership), pause-resume, templates and winner reroll
+- 🖥️ Giveaway **web dashboard** — create & manage giveaways and per-server settings from the browser (Discord login, no commands needed)
+- 🏆 Public shareable **results page** per finished giveaway + live **stats page** (`/giveaway/stats`, anonymous, EN/DE)
+- 🌍 Multilingual giveaway bot (EN / DE / FR / ES) with per-guild branding
 - 🔒 Security headers, rate limiting, path traversal protection, signed session cookies
 - 🛡️ Nonce-based CSP via Edge middleware (`'strict-dynamic'`, no `unsafe-inline`/`unsafe-eval` in `script-src` or `style-src`, `default-src 'none'`)
 - 🌐 Apache2 reverse proxy with HSTS (2 years + preload) and centralized security headers
@@ -122,14 +126,19 @@ app/                        Next.js App Router pages & API routes
     └── page.tsx            Terms & Conditions (EN + DE)
 
 components/
-├── cart/                   CartDrawer (slide-in)
-├── home/                   Hero, InfoSection, CTASection, Divider
-├── layout/                 Navbar, Footer
-├── legal/                  LegalContent (language switcher)
-├── packages/               PackageCard, AddToCartButton, PackagePrice
+├── cart/CartDrawer.tsx     Slide-in cart drawer (trust signals, theme-aware modal)
+├── home/                   Homepage sections: Hero, TrustBar, WhyMSK, FeaturedPackages, CustomPackages, CTASection
+│                           (InfoSection, Divider = empty deprecation stubs)
+├── layout/                 Header (sticky nav: theme toggle, cart, ⌘K search, dropdowns) + Footer (+ Footer.module.css)
+│                           — Navbar.tsx is a backward-compat re-export of Header
+├── legal/LegalContent.tsx  Legal-text renderer with EN / DE switcher
+├── packages/               PackageCard, PackagePrice, AddToCartButton, PackageGallery
+├── search/SearchDialog.tsx Command-palette search (⌘K)
+├── theme/                  ThemeProvider + ThemeToggle (next-themes, CSP-nonce-safe)
+├── ui/                     Component library: Button, Card, Badge, Container, Input, Skeleton, NewsPopup
+│                           (DiscordButton = deprecation stub)
 ├── BotConfigEditor.tsx     Hosted-bot dashboard — config editor (incl. locale tab), bot control, live log console
-├── SalePriceFetcher.tsx    Client component — pre-fetches sale prices on mount
-└── ui/                     DiscordButton, NewsPopup
+└── SalePriceFetcher.tsx    Client component — pre-fetches sale prices on mount
 
 content/
 ├── custom-packages.ts      Non-Tebex packages (Discord Bots, GitHub, etc.)
@@ -146,6 +155,10 @@ lib/
 ├── config.ts               All shop configuration (packages, badges, news popup, etc.)
 ├── dashboardSession.ts     Signed dashboard session cookies (guildId)
 ├── db.ts                   mysql2 connection pool (singleton) + query/queryOne wrappers
+├── giveawayControl.ts      Server-side client for the giveaway bot's localhost control endpoint (guildId from signed session → IDOR-safe)
+├── giveawayDb.ts           Read-only mysql2 pool for the separate giveaway_bot DB (GIVEAWAY_DB_*)
+├── giveawaySession.ts      Scoped signed giveaway sessions (separate HMAC scope, same SESSION_SECRET)
+├── giveawayStats.ts        Shared loader for the anonymous giveaway stats (page + API route)
 ├── i18n.ts                 Language helpers (EN / DE) + translation tables
 ├── lang.ts                 Language detection (cookie + Accept-Language) + setLangCookie helper
 ├── markdown.ts             Markdown → HTML renderer (tables, lists, links, code)
@@ -154,7 +167,8 @@ lib/
 ├── statsIgnore.ts          API keys excluded from /ticketbot/stats
 ├── tebex.ts                Tebex API client (read-only direct, mutations via /api/basket)
 ├── tiers.ts                Tier definitions (basic / premium / premium_plus) + limits
-└── useCart.ts              Cart hook (auth flow, basket management)
+├── useCart.ts              Cart hook (auth flow, basket management)
+└── utils.ts                `cn()` helper (clsx + tailwind-merge)
 
 store/
 ├── cart.ts                 Zustand store (persisted to localStorage, key: "msk-cart")
@@ -192,7 +206,7 @@ Single source of truth for all limits. Tiers: `basic` · `premium` · `premium_p
 |---|---|---|---|
 | Transcript max. | 10 MB | 100 MB | 250 MB |
 | Attachments max. | — | 150 MB | 500 MB |
-| Storage retention | 30 days | 60 days | 120 days |
+| Storage retention | 30 days | 180 days | 365 days |
 | Custom domain | ✗ | ✓ | ✓ |
 | Attachment downloads | ✗ | ✓ | ✓ |
 | Uploads / hour | 30 | 60 | 300 |
