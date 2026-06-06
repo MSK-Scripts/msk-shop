@@ -48,14 +48,17 @@ mv /opt/msk-shop /opt/msk-shop.old
 # Read-only Deploy-Key für den Server-seitigen `git fetch` (separat vom Action-Key):
 #   - GitHub: Repo → Settings → Deploy keys → neuen (read-only) Key hinterlegen
 #   - Private-Key z. B. unter /root/.ssh/msk-shop_ro ablegen, dann:
-GIT_SSH_COMMAND='ssh -i /root/.ssh/msk-shop_ro' \
+GIT_SSH_COMMAND='ssh -i /root/.ssh/msk-shop_ro -o IdentitiesOnly=yes -F /dev/null -o IdentityAgent=none' \
   git clone git@github.com:MSK-Scripts/msk-shop.git /opt/msk-shop
 
 cp /root/msk-shop.env.local.bak /opt/msk-shop/.env.local
 ```
-Damit `git fetch` in `deploy.sh` dauerhaft ohne Nachfrage läuft, den Key fest hinterlegen:
+Damit `git fetch` in `deploy.sh` dauerhaft ohne Nachfrage läuft, den Key fest hinterlegen.
+`-F /dev/null -o IdentityAgent=none` isoliert den Key — sonst bietet die `~/.ssh/config`
+bzw. der Agent (hier liegen auch srh-checklisten-/mskanban-Keys) andere Keys mit an, was zu
+„Too many authentication failures" oder Auth über den falschen Key führen kann:
 ```bash
-git -C /opt/msk-shop config core.sshCommand 'ssh -i /root/.ssh/msk-shop_ro'
+git -C /opt/msk-shop config core.sshCommand 'ssh -i /root/.ssh/msk-shop_ro -o IdentitiesOnly=yes -F /dev/null -o IdentityAgent=none'
 ```
 
 ### 2. `.env.local` um die Build-Variablen ergänzen
