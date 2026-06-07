@@ -4,7 +4,7 @@ import {
   ArrowRight, KeyRound, LayoutDashboard, BarChart3, Ticket, ClipboardList,
   UserCheck, Flag, Star, Clock, FileText, MessageSquareText, Globe, Lock,
   Megaphone, Bell, Github, MessageSquare,
-  Check, X, ServerCog, RefreshCw, Terminal,
+  Check, X, ServerCog, RefreshCw, Terminal, RotateCcw,
 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
@@ -96,13 +96,14 @@ const FEATURES = [
   { icon: Ticket,            title: 'Ticket Types',        text: 'Up to 25 configurable types — each with its own emoji, color, category and questions.' },
   { icon: ClipboardList,     title: 'Questionnaires',      text: 'Modal forms with up to 5 questions shown when a ticket is opened.' },
   { icon: UserCheck,         title: 'Claim System',        text: 'Staff claim and release tickets — embed, topic and channel name update automatically.' },
-  { icon: Flag,              title: 'Priorities',          text: 'Low, Medium, High or Urgent — reflected in the channel topic and opening embed.' },
+  { icon: Flag,              title: 'Priorities',          text: 'Low, Medium, High or Urgent — predefined per ticket type or set live via /priority, reflected in the channel topic and opening embed.' },
   { icon: Star,              title: 'Rating System',       text: '1–5 star feedback after closing, posted automatically to a channel of your choice.' },
   { icon: Clock,             title: 'Auto-Close & Reminders', text: 'Close inactive tickets automatically and ping staff after X hours without a reply.' },
   { icon: FileText,          title: 'HTML Transcripts',    text: 'Self-contained HTML with avatars embedded as Base64 — no CDN, served via a public link.' },
   { icon: MessageSquareText, title: 'Canned Responses',    text: 'Pre-defined snippets sent with one command, with placeholders and autocomplete.' },
   { icon: Globe,             title: 'Custom Domain',       text: 'Premium servers serve transcripts under their own domain with automatic SSL.' },
   { icon: Lock,              title: 'Lock & Blacklist',    text: 'Lock a ticket to mute the user, or blacklist users from opening tickets entirely.' },
+  { icon: RotateCcw,         title: 'Reopen Tickets',      text: 'Reopen a closed ticket with one click or /reopen — restores access and moves it back, no need to recreate.' },
   { icon: Bell,              title: 'User Notifications',  text: 'Users can opt in to a DM when staff first replies — rate-limited to avoid spam.' },
   { icon: Megaphone,         title: 'Broadcast',           text: 'Send a single message to every open ticket channel at once.' },
 ]
