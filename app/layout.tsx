@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL ?? 'https://www.msk-scripts.de'),
   title: {
     default:  'MSK Scripts – Website & Shop',
-    template: '%s | MSK Scripts',
+    template: '%s',
   },
   description: 'High quality FiveM resources, Tools & Discord bots for your server',
   applicationName: 'MSK Scripts',
