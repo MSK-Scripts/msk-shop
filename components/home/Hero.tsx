@@ -64,7 +64,7 @@ export function Hero() {
                 <span>ensure msk_core</span>{'\n\n'}
                 <span className="font-semibold text-[var(--color-info)]">[INFO]</span>{' '}
                 <span>msk_core </span>
-                <span className="text-amber-500">v2.8.4</span>
+                <span className="text-amber-500">v3.0.0</span>
                 <span> ready</span>{'\n'}
                 <span className="font-semibold text-[var(--color-info)]">[INFO]</span>{' '}
                 <span>ESX bridge connected</span>{'\n'}
