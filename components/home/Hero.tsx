@@ -72,7 +72,7 @@ export function Hero() {
                 <span>msk_handcuffs loaded </span>
                 <span className="text-[var(--color-success)]">✓</span>{'\n'}
                 <span className="font-semibold text-[var(--color-info)]">[INFO]</span>{' '}
-                <span>msk_banking loaded </span>
+                <span>msk_garage loaded </span>
                 <span className="text-[var(--color-success)]">✓</span>{'\n'}
                 <span className="font-semibold text-[var(--color-info)]">[INFO]</span>{' '}
                 <span>msk_vehiclekeys loaded </span>
