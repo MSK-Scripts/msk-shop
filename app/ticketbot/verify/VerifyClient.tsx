@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import {
   CheckCircle, Github, Copy, Check, AlertCircle, Loader2,
@@ -153,7 +152,6 @@ const TIER_LABELS: Record<string, { en: string; de: string }> = {
 }
 
 export default function VerifyClient({ session, step: _step, errorCode, initialLang }: Props) {
-  const router = useRouter()
   const [lang, setLang] = useState<Lang>(initialLang)
   const t = translations[lang]
 
@@ -233,7 +231,10 @@ export default function VerifyClient({ session, step: _step, errorCode, initialL
       })
       const data = await res.json()
       if (!res.ok) { setCompleteError(data.error ?? 'Error'); return }
-      router.push('/ticketbot/dashboard')
+      // Hard-Navigation: das gerade gesetzte msk_dashboard_session-Cookie muss
+      // server-seitig gelesen werden. router.push() würde ggf. einen im
+      // Router-Cache liegenden (ausgeloggten) Redirect zurück auf /verify abspielen.
+      window.location.href = '/ticketbot/dashboard'
     } catch { setCompleteError('Network error. Please try again.') }
     finally   { setDashboardLoading(false) }
   }

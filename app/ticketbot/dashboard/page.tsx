@@ -6,6 +6,9 @@ import { LANG_COOKIE_NAME, resolveLang } from '@/lib/lang';
 import DashboardClient          from './DashboardClient';
 import type { Tier }            from '@/lib/tiers';
 
+// Session-/Cookie-abhängig + server-seitiger redirect() → niemals statisch/route-cachen.
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: 'Dashboard – MSK Scripts',
 }

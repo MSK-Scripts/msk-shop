@@ -193,7 +193,7 @@ export default function TicketBotPage() {
 
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Button asChild size="lg">
-              <Link href="/ticketbot/verify">
+              <Link href="/ticketbot/verify" prefetch={false}>
                 Get API Key
                 <ArrowRight className="h-4 w-4" />
               </Link>
@@ -248,7 +248,10 @@ export default function TicketBotPage() {
               </p>
 
               <Button asChild variant={card.variant} className="w-full">
-                <Link href={card.href}>
+                <Link
+                  href={card.href}
+                  prefetch={card.href.startsWith('/ticketbot/dashboard') || card.href.startsWith('/ticketbot/verify') ? false : undefined}
+                >
                   {card.cta}
                   <ArrowRight className="h-4 w-4" />
                 </Link>
@@ -318,7 +321,7 @@ export default function TicketBotPage() {
 
         <div className="mt-8 text-center">
           <Button asChild size="lg">
-            <Link href="/ticketbot/verify">
+            <Link href="/ticketbot/verify" prefetch={false}>
               Start verification
               <ArrowRight className="h-4 w-4" />
             </Link>
@@ -342,7 +345,7 @@ export default function TicketBotPage() {
               </p>
               <div className="mt-7 flex flex-wrap gap-3">
                 <Button asChild>
-                  <Link href="/ticketbot/dashboard">
+                  <Link href="/ticketbot/dashboard" prefetch={false}>
                     <LayoutDashboard className="h-4 w-4" />
                     Open Dashboard
                   </Link>
@@ -433,7 +436,10 @@ export default function TicketBotPage() {
 
               <Button asChild variant={card.variant} className="w-full">
                 {card.href.startsWith('/') ? (
-                  <Link href={card.href}>
+                  <Link
+                    href={card.href}
+                    prefetch={card.href.startsWith('/ticketbot/dashboard') || card.href.startsWith('/ticketbot/verify') ? false : undefined}
+                  >
                     {card.cta}
                     <ArrowRight className="h-4 w-4" />
                   </Link>
@@ -462,7 +468,7 @@ export default function TicketBotPage() {
             </p>
             <div className="mt-7 flex flex-wrap justify-center gap-3">
               <Button asChild size="lg">
-                <Link href="/ticketbot/verify">
+                <Link href="/ticketbot/verify" prefetch={false}>
                   Get API Key
                   <ArrowRight className="h-4 w-4" />
                 </Link>

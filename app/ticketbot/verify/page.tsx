@@ -3,6 +3,9 @@ import { parseSession }     from '@/lib/session';
 import { LANG_COOKIE_NAME, resolveLang } from '@/lib/lang';
 import VerifyClient         from './VerifyClient';
 
+// Session-/Cookie-abhängig → niemals statisch/route-cachen.
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: 'Verify Server – MSK Scripts',
   description: 'Link your GitHub account and Discord server to receive your MSK Ticket Bot API key.',

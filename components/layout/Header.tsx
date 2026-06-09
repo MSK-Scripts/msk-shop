@@ -26,6 +26,15 @@ interface NavItem {
    */
   external?: boolean
   /**
+   * Prefetch ist standardmäßig an. Für **auth-gated** Routen (verify/dashboard),
+   * die server-seitig je nach Session-Cookie ein `redirect()` zurückgeben, MUSS
+   * Prefetch aus sein: sonst cached der Next.js-Router-Cache die Redirect-
+   * Entscheidung aus dem ausgeloggten/alten Zustand und spielt sie bei Soft-
+   * Navigation ab (Dashboard → verify ohne Reload; verify erst nach Reload
+   * aktuell). Default `true`, wenn nicht gesetzt.
+   */
+  prefetch?: boolean
+  /**
    * Unterpunkte. Ist dies gesetzt, wird der Eintrag auf dem Desktop beim
    * Hovern (oder per Tastatur-Fokus) zu einem Dropdown — der Haupt-Link
    * bleibt klickbar. Auf Mobile werden die Unterpunkte eingerückt gelistet.
@@ -42,8 +51,10 @@ const NAV_ITEMS_SECONDARY: NavItem[] = [
     label: 'Ticket Bot',
     href: '/ticketbot',
     children: [
-      { label: 'Verify',    href: '/ticketbot/verify' },
-      { label: 'Dashboard', href: '/ticketbot/dashboard' },
+      // verify/dashboard sind session-abhängig + können redirect() liefern →
+      // nicht prefetchen (sonst stale Redirect aus dem Router-Cache).
+      { label: 'Verify',    href: '/ticketbot/verify',    prefetch: false },
+      { label: 'Dashboard', href: '/ticketbot/dashboard', prefetch: false },
       { label: 'Statistics',     href: '/ticketbot/stats' },
     ],
   },
@@ -51,7 +62,7 @@ const NAV_ITEMS_SECONDARY: NavItem[] = [
     label: 'Giveaway Bot',
     href: '/giveaway',
     children: [
-      { label: 'Dashboard', href: '/giveaway/dashboard' },
+      { label: 'Dashboard', href: '/giveaway/dashboard', prefetch: false },
       { label: 'Statistics', href: '/giveaway/stats' },
     ],
   },
@@ -258,7 +269,7 @@ function HeaderInner() {
               <Link
                 key={child.href}
                 href={child.href}
-                prefetch
+                prefetch={child.prefetch ?? true}
                 role="menuitem"
                 onClick={() => setOpenDropdown(null)}
                 className={cn(
@@ -289,7 +300,7 @@ function HeaderInner() {
             <Link
               key={child.href}
               href={child.href}
-              prefetch
+              prefetch={child.prefetch ?? true}
               className={cn(
                 'flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors',
                 isActive(child.href)
