@@ -14,8 +14,16 @@ import type { BadgeVariant } from '@/components/ui/Badge'
 export const revalidate = 60
 
 export async function generateStaticParams() {
-  const packages = await getPackages()
-  return packages.map(pkg => ({ id: String(pkg.id) }))
+  // Fail-soft: ist die Tebex-API zur Build-Zeit nicht erreichbar/autorisiert
+  // (z. B. CI-Builds ohne Secrets wie bei Dependabot-PRs), wird kein Prerender
+  // erzeugt — die Seiten rendern weiterhin on-demand.
+  try {
+    const packages = await getPackages()
+    return packages.map(pkg => ({ id: String(pkg.id) }))
+  } catch (err) {
+    console.warn('[packages/[id]] generateStaticParams: Tebex nicht verfügbar, Prerender übersprungen:', err)
+    return []
+  }
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {

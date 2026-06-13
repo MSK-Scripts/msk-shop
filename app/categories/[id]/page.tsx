@@ -9,8 +9,17 @@ import { PACKAGE_BADGES, PACKAGE_TAGS, PACKAGE_DESCRIPTIONS } from '@/lib/config
 export const revalidate = 60
 
 export async function generateStaticParams() {
-  const categories = await getCategories()
-  return categories.map(cat => ({ id: String(cat.id) }))
+  // Fail-soft: ist die Tebex-API zur Build-Zeit nicht erreichbar/autorisiert
+  // (z. B. CI-Builds ohne Secrets wie bei Dependabot-PRs), wird kein Prerender
+  // erzeugt — die Seiten rendern weiterhin on-demand. Verhindert, dass der
+  // gesamte Build an der Storefront-API scheitert.
+  try {
+    const categories = await getCategories()
+    return categories.map(cat => ({ id: String(cat.id) }))
+  } catch (err) {
+    console.warn('[categories/[id]] generateStaticParams: Tebex nicht verfügbar, Prerender übersprungen:', err)
+    return []
+  }
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {

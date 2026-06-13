@@ -5,7 +5,13 @@ import { PackageCard } from '@/components/packages/PackageCard'
 import { FEATURED_PACKAGE_IDS, PACKAGE_BADGES, PACKAGE_TAGS, PACKAGE_DESCRIPTIONS } from '@/lib/config'
 
 export async function FeaturedPackages() {
-  const allPackages = await getPackages()
+  // Fail-soft: ist die Tebex-API zur Build-Zeit nicht erreichbar/autorisiert
+  // (z. B. CI-Builds ohne Secrets wie bei Dependabot-PRs), wird die Sektion
+  // ausgeblendet statt den ganzen Build/Prerender zu sprengen.
+  const allPackages = await getPackages().catch(err => {
+    console.warn('[FeaturedPackages] Tebex nicht verfügbar, Sektion ausgeblendet:', err)
+    return []
+  })
   const featured = FEATURED_PACKAGE_IDS.length > 0
     ? allPackages.filter(pkg => FEATURED_PACKAGE_IDS.includes(pkg.id))
     : allPackages

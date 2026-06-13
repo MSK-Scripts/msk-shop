@@ -45,13 +45,18 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    # NEXT_PUBLIC_* werden zur Build-Zeit ins Bundle inlined; ohne sie würde der
-    # Build mit Platzhaltern durchlaufen. Gleiche Secrets wie beim Server-Build.
+    # NEXT_PUBLIC_* werden zur Build-Zeit ins Bundle inlined; gleiche Secrets wie
+    # beim Server-Build. Dependabot-PRs erhalten (GitHub-Sicherheitsregel) KEINE
+    # Repo-Secrets → die Werte wären leer und der Build würde an `new URL('')`
+    # bzw. an den Tebex-Prerender-Fetches scheitern. Per `|| <fallback>` bekommt
+    # der Build dann valide Platzhalter: die Tebex-abhängigen Seiten rendern
+    # mangels Creds nicht vor (generateStaticParams/FeaturedPackages sind
+    # fail-soft), aber Compile + Page-Data-Collection laufen durch → grüner Build.
     env:
-      NEXT_PUBLIC_TEBEX_PUBLIC_TOKEN: ${{ secrets.NEXT_PUBLIC_TEBEX_PUBLIC_TOKEN }}
-      NEXT_PUBLIC_TEBEX_PROJECT_ID:   ${{ secrets.NEXT_PUBLIC_TEBEX_PROJECT_ID }}
-      NEXT_PUBLIC_BASE_URL:           ${{ secrets.NEXT_PUBLIC_BASE_URL }}
-      TEBEX_PRIVATE_KEY:              ${{ secrets.TEBEX_PRIVATE_KEY }}
+      NEXT_PUBLIC_TEBEX_PUBLIC_TOKEN: ${{ secrets.NEXT_PUBLIC_TEBEX_PUBLIC_TOKEN || 'ci-placeholder' }}
+      NEXT_PUBLIC_TEBEX_PROJECT_ID:   ${{ secrets.NEXT_PUBLIC_TEBEX_PROJECT_ID || '0' }}
+      NEXT_PUBLIC_BASE_URL:           ${{ secrets.NEXT_PUBLIC_BASE_URL || 'https://www.msk-scripts.de' }}
+      TEBEX_PRIVATE_KEY:              ${{ secrets.TEBEX_PRIVATE_KEY || 'ci-placeholder' }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v5
