@@ -19,13 +19,14 @@ export function SalePriceFetcher() {
         const res = await fetch(`/api/packages?ident=${ident}`, { cache: 'no-store' })
         if (!res.ok) return
         const data = await res.json()
-        const packages: { id: number; base_price: number; total_price?: number }[] = data.data ?? []
+        const packages: { id: number; base_price: number; total_price?: number; discount?: number }[] = data.data ?? []
 
-        const prices: Record<number, { base_price: number; total_price: number }> = {}
+        const prices: Record<number, { base_price: number; total_price: number; discount: number }> = {}
         for (const pkg of packages) {
           prices[pkg.id] = {
             base_price: pkg.base_price ?? 0,
             total_price: pkg.total_price ?? pkg.base_price ?? 0,
+            discount: pkg.discount ?? 0,
           }
         }
         setPrices(prices)

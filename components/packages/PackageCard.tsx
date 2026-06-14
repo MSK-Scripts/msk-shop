@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { ShoppingCart, Loader2, LogIn } from 'lucide-react'
 import { useCart } from '@/lib/useCart'
 import { useSalePricesStore } from '@/store/salePrices'
+import { resolveDisplayPrice } from '@/lib/price'
 import { Card, CardContent, CardTitle, CardDescription } from '@/components/ui/Card'
 import { Badge, type BadgeVariant } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
@@ -22,15 +23,9 @@ export function PackageCard({ pkg, tags, badges, description }: Props) {
   const { addPackage, isLoading, username } = useCart()
   const { prices } = useSalePricesStore()
 
-  const saleData = prices[pkg.id]
-  const basePrice = saleData?.base_price ?? pkg.base_price ?? 0
-  const totalPrice = saleData?.total_price ?? pkg.total_price ?? basePrice
-  const hasDiscount = totalPrice < basePrice && basePrice > 0
-  const isFree = basePrice === 0
+  const { original, price, isFree, hasDiscount, discountPct } =
+    resolveDisplayPrice(pkg.base_price ?? 0, pkg.total_price ?? pkg.base_price ?? 0, prices[pkg.id])
   const needsLogin = !username && !isFree
-  const discountPct = hasDiscount && basePrice > 0
-    ? Math.round(((basePrice - totalPrice) / basePrice) * 100)
-    : 0
 
   return (
     <Card hoverLift className="group flex flex-col overflow-hidden">
@@ -96,11 +91,11 @@ export function PackageCard({ pkg, tags, badges, description }: Props) {
           <div className="flex flex-col leading-none">
             {hasDiscount && (
               <span className="font-mono text-xs text-[var(--color-muted-foreground)] line-through">
-                {basePrice.toFixed(2)}€
+                {original.toFixed(2)}€
               </span>
             )}
             <span className={`font-mono font-bold tracking-tight ${isFree ? 'text-xl text-[var(--color-muted-foreground)]' : 'text-2xl text-[var(--color-primary)]'}`}>
-              {isFree ? 'Free' : `${totalPrice.toFixed(2)}€`}
+              {isFree ? 'Free' : `${price.toFixed(2)}€`}
             </span>
           </div>
 
