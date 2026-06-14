@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 /**
- * cleanup.js — deletes expired transcripts and attachments from disk and DB.
+ * cleanup.js — daily housekeeping:
+ *   1. deletes expired transcripts and attachments from disk and DB,
+ *   2. auto-downgrades guilds whose paid membership has lapsed (expires_at in
+ *      the past and no active premium sponsor backing them),
+ *   3. prunes stale rate-limit rows.
  *
  * Deployed with the repo at /opt/msk-shop/scripts/cleanup.js and run daily via
  * a root cron.
@@ -55,6 +59,50 @@ async function main() {
       errors++;
     }
   }
+
+  // ── Enforce membership expiry (auto-downgrade) ───────────────────────────────
+  // Downgrade any guild whose paid membership has lapsed. A guild is only
+  // downgraded when BOTH hold:
+  //   • expires_at is in the past (NULL never counts as expired — that is the
+  //     "freshly verified / basic" state), AND
+  //   • there is NO active premium sponsor backing it.
+  // The active-sponsor guard makes this safe regardless of cron ordering: a
+  // still-paying GitHub sponsor (active=TRUE in ticketbot_sponsors, kept fresh
+  // by sponsors-reconcile.js) is never wrongly downgraded even if their
+  // webhook-set expires_at has drifted into the past. This is the time-based
+  // safety net for ended/de-sponsored memberships and runs independently of the
+  // GitHub API. Hosted bots are only flagged here — never auto-archived.
+  const EXPIRED_GUILD_PREDICATE = `
+    g.tier <> 'basic'
+    AND g.expires_at IS NOT NULL
+    AND g.expires_at < NOW()
+    AND NOT EXISTS (
+      SELECT 1 FROM ticketbot_sponsors s
+      WHERE s.github_username = g.github_username
+        AND s.active = TRUE
+        AND s.tier <> 'basic'
+    )`;
+
+  const [expiredGuilds] = await pool.execute(
+    `SELECT g.guild_id, g.is_hosted, g.tier
+       FROM ticketbot_guilds g
+      WHERE ${EXPIRED_GUILD_PREDICATE}`
+  );
+
+  if (expiredGuilds.length > 0) {
+    await pool.execute(
+      `UPDATE ticketbot_guilds g
+          SET g.tier = 'basic', g.expires_at = NULL
+        WHERE ${EXPIRED_GUILD_PREDICATE}`
+    );
+    for (const g of expiredGuilds) {
+      console.log(`[cleanup] Membership expired → downgraded guild ${g.guild_id} (${g.tier} → basic)`);
+      if (g.is_hosted) {
+        console.warn(`[cleanup] ⚠ guild ${g.guild_id} is still HOSTED after downgrade — archive it manually or via the cancel webhook.`);
+      }
+    }
+  }
+  console.log(`[cleanup] Expired memberships downgraded: ${expiredGuilds.length}`);
 
   // Clean up old rate limit entries
   await pool.execute(
