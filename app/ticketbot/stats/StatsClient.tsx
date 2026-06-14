@@ -1,21 +1,29 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { FileText, Key, HardDrive, Paperclip, Github, BarChart3 } from 'lucide-react'
+import { FileText, Key, HardDrive, Paperclip, Github, BarChart3, Globe, Server, TrendingUp, Database, Activity, Files, Maximize2 } from 'lucide-react'
 import { statsTranslations, type Lang } from '@/lib/i18n'
 import { setLangCookie } from '@/lib/lang'
 import { Card } from '@/components/ui/Card'
 import { cn } from '@/lib/utils'
 
 export interface Stats {
-  available:          boolean
-  transcripts:        number
-  apiKeys:            number
-  tiers:              Record<string, number>
-  avgTranscriptBytes: number
-  attachments:        number
-  avgAttachmentBytes: number
-  sponsors:           number
+  available:                  boolean
+  transcripts:                number
+  apiKeys:                    number
+  tiers:                      Record<string, number>
+  avgTranscriptBytes:         number
+  attachments:                number
+  avgAttachmentBytes:         number
+  sponsors:                   number
+  sponsorTiers:               Record<string, number>
+  customDomains:              number
+  hostedBots:                 number
+  newGuilds30d:               number
+  totalStorageBytes:          number
+  transcripts30d:             number
+  transcriptsWithAttachments: number
+  maxTranscriptBytes:         number
 }
 
 function formatBytes(bytes: number): string {
@@ -149,12 +157,19 @@ export default function StatsClient({ stats, initialLang }: { stats: Stats; init
   useEffect(() => { setLangCookie(lang) }, [lang])
 
   const cards = [
-    { icon: FileText,  label: t.card_transcripts,    value: formatNum(stats.transcripts, lang),        sub: t.card_transcripts_sub,    accent: true  },
-    { icon: Key,       label: t.card_api_keys,       value: formatNum(stats.apiKeys, lang),            sub: t.card_api_keys_sub,       accent: false },
-    { icon: Paperclip, label: t.card_attachments,    value: formatNum(stats.attachments, lang),        sub: t.card_attachments_sub,    accent: false },
-    { icon: HardDrive, label: t.card_avg_transcript, value: formatBytes(stats.avgTranscriptBytes),     sub: t.card_avg_transcript_sub, accent: false },
-    { icon: HardDrive, label: t.card_avg_attachment, value: formatBytes(stats.avgAttachmentBytes),     sub: t.card_avg_attachment_sub, accent: false },
-    { icon: Github,    label: t.card_sponsors,       value: formatNum(stats.sponsors, lang),           sub: t.card_sponsors_sub,       accent: true  },
+    { icon: FileText,   label: t.card_transcripts,       value: formatNum(stats.transcripts, lang),                 sub: t.card_transcripts_sub,        accent: true  },
+    { icon: Activity,   label: t.card_transcripts_30d,   value: formatNum(stats.transcripts30d, lang),              sub: t.card_transcripts_30d_sub,    accent: false },
+    { icon: Key,        label: t.card_api_keys,          value: formatNum(stats.apiKeys, lang),                     sub: t.card_api_keys_sub,           accent: false },
+    { icon: TrendingUp, label: t.card_new_guilds,        value: formatNum(stats.newGuilds30d, lang),                sub: t.card_new_guilds_sub,         accent: false },
+    { icon: Globe,      label: t.card_custom_domains,    value: formatNum(stats.customDomains, lang),               sub: t.card_custom_domains_sub,     accent: true  },
+    { icon: Server,     label: t.card_hosted_bots,       value: formatNum(stats.hostedBots, lang),                  sub: t.card_hosted_bots_sub,        accent: false },
+    { icon: Paperclip,  label: t.card_attachments,       value: formatNum(stats.attachments, lang),                 sub: t.card_attachments_sub,        accent: false },
+    { icon: Files,      label: t.card_with_attachments,  value: formatNum(stats.transcriptsWithAttachments, lang),  sub: t.card_with_attachments_sub,   accent: false },
+    { icon: Database,   label: t.card_total_storage,     value: formatBytes(stats.totalStorageBytes),               sub: t.card_total_storage_sub,      accent: true  },
+    { icon: HardDrive,  label: t.card_avg_transcript,    value: formatBytes(stats.avgTranscriptBytes),              sub: t.card_avg_transcript_sub,     accent: false },
+    { icon: HardDrive,  label: t.card_avg_attachment,    value: formatBytes(stats.avgAttachmentBytes),              sub: t.card_avg_attachment_sub,     accent: false },
+    { icon: Maximize2,  label: t.card_max_transcript,    value: formatBytes(stats.maxTranscriptBytes),              sub: t.card_max_transcript_sub,     accent: false },
+    { icon: Github,     label: t.card_sponsors,          value: formatNum(stats.sponsors, lang),                    sub: t.card_sponsors_sub,           accent: true  },
   ]
 
   return (
@@ -200,8 +215,11 @@ export default function StatsClient({ stats, initialLang }: { stats: Stats; init
           {cards.map(c => <StatCard key={c.label} {...c} />)}
         </div>
 
-        {/* Tier Breakdown */}
-        <TierBreakdown tiers={stats.tiers} total={stats.apiKeys} label={t.tier_distribution} lang={lang} />
+        {/* Tier Breakdowns */}
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <TierBreakdown tiers={stats.tiers}        total={stats.apiKeys}  label={t.tier_distribution}    lang={lang} />
+          <TierBreakdown tiers={stats.sponsorTiers} total={stats.sponsors} label={t.sponsor_distribution} lang={lang} />
+        </div>
 
         {/* Footer note */}
         <p className="mt-8 text-center text-[0.6875rem] text-[var(--color-muted-foreground)]">
