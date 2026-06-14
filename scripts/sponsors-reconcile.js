@@ -35,9 +35,13 @@
  *     /opt/msk-shop/scripts/sponsors-reconcile.js \
  *     >> /var/log/msk-sponsors-reconcile.log 2>&1
  *
- * Required env: GITHUB_SPONSORS_TOKEN (a PAT owned by the sponsored account).
- *   Classic PAT scopes: `read:user` (+ `read:org` if the account is an org).
- *   Without it the script exits without touching the database.
+ * Required env: GITHUB_SPONSORS_TOKEN (a PAT owned by / with access to the
+ *   sponsored account). Classic PAT scopes: `read:user` (+ `read:org` if the
+ *   Sponsors profile belongs to an organization). Without it the script exits
+ *   without touching the database.
+ * Optional env: GITHUB_SPONSORS_LOGIN — the sponsorable login when the Sponsors
+ *   profile is owned by an organization (e.g. MSK-Scripts) or a user other than
+ *   the token owner. If unset, the token owner (viewer) is used.
  *
  * Flags: --dry-run   log intended changes without writing to the DB.
  */
@@ -55,75 +59,106 @@ function resolveGitHubTier(monthlyUsd) {
   return 'basic';
 }
 
-const SPONSORS_QUERY = `
-  query($cursor: String) {
-    viewer {
-      sponsorshipsAsMaintainer(first: 100, after: $cursor, activeOnly: true, includePrivate: true) {
-        pageInfo { hasNextPage endCursor }
-        nodes {
-          isOneTimePayment
-          tier { monthlyPriceInDollars }
-          sponsorEntity {
-            __typename
-            ... on User { login }
-            ... on Organization { login }
-          }
-        }
+// The sponsorable can be an organization, a user, or — if no login is given —
+// the token owner (viewer). GitHub Sponsors profiles are often owned by an org
+// (e.g. MSK-Scripts) rather than the personal account, so the login is
+// configurable via GITHUB_SPONSORS_LOGIN.
+const SPONSORABLE_LOGIN = (process.env.GITHUB_SPONSORS_LOGIN ?? '').trim();
+
+const SPONSORSHIPS_FIELD = `
+  sponsorshipsAsMaintainer(first: 100, after: $cursor, activeOnly: true, includePrivate: true) {
+    pageInfo { hasNextPage endCursor }
+    nodes {
+      isOneTimePayment
+      tier { monthlyPriceInDollars }
+      sponsorEntity {
+        __typename
+        ... on User { login }
+        ... on Organization { login }
       }
     }
   }
 `;
 
+/** Build the GraphQL query for a given root field ('viewer' | 'organization' | 'user'). */
+function buildQuery(rootField) {
+  return rootField === 'viewer'
+    ? `query($cursor: String) { viewer { ${SPONSORSHIPS_FIELD} } }`
+    : `query($login: String!, $cursor: String) { ${rootField}(login: $login) { ${SPONSORSHIPS_FIELD} } }`;
+}
+
 /**
- * Fetch ALL active (recurring) sponsors from GitHub. Throws on any API/HTTP
- * error so the caller can abort WITHOUT touching the DB — we must never treat a
- * failed fetch as "zero sponsors" and mass-downgrade everyone.
+ * Run one sponsorshipsAsMaintainer page for a given root field.
+ * Returns the connection object, or null if the account of that type does not
+ * exist (NOT_FOUND) — so the caller can fall back to another root. Throws on
+ * any other API/HTTP/GraphQL error so the caller can abort WITHOUT touching the
+ * DB (we must never treat a failed fetch as "zero sponsors").
+ */
+async function fetchPage(rootField, cursor) {
+  const variables = rootField === 'viewer' ? { cursor } : { login: SPONSORABLE_LOGIN, cursor };
+
+  const res = await fetch(GH_API, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${GH_TOKEN}`,
+      'Content-Type':  'application/json',
+      'User-Agent':    'msk-shop-sponsors-reconcile',
+    },
+    body: JSON.stringify({ query: buildQuery(rootField), variables }),
+  });
+
+  if (!res.ok) {
+    throw new Error(`GitHub API HTTP ${res.status}: ${await res.text()}`);
+  }
+
+  const json = await res.json();
+  if (json.errors) {
+    // Tolerate "not found" — it just means the login isn't this account type.
+    if (json.errors.every(e => e.type === 'NOT_FOUND')) return null;
+    throw new Error(`GitHub GraphQL error: ${JSON.stringify(json.errors)}`);
+  }
+
+  const root = json?.data?.[rootField];
+  return root ? (root.sponsorshipsAsMaintainer ?? null) : null;
+}
+
+/**
+ * Fetch ALL active (recurring) sponsors from GitHub. Picks the right root:
+ * with GITHUB_SPONSORS_LOGIN set it tries `organization` then `user`; without
+ * it, the token owner (`viewer`).
  *
  * @returns {Promise<Array<{ login: string, tier: string }>>}
  */
 async function fetchActiveSponsors() {
-  const sponsors = [];
-  let cursor = null;
+  const candidates = SPONSORABLE_LOGIN ? ['organization', 'user'] : ['viewer'];
 
-  for (;;) {
-    const res = await fetch(GH_API, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${GH_TOKEN}`,
-        'Content-Type':  'application/json',
-        'User-Agent':    'msk-shop-sponsors-reconcile',
-      },
-      body: JSON.stringify({ query: SPONSORS_QUERY, variables: { cursor } }),
-    });
+  for (const rootField of candidates) {
+    let conn = await fetchPage(rootField, null);
+    if (conn === null) continue; // wrong account type — try the next candidate
 
-    if (!res.ok) {
-      throw new Error(`GitHub API HTTP ${res.status}: ${await res.text()}`);
+    const sponsors = [];
+    for (;;) {
+      for (const node of conn.nodes ?? []) {
+        // Skip one-time payments — they are not an ongoing tier grant.
+        if (node.isOneTimePayment) continue;
+        const login = node.sponsorEntity?.login;
+        if (!login) continue;
+        const monthly = Number(node.tier?.monthlyPriceInDollars ?? 0);
+        sponsors.push({ login, tier: resolveGitHubTier(monthly) });
+      }
+      if (!conn.pageInfo?.hasNextPage) break;
+      conn = await fetchPage(rootField, conn.pageInfo.endCursor);
+      if (conn === null) break; // should not happen mid-pagination
     }
 
-    const json = await res.json();
-    if (json.errors) {
-      throw new Error(`GitHub GraphQL error: ${JSON.stringify(json.errors)}`);
-    }
-
-    const conn = json?.data?.viewer?.sponsorshipsAsMaintainer;
-    if (!conn) {
-      throw new Error('Unexpected GitHub API response shape (no sponsorshipsAsMaintainer).');
-    }
-
-    for (const node of conn.nodes ?? []) {
-      // Skip one-time payments — they are not an ongoing tier grant.
-      if (node.isOneTimePayment) continue;
-      const login = node.sponsorEntity?.login;
-      if (!login) continue;
-      const monthly = Number(node.tier?.monthlyPriceInDollars ?? 0);
-      sponsors.push({ login, tier: resolveGitHubTier(monthly) });
-    }
-
-    if (!conn.pageInfo?.hasNextPage) break;
-    cursor = conn.pageInfo.endCursor;
+    console.log(`[reconcile] Source: ${rootField}${SPONSORABLE_LOGIN ? ` (${SPONSORABLE_LOGIN})` : ''}`);
+    return sponsors;
   }
 
-  return sponsors;
+  if (SPONSORABLE_LOGIN) {
+    throw new Error(`Could not resolve sponsorable '${SPONSORABLE_LOGIN}' as an organization or user.`);
+  }
+  return [];
 }
 
 async function main() {
