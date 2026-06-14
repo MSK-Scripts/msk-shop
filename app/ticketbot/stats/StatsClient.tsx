@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { FileText, Key, HardDrive, Paperclip, Github, BarChart3, Globe, Server, TrendingUp, Database, Activity, Files, Maximize2 } from 'lucide-react'
+import { FileText, Key, HardDrive, Paperclip, Github, BarChart3, Globe, Server, TrendingUp, Database, Activity, Files, Maximize2, Gift } from 'lucide-react'
 import { statsTranslations, type Lang } from '@/lib/i18n'
 import { setLangCookie } from '@/lib/lang'
 import { Card } from '@/components/ui/Card'
@@ -97,17 +97,19 @@ function StatCard({
   )
 }
 
-function TierBreakdown({ tiers, total, label, lang }: {
+function TierBreakdown({ tiers, total, label, lang, hideBasic = false }: {
   tiers: Record<string, number>
   total: number
   label: string
   lang:  Lang
+  hideBasic?: boolean
 }) {
-  const items = [
+  const allItems = [
     { key: 'basic',        tierLabel: 'Basic',    bg: 'bg-[var(--color-muted-foreground)]', text: 'text-[var(--color-muted-foreground)]' },
     { key: 'premium',      tierLabel: 'Premium',  bg: 'bg-[var(--color-primary)]',          text: 'text-[var(--color-primary)]' },
     { key: 'premium_plus', tierLabel: 'Premium+', bg: 'bg-yellow-400',                       text: 'text-yellow-400' },
   ]
+  const items = hideBasic ? allItems.filter(i => i.key !== 'basic') : allItems
 
   return (
     <Card hoverLift className="p-5">
@@ -133,7 +135,7 @@ function TierBreakdown({ tiers, total, label, lang }: {
         <div className="mb-4 h-3 rounded-full bg-[var(--color-muted)]" />
       )}
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className={cn('grid gap-3', items.length === 2 ? 'grid-cols-2' : 'grid-cols-3')}>
         {items.map(({ key, tierLabel, text }) => (
           <div key={key} className="flex flex-col gap-1 rounded-lg bg-[var(--color-muted)] px-3 py-2.5">
             <span className={cn('font-mono text-[0.625rem] font-bold uppercase tracking-widest', text)}>
@@ -156,6 +158,13 @@ export default function StatsClient({ stats, initialLang }: { stats: Stats; init
 
   useEffect(() => { setLangCookie(lang) }, [lang])
 
+  // Paid-tier API keys (premium + premium+) that are NOT backed by an active
+  // GitHub sponsor were granted via giveaways. Clamp at 0 for safety.
+  const giveawayKeys = Math.max(
+    0,
+    stats.tiers.premium + stats.tiers.premium_plus - stats.sponsors,
+  )
+
   const cards = [
     { icon: FileText,   label: t.card_transcripts,       value: formatNum(stats.transcripts, lang),                 sub: t.card_transcripts_sub,        accent: true  },
     { icon: Activity,   label: t.card_transcripts_30d,   value: formatNum(stats.transcripts30d, lang),              sub: t.card_transcripts_30d_sub,    accent: false },
@@ -170,6 +179,7 @@ export default function StatsClient({ stats, initialLang }: { stats: Stats; init
     { icon: HardDrive,  label: t.card_avg_attachment,    value: formatBytes(stats.avgAttachmentBytes),              sub: t.card_avg_attachment_sub,     accent: false },
     { icon: Maximize2,  label: t.card_max_transcript,    value: formatBytes(stats.maxTranscriptBytes),              sub: t.card_max_transcript_sub,     accent: false },
     { icon: Github,     label: t.card_sponsors,          value: formatNum(stats.sponsors, lang),                    sub: t.card_sponsors_sub,           accent: true  },
+    { icon: Gift,       label: t.card_giveaway_keys,     value: formatNum(giveawayKeys, lang),                      sub: t.card_giveaway_keys_sub,      accent: false },
   ]
 
   return (
@@ -218,7 +228,13 @@ export default function StatsClient({ stats, initialLang }: { stats: Stats; init
         {/* Tier Breakdowns */}
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <TierBreakdown tiers={stats.tiers}        total={stats.apiKeys}  label={t.tier_distribution}    lang={lang} />
-          <TierBreakdown tiers={stats.sponsorTiers} total={stats.sponsors} label={t.sponsor_distribution} lang={lang} />
+          <TierBreakdown
+            tiers={stats.sponsorTiers}
+            total={stats.sponsors}
+            label={t.sponsor_distribution}
+            lang={lang}
+            hideBasic
+          />
         </div>
 
         {/* Footer note */}

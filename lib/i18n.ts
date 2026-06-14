@@ -180,8 +180,10 @@ export const statsTranslations = {
     card_with_attachments_sub:'Transcripts including attachments',
     card_max_transcript:     'Largest Transcript',
     card_max_transcript_sub: 'Biggest single transcript file',
+    card_giveaway_keys:      'Giveaway API Keys',
+    card_giveaway_keys_sub:  'Premium keys granted via giveaways',
     tier_distribution:       'API Key Distribution',
-    sponsor_distribution:    'Sponsor Tier Distribution',
+    sponsor_distribution:    'Active Sponsor Tiers',
     footer_note:             'All statistics are anonymous — no server information or user data is stored or displayed.',
   },
   de: {
@@ -218,8 +220,10 @@ export const statsTranslations = {
     card_with_attachments_sub:'Transkripte inkl. Anhängen',
     card_max_transcript:     'Größtes Transkript',
     card_max_transcript_sub: 'Größte einzelne Transkript-Datei',
+    card_giveaway_keys:      'Giveaway API Keys',
+    card_giveaway_keys_sub:  'Premium-Keys über Giveaways vergeben',
     tier_distribution:       'API Key Verteilung',
-    sponsor_distribution:    'Sponsoren-Tier-Verteilung',
+    sponsor_distribution:    'Aktive Sponsoren nach Tier',
     footer_note:             'Alle Statistiken sind anonym — es werden keine Serverinformationen oder Nutzerdaten gespeichert oder angezeigt.',
   },
 } as const;
