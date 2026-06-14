@@ -68,8 +68,8 @@ The MSK Ticket Bot Transcript Service allows users who self-host the MSK Ticket 
 | Tier | Price | Storage | Max Transcript | Attachments | Custom Domain |
 |---|---|---|---|---|---|
 | **Basic** | Free | 30 days | 10 MB | No | No |
-| **Premium** | €5/month | 180 days | 100 MB | Yes (150 MB/ticket) | Yes |
-| **Premium+** | €10/month | 365 days | 250 MB | Yes (500 MB/ticket) | Yes |
+| **Premium** | $4/month | 180 days | 100 MB | Yes (150 MB/ticket) | Yes |
+| **Premium+** | $8/month | 365 days | 250 MB | Yes (500 MB/ticket) | Yes |
 
 ### 7.2 Subscription and Payment
 

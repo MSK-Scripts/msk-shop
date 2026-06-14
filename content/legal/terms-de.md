@@ -68,8 +68,8 @@ Der MSK Ticket Bot Transcript Service ermöglicht Nutzern, die den MSK Ticket Bo
 | Tier | Preis | Speicherdauer | Max. Transkript | Anhänge | Eigene Domain |
 |---|---|---|---|---|---|
 | **Basic** | Kostenlos | 30 Tage | 10 MB | Nein | Nein |
-| **Premium** | 5 €/Monat | 180 Tage | 100 MB | Ja (150 MB/Ticket) | Ja |
-| **Premium+** | 10 €/Monat | 365 Tage | 250 MB | Ja (500 MB/Ticket) | Ja |
+| **Premium** | 4 $/Monat | 180 Tage | 100 MB | Ja (150 MB/Ticket) | Ja |
+| **Premium+** | 8 $/Monat | 365 Tage | 250 MB | Ja (500 MB/Ticket) | Ja |
 
 ### 7.2 Abonnement und Zahlung
 

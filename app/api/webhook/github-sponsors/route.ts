@@ -40,8 +40,8 @@ interface SponsorshipPayload {
 
 /** Map GitHub Sponsors monthly amount → internal tier. */
 function resolveGitHubTier(monthlyUsd: number): Tier {
-  if (monthlyUsd >= 10) return 'premium_plus';
-  if (monthlyUsd >= 5)  return 'premium';
+  if (monthlyUsd >= 8) return 'premium_plus';
+  if (monthlyUsd >= 4) return 'premium';
   return 'basic';
 }
 

@@ -136,8 +136,8 @@ interface TierCard {
 
 const TIER_CARDS: TierCard[] = [
   { key: 'basic',        name: 'Basic',    price: 'Free', priceSub: 'forever',  badge: null,            accent: false, hosted: false, variant: 'outline', cta: 'Get API Key',         href: '/ticketbot/verify' },
-  { key: 'premium',      name: 'Premium',  price: '5€',   priceSub: '/ month',  badge: 'Most popular',  accent: true,  hosted: true,  variant: 'primary', cta: 'Become a Sponsor',    href: SPONSORS_URL },
-  { key: 'premium_plus', name: 'Premium+', price: '10€',  priceSub: '/ month',  badge: null,            accent: false, hosted: true,  variant: 'outline', cta: 'Become a Sponsor',    href: SPONSORS_URL },
+  { key: 'premium',      name: 'Premium',  price: '$4',   priceSub: '/ month',  badge: 'Most popular',  accent: true,  hosted: true,  variant: 'primary', cta: 'Become a Sponsor',    href: SPONSORS_URL },
+  { key: 'premium_plus', name: 'Premium+', price: '$8',   priceSub: '/ month',  badge: null,            accent: false, hosted: true,  variant: 'outline', cta: 'Become a Sponsor',    href: SPONSORS_URL },
 ]
 
 function tierFeatures(card: TierCard) {
