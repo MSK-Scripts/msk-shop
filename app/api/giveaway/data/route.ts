@@ -2,9 +2,12 @@ import { NextResponse }                      from 'next/server';
 import { cookies }                           from 'next/headers';
 import { parseGiveawaySession, GIVEAWAY_SESSION_COOKIE } from '@/lib/giveawaySession';
 import { controlGet }                        from '@/lib/giveawayControl';
+import { query }                             from '@/lib/db';
 
 // Lese-Proxy zum Bot-Steuer-Endpunkt. guildId kommt IMMER aus der Session.
 const ALLOWED = new Set(['giveaways', 'giveaway', 'settings', 'roles', 'channels']);
+
+interface GwListItem { id: string; [k: string]: unknown }
 
 export async function GET(req: Request) {
   const cookieStore = await cookies();
@@ -28,5 +31,25 @@ export async function GET(req: Request) {
 
   const path = kind === 'giveaways' ? '/giveaways' : `/${kind}`;
   const { status, data } = await controlGet(session.guildId, path, search);
+
+  // Liste mit dem Link zur öffentlichen Ergebnis-Seite anreichern (Token liegt
+  // in der Shop-DB, nicht beim Bot) — für beendete Giveaways im Dashboard.
+  if (kind === 'giveaways' && status === 200) {
+    const payload = data as { giveaways?: GwListItem[] } | null;
+    if (payload?.giveaways?.length) {
+      const rows = await query<{ giveaway_id: string; token: string }>(
+        'SELECT giveaway_id, token FROM giveaway_results WHERE guild_id = ?',
+        [session.guildId],
+      );
+      const base = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://www.msk-scripts.de';
+      const byId = new Map(rows.map((r) => [r.giveaway_id, r.token] as const));
+      payload.giveaways = payload.giveaways.map((g) => {
+        const token = byId.get(g.id);
+        return token ? { ...g, resultUrl: `${base}/giveaway/g/${token}` } : g;
+      });
+      return NextResponse.json(payload, { status });
+    }
+  }
+
   return NextResponse.json(data ?? {}, { status });
 }

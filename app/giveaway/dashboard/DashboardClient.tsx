@@ -4,7 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import { useRouter } from 'next/navigation';
 import {
   Gift, Plus, Pause, Play, Square, Ban, Dice5, Pencil, Clock,
-  LogOut, RefreshCw, Settings as SettingsIcon, Loader2,
+  LogOut, RefreshCw, Settings as SettingsIcon, Loader2, ExternalLink,
 } from 'lucide-react';
 import { giveawayDashboardTranslations, type Lang } from '@/lib/i18n';
 import { setLangCookie } from '@/lib/lang';
@@ -23,7 +23,7 @@ interface Giveaway {
   id: string; channelId: string; title: string; description: string; prize: string | null;
   winnersCount: number; status: 'ACTIVE' | 'PAUSED' | 'ENDED' | 'CANCELLED';
   endAt: string | null; createdAt: string | null; endedAt: string | null;
-  entryCount: number; winnerIds?: string[];
+  entryCount: number; winnerIds?: string[]; resultUrl?: string;
 }
 interface Settings {
   lang: string; embedColor: string; buttonEmoji: string; buttonStyle: string;
@@ -222,7 +222,7 @@ function GiveawaysTab({ giveaways, channels, reload, setError }: {
                 </div>
                 <h3 className="mt-1 truncate font-semibold">{g.title}</h3>
                 <p className="text-xs text-[var(--color-muted-foreground)]">
-                  {g.winnersCount} {t.winners_unit} · {g.entryCount} {t.entries_unit}
+                  {(g.status === 'ENDED' ? (g.winnerIds?.length ?? 0) : g.winnersCount)} {t.winners_unit} · {g.entryCount} {t.entries_unit}
                   {g.endAt && (g.status === 'ACTIVE' || g.status === 'PAUSED') ? ` · ${t.ends} ${new Date(g.endAt).toLocaleString(lang === 'de' ? 'de-DE' : 'en-US')}` : ''}
                 </p>
               </div>
@@ -245,6 +245,13 @@ function GiveawaysTab({ giveaways, channels, reload, setError }: {
                   <Button variant="outline" size="sm" disabled={busy?.startsWith(g.id)} onClick={() => action({ action: 'reroll', id: g.id }, `${g.id}:reroll`)}><Dice5 className="mr-1.5 h-3.5 w-3.5" /> {t.btn_reroll_all}</Button>
                   <RerollSingle onReroll={(wid) => action({ action: 'reroll', id: g.id, winnerId: wid }, `${g.id}:reroll1`)} disabled={busy?.startsWith(g.id)} />
                 </>
+              )}
+              {g.resultUrl && (
+                <Button variant="ghost" size="sm" asChild>
+                  <a href={g.resultUrl} target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="mr-1.5 h-3.5 w-3.5" /> {t.btn_results}
+                  </a>
+                </Button>
               )}
               {(g.status === 'ACTIVE' || g.status === 'PAUSED') && (
                 <EditButton giveaway={g} onSave={(p) => action({ action: 'edit', id: g.id, ...p }, `${g.id}:edit`)} disabled={busy?.startsWith(g.id)} />

@@ -64,6 +64,9 @@ export default async function GiveawayResultPage({ params }: { params: Promise<{
             <Gift className="h-4 w-4" /> {t.prize}: <span className="font-medium text-[var(--color-foreground)]">{row.prize}</span>
           </p>
         )}
+        <p className="mt-3 font-mono text-[0.625rem] uppercase tracking-widest text-[var(--color-muted-foreground)]">
+          {t.giveaway_id}: {row.giveaway_id}
+        </p>
       </div>
 
       <Card className="flex flex-col gap-4 p-6">
