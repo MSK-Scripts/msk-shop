@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/Input'
 import { cn } from '@/lib/utils'
 
 const BotConfigEditor = dynamic(() => import('@/components/BotConfigEditor'), { ssr: false })
+const TranscriptsCard = dynamic(() => import('./TranscriptsCard'), { ssr: false })
 
 /**
  * Validates a user-supplied domain and returns a safe https:// URL.
@@ -390,6 +391,9 @@ export default function DashboardClient({ guild, serverIp, initialLang }: Props)
             </>
           )}
         </Card>
+
+        {/* Transcripts overview — für alle eingeloggten Nutzer (nur die eigenen) */}
+        <TranscriptsCard lang={lang} />
 
         {/* Bot Config Editor — nur für hosted customers */}
         {!!guild.is_hosted && (
