@@ -1,7 +1,10 @@
+'use client'
+
 import Link from 'next/link'
 import Image from 'next/image'
 import { Github } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
+import { useLang } from '@/components/i18n/LangProvider'
 
 const SHOP_LINKS = [
   { label: 'All Packages', href: '/packages' },
@@ -15,10 +18,11 @@ const ECOSYSTEM_LINKS = [
   { label: 'MSK Shortener',  href: 'https://s.msk-scripts.de/',         external: true },
 ] as const
 
+// Legal-Labels sind sprachabhängig (z. B. Imprint ⇄ Impressum).
 const LEGAL_LINKS = [
-  { label: 'Imprint',          href: '/terms/imprint' },
-  { label: 'Privacy Policy',   href: '/terms/privacy' },
-  { label: 'Terms & Conditions', href: '/terms' },
+  { en: 'Imprint',            de: 'Impressum',    href: '/terms/imprint' },
+  { en: 'Privacy Policy',     de: 'Datenschutz',  href: '/terms/privacy' },
+  { en: 'Terms & Conditions', de: 'AGB',          href: '/terms' },
 ] as const
 
 const DISCORD_URL = 'https://discord.gg/5hHSBRHvJE'
@@ -44,6 +48,7 @@ function ColumnTitle({ children }: { children: React.ReactNode }) {
 }
 
 export function Footer() {
+  const { lang } = useLang()
   return (
     <footer className="mt-16 border-t border-[var(--color-border)] bg-[color-mix(in_oklab,var(--color-muted)_40%,var(--color-background))]">
       <div className="container-page py-12">
@@ -95,9 +100,9 @@ export function Footer() {
 
           {/* Legal */}
           <div>
-            <ColumnTitle>Legal</ColumnTitle>
+            <ColumnTitle>{lang === 'de' ? 'Rechtliches' : 'Legal'}</ColumnTitle>
             {LEGAL_LINKS.map(l => (
-              <FooterLink key={l.href} href={l.href}>{l.label}</FooterLink>
+              <FooterLink key={l.href} href={l.href}>{lang === 'de' ? l.de : l.en}</FooterLink>
             ))}
           </div>
 

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { headers } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 
 // Fonts werden 100% lokal über @fontsource-variable geladen.
 // Keine Kommunikation zu fonts.googleapis.com — auch nicht zur Build-Zeit.
@@ -14,6 +14,8 @@ import { CartDrawer } from '@/components/cart/CartDrawer'
 import { SalePriceFetcher } from '@/components/SalePriceFetcher'
 import { NewsPopup } from '@/components/ui/NewsPopup'
 import { ThemeProvider } from '@/components/theme/ThemeProvider'
+import { LangProvider } from '@/components/i18n/LangProvider'
+import { LANG_COOKIE_NAME, resolveLang } from '@/lib/lang'
 
 export const viewport: Viewport = {
   width:        'device-width',
@@ -61,10 +63,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // den Nonce aus middleware.ts in seine internen Hydration-Scripts injiziert.
   // Ohne diesen Aufruf bliebe das Root-Layout statisch und die CSP würde alle
   // Next.js-Scripts blockieren.
-  const nonce = (await headers()).get('x-nonce') ?? undefined
+  const [hdrs, cookieStore] = await Promise.all([headers(), cookies()])
+  const nonce = hdrs.get('x-nonce') ?? undefined
+  const lang = resolveLang(cookieStore.get(LANG_COOKIE_NAME)?.value, hdrs.get('accept-language'))
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={lang} suppressHydrationWarning>
       <body className="flex min-h-screen flex-col bg-[var(--color-background)] text-[var(--color-foreground)] antialiased">
         <ThemeProvider
           attribute="class"
@@ -73,12 +77,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           disableTransitionOnChange
           nonce={nonce}
         >
-          <Header />
-          <CartDrawer />
-          <SalePriceFetcher />
-          <NewsPopup />
-          <main className="flex-1">{children}</main>
-          <Footer />
+          <LangProvider initial={lang}>
+            <Header />
+            <CartDrawer />
+            <SalePriceFetcher />
+            <NewsPopup />
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </LangProvider>
         </ThemeProvider>
       </body>
     </html>

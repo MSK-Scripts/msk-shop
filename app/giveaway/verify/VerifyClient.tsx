@@ -3,38 +3,17 @@
 import { useState }   from 'react';
 import { useRouter }  from 'next/navigation';
 import { Gift, LogIn, ShieldCheck } from 'lucide-react';
-import { giveawayDashboardTranslations, type Lang } from '@/lib/i18n';
-import { setLangCookie } from '@/lib/lang';
+import { giveawayDashboardTranslations } from '@/lib/i18n';
+import { useLang }    from '@/components/i18n/LangProvider';
 import { Card }       from '@/components/ui/Card';
 import { Button }     from '@/components/ui/Button';
 import { cn }         from '@/lib/utils';
 
 interface Guild { id: string; name: string; icon: string | null }
 
-function LanguageToggle({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => void }) {
-  return (
-    <div className="flex items-center gap-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)] p-1 text-xs font-semibold">
-      {(['en', 'de'] as const).map((l) => (
-        <button
-          key={l}
-          onClick={() => { setLang(l); setLangCookie(l); }}
-          className={cn(
-            'rounded px-2.5 py-1 uppercase transition-colors',
-            lang === l
-              ? 'bg-[var(--color-primary)] text-[var(--color-primary-foreground)]'
-              : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]',
-          )}
-        >
-          {l}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-export default function VerifyClient({ step, guilds, initialLang }: { step: 'login' | 'select'; guilds: Guild[]; initialLang: Lang }) {
+export default function VerifyClient({ step, guilds }: { step: 'login' | 'select'; guilds: Guild[] }) {
   const router = useRouter();
-  const [lang, setLang] = useState<Lang>(initialLang);
+  const { lang } = useLang();
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const t = giveawayDashboardTranslations[lang];
@@ -64,10 +43,6 @@ export default function VerifyClient({ step, guilds, initialLang }: { step: 'log
 
   return (
     <main className="mx-auto flex min-h-[70vh] w-full max-w-2xl flex-col items-center justify-center px-4 py-16">
-      <div className="mb-6 flex w-full justify-end">
-        <LanguageToggle lang={lang} setLang={setLang} />
-      </div>
-
       <div className="mb-8 flex flex-col items-center text-center">
         <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--color-primary)]/15 text-[var(--color-primary)]">
           <Gift className="h-6 w-6" />

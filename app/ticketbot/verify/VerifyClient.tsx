@@ -1,49 +1,18 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Image from 'next/image'
 import {
   CheckCircle, Github, Copy, Check, AlertCircle, Loader2,
   ExternalLink, Globe, RefreshCw, LayoutDashboard,
 } from 'lucide-react'
 import type { DiscordGuild, VerifySession } from '@/lib/session'
-import { translations, type Lang } from '@/lib/i18n'
-import { setLangCookie } from '@/lib/lang'
+import { translations } from '@/lib/i18n'
+import { useLang } from '@/components/i18n/LangProvider'
 import type { Tier } from '@/lib/tiers'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { cn } from '@/lib/utils'
-
-// ── Language Toggle ────────────────────────────────────────────────────────────
-
-function LanguageToggle({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => void }) {
-  return (
-    <div className="flex items-center gap-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)] p-1 text-xs font-semibold">
-      <button
-        onClick={() => setLang('en')}
-        className={cn(
-          'rounded px-2.5 py-1 transition-colors',
-          lang === 'en'
-            ? 'bg-[var(--color-primary)] text-[var(--color-primary-foreground)]'
-            : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]',
-        )}
-      >
-        EN
-      </button>
-      <button
-        onClick={() => setLang('de')}
-        className={cn(
-          'rounded px-2.5 py-1 transition-colors',
-          lang === 'de'
-            ? 'bg-[var(--color-primary)] text-[var(--color-primary-foreground)]'
-            : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]',
-        )}
-      >
-        DE
-      </button>
-    </div>
-  )
-}
 
 // ── Step Indicator ─────────────────────────────────────────────────────────────
 
@@ -142,7 +111,6 @@ interface Props {
   session: VerifySession | null
   step: string | null
   errorCode: string | null
-  initialLang: Lang
 }
 
 const TIER_LABELS: Record<string, { en: string; de: string }> = {
@@ -151,11 +119,9 @@ const TIER_LABELS: Record<string, { en: string; de: string }> = {
   premium_plus: { en: 'Premium+',     de: 'Premium+' },
 }
 
-export default function VerifyClient({ session, step: _step, errorCode, initialLang }: Props) {
-  const [lang, setLang] = useState<Lang>(initialLang)
+export default function VerifyClient({ session, step: _step, errorCode }: Props) {
+  const { lang } = useLang()
   const t = translations[lang]
-
-  useEffect(() => { setLangCookie(lang) }, [lang])
 
   const [selectedGuildId, setSelectedGuildId] = useState<string>('')
   const [loading, setLoading] = useState(false)
@@ -275,9 +241,6 @@ export default function VerifyClient({ session, step: _step, errorCode, initialL
             <span className="eyebrow">{t.verify_label}</span>
             <h1 className="mt-2 text-3xl font-bold tracking-tight md:text-4xl">{t.verify_title}</h1>
             <p className="mt-2 text-sm text-[var(--color-muted-foreground)]">{t.verify_subtitle}</p>
-          </div>
-          <div className="mt-1 shrink-0">
-            <LanguageToggle lang={lang} setLang={setLang} />
           </div>
         </div>
 

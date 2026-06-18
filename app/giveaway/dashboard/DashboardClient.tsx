@@ -7,7 +7,7 @@ import {
   LogOut, RefreshCw, Settings as SettingsIcon, Loader2, ExternalLink,
 } from 'lucide-react';
 import { giveawayDashboardTranslations, type Lang } from '@/lib/i18n';
-import { setLangCookie } from '@/lib/lang';
+import { useLang } from '@/components/i18n/LangProvider';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -49,30 +49,9 @@ function StatusBadge({ status }: { status: Giveaway['status'] }) {
   );
 }
 
-function LanguageToggle({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => void }) {
-  return (
-    <div className="flex items-center gap-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)] p-1 text-xs font-semibold">
-      {(['en', 'de'] as const).map((l) => (
-        <button
-          key={l}
-          onClick={() => { setLang(l); setLangCookie(l); }}
-          className={cn(
-            'rounded px-2.5 py-1 uppercase transition-colors',
-            lang === l
-              ? 'bg-[var(--color-primary)] text-[var(--color-primary-foreground)]'
-              : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]',
-          )}
-        >
-          {l}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-export default function DashboardClient({ guildId, initialLang }: { guildId: string; initialLang: Lang }) {
+export default function DashboardClient({ guildId }: { guildId: string }) {
   const router = useRouter();
-  const [lang, setLang] = useState<Lang>(initialLang);
+  const { lang } = useLang();
   const t = giveawayDashboardTranslations[lang];
   const [tab, setTab] = useState<'giveaways' | 'settings'>('giveaways');
   const [giveaways, setGiveaways] = useState<Giveaway[]>([]);
@@ -138,7 +117,6 @@ export default function DashboardClient({ guildId, initialLang }: { guildId: str
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <LanguageToggle lang={lang} setLang={setLang} />
             <Button variant="ghost" size="icon" onClick={loadAll} title={t.refresh}><RefreshCw className="h-4 w-4" /></Button>
             <Button variant="outline" size="sm" onClick={logout}><LogOut className="mr-2 h-4 w-4" /> {t.logout}</Button>
           </div>

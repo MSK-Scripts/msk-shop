@@ -6,34 +6,13 @@ import {
   TrendingUp, Layers, Flame,
 } from 'lucide-react'
 import { giveawayStatsTranslations, type Lang } from '@/lib/i18n'
-import { setLangCookie } from '@/lib/lang'
+import { useLang } from '@/components/i18n/LangProvider'
 import { Card } from '@/components/ui/Card'
 import { cn } from '@/lib/utils'
 import type { GiveawayStats } from '@/lib/giveawayStats'
 
 function formatNum(n: number, lang: Lang): string {
   return new Intl.NumberFormat(lang === 'de' ? 'de-DE' : 'en-US').format(n)
-}
-
-function LanguageToggle({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => void }) {
-  return (
-    <div className="flex items-center gap-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)] p-1 text-xs font-semibold">
-      {(['en', 'de'] as const).map(l => (
-        <button
-          key={l}
-          onClick={() => setLang(l)}
-          className={cn(
-            'rounded px-2.5 py-1 uppercase transition-colors',
-            lang === l
-              ? 'bg-[var(--color-primary)] text-[var(--color-primary-foreground)]'
-              : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]',
-          )}
-        >
-          {l}
-        </button>
-      ))}
-    </div>
-  )
 }
 
 function StatCard({
@@ -124,16 +103,13 @@ function Breakdown({
 }
 
 export default function StatsClient({
-  stats: initialStats, initialLang,
+  stats: initialStats,
 }: {
   stats: GiveawayStats
-  initialLang: Lang
 }) {
-  const [lang, setLang]   = useState<Lang>(initialLang)
+  const { lang }          = useLang()
   const [stats, setStats] = useState<GiveawayStats>(initialStats)
   const t = giveawayStatsTranslations[lang]
-
-  useEffect(() => { setLangCookie(lang) }, [lang])
 
   // Live refresh: poll the API once a minute, replacing the SSR snapshot.
   useEffect(() => {
@@ -209,9 +185,6 @@ export default function StatsClient({
             <p className="max-w-xl text-sm text-[var(--color-muted-foreground)] md:text-base">
               {t.subtitle}
             </p>
-          </div>
-          <div className="mt-1 shrink-0">
-            <LanguageToggle lang={lang} setLang={setLang} />
           </div>
         </div>
 

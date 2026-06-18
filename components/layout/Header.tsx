@@ -11,6 +11,7 @@ import { useCartStore } from '@/store/cart'
 import { useCart } from '@/lib/useCart'
 import { Button } from '@/components/ui/Button'
 import { ThemeToggle } from '@/components/theme/ThemeToggle'
+import { LanguageDropdown } from '@/components/i18n/LanguageDropdown'
 import { SearchDialog } from '@/components/search/SearchDialog'
 import { getCategories } from '@/lib/tebex'
 import type { TebexCategory } from '@/types/tebex'
@@ -440,6 +441,8 @@ function HeaderInner() {
                 ⌘K
               </kbd>
             </Button>
+
+            <LanguageDropdown />
 
             <ThemeToggle />
 

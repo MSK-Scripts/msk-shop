@@ -1,9 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { FileText, Key, HardDrive, Paperclip, Github, BarChart3, Globe, Server, TrendingUp, Database, Activity, Files, Maximize2, Gift } from 'lucide-react'
 import { statsTranslations, type Lang } from '@/lib/i18n'
-import { setLangCookie } from '@/lib/lang'
+import { useLang } from '@/components/i18n/LangProvider'
 import { Card } from '@/components/ui/Card'
 import { cn } from '@/lib/utils'
 
@@ -36,35 +35,6 @@ function formatBytes(bytes: number): string {
 
 function formatNum(n: number, lang: Lang): string {
   return new Intl.NumberFormat(lang === 'de' ? 'de-DE' : 'en-US').format(n)
-}
-
-function LanguageToggle({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => void }) {
-  return (
-    <div className="flex items-center gap-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)] p-1 text-xs font-semibold">
-      <button
-        onClick={() => setLang('en')}
-        className={cn(
-          'rounded px-2.5 py-1 transition-colors',
-          lang === 'en'
-            ? 'bg-[var(--color-primary)] text-[var(--color-primary-foreground)]'
-            : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]',
-        )}
-      >
-        EN
-      </button>
-      <button
-        onClick={() => setLang('de')}
-        className={cn(
-          'rounded px-2.5 py-1 transition-colors',
-          lang === 'de'
-            ? 'bg-[var(--color-primary)] text-[var(--color-primary-foreground)]'
-            : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]',
-        )}
-      >
-        DE
-      </button>
-    </div>
-  )
 }
 
 function StatCard({
@@ -152,11 +122,9 @@ function TierBreakdown({ tiers, total, label, lang, hideBasic = false }: {
   )
 }
 
-export default function StatsClient({ stats, initialLang }: { stats: Stats; initialLang: Lang }) {
-  const [lang, setLang] = useState<Lang>(initialLang)
+export default function StatsClient({ stats }: { stats: Stats }) {
+  const { lang } = useLang()
   const t = statsTranslations[lang]
-
-  useEffect(() => { setLangCookie(lang) }, [lang])
 
   // Paid-tier API keys (premium + premium+) that are NOT backed by an active
   // GitHub sponsor were granted via giveaways. Clamp at 0 for safety.
@@ -214,9 +182,6 @@ export default function StatsClient({ stats, initialLang }: { stats: Stats; init
             <p className="max-w-xl text-sm text-[var(--color-muted-foreground)] md:text-base">
               {t.subtitle}
             </p>
-          </div>
-          <div className="mt-1 shrink-0">
-            <LanguageToggle lang={lang} setLang={setLang} />
           </div>
         </div>
 

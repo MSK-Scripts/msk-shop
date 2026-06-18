@@ -1,6 +1,4 @@
-import { cookies, headers }            from 'next/headers'
 import { loadGiveawayStats }           from '@/lib/giveawayStats'
-import { LANG_COOKIE_NAME, resolveLang } from '@/lib/lang'
 import StatsClient                     from './StatsClient'
 
 export const dynamic = 'force-dynamic'
@@ -11,14 +9,6 @@ export const metadata = {
 }
 
 export default async function GiveawayStatsPage() {
-  const [stats, cookieStore, headerStore] = await Promise.all([
-    loadGiveawayStats(),
-    cookies(),
-    headers(),
-  ])
-  const initialLang = resolveLang(
-    cookieStore.get(LANG_COOKIE_NAME)?.value,
-    headerStore.get('accept-language'),
-  )
-  return <StatsClient stats={stats} initialLang={initialLang} />
+  const stats = await loadGiveawayStats()
+  return <StatsClient stats={stats} />
 }

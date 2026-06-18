@@ -5,7 +5,6 @@ import { queryOne }     from '@/lib/db';
 import { Card }         from '@/components/ui/Card';
 import { LANG_COOKIE_NAME, resolveLang } from '@/lib/lang';
 import { giveawayResultTranslations } from '@/lib/i18n';
-import LangToggle       from './LangToggle';
 
 export const dynamic = 'force-dynamic';
 
@@ -50,9 +49,6 @@ export default async function GiveawayResultPage({ params }: { params: Promise<{
 
   return (
     <main className="mx-auto w-full max-w-xl px-4 py-16">
-      <div className="mb-6 flex justify-end">
-        <LangToggle lang={lang} />
-      </div>
       <div className="mb-8 flex flex-col items-center text-center">
         <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--color-primary)]/15 text-[var(--color-primary)]">
           <Gift className="h-7 w-7" />

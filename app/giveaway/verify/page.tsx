@@ -1,7 +1,6 @@
-import { cookies, headers } from 'next/headers';
+import { cookies } from 'next/headers';
 import { parseGiveawayVerify } from '@/lib/giveawaySession';
 import { giveawayQuery }     from '@/lib/giveawayDb';
-import { LANG_COOKIE_NAME, resolveLang } from '@/lib/lang';
 import VerifyClient          from './VerifyClient';
 
 export const dynamic = 'force-dynamic';
@@ -13,13 +12,12 @@ export const metadata = {
 interface BotGuild { id: string; name: string; icon: string | null }
 
 export default async function GiveawayVerifyPage() {
-  const [cookieStore, headerStore] = await Promise.all([cookies(), headers()]);
+  const cookieStore = await cookies();
   const session = parseGiveawayVerify(cookieStore.get('msk_gw_verify')?.value);
-  const initialLang = resolveLang(cookieStore.get(LANG_COOKIE_NAME)?.value, headerStore.get('accept-language'));
 
   // Noch nicht via Discord eingeloggt → Login-Schritt.
   if (!session?.guilds || !session.discordUserId) {
-    return <VerifyClient step="login" guilds={[]} initialLang={initialLang} />;
+    return <VerifyClient step="login" guilds={[]} />;
   }
 
   // Admin-Guilds auf die einschränken, in denen der Bot ist (GuildSettings-Row).
@@ -36,5 +34,5 @@ export default async function GiveawayVerifyPage() {
     botGuilds = adminGuilds.filter((g) => present.has(g.id));
   }
 
-  return <VerifyClient step="select" guilds={botGuilds} initialLang={initialLang} />;
+  return <VerifyClient step="select" guilds={botGuilds} />;
 }

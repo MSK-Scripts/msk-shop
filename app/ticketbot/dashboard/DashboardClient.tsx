@@ -1,14 +1,14 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import dynamic from 'next/dynamic'
 import {
   Globe, CheckCircle, AlertCircle, Clock, Trash2,
   ExternalLink, RefreshCw, Loader2, Info, LogOut,
   FileText, Server, type LucideIcon,
 } from 'lucide-react'
-import { dashboardTranslations, type Lang } from '@/lib/i18n'
-import { setLangCookie } from '@/lib/lang'
+import { dashboardTranslations } from '@/lib/i18n'
+import { useLang } from '@/components/i18n/LangProvider'
 import type { Tier } from '@/lib/tiers'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
@@ -43,38 +43,8 @@ interface Guild {
 }
 
 interface Props {
-  guild:       Guild
-  serverIp:    string
-  initialLang: Lang
-}
-
-function LanguageToggle({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => void }) {
-  return (
-    <div className="flex items-center gap-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)] p-1 text-xs font-semibold">
-      <button
-        onClick={() => setLang('en')}
-        className={cn(
-          'rounded px-2.5 py-1 transition-colors',
-          lang === 'en'
-            ? 'bg-[var(--color-primary)] text-[var(--color-primary-foreground)]'
-            : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]',
-        )}
-      >
-        EN
-      </button>
-      <button
-        onClick={() => setLang('de')}
-        className={cn(
-          'rounded px-2.5 py-1 transition-colors',
-          lang === 'de'
-            ? 'bg-[var(--color-primary)] text-[var(--color-primary-foreground)]'
-            : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]',
-        )}
-      >
-        DE
-      </button>
-    </div>
-  )
+  guild:    Guild
+  serverIp: string
 }
 
 function StatusBadge({ status, t }: { status: Guild['domain_status']; t: { active_label: string; pending_label: string } }) {
@@ -93,11 +63,9 @@ function StatusBadge({ status, t }: { status: Guild['domain_status']; t: { activ
 
 type TabKey = 'domain' | 'transcripts' | 'hosting'
 
-export default function DashboardClient({ guild, serverIp, initialLang }: Props) {
-  const [lang, setLang] = useState<Lang>(initialLang)
+export default function DashboardClient({ guild, serverIp }: Props) {
+  const { lang } = useLang()
   const t = dashboardTranslations[lang]
-
-  useEffect(() => { setLangCookie(lang) }, [lang])
 
   const [tab, setTab] = useState<TabKey>('domain')
   const tabs: { key: TabKey; label: string; icon: LucideIcon }[] = [
@@ -196,18 +164,13 @@ export default function DashboardClient({ guild, serverIp, initialLang }: Props)
       <div className="mx-auto max-w-5xl">
 
         {/* Header */}
-        <div className="mb-8 flex items-start justify-between">
-          <div>
-            <span className="eyebrow">{t.label}</span>
-            <h1 className="mt-2 text-3xl font-bold tracking-tight md:text-4xl">{t.title}</h1>
-            <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">
-              {t.server_id}{' '}
-              <code className="font-mono text-xs">{guild.guild_id}</code>
-            </p>
-          </div>
-          <div className="mt-1 shrink-0">
-            <LanguageToggle lang={lang} setLang={setLang} />
-          </div>
+        <div className="mb-8">
+          <span className="eyebrow">{t.label}</span>
+          <h1 className="mt-2 text-3xl font-bold tracking-tight md:text-4xl">{t.title}</h1>
+          <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">
+            {t.server_id}{' '}
+            <code className="font-mono text-xs">{guild.guild_id}</code>
+          </p>
         </div>
 
         {/* Tier Badge + Quick Links */}
