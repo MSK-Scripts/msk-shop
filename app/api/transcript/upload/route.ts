@@ -31,7 +31,15 @@ interface AttachmentInput {
   name:      string;   // original filename
   data:      string;   // base64-encoded file content
   mimeType:  string;
+  id?:       string;   // optional bot-supplied UUID — lets the transcript HTML
+                       // reference the stored file via a stable relative path
+                       // (attachments/<id>.<ext>). Strictly validated below.
 }
+
+/** Lowercase UUID (any version) — the only shape we accept as a bot-supplied
+ *  attachment id. Anything else falls back to a server-generated UUID, so a
+ *  malicious value can never influence the on-disk filename. */
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -261,7 +269,11 @@ export async function POST(req: Request): Promise<NextResponse> {
     }
 
     for (const att of attachments) {
-      const attId       = randomUUID();
+      // Prefer the bot-supplied UUID so the transcript HTML can reference this
+      // file via a stable relative path (attachments/<id>.<ext>). Fall back to a
+      // server UUID for older bots / invalid ids — the strict UUID_RE guarantees
+      // the value can't escape the attachments dir.
+      const attId       = (typeof att.id === 'string' && UUID_RE.test(att.id)) ? att.id : randomUUID();
       const ext         = safeAttachmentExt(att.name)!;   // allow-listed in step 6
       const storedName  = `${attId}.${ext}`;
       const attFilePath = path.join(attachmentsDir, storedName);
