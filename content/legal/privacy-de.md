@@ -264,6 +264,8 @@ Wenn ein Ticket auf einem selbst-gehosteten Bot mit gültigem API Key geschlosse
 - Die **HTML-Datei** des Transkripts im Dateisystem unseres Servers
 - Metadaten in unserer Datenbank: Upload-Zeitstempel, Dateigröße, Ablaufdatum, Server-Referenz
 
+Das HTML-Transkript wird **vor** dem Upload vom selbst-gehosteten Bot erzeugt und kann personenbezogene Daten der Ticket-Teilnehmer enthalten — insbesondere deren Discord-Benutzernamen und Anzeigenamen, Benutzer-Avatare, benutzerdefinierte Server-Emojis, den Nachrichteninhalt des Tickets sowie Zeitstempel (und bei Premium und Premium+ Dateianhänge; siehe unten). Avatare und benutzerdefinierte Emojis werden direkt in die Datei eingebettet. Der Betreiber des selbst-gehosteten Bots entscheidet, welche Tickets hochgeladen werden, und ist für den Inhalt dieser Transkripte verantwortlich; wir speichern und stellen die resultierende Datei in seinem Auftrag bereit.
+
 Transkripte werden nach Ablauf der für Ihr Tier geltenden Aufbewahrungsfrist (30, 180 oder 365 Tage) automatisch gelöscht. Transkripte sind über ihre eindeutige URL (mit zufälliger UUID) öffentlich abrufbar, werden jedoch nicht indiziert oder verlinkt.
 
 ### Anhangsspeicherung (Premium und Premium+)
