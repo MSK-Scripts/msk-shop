@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic'
 import {
   Globe, CheckCircle, AlertCircle, Clock, Trash2,
   ExternalLink, RefreshCw, Loader2, Info, LogOut,
+  FileText, Server, type LucideIcon,
 } from 'lucide-react'
 import { dashboardTranslations, type Lang } from '@/lib/i18n'
 import { setLangCookie } from '@/lib/lang'
@@ -90,11 +91,20 @@ function StatusBadge({ status, t }: { status: Guild['domain_status']; t: { activ
   return null
 }
 
+type TabKey = 'domain' | 'transcripts' | 'hosting'
+
 export default function DashboardClient({ guild, serverIp, initialLang }: Props) {
   const [lang, setLang] = useState<Lang>(initialLang)
   const t = dashboardTranslations[lang]
 
   useEffect(() => { setLangCookie(lang) }, [lang])
+
+  const [tab, setTab] = useState<TabKey>('domain')
+  const tabs: { key: TabKey; label: string; icon: LucideIcon }[] = [
+    { key: 'domain',      label: t.tab_domain,      icon: Globe },
+    { key: 'transcripts', label: t.tab_transcripts, icon: FileText },
+    ...(guild.is_hosted ? [{ key: 'hosting' as const, label: t.tab_hosting, icon: Server }] : []),
+  ]
 
   const hasPremium = guild.tier === 'premium' || guild.tier === 'premium_plus'
   const [domain, setDomain] = useState(guild.custom_domain ?? '')
@@ -245,7 +255,27 @@ export default function DashboardClient({ guild, serverIp, initialLang }: Props)
           </div>
         </div>
 
+        {/* Tab Bar */}
+        <div className="mb-6 flex gap-1 overflow-x-auto border-b border-[var(--color-border)]">
+          {tabs.map(({ key, label, icon: Icon }) => (
+            <button
+              key={key}
+              onClick={() => setTab(key)}
+              className={cn(
+                '-mb-px inline-flex shrink-0 items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors',
+                tab === key
+                  ? 'border-[var(--color-primary)] text-[var(--color-primary)]'
+                  : 'border-transparent text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]',
+              )}
+            >
+              <Icon className="h-4 w-4" />
+              {label}
+            </button>
+          ))}
+        </div>
+
         {/* Custom Domain Card */}
+        {tab === 'domain' && (
         <Card className="p-6">
           <div className="mb-1 flex flex-wrap items-center gap-2">
             <Globe className="h-4 w-4 text-[var(--color-primary)]" />
@@ -391,15 +421,14 @@ export default function DashboardClient({ guild, serverIp, initialLang }: Props)
             </>
           )}
         </Card>
+        )}
 
         {/* Transcripts overview — für alle eingeloggten Nutzer (nur die eigenen) */}
-        <TranscriptsCard lang={lang} />
+        {tab === 'transcripts' && <TranscriptsCard lang={lang} />}
 
         {/* Bot Config Editor — nur für hosted customers */}
-        {!!guild.is_hosted && (
-          <div className="mt-4">
-            <BotConfigEditor lang={lang} />
-          </div>
+        {tab === 'hosting' && !!guild.is_hosted && (
+          <BotConfigEditor lang={lang} />
         )}
 
       </div>

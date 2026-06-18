@@ -423,6 +423,11 @@ export const dashboardTranslations = {
     tx_next:              'Next',
     tx_page_of:           'Page {page} of {total}',
     tx_count:             '{n} transcripts',
+
+    // Dashboard tabs
+    tab_domain:           'Custom Domain',
+    tab_transcripts:      'Transcripts',
+    tab_hosting:          'Bot Hosting',
   },
   de: {
     label:            'Ticket Bot',
@@ -549,6 +554,11 @@ export const dashboardTranslations = {
     tx_next:              'Weiter',
     tx_page_of:           'Seite {page} von {total}',
     tx_count:             '{n} Transkripte',
+
+    // Dashboard tabs
+    tab_domain:           'Eigene Domain',
+    tab_transcripts:      'Transkripte',
+    tab_hosting:          'Bot-Hosting',
   },
 } as const;
 
