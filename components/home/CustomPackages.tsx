@@ -3,7 +3,8 @@ import { ExternalLink } from 'lucide-react'
 import { Card, CardContent, CardTitle, CardDescription } from '@/components/ui/Card'
 import { Badge, type BadgeVariant } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
-import { CUSTOM_PACKAGES, CUSTOM_PACKAGES_TITLE } from '@/content/custom-packages'
+import { CUSTOM_PACKAGES } from '@/content/custom-packages'
+import { homeTranslations, type Lang } from '@/lib/i18n'
 
 /**
  * Normalisiert Bildpfade aus custom-packages.ts. next/image akzeptiert nur
@@ -17,7 +18,8 @@ function resolveImageSrc(src: string): string {
   return `/${src}`
 }
 
-export function CustomPackages() {
+export function CustomPackages({ lang }: { lang: Lang }) {
+  const t = homeTranslations[lang]
   if (CUSTOM_PACKAGES.length === 0) {
     return null
   }
@@ -25,12 +27,12 @@ export function CustomPackages() {
   return (
     <section className="container-page py-16 md:py-20">
       <div className="mb-10">
-        <span className="eyebrow">GitHub &amp; More</span>
+        <span className="eyebrow">{t.custom_eyebrow}</span>
         <h2 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">
-          {CUSTOM_PACKAGES_TITLE}
+          {t.custom_title}
         </h2>
         <p className="mt-3 max-w-xl text-base text-[var(--color-muted-foreground)]">
-          Free tools, Discord bots, and open-source libraries from the MSK ecosystem.
+          {t.custom_subtitle}
         </p>
       </div>
 

@@ -1,17 +1,19 @@
+import { homeTranslations, type Lang } from '@/lib/i18n'
+
 interface Kpi {
   number: string
   label: string
   emphasis?: string
 }
 
-const KPIS: Kpi[] = [
-  { number: '500', emphasis: '+', label: 'Customers' },
-  { number: '20',  emphasis: '+', label: 'Resources' },
-  { number: '24/7',             label: 'Discord Support' },
-  { number: 'ESX · QB',    label: 'Frameworks' },
-]
-
-export function TrustBar() {
+export function TrustBar({ lang }: { lang: Lang }) {
+  const t = homeTranslations[lang]
+  const KPIS: Kpi[] = [
+    { number: '500', emphasis: '+', label: t.trust_customers },
+    { number: '20',  emphasis: '+', label: t.trust_resources },
+    { number: '24/7',               label: t.trust_support },
+    { number: 'ESX · QB',           label: t.trust_frameworks },
+  ]
   return (
     <section className="border-b border-[var(--color-border)] bg-[color-mix(in_oklab,var(--color-muted)_60%,var(--color-background))]">
       <div className="container-page grid grid-cols-2 gap-6 py-10 md:grid-cols-4 md:py-12">

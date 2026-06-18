@@ -1,3 +1,5 @@
+import { cookies, headers } from 'next/headers'
+import { LANG_COOKIE_NAME, resolveLang } from '@/lib/lang'
 import { Hero } from '@/components/home/Hero'
 import { TrustBar } from '@/components/home/TrustBar'
 import { FeaturedPackages } from '@/components/home/FeaturedPackages'
@@ -5,17 +7,18 @@ import { WhyMSK } from '@/components/home/WhyMSK'
 import { CustomPackages } from '@/components/home/CustomPackages'
 import { CTASection } from '@/components/home/CTASection'
 
-export const revalidate = 60
-
 export default async function HomePage() {
+  const [cookieStore, headerStore] = await Promise.all([cookies(), headers()])
+  const lang = resolveLang(cookieStore.get(LANG_COOKIE_NAME)?.value, headerStore.get('accept-language'))
+
   return (
     <>
-      <Hero />
-      <TrustBar />
-      <FeaturedPackages />
-      <WhyMSK />
-      <CustomPackages />
-      <CTASection />
+      <Hero lang={lang} />
+      <TrustBar lang={lang} />
+      <FeaturedPackages lang={lang} />
+      <WhyMSK lang={lang} />
+      <CustomPackages lang={lang} />
+      <CTASection lang={lang} />
     </>
   )
 }

@@ -2,8 +2,10 @@ import Link from 'next/link'
 import { ArrowRight, Github } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
+import { homeTranslations, type Lang } from '@/lib/i18n'
 
-export function Hero() {
+export function Hero({ lang }: { lang: Lang }) {
+  const t = homeTranslations[lang]
   return (
     <section className="relative overflow-hidden border-b border-[var(--color-border)]">
       <div aria-hidden className="hero-decor-gradient pointer-events-none absolute inset-0" />
@@ -14,31 +16,30 @@ export function Hero() {
         <div>
           <Badge variant="outline" className="mb-6">
             <span className="pulse-dot inline-block h-1.5 w-1.5 rounded-full bg-[var(--color-primary)]" />
-            Live · Trusted by 500+ Servers
+            {t.hero_badge}
           </Badge>
 
           <h1 className="text-balance text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
-            Premium FiveM<br />
-            Scripts.<br />
-            <span className="text-[var(--color-primary)]">Built by a player.</span>
+            {t.hero_h1_line1}<br />
+            {t.hero_h1_line2}<br />
+            <span className="text-[var(--color-primary)]">{t.hero_h1_accent}</span>
           </h1>
 
           <p className="mt-6 max-w-xl text-pretty text-lg text-[var(--color-muted-foreground)] md:text-xl">
-            Clean code, regular updates, and real support — from the developer
-            who codes every line himself.
+            {t.hero_subtitle}
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild size="lg">
               <Link href="/packages">
-                Browse Packages
+                {t.hero_btn_browse}
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline">
               <a href="https://github.com/MSK-Scripts" target="_blank" rel="noopener noreferrer">
                 <Github className="h-4 w-4" />
-                View on GitHub
+                {t.hero_btn_github}
               </a>
             </Button>
           </div>

@@ -1,5 +1,6 @@
 import { Sparkles, Github } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
+import { homeTranslations, type Lang } from '@/lib/i18n'
 
 const DISCORD_URL = 'https://discord.gg/5hHSBRHvJE'
 const GITHUB_URL = 'https://github.com/MSK-Scripts'
@@ -12,7 +13,8 @@ function DiscordLogo() {
   )
 }
 
-export function CTASection() {
+export function CTASection({ lang }: { lang: Lang }) {
+  const t = homeTranslations[lang]
   return (
     <section className="border-t border-[var(--color-border)] bg-[color-mix(in_oklab,var(--color-muted)_60%,var(--color-background))]">
       <div className="container-page py-16 md:py-24">
@@ -21,22 +23,22 @@ export function CTASection() {
             <Sparkles className="h-7 w-7 text-[var(--color-primary)]" aria-hidden="true" />
           </div>
           <h2 className="text-balance text-3xl font-bold tracking-tight md:text-4xl">
-            Join 500+ server owners already running MSK.
+            {t.cta_heading}
           </h2>
           <p className="mt-4 text-base text-[var(--color-muted-foreground)] md:text-lg">
-            Discord support, sneak peeks, and announcements — straight from the developer.
+            {t.cta_subtitle}
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <Button asChild size="lg" variant="discord">
               <a href={DISCORD_URL} target="_blank" rel="noopener noreferrer">
                 <DiscordLogo />
-                Join Discord
+                {t.cta_btn_discord}
               </a>
             </Button>
             <Button asChild size="lg" variant="outline">
               <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">
                 <Github className="h-4 w-4" />
-                Browse GitHub
+                {t.cta_btn_github}
               </a>
             </Button>
           </div>

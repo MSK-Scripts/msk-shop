@@ -1,34 +1,13 @@
 import { Wrench, RefreshCcw, MessageCircle, BookOpen, type LucideIcon } from 'lucide-react'
 
-export interface HomeFeature {
-  title: string
-  description: string
-  icon: LucideIcon
-}
-
 /**
- * Wird in components/home/WhyMSK.tsx als 4-Karten-Grid gerendert.
- * Reihenfolge = Reihenfolge in der UI.
+ * Icons für die "Why MSK"-Karten (components/home/WhyMSK.tsx).
+ * Reihenfolge = Reihenfolge der Texte in `homeTranslations.*.why_features`
+ * (lib/i18n.ts) — Index-basiert gezippt. Texte sind dort übersetzbar.
  */
-export const HOME_FEATURES: HomeFeature[] = [
-  {
-    icon: Wrench,
-    title: 'Quality over Quantity',
-    description: 'Every script is personally coded, tested, and maintained — no template farms.',
-  },
-  {
-    icon: RefreshCcw,
-    title: 'Regular Updates',
-    description: 'New features and bugfixes ship as they’re ready, not on a corporate roadmap.',
-  },
-  {
-    icon: MessageCircle,
-    title: 'Real Support',
-    description: 'Discord support from the person who actually wrote the code.',
-  },
-  {
-    icon: BookOpen,
-    title: 'Open Documentation',
-    description: 'Full guides, examples, and exports — no guessing how things work.',
-  },
+export const HOME_FEATURE_ICONS: LucideIcon[] = [
+  Wrench,         // Quality over Quantity
+  RefreshCcw,     // Regular Updates
+  MessageCircle,  // Real Support
+  BookOpen,       // Open Documentation
 ]

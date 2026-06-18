@@ -3,8 +3,10 @@ import { ArrowRight } from 'lucide-react'
 import { getPackages } from '@/lib/tebex'
 import { PackageCard } from '@/components/packages/PackageCard'
 import { FEATURED_PACKAGE_IDS, PACKAGE_BADGES, PACKAGE_TAGS, PACKAGE_DESCRIPTIONS } from '@/lib/config'
+import { homeTranslations, type Lang } from '@/lib/i18n'
 
-export async function FeaturedPackages() {
+export async function FeaturedPackages({ lang }: { lang: Lang }) {
+  const t = homeTranslations[lang]
   // Fail-soft: ist die Tebex-API zur Build-Zeit nicht erreichbar/autorisiert
   // (z. B. CI-Builds ohne Secrets wie bei Dependabot-PRs), wird die Sektion
   // ausgeblendet statt den ganzen Build/Prerender zu sprengen.
@@ -20,7 +22,7 @@ export async function FeaturedPackages() {
     return null
   }
 
-  const heading = FEATURED_PACKAGE_IDS.length > 0 ? 'Featured Packages' : 'All Packages'
+  const heading = FEATURED_PACKAGE_IDS.length > 0 ? t.featured_heading_featured : t.featured_heading_all
 
   return (
     <section className="container-page py-16 md:py-20">
@@ -36,7 +38,7 @@ export async function FeaturedPackages() {
           prefetch={true}
           className="hidden items-center gap-1 text-sm font-medium text-[var(--color-primary)] transition-colors hover:underline sm:inline-flex"
         >
-          All packages
+          {t.featured_all_link}
           <ArrowRight className="h-3.5 w-3.5" />
         </Link>
       </div>

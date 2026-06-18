@@ -12,6 +12,8 @@ import { useCart } from '@/lib/useCart'
 import { Button } from '@/components/ui/Button'
 import { ThemeToggle } from '@/components/theme/ThemeToggle'
 import { LanguageDropdown } from '@/components/i18n/LanguageDropdown'
+import { useLang } from '@/components/i18n/LangProvider'
+import { layoutTranslations } from '@/lib/i18n'
 import { SearchDialog } from '@/components/search/SearchDialog'
 import { getCategories } from '@/lib/tebex'
 import type { TebexCategory } from '@/types/tebex'
@@ -79,6 +81,17 @@ function HeaderInner() {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
   const [searchOpen, setSearchOpen] = useState(false)
   const [hydrated, setHydrated] = useState(false)
+
+  const { lang } = useLang()
+  const t = layoutTranslations[lang]
+  // Nav-Labels übersetzen; Marken-/Produktnamen (Ticket Bot, Giveaway Bot,
+  // Dashboard) bleiben bewusst unverändert (kein Mapping-Eintrag → Fallback).
+  const navLabel = (label: string): string => ({
+    'Home':          t.nav_home,
+    'Verify':        t.nav_verify,
+    'Statistics':    t.nav_statistics,
+    'Documentation': t.nav_documentation,
+  } as Record<string, string>)[label] ?? label
 
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -207,7 +220,7 @@ function HeaderInner() {
         rel="noopener noreferrer"
         className={cn(navLinkClasses(false), 'inline-flex items-center gap-1')}
       >
-        {item.label}
+        {navLabel(item.label)}
         <ExternalLink className="h-3 w-3 opacity-70" aria-hidden />
       </a>
     ) : (
@@ -217,7 +230,7 @@ function HeaderInner() {
         prefetch
         className={navLinkClasses(isActive(item.href))}
       >
-        {item.label}
+        {navLabel(item.label)}
       </Link>
     )
 
@@ -250,7 +263,7 @@ function HeaderInner() {
           aria-haspopup="menu"
           aria-expanded={open}
         >
-          {item.label}
+          {navLabel(item.label)}
           <ChevronDown
             className={cn(
               'h-3.5 w-3.5 transition-transform duration-150',
@@ -281,7 +294,7 @@ function HeaderInner() {
                 )}
               >
                 <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-primary)]" />
-                {child.label}
+                {navLabel(child.label)}
               </Link>
             ))}
           </div>
@@ -356,7 +369,7 @@ function HeaderInner() {
                 aria-haspopup="menu"
                 aria-expanded={catOpen}
               >
-                Categories
+                {t.nav_categories}
                 <ChevronDown
                   className={cn(
                     'h-3.5 w-3.5 transition-transform duration-150',
@@ -373,7 +386,7 @@ function HeaderInner() {
                   {!categoriesLoaded ? (
                     <div className="flex items-center gap-2 px-3 py-2 text-xs text-[var(--color-muted-foreground)]">
                       <Loader2 className="h-3 w-3 animate-spin" />
-                      Loading…
+                      {t.nav_loading}
                     </div>
                   ) : hasCategories ? (
                     <>
@@ -396,14 +409,14 @@ function HeaderInner() {
                         role="menuitem"
                         className="flex items-center justify-between rounded-md px-3 py-2 text-sm font-medium text-[var(--color-primary)] outline-none transition-colors hover:bg-[var(--color-muted)]"
                       >
-                        <span>All packages</span>
+                        <span>{t.nav_all_packages}</span>
                         <ArrowRight className="h-3.5 w-3.5" />
                       </Link>
                     </>
                   ) : (
                     <>
                       <div className="px-3 py-2 text-xs text-[var(--color-muted-foreground)]">
-                        No categories configured.
+                        {t.nav_no_categories}
                       </div>
                       <Link
                         href="/packages"
@@ -411,7 +424,7 @@ function HeaderInner() {
                         role="menuitem"
                         className="flex items-center justify-between rounded-md px-3 py-2 text-sm font-medium text-[var(--color-primary)] outline-none transition-colors hover:bg-[var(--color-muted)]"
                       >
-                        <span>Browse all packages</span>
+                        <span>{t.nav_browse_all}</span>
                         <ArrowRight className="h-3.5 w-3.5" />
                       </Link>
                     </>
@@ -436,7 +449,7 @@ function HeaderInner() {
               title="Search packages (⌘K)"
             >
               <Search className="h-4 w-4" />
-              <span className="hidden sm:inline">Search</span>
+              <span className="hidden sm:inline">{t.action_search}</span>
               <kbd className="ml-1 hidden rounded border border-[var(--color-border)] bg-[var(--color-muted)] px-1.5 py-0.5 font-mono text-[0.625rem] text-[var(--color-muted-foreground)] lg:inline">
                 ⌘K
               </kbd>
@@ -455,7 +468,7 @@ function HeaderInner() {
               aria-label={`Cart (${effectiveItemCount} items)`}
             >
               <ShoppingCart className="h-4 w-4" />
-              <span className="hidden sm:inline">Cart</span>
+              <span className="hidden sm:inline">{t.action_cart}</span>
               {effectiveItemCount > 0 && (
                 <span
                   className="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full border-2 border-[var(--color-background)] bg-[var(--color-primary)] px-1 text-[0.625rem] font-bold leading-none text-[var(--color-primary-foreground)] tabular-nums"
@@ -489,7 +502,7 @@ function HeaderInner() {
                       role="menuitem"
                     >
                       <LogOut className="h-4 w-4" />
-                      Logout
+                      {t.action_logout}
                     </button>
                   </div>
                 )}
@@ -504,7 +517,7 @@ function HeaderInner() {
                 {loginLoading
                   ? <Loader2 className="h-4 w-4 animate-spin" />
                   : <User className="h-4 w-4" />}
-                Login
+                {t.action_login}
               </Button>
             )}
 
@@ -531,7 +544,7 @@ function HeaderInner() {
               {hasCategories && (
                 <div className="mt-2">
                   <div className="px-3 py-1.5 font-mono text-[0.625rem] font-bold uppercase tracking-widest text-[var(--color-muted-foreground)]">
-                    Categories
+                    {t.nav_categories}
                   </div>
                   {categories.map(cat => (
                     <Link
@@ -556,7 +569,7 @@ function HeaderInner() {
                 className="flex items-center gap-2 rounded-md px-3 py-2.5 text-left text-sm text-[var(--color-muted-foreground)] transition-colors hover:bg-[var(--color-muted)] hover:text-[var(--color-foreground)]"
               >
                 <Search className="h-4 w-4" />
-                Search packages
+                {t.action_search}
               </button>
 
               <div className="my-2 h-px bg-[var(--color-border)]" />
@@ -572,7 +585,7 @@ function HeaderInner() {
                     className="flex items-center gap-2 rounded-md px-3 py-2.5 text-left text-sm text-[var(--color-danger)] transition-colors hover:bg-[var(--color-muted)]"
                   >
                     <LogOut className="h-4 w-4" />
-                    Logout
+                    {t.action_logout}
                   </button>
                 </>
               ) : (
@@ -584,7 +597,7 @@ function HeaderInner() {
                   {loginLoading
                     ? <Loader2 className="h-4 w-4 animate-spin" />
                     : <User className="h-4 w-4" />}
-                  Login
+                  {t.action_login}
                 </button>
               )}
             </nav>

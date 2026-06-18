@@ -28,7 +28,9 @@ export function LanguageDropdown() {
         aria-label="Change language"
       >
         <span aria-hidden>{current.flag}</span>
-        <span className="hidden font-medium sm:inline">{current.label}</span>
+        {/* Label erst ab lg — auf Mobile/Tablet kompakt (nur Flagge), damit die
+            Action-Leiste im sm–md-Bereich nicht überläuft. */}
+        <span className="hidden font-medium lg:inline">{current.label}</span>
         <ChevronDown className={cn('h-3 w-3 transition-transform', open && 'rotate-180')} />
       </Button>
 

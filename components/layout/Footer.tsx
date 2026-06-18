@@ -5,24 +5,12 @@ import Image from 'next/image'
 import { Github } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useLang } from '@/components/i18n/LangProvider'
-
-const SHOP_LINKS = [
-  { label: 'All Packages', href: '/packages' },
-  { label: 'Github', href: 'https://github.com/MSK-Scripts', external: true },
-  { label: 'Documentation', href: 'https://docu.msk-scripts.de/', external: true },
-] as const
+import { layoutTranslations } from '@/lib/i18n'
 
 const ECOSYSTEM_LINKS = [
   { label: 'MSKanban',       href: 'https://mskanban.msk-scripts.de/',  external: true },
   { label: 'MSK Paste',      href: 'https://paste.msk-scripts.de/',     external: true },
   { label: 'MSK Shortener',  href: 'https://s.msk-scripts.de/',         external: true },
-] as const
-
-// Legal-Labels sind sprachabhängig (z. B. Imprint ⇄ Impressum).
-const LEGAL_LINKS = [
-  { en: 'Imprint',            de: 'Impressum',    href: '/terms/imprint' },
-  { en: 'Privacy Policy',     de: 'Datenschutz',  href: '/terms/privacy' },
-  { en: 'Terms & Conditions', de: 'AGB',          href: '/terms' },
 ] as const
 
 const DISCORD_URL = 'https://discord.gg/5hHSBRHvJE'
@@ -49,6 +37,20 @@ function ColumnTitle({ children }: { children: React.ReactNode }) {
 
 export function Footer() {
   const { lang } = useLang()
+  const t = layoutTranslations[lang]
+
+  const shopLinks = [
+    { label: t.footer_all_packages, href: '/packages' },
+    { label: 'Github', href: GITHUB_URL, external: true },
+    { label: t.footer_documentation, href: 'https://docu.msk-scripts.de/', external: true },
+  ]
+  // Legal-Labels sind sprachabhängig (z. B. Imprint ⇄ Impressum).
+  const legalLinks = [
+    { label: t.legal_imprint, href: '/terms/imprint' },
+    { label: t.legal_privacy, href: '/terms/privacy' },
+    { label: t.legal_terms,   href: '/terms' },
+  ]
+
   return (
     <footer className="mt-16 border-t border-[var(--color-border)] bg-[color-mix(in_oklab,var(--color-muted)_40%,var(--color-background))]">
       <div className="container-page py-12">
@@ -61,7 +63,7 @@ export function Footer() {
               <span>MSK Scripts</span>
             </Link>
             <p className="mt-3 max-w-xs text-sm text-[var(--color-muted-foreground)]">
-              FiveM Scripts with Heart 💚
+              {t.footer_tagline}
             </p>
             <div className="mt-4 flex gap-2">
               <Button asChild variant="outline" size="sm" aria-label="Discord">
@@ -84,15 +86,15 @@ export function Footer() {
 
           {/* Shop */}
           <div>
-            <ColumnTitle>Shop</ColumnTitle>
-            {SHOP_LINKS.map(l => (
-              <FooterLink key={l.href} href={l.href}>{l.label}</FooterLink>
+            <ColumnTitle>{t.footer_col_shop}</ColumnTitle>
+            {shopLinks.map(l => (
+              <FooterLink key={l.href} href={l.href} external={l.external}>{l.label}</FooterLink>
             ))}
           </div>
 
           {/* Ecosystem */}
           <div>
-            <ColumnTitle>Ecosystem</ColumnTitle>
+            <ColumnTitle>{t.footer_col_eco}</ColumnTitle>
             {ECOSYSTEM_LINKS.map(l => (
               <FooterLink key={l.href} href={l.href} external>{l.label}</FooterLink>
             ))}
@@ -100,9 +102,9 @@ export function Footer() {
 
           {/* Legal */}
           <div>
-            <ColumnTitle>{lang === 'de' ? 'Rechtliches' : 'Legal'}</ColumnTitle>
-            {LEGAL_LINKS.map(l => (
-              <FooterLink key={l.href} href={l.href}>{lang === 'de' ? l.de : l.en}</FooterLink>
+            <ColumnTitle>{t.footer_col_legal}</ColumnTitle>
+            {legalLinks.map(l => (
+              <FooterLink key={l.href} href={l.href}>{l.label}</FooterLink>
             ))}
           </div>
 
@@ -111,15 +113,15 @@ export function Footer() {
 
         <div className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--color-border)] pt-6">
           <p className="text-xs text-[var(--color-muted-foreground)]">
-            © {new Date().getFullYear()} MSK Scripts. All rights reserved.
+            © {new Date().getFullYear()} MSK Scripts. {t.footer_rights}
           </p>
           <p className="text-xs text-[var(--color-muted-foreground)]">
-            Powered by{' '}
+            {t.footer_powered_by}{' '}
             <a href="https://tebex.io" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--color-foreground)] transition-colors">
               Tebex
             </a>
             {' · '}
-            Built by{' '}
+            {t.footer_built_by}{' '}
             <a href="https://www.musiker15.de" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--color-foreground)] transition-colors">
               Musiker15
             </a>

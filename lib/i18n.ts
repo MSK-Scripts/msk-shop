@@ -751,3 +751,148 @@ export const giveawayResultTranslations = {
     footer:      'Gehostet von MSK Scripts',
   },
 } as const;
+
+// ── Homepage (Landing) ───────────────────────────────────────────────────────
+// Genutzt von den Server-Komponenten unter components/home/*. Die Seite löst die
+// Sprache server-seitig auf (Cookie) und reicht `lang` durch; der Navbar-Switch
+// triggert router.refresh(), wodurch diese Server-Komponenten neu rendern.
+export const homeTranslations = {
+  en: {
+    hero_badge:        'Live · Trusted by 500+ Servers',
+    hero_h1_line1:     'Premium FiveM',
+    hero_h1_line2:     'Scripts.',
+    hero_h1_accent:    'Built by a player.',
+    hero_subtitle:     'Clean code, regular updates, and real support — from the developer who codes every line himself.',
+    hero_btn_browse:   'Browse Packages',
+    hero_btn_github:   'View on GitHub',
+
+    trust_customers:   'Customers',
+    trust_resources:   'Resources',
+    trust_support:     'Discord Support',
+    trust_frameworks:  'Frameworks',
+
+    why_eyebrow:       'Benefits',
+    why_heading:       'Why MSK Scripts?',
+    why_subtitle:      'No template farms. No corporate roadmap. Just well-crafted FiveM scripts you can trust.',
+    why_features: [
+      { title: 'Quality over Quantity', description: 'Every script is personally coded, tested, and maintained — no template farms.' },
+      { title: 'Regular Updates',       description: 'New features and bugfixes ship as they’re ready, not on a corporate roadmap.' },
+      { title: 'Real Support',          description: 'Discord support from the person who actually wrote the code.' },
+      { title: 'Open Documentation',    description: 'Full guides, examples, and exports — no guessing how things work.' },
+    ],
+
+    featured_heading_featured: 'Featured Packages',
+    featured_heading_all:      'All Packages',
+    featured_all_link:         'All packages',
+
+    custom_eyebrow:    'GitHub & More',
+    custom_title:      'Tools, Bots & More',
+    custom_subtitle:   'Free tools, Discord bots, and open-source libraries from the MSK ecosystem.',
+
+    cta_heading:       'Join 500+ server owners already running MSK.',
+    cta_subtitle:      'Discord support, sneak peeks, and announcements — straight from the developer.',
+    cta_btn_discord:   'Join Discord',
+    cta_btn_github:    'Browse GitHub',
+  },
+  de: {
+    hero_badge:        'Live · Über 500 Server vertrauen darauf',
+    hero_h1_line1:     'Premium FiveM',
+    hero_h1_line2:     'Scripts.',
+    hero_h1_accent:    'Von einem Spieler entwickelt.',
+    hero_subtitle:     'Sauberer Code, regelmäßige Updates und echter Support — vom Entwickler, der jede Zeile selbst schreibt.',
+    hero_btn_browse:   'Pakete ansehen',
+    hero_btn_github:   'Auf GitHub ansehen',
+
+    trust_customers:   'Kunden',
+    trust_resources:   'Ressourcen',
+    trust_support:     'Discord-Support',
+    trust_frameworks:  'Frameworks',
+
+    why_eyebrow:       'Vorteile',
+    why_heading:       'Warum MSK Scripts?',
+    why_subtitle:      'Keine Template-Farmen. Keine Konzern-Roadmap. Nur sorgfältig gebaute FiveM-Scripts, denen du vertrauen kannst.',
+    why_features: [
+      { title: 'Qualität statt Quantität', description: 'Jedes Script wird persönlich programmiert, getestet und gepflegt — keine Template-Farmen.' },
+      { title: 'Regelmäßige Updates',      description: 'Neue Features und Bugfixes kommen, sobald sie fertig sind — nicht nach Konzern-Roadmap.' },
+      { title: 'Echter Support',           description: 'Discord-Support von der Person, die den Code tatsächlich geschrieben hat.' },
+      { title: 'Offene Dokumentation',     description: 'Vollständige Anleitungen, Beispiele und Exports — kein Rätselraten, wie etwas funktioniert.' },
+    ],
+
+    featured_heading_featured: 'Empfohlene Pakete',
+    featured_heading_all:      'Alle Pakete',
+    featured_all_link:         'Alle Pakete',
+
+    custom_eyebrow:    'GitHub & mehr',
+    custom_title:      'Tools, Bots & mehr',
+    custom_subtitle:   'Kostenlose Tools, Discord-Bots und Open-Source-Bibliotheken aus dem MSK-Ökosystem.',
+
+    cta_heading:       'Schließe dich 500+ Server-Besitzern an, die bereits MSK nutzen.',
+    cta_subtitle:      'Discord-Support, Vorab-Einblicke und Ankündigungen — direkt vom Entwickler.',
+    cta_btn_discord:   'Discord beitreten',
+    cta_btn_github:    'GitHub ansehen',
+  },
+} as const;
+
+// ── Site-Chrome (Navbar + Footer) ────────────────────────────────────────────
+// Genutzt von den Client-Komponenten Header/Footer via useLang() (sofortiger
+// Wechsel, kein Reload).
+export const layoutTranslations = {
+  en: {
+    nav_home:          'Home',
+    nav_verify:        'Verify',
+    nav_dashboard:     'Dashboard',
+    nav_statistics:    'Statistics',
+    nav_documentation: 'Documentation',
+    nav_categories:    'Categories',
+    nav_loading:       'Loading…',
+    nav_all_packages:  'All packages',
+    nav_browse_all:    'Browse all packages',
+    nav_no_categories: 'No categories configured.',
+    action_search:     'Search',
+    action_cart:       'Cart',
+    action_login:      'Login',
+    action_logout:     'Logout',
+
+    footer_tagline:    'FiveM Scripts with Heart 💚',
+    footer_col_shop:   'Shop',
+    footer_col_eco:    'Ecosystem',
+    footer_col_legal:  'Legal',
+    footer_all_packages: 'All Packages',
+    footer_documentation: 'Documentation',
+    footer_rights:     'All rights reserved.',
+    footer_powered_by: 'Powered by',
+    footer_built_by:   'Built by',
+    legal_imprint:     'Imprint',
+    legal_privacy:     'Privacy Policy',
+    legal_terms:       'Terms & Conditions',
+  },
+  de: {
+    nav_home:          'Start',
+    nav_verify:        'Verifizieren',
+    nav_dashboard:     'Dashboard',
+    nav_statistics:    'Statistiken',
+    nav_documentation: 'Dokumentation',
+    nav_categories:    'Kategorien',
+    nav_loading:       'Lädt…',
+    nav_all_packages:  'Alle Pakete',
+    nav_browse_all:    'Alle Pakete ansehen',
+    nav_no_categories: 'Keine Kategorien konfiguriert.',
+    action_search:     'Suchen',
+    action_cart:       'Warenkorb',
+    action_login:      'Anmelden',
+    action_logout:     'Abmelden',
+
+    footer_tagline:    'FiveM Scripts mit Herz 💚',
+    footer_col_shop:   'Shop',
+    footer_col_eco:    'Ökosystem',
+    footer_col_legal:  'Rechtliches',
+    footer_all_packages: 'Alle Pakete',
+    footer_documentation: 'Dokumentation',
+    footer_rights:     'Alle Rechte vorbehalten.',
+    footer_powered_by: 'Bereitgestellt über',
+    footer_built_by:   'Erstellt von',
+    legal_imprint:     'Impressum',
+    legal_privacy:     'Datenschutz',
+    legal_terms:       'AGB',
+  },
+} as const;
