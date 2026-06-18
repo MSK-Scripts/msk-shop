@@ -218,23 +218,28 @@ export default function DashboardClient({ guild, serverIp }: Props) {
           </div>
         </div>
 
-        {/* Tab Bar */}
-        <div className="mb-6 flex gap-1 overflow-x-auto border-b border-[var(--color-border)]">
-          {tabs.map(({ key, label, icon: Icon }) => (
-            <button
-              key={key}
-              onClick={() => setTab(key)}
-              className={cn(
-                '-mb-px inline-flex shrink-0 items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors',
-                tab === key
-                  ? 'border-[var(--color-primary)] text-[var(--color-primary)]'
-                  : 'border-transparent text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]',
-              )}
-            >
-              <Icon className="h-4 w-4" />
-              {label}
-            </button>
-          ))}
+        {/* Tab Bar — Border liegt auf dem äußeren Wrapper (scrollt nie); die Buttons
+            in einem inneren horizontalen Scroll-Container. So entsteht keine
+            vertikale Scrollbar (overflow-x:auto würde sonst overflow-y:auto
+            erzwingen und das -mb-px der Buttons 1px überlaufen lassen). */}
+        <div className="mb-6 border-b border-[var(--color-border)]">
+          <div className="-mb-px flex gap-1 overflow-x-auto">
+            {tabs.map(({ key, label, icon: Icon }) => (
+              <button
+                key={key}
+                onClick={() => setTab(key)}
+                className={cn(
+                  'inline-flex shrink-0 items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors',
+                  tab === key
+                    ? 'border-[var(--color-primary)] text-[var(--color-primary)]'
+                    : 'border-transparent text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]',
+                )}
+              >
+                <Icon className="h-4 w-4" />
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Custom Domain Card */}
