@@ -1,6 +1,6 @@
 import { NextResponse }               from 'next/server';
 import { randomUUID }                  from 'crypto';
-import { writeFile, mkdir }            from 'fs/promises';
+import { writeFile, mkdir, rm }        from 'fs/promises';
 import path                            from 'path';
 import sharp                           from 'sharp';
 import { query, queryOne }             from '@/lib/db';
@@ -237,14 +237,31 @@ export async function POST(req: Request): Promise<NextResponse> {
       }, { status: 413 });
     }
 
-    // 7. Prepare filesystem paths
-    const transcriptId    = randomUUID();
+    // 7. Prepare filesystem paths.
+    //    Reuse the existing transcript for this ticket so re-closing it (e.g.
+    //    after a reopen) REPLACES the transcript in place and keeps the SAME
+    //    public URL, instead of accumulating a new transcript per close. Both
+    //    ids come from our own DB / randomUUID() — never from the request — so
+    //    the on-disk path stays fully server-controlled.
+    const existing = await query<{ id: string }>(
+      `SELECT id FROM ticketbot_transcripts WHERE guild_id = ? AND ticket_id = ? ORDER BY created_at DESC`,
+      [guild.guild_id, ticketId],
+    );
+    const transcriptId    = existing[0]?.id ?? randomUUID();
     const urlPrefix       = transcriptUrlPrefix(guild);
     const guildDir        = path.join(transcriptBasePath(), guild.guild_id);
     const transcriptDir   = path.join(guildDir, transcriptId);
     const htmlFilename    = 'transcript.html';
     const htmlFilePath    = path.join(transcriptDir, htmlFilename);
 
+    // Drop any older duplicate transcripts for this ticket (files + DB rows,
+    // attachments cascade), then clear the reused directory so stale HTML and
+    // attachments don't linger before we write the fresh version.
+    for (const dup of existing.slice(1)) {
+      await rm(path.join(guildDir, dup.id), { recursive: true, force: true }).catch(() => {});
+      await query(`DELETE FROM ticketbot_transcripts WHERE id = ?`, [dup.id]);
+    }
+    await rm(transcriptDir, { recursive: true, force: true }).catch(() => {});
     await mkdir(transcriptDir, { recursive: true });
 
     // 8. Write transcript HTML to disk
@@ -310,6 +327,10 @@ export async function POST(req: Request): Promise<NextResponse> {
     // 10. Persist to DB
     const expiresAt      = getExpiresAt(guild.tier);
     const transcriptUrl  = `${urlPrefix}/${transcriptId}/${htmlFilename}`;
+
+    // Replace in place when reusing an id (clears the old row + its attachment
+    // rows via cascade); a no-op for a brand-new id.
+    await query(`DELETE FROM ticketbot_transcripts WHERE id = ?`, [transcriptId]);
 
     await query(
       `INSERT INTO ticketbot_transcripts
