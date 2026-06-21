@@ -8,7 +8,7 @@ import { useLang } from '@/components/i18n/LangProvider'
 import { layoutTranslations } from '@/lib/i18n'
 
 const ECOSYSTEM_LINKS = [
-  { label: 'MSKanban',       href: 'https://mskanban.msk-scripts.de/',  external: true },
+  { label: 'MSK Forms',      href: 'https://forms.msk-scripts.de/',     external: true },
   { label: 'MSK Paste',      href: 'https://paste.msk-scripts.de/',     external: true },
   { label: 'MSK Shortener',  href: 'https://s.msk-scripts.de/',         external: true },
 ] as const
