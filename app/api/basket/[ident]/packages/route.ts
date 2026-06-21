@@ -15,9 +15,13 @@ export async function POST(
     const { ident } = await params
     const body = await req.json()
 
+    // Coerce quantity to a positive integer; reject negative/zero/non-integer
+    // client input instead of forwarding it to Tebex.
+    const quantity = Number.isInteger(body.quantity) && body.quantity > 0 ? body.quantity : 1
+
     const payload: Record<string, unknown> = {
       package_id: String(body.package_id),
-      quantity: body.quantity ?? 1,
+      quantity,
     }
 
     const variableData: Record<string, string> = {}
