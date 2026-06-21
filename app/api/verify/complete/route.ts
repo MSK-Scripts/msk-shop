@@ -78,7 +78,7 @@ export async function POST(req: Request) {
   }
 
   // Clear the verify session cookie — flow is complete
-  const dashboardToken = signDashboardSession({ guildId });
+  const dashboardToken = signDashboardSession({ guildId, githubUsername: session.githubUsername });
   const res = NextResponse.json({ success: true, apiKey, tier });
   res.cookies.delete('msk_verify_session');
   res.cookies.set('msk_dashboard_session', dashboardToken, {

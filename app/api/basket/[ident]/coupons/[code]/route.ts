@@ -1,15 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getTebexAuth, TEBEX_BASE, TEBEX_HEADERS } from '../../../auth'
+import { rateLimit, getClientIp } from '@/lib/rateLimit'
 
 const PUBLIC_TOKEN = process.env.NEXT_PUBLIC_TEBEX_PUBLIC_TOKEN!
 
 // DELETE /api/basket/[ident]/coupons/[code]
 // Uses the correct Tebex Headless endpoint: POST /coupons/remove
 export async function DELETE(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ ident: string; code: string }> }
 ) {
   try {
+    // Rate limit: max 30 basket mutations per IP per minute
+    if (!rateLimit(getClientIp(req), { limit: 30, windowMs: 60_000 })) {
+      return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+    }
+
     const { ident, code } = await params
 
     const res = await fetch(

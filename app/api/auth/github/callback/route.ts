@@ -12,8 +12,16 @@ export async function GET(req: Request) {
   const cookieStore  = await cookies();
   const storedState  = cookieStore.get('msk_oauth_state')?.value;
 
+  // Redirect back to the verify flow AND clear the one-shot state cookie, so a
+  // failed/abandoned callback does not leave it lingering for its full lifetime.
+  const fail = (reason: string) => {
+    const res = NextResponse.redirect(`${baseUrl}/ticketbot/verify?error=${reason}`);
+    res.cookies.delete('msk_oauth_state');
+    return res;
+  };
+
   if (!code || !state || state !== storedState) {
-    return NextResponse.redirect(`${baseUrl}/ticketbot/verify?error=invalid_state`);
+    return fail('invalid_state');
   }
 
   // Exchange code for access token
@@ -30,11 +38,11 @@ export async function GET(req: Request) {
     });
     tokenData = await tokenRes.json();
   } catch {
-    return NextResponse.redirect(`${baseUrl}/ticketbot/verify?error=github_token_failed`);
+    return fail('github_token_failed');
   }
 
   if (!tokenData.access_token) {
-    return NextResponse.redirect(`${baseUrl}/ticketbot/verify?error=github_token_failed`);
+    return fail('github_token_failed');
   }
 
   // Fetch GitHub user info
@@ -48,11 +56,11 @@ export async function GET(req: Request) {
     });
     githubUser = await userRes.json();
   } catch {
-    return NextResponse.redirect(`${baseUrl}/ticketbot/verify?error=github_user_failed`);
+    return fail('github_user_failed');
   }
 
   if (!githubUser.login) {
-    return NextResponse.redirect(`${baseUrl}/ticketbot/verify?error=github_user_failed`);
+    return fail('github_user_failed');
   }
 
   // Set signed session cookie and redirect to next step

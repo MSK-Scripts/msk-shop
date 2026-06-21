@@ -27,12 +27,20 @@ export async function GET(req: Request) {
   const sessionRaw   = cookieStore.get('msk_verify_session')?.value;
   const session      = sessionRaw ? parseSession(sessionRaw) : null;
 
+  // Redirect back to the verify flow AND clear the one-shot state cookie, so a
+  // failed/abandoned callback does not leave it lingering for its full lifetime.
+  const fail = (reason: string) => {
+    const res = NextResponse.redirect(`${baseUrl}/ticketbot/verify?error=${reason}`);
+    res.cookies.delete('msk_oauth_state');
+    return res;
+  };
+
   if (!code || !state || state !== storedState) {
-    return NextResponse.redirect(`${baseUrl}/ticketbot/verify?error=invalid_state`);
+    return fail('invalid_state');
   }
 
   if (!session?.githubUsername) {
-    return NextResponse.redirect(`${baseUrl}/ticketbot/verify?error=github_required`);
+    return fail('github_required');
   }
 
   // Exchange code for access token
@@ -51,11 +59,11 @@ export async function GET(req: Request) {
     });
     tokenData = await tokenRes.json();
   } catch {
-    return NextResponse.redirect(`${baseUrl}/ticketbot/verify?error=discord_token_failed`);
+    return fail('discord_token_failed');
   }
 
   if (!tokenData.access_token) {
-    return NextResponse.redirect(`${baseUrl}/ticketbot/verify?error=discord_token_failed`);
+    return fail('discord_token_failed');
   }
 
   // Fetch Discord user ID and guild list in parallel
@@ -74,13 +82,13 @@ export async function GET(req: Request) {
     rawGuilds         = await guildsRes.json();
     discordUserId     = discordUser?.id;
   } catch {
-    return NextResponse.redirect(`${baseUrl}/ticketbot/verify?error=discord_guilds_failed`);
+    return fail('discord_guilds_failed');
   }
 
   // Discord may return an error object (e.g. 429 rate limit, missing scope)
   // instead of the expected array/user — guard before using array methods.
   if (!Array.isArray(rawGuilds) || !discordUserId) {
-    return NextResponse.redirect(`${baseUrl}/ticketbot/verify?error=discord_guilds_failed`);
+    return fail('discord_guilds_failed');
   }
 
   // Only show guilds where the user is admin or owner

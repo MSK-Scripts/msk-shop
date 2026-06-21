@@ -9,9 +9,11 @@ export async function GET(req: NextRequest) {
   try {
     const ident = req.nextUrl.searchParams.get('ident')
 
-    // With basket ident Tebex applies user-specific/global sale pricing
+    // With basket ident Tebex applies user-specific/global sale pricing.
+    // encodeURIComponent prevents the client-supplied ident from injecting extra
+    // query parameters (&, ?, #) into the Tebex request.
     const url = ident
-      ? `${BASE}/accounts/${PUBLIC_TOKEN}/packages?basketIdent=${ident}`
+      ? `${BASE}/accounts/${PUBLIC_TOKEN}/packages?basketIdent=${encodeURIComponent(ident)}`
       : `${BASE}/accounts/${PUBLIC_TOKEN}/packages`
 
     const res = await fetch(url, { headers: TEBEX_HEADERS, cache: 'no-store' })

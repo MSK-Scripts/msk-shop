@@ -30,8 +30,15 @@ const buckets = new Map<string, Bucket>()
 let lastSweep = 0
 
 function clientIp(request: NextRequest): string {
+  // X-Forwarded-For is a chain where each proxy appends the address it saw.
+  // Behind our single trusted proxy (Apache) the RIGHTMOST entry is the real
+  // client; the leftmost entries are client-supplied and spoofable, so keying
+  // the rate limiter on them would let an attacker reset their bucket at will.
   const xff = request.headers.get('x-forwarded-for')
-  if (xff) return xff.split(',')[0].trim()
+  if (xff) {
+    const parts = xff.split(',').map(s => s.trim()).filter(Boolean)
+    if (parts.length) return parts[parts.length - 1]
+  }
   return request.headers.get('x-real-ip') ?? 'unknown'
 }
 

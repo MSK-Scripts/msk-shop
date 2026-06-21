@@ -44,7 +44,7 @@ export async function POST(req: Request) {
   }
 
   // Set dashboard session without touching the API key
-  const dashboardToken = signDashboardSession({ guildId });
+  const dashboardToken = signDashboardSession({ guildId, githubUsername: session.githubUsername });
   const res = NextResponse.json({ success: true });
   res.cookies.delete('msk_verify_session');
   res.cookies.set('msk_dashboard_session', dashboardToken, {

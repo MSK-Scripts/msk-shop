@@ -1,6 +1,16 @@
 import { createHmac, randomBytes, timingSafeEqual } from 'crypto';
 
-const SECRET = process.env.SESSION_SECRET ?? 'change-me-in-production';
+/**
+ * Resolve the HMAC secret. Throws if SESSION_SECRET is unset rather than
+ * falling back to a known placeholder — a missing secret in production would
+ * otherwise let anyone forge sessions. Evaluated lazily (on sign/parse), so a
+ * build without the env var still compiles; only runtime use requires it.
+ */
+function getSecret(): string {
+  const secret = process.env.SESSION_SECRET;
+  if (!secret) throw new Error('SESSION_SECRET is not set');
+  return secret;
+}
 
 export interface DiscordGuild {
   id:   string;
@@ -22,7 +32,7 @@ export function generateState(): string {
 /** Sign a session payload into a cookie-safe string. */
 export function signSession(data: VerifySession): string {
   const payload = Buffer.from(JSON.stringify(data)).toString('base64url');
-  const sig     = createHmac('sha256', SECRET).update(payload).digest('base64url');
+  const sig     = createHmac('sha256', getSecret()).update(payload).digest('base64url');
   return `${payload}.${sig}`;
 }
 
@@ -33,7 +43,7 @@ export function parseSession(token: string): VerifySession | null {
   if (dot === -1) return null;
   const payload  = token.substring(0, dot);
   const sig      = token.substring(dot + 1);
-  const expected = createHmac('sha256', SECRET).update(payload).digest('base64url');
+  const expected = createHmac('sha256', getSecret()).update(payload).digest('base64url');
   // Constant-time comparison to avoid signature-forgery timing side channels.
   const sigBuf = Buffer.from(sig);
   const expBuf = Buffer.from(expected);
