@@ -439,15 +439,15 @@ export default function BotConfigEditor({ lang, nonce }: { lang: Lang; nonce?: s
       <div className="bg-surface border border-borderlt rounded-xl p-6">
         <div className="flex items-center gap-2 mb-1">
           <Terminal size={18} className="text-accent" />
-          <h2 className="text-white font-bold text-base">{t.bot_control_title}</h2>
+          <h2 className="text-foreground font-bold text-base">{t.bot_control_title}</h2>
         </div>
-        <p className="text-muted text-sm mb-5">{t.bot_control_desc}</p>
+        <p className="text-muted-foreground text-sm mb-5">{t.bot_control_desc}</p>
 
         {/* Status row */}
         <div className="flex items-center justify-between bg-surface2 border border-borderlt rounded-lg px-4 py-3 mb-4">
           <div className="flex items-center gap-2">
             <StatusDot status={botStatus} />
-            <span className="text-sm text-white font-medium">{botStatus ? STATUS_LABEL[botStatus] : '—'}</span>
+            <span className="text-sm text-foreground font-medium">{botStatus ? STATUS_LABEL[botStatus] : '—'}</span>
           </div>
           <div className="flex items-center gap-2">
             {botStatus === 'errored' && !showLogs && (
@@ -459,7 +459,7 @@ export default function BotConfigEditor({ lang, nonce }: { lang: Lang; nonce?: s
               </button>
             )}
             <button onClick={() => fetchStatus()} disabled={statusLoading}
-              className="text-dim hover:text-muted transition-colors p-1 rounded" title={t.bot_status_refresh}
+              className="text-dim hover:text-muted-foreground transition-colors p-1 rounded" title={t.bot_status_refresh}
             >
               {statusLoading ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
             </button>
@@ -479,7 +479,7 @@ export default function BotConfigEditor({ lang, nonce }: { lang: Lang; nonce?: s
             </div>
             <div className="overflow-y-auto max-h-72 p-3 bg-bg">
               {logsLoading ? (
-                <div className="flex items-center gap-2 text-xs text-muted">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <Loader2 size={13} className="animate-spin" /> {t.bot_log_loading}
                 </div>
               ) : logs && logs.length > 0 ? (
@@ -529,8 +529,8 @@ export default function BotConfigEditor({ lang, nonce }: { lang: Lang; nonce?: s
         {/* Update section */}
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-sm text-white font-medium mb-0.5">{t.bot_update_title}</p>
-            <p className="text-xs text-muted">{t.bot_update_desc}</p>
+            <p className="text-sm text-foreground font-medium mb-0.5">{t.bot_update_title}</p>
+            <p className="text-xs text-muted-foreground">{t.bot_update_desc}</p>
           </div>
           <button onClick={handleUpdate} disabled={isBusy}
             className="msk-btn-ghost shrink-0"
@@ -555,7 +555,7 @@ export default function BotConfigEditor({ lang, nonce }: { lang: Lang; nonce?: s
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center gap-2">
             <Activity size={18} className="text-accent" />
-            <h2 className="text-white font-bold text-base">{t.bot_live_logs_title}</h2>
+            <h2 className="text-foreground font-bold text-base">{t.bot_live_logs_title}</h2>
             {liveStatus === 'connected' && (
               <span className="flex items-center gap-1.5 text-xs font-semibold text-accent">
                 <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse inline-block" />
@@ -570,7 +570,7 @@ export default function BotConfigEditor({ lang, nonce }: { lang: Lang; nonce?: s
             {liveOpen && liveLines.length > 0 && (
               <button
                 onClick={() => setLiveLines([])}
-                className="text-xs text-dim hover:text-muted transition-colors px-2 py-1"
+                className="text-xs text-dim hover:text-muted-foreground transition-colors px-2 py-1"
               >
                 {t.bot_live_clear}
               </button>
@@ -583,7 +583,7 @@ export default function BotConfigEditor({ lang, nonce }: { lang: Lang; nonce?: s
             </button>
           </div>
         </div>
-        <p className="text-muted text-sm mb-4">{t.bot_live_logs_desc}</p>
+        <p className="text-muted-foreground text-sm mb-4">{t.bot_live_logs_desc}</p>
 
         {liveOpen && (
           <div
@@ -609,9 +609,9 @@ export default function BotConfigEditor({ lang, nonce }: { lang: Lang; nonce?: s
       <div className="bg-surface border border-borderlt rounded-xl p-6">
         <div className="flex items-center gap-2 mb-1">
           <FileText size={18} className="text-accent" />
-          <h2 className="text-white font-bold text-base">{t.bot_config_title}</h2>
+          <h2 className="text-foreground font-bold text-base">{t.bot_config_title}</h2>
         </div>
-        <p className="text-muted text-sm mb-5">{t.bot_config_desc}</p>
+        <p className="text-muted-foreground text-sm mb-5">{t.bot_config_desc}</p>
 
         {/* Tabs */}
         <div className="flex gap-1 bg-surface2 border border-borderlt rounded-lg p-1 mb-4 w-fit">
@@ -623,7 +623,7 @@ export default function BotConfigEditor({ lang, nonce }: { lang: Lang; nonce?: s
             return (
               <button key={f} onClick={() => handleTabSwitch(f)}
                 className={`px-3 py-1.5 rounded text-xs font-mono font-semibold transition-colors ${
-                  f === activeFile ? 'bg-accent text-black' : 'text-muted hover:text-white'
+                  f === activeFile ? 'bg-accent text-black' : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 {label}
@@ -631,7 +631,7 @@ export default function BotConfigEditor({ lang, nonce }: { lang: Lang; nonce?: s
             )
           })}
           <button onClick={() => loadFile(activeFile)} disabled={loadingGet}
-            className="ml-1 px-2 py-1.5 rounded text-dim hover:text-muted transition-colors" title={t.bot_reload}
+            className="ml-1 px-2 py-1.5 rounded text-dim hover:text-muted-foreground transition-colors" title={t.bot_reload}
           >
             {loadingGet ? <Loader2 size={13} className="animate-spin" /> : <RefreshCw size={13} />}
           </button>
@@ -671,7 +671,7 @@ export default function BotConfigEditor({ lang, nonce }: { lang: Lang; nonce?: s
         <div className="border border-borderlt rounded-lg overflow-hidden mb-4">
           {loadingGet ? (
             <div className="flex items-center justify-center h-64 bg-bg">
-              <Loader2 size={20} className="animate-spin text-muted" />
+              <Loader2 size={20} className="animate-spin text-muted-foreground" />
             </div>
           ) : (
             <CodeMirror
