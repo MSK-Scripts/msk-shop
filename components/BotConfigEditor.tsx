@@ -160,7 +160,7 @@ function Banner({ msg, onClose }: { msg: Msg; onClose?: () => void }) {
 
 // ── Main Component ─────────────────────────────────────────────────────────────
 
-export default function BotConfigEditor({ lang }: { lang: Lang }) {
+export default function BotConfigEditor({ lang, nonce }: { lang: Lang; nonce?: string }) {
   const t = dashboardTranslations[lang]
 
   const STATUS_LABEL: Record<BotStatus, string> = {
@@ -676,7 +676,13 @@ export default function BotConfigEditor({ lang }: { lang: Lang }) {
           ) : (
             <CodeMirror
               value={content} height="700px"
-              extensions={activeFile !== 'env' ? [json(), mskTheme] : [mskTheme]}
+              extensions={[
+                // Nonce CodeMirror's runtime-injected <style> elements so the
+                // strict `style-src 'self' 'nonce-…'` CSP doesn't block them
+                // (without this the editor renders blank).
+                ...(nonce ? [EditorView.cspNonce.of(nonce)] : []),
+                ...(activeFile !== 'env' ? [json(), mskTheme] : [mskTheme]),
+              ]}
               theme="dark"
               onChange={(val) => { setContent(val); setEditorMsg(null) }}
               basicSetup={{

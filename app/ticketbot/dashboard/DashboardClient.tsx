@@ -45,6 +45,7 @@ interface Guild {
 interface Props {
   guild:    Guild
   serverIp: string
+  nonce?:   string
 }
 
 function StatusBadge({ status, t }: { status: Guild['domain_status']; t: { active_label: string; pending_label: string } }) {
@@ -63,7 +64,7 @@ function StatusBadge({ status, t }: { status: Guild['domain_status']; t: { activ
 
 type TabKey = 'domain' | 'transcripts' | 'hosting'
 
-export default function DashboardClient({ guild, serverIp }: Props) {
+export default function DashboardClient({ guild, serverIp, nonce }: Props) {
   const { lang } = useLang()
   const t = dashboardTranslations[lang]
 
@@ -396,7 +397,7 @@ export default function DashboardClient({ guild, serverIp }: Props) {
 
         {/* Bot Config Editor — nur für hosted customers */}
         {tab === 'hosting' && !!guild.is_hosted && (
-          <BotConfigEditor lang={lang} />
+          <BotConfigEditor lang={lang} nonce={nonce} />
         )}
 
       </div>
