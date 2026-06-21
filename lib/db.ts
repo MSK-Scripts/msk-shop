@@ -32,3 +32,25 @@ export async function queryOne<T = unknown>(sql: string, params?: unknown[]): Pr
   const rows = await query<T>(sql, params);
   return rows[0] ?? null;
 }
+
+/**
+ * Run `fn` inside a single transaction on a dedicated connection. Commits on
+ * success, rolls back on any thrown error, and always releases the connection.
+ * Use this when multiple writes must succeed or fail atomically.
+ */
+export async function withTransaction<T>(
+  fn: (conn: mysql.PoolConnection) => Promise<T>,
+): Promise<T> {
+  const conn = await getPool().getConnection();
+  try {
+    await conn.beginTransaction();
+    const result = await fn(conn);
+    await conn.commit();
+    return result;
+  } catch (err) {
+    try { await conn.rollback(); } catch { /* ignore rollback failure */ }
+    throw err;
+  } finally {
+    conn.release();
+  }
+}

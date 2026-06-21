@@ -4,7 +4,7 @@ import { rename }        from 'fs/promises';
 import { exec }          from 'child_process';
 import { join, resolve } from 'path';
 import { promisify }     from 'util';
-import { query, queryOne } from '@/lib/db';
+import { query, queryOne, withTransaction } from '@/lib/db';
 import type { Tier }     from '@/lib/tiers';
 
 const execAsync = promisify(exec);
@@ -180,66 +180,77 @@ export async function POST(req: Request): Promise<NextResponse> {
 
   console.info(`[github-sponsors] Action: ${logAction} | Sponsor: ${logUsername}`);
 
-  // 4. Handle each action
-  switch (action) {
-    case 'created':
-    case 'tier_changed': {
-      const tier   = resolveGitHubTier(sponsorship.tier.monthly_price_in_dollars);
-      const expiry = new Date();
-      expiry.setDate(expiry.getDate() + 32); // ~1 month buffer
+  // 4. Handle each action. The two DB writes per action run in a single
+  //    transaction so a partial failure cannot leave the sponsors table and the
+  //    guilds table inconsistent. The hosted-bot archive (filesystem + PM2) runs
+  //    only after the DB transaction has committed. Any failure returns 500 so
+  //    GitHub retries instead of the handler silently reporting success.
+  try {
+    switch (action) {
+      case 'created':
+      case 'tier_changed': {
+        const tier   = resolveGitHubTier(sponsorship.tier.monthly_price_in_dollars);
+        const expiry = new Date();
+        expiry.setDate(expiry.getDate() + 32); // ~1 month buffer
 
-      // Update sponsors lookup table
-      await query(
-        `INSERT INTO ticketbot_sponsors (github_username, tier, active)
-         VALUES (?, ?, TRUE)
-         ON DUPLICATE KEY UPDATE tier = ?, active = TRUE`,
-        [githubUsername, tier, tier],
-      );
+        await withTransaction(async (conn) => {
+          // Update sponsors lookup table
+          await conn.execute(
+            `INSERT INTO ticketbot_sponsors (github_username, tier, active)
+             VALUES (?, ?, TRUE)
+             ON DUPLICATE KEY UPDATE tier = ?, active = TRUE`,
+            [githubUsername, tier, tier],
+          );
+          // Update guild record if already linked
+          await conn.execute(
+            `UPDATE ticketbot_guilds
+             SET tier = ?, active = TRUE, expires_at = ?
+             WHERE github_username = ?`,
+            [tier, expiry, githubUsername],
+          );
+        });
+        console.info(`[github-sponsors] Upgraded ${logUsername} → ${tier}`);
 
-      // Update guild record if already linked
-      await query(
-        `UPDATE ticketbot_guilds
-         SET tier = ?, active = TRUE, expires_at = ?
-         WHERE github_username = ?`,
-        [tier, expiry, githubUsername],
-      );
-      console.info(`[github-sponsors] Upgraded ${logUsername} → ${tier}`);
-
-      // Archive the hosted bot only if the tier dropped completely to basic.
-      // A downgrade from Premium+ to Premium keeps the directory intact.
-      if (tier === 'basic') {
-        await archiveHostedBot(githubUsername);
+        // Archive the hosted bot only if the tier dropped completely to basic.
+        // A downgrade from Premium+ to Premium keeps the directory intact.
+        if (tier === 'basic') {
+          await archiveHostedBot(githubUsername);
+        }
+        break;
       }
-      break;
+
+      case 'cancelled':
+      case 'pending_cancellation': {
+        await withTransaction(async (conn) => {
+          // Update sponsors lookup table
+          await conn.execute(
+            `INSERT INTO ticketbot_sponsors (github_username, tier, active)
+             VALUES (?, 'basic', FALSE)
+             ON DUPLICATE KEY UPDATE tier = 'basic', active = FALSE`,
+            [githubUsername],
+          );
+          // Downgrade guild record if already linked
+          await conn.execute(
+            `UPDATE ticketbot_guilds
+             SET tier = 'basic', expires_at = NULL
+             WHERE github_username = ?`,
+            [githubUsername],
+          );
+        });
+        console.info(`[github-sponsors] Downgraded ${logUsername} → basic`);
+
+        // Archive the hosted bot if the guild had one.
+        await archiveHostedBot(githubUsername);
+        break;
+      }
+
+      default:
+        // Ignore unknown actions (e.g. 'edited')
+        break;
     }
-
-    case 'cancelled':
-    case 'pending_cancellation': {
-      // Update sponsors lookup table
-      await query(
-        `INSERT INTO ticketbot_sponsors (github_username, tier, active)
-         VALUES (?, 'basic', FALSE)
-         ON DUPLICATE KEY UPDATE tier = 'basic', active = FALSE`,
-        [githubUsername],
-      );
-
-      // Downgrade guild record if already linked
-      await query(
-        `UPDATE ticketbot_guilds
-         SET tier = 'basic', expires_at = NULL
-         WHERE github_username = ?`,
-        [githubUsername],
-      );
-      console.info(`[github-sponsors] Downgraded ${logUsername} → basic`);
-
-      // Archive the hosted bot if the guild had one.
-      await archiveHostedBot(githubUsername);
-      break;
-    }
-
-    default:
-      // Ignore unknown actions (e.g. 'edited')
-      break;
+  } catch (err) {
+    console.error('[github-sponsors] Failed to process webhook:', err);
+    return NextResponse.json({ error: 'Internal error' }, { status: 500 });
   }
 
   return NextResponse.json({ ok: true });
