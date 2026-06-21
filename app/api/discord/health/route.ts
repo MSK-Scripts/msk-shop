@@ -35,6 +35,7 @@ export async function GET() {
     ])
 
     if (!statusRes.ok || !incidentsRes.ok) {
+      console.error(`[discord/health] Upstream returned non-OK: status=${statusRes.status}, incidents=${incidentsRes.status}`)
       return NextResponse.json({ indicator: 'unknown' })
     }
 
@@ -56,7 +57,8 @@ export async function GET() {
     }
 
     return NextResponse.json({ indicator: worstIndicator })
-  } catch {
+  } catch (err) {
+    console.error('[discord/health] Failed to fetch Discord status:', err)
     return NextResponse.json({ indicator: 'unknown' })
   }
 }
