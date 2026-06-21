@@ -182,6 +182,24 @@ export default function BotConfigEditor({ lang, nonce }: { lang: Lang; nonce?: s
   const [editorMsg, setEditorMsg]       = useState<Msg | null>(null)
   const [localeMeta, setLocaleMeta]     = useState<LocaleMeta | null>(null)
 
+  // CSP nonce for CodeMirror's runtime-injected <style> elements. The server
+  // passes a `nonce` prop, but on SOFT navigation that value is stale: the
+  // browser enforces the CSP of the *current* document, whose nonce differs from
+  // the one generated for the RSC request — so the injected styles get blocked
+  // and the editor renders blank until a hard reload (F5). Instead resolve the
+  // nonce the browser actually enforces from an existing nonced element (Next
+  // injects its <script>/<style> with it). Read synchronously (lazy init) so the
+  // value is set BEFORE CodeMirror creates the EditorView — reconfiguring
+  // cspNonce afterwards would not re-inject the already-blocked styles. Falls
+  // back to the server prop during SSR (where there is no document).
+  const [effectiveNonce] = useState<string | undefined>(() => {
+    if (typeof document === 'undefined') return nonce
+    const el = document.querySelector<HTMLElement>('style[nonce], script[nonce]')
+    // Chrome hides the nonce *attribute* after applying the CSP, but the .nonce
+    // IDL property still returns it for same-origin elements.
+    return el?.nonce || el?.getAttribute('nonce') || nonce
+  })
+
   // Bot control
   const [botStatus, setBotStatus]           = useState<BotStatus | null>(null)
   const [statusLoading, setStatusLoading]   = useState(false)
@@ -679,8 +697,9 @@ export default function BotConfigEditor({ lang, nonce }: { lang: Lang; nonce?: s
               extensions={[
                 // Nonce CodeMirror's runtime-injected <style> elements so the
                 // strict `style-src 'self' 'nonce-…'` CSP doesn't block them
-                // (without this the editor renders blank).
-                ...(nonce ? [EditorView.cspNonce.of(nonce)] : []),
+                // (without this the editor renders blank). effectiveNonce is the
+                // nonce the browser actually enforces — see its useState above.
+                ...(effectiveNonce ? [EditorView.cspNonce.of(effectiveNonce)] : []),
                 ...(activeFile !== 'env' ? [json(), mskTheme] : [mskTheme]),
               ]}
               theme="dark"
