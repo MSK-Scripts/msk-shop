@@ -9,6 +9,7 @@ import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { PACKAGE_BADGES, PACKAGE_TAGS, PACKAGE_DESCRIPTIONS } from '@/lib/config'
+import { sanitizeTebexHtml } from '@/lib/sanitize'
 import type { BadgeVariant } from '@/components/ui/Badge'
 
 export const revalidate = 60
@@ -119,7 +120,7 @@ export default async function PackageDetailPage({
 
               <div
                 className="tebex-description"
-                dangerouslySetInnerHTML={{ __html: pkg.description }}
+                dangerouslySetInnerHTML={{ __html: sanitizeTebexHtml(pkg.description) }}
               />
             </div>
           </Card>

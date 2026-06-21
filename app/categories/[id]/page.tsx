@@ -5,6 +5,7 @@ import { getCategory, getCategories } from '@/lib/tebex'
 import { PackageCard } from '@/components/packages/PackageCard'
 import { Button } from '@/components/ui/Button'
 import { PACKAGE_BADGES, PACKAGE_TAGS, PACKAGE_DESCRIPTIONS } from '@/lib/config'
+import { sanitizeTebexHtml } from '@/lib/sanitize'
 
 export const revalidate = 60
 
@@ -65,7 +66,7 @@ export default async function CategoryPage({
         {category.description && (
           <div
             className="mt-3 max-w-3xl text-base text-[var(--color-muted-foreground)]"
-            dangerouslySetInnerHTML={{ __html: category.description }}
+            dangerouslySetInnerHTML={{ __html: sanitizeTebexHtml(category.description) }}
           />
         )}
         <p className="mt-3 text-sm text-[var(--color-muted-foreground)]">
