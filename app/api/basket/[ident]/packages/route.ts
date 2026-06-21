@@ -1,11 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getTebexAuth, TEBEX_BASE, TEBEX_HEADERS } from '../../auth'
+import { rateLimit, getClientIp } from '@/lib/rateLimit'
 
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ ident: string }> }
 ) {
   try {
+    // Rate limit: max 30 basket mutations per IP per minute
+    if (!rateLimit(getClientIp(req), { limit: 30, windowMs: 60_000 })) {
+      return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+    }
+
     const { ident } = await params
     const body = await req.json()
 
