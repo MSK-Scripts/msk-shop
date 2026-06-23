@@ -2,7 +2,7 @@ import { NextResponse }           from 'next/server';
 import { cookies }                from 'next/headers';
 import { parseSession }           from '@/lib/session';
 import { signDashboardSession }   from '@/lib/dashboardSession';
-import { queryOne }               from '@/lib/db';
+import { query, queryOne }        from '@/lib/db';
 
 interface GuildRow { discord_user_id: string | null; }
 
@@ -41,6 +41,14 @@ export async function POST(req: Request) {
 
   if (existing.discord_user_id !== session.discordUserId) {
     return NextResponse.json({ error: 'This server is registered to another account.' }, { status: 403 });
+  }
+
+  // Opportunistically backfill the server name for dashboard display. This path
+  // does NOT rotate the API key, so existing users can populate the name without
+  // having to update their bot's key.
+  const guildName = session.guilds.find(g => g.id === guildId)?.name?.slice(0, 120) ?? null;
+  if (guildName) {
+    await query('UPDATE ticketbot_guilds SET guild_name = ? WHERE guild_id = ?', [guildName, guildId]);
   }
 
   // Set the account-scoped dashboard session (covers all the user's guilds)
