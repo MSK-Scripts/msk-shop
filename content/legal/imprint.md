@@ -48,7 +48,13 @@ VAT ID: GB167189962 & EU372035465
 
 ### Payment Processing
 
-All purchases are processed through Tebex Limited. By making a purchase, you also agree to the [Tebex Terms of Service](https://checkout.tebex.io/terms) and the [Tebex Privacy Policy](https://checkout.tebex.io/privacy).
+Shop purchases are processed through Tebex Limited. By making a purchase, you also agree to the [Tebex Terms of Service](https://checkout.tebex.io/terms) and the [Tebex Privacy Policy](https://checkout.tebex.io/privacy).
+
+**Stripe Payments Europe, Ltd.**
+1 Grand Canal Street Lower, Grand Canal Dock  
+Dublin, Ireland
+
+Ticket Bot Premium and Premium+ subscriptions are processed through Stripe. By subscribing, you also agree to the [Stripe Privacy Policy](https://stripe.com/privacy). We do not receive or store your card details.
 
 ---
 

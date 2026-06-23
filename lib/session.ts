@@ -19,7 +19,6 @@ export interface DiscordGuild {
 }
 
 export interface VerifySession {
-  githubUsername?:  string;
   discordUserId?:   string;
   guilds?:          DiscordGuild[];
 }

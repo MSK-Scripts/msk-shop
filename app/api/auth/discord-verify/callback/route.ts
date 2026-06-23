@@ -1,6 +1,6 @@
 import { NextResponse }                 from 'next/server';
 import { cookies }                      from 'next/headers';
-import { parseSession, signSession }    from '@/lib/session';
+import { signSession }                  from '@/lib/session';
 import type { DiscordGuild }            from '@/lib/session';
 
 // Discord guild permissions bit for ADMINISTRATOR
@@ -24,8 +24,6 @@ export async function GET(req: Request) {
   // Verify CSRF state
   const cookieStore  = await cookies();
   const storedState  = cookieStore.get('msk_oauth_state')?.value;
-  const sessionRaw   = cookieStore.get('msk_verify_session')?.value;
-  const session      = sessionRaw ? parseSession(sessionRaw) : null;
 
   // Redirect back to the verify flow AND clear the one-shot state cookie, so a
   // failed/abandoned callback does not leave it lingering for its full lifetime.
@@ -37,10 +35,6 @@ export async function GET(req: Request) {
 
   if (!code || !state || state !== storedState) {
     return fail('invalid_state');
-  }
-
-  if (!session?.githubUsername) {
-    return fail('github_required');
   }
 
   // Exchange code for access token
@@ -96,8 +90,8 @@ export async function GET(req: Request) {
     .filter(g => isAdmin(g.permissions, g.owner))
     .map(g => ({ id: g.id, name: g.name, icon: g.icon }));
 
-  // Update session with guild list + Discord user ID, redirect to guild selection
-  const updatedSession = signSession({ githubUsername: session.githubUsername, discordUserId, guilds: adminGuilds });
+  // Store guild list + Discord user ID in the signed session, redirect to guild selection
+  const updatedSession = signSession({ discordUserId, guilds: adminGuilds });
   const res            = NextResponse.redirect(`${baseUrl}/ticketbot/verify?step=select`);
 
   res.cookies.set('msk_verify_session', updatedSession, {

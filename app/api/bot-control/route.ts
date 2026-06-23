@@ -1,39 +1,29 @@
-import { cookies }                from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import { exec }                   from 'child_process';
 import { promisify }              from 'util';
 import { join, resolve }          from 'path';
-import { parseDashboardSession }  from '@/lib/dashboardSession';
-import { queryOne }               from '@/lib/db';
+import { authorizeGuild }         from '@/lib/dashboardAuth';
 
 const execAsync = promisify(exec);
 
 const ALLOWED_ACTIONS = new Set(['start', 'stop', 'restart', 'update']);
-
-// Discord snowflakes are 17–20 digit numbers — validate strictly to prevent any
-// shell injection even though guildId comes from an HMAC-signed session cookie.
-const GUILD_ID_RE = /^\d{17,20}$/;
-
-interface GuildRow { is_hosted: number }
 
 interface Pm2Process {
   name:    string;
   pm2_env: { status: string };
 }
 
-async function getSession(): Promise<string | null> {
-  const cookieStore = await cookies();
-  const token       = cookieStore.get('msk_dashboard_session')?.value;
-  const session     = token ? parseDashboardSession(token) : null;
-  return session?.guildId ?? null;
-}
-
-async function assertHosted(guildId: string): Promise<boolean> {
-  const guild = await queryOne<GuildRow>(
-    'SELECT is_hosted FROM ticketbot_guilds WHERE guild_id = ? AND active = 1',
-    [guildId],
-  );
-  return !!guild?.is_hosted;
+/**
+ * Authorize a hosted-bot request: the session's Discord user must own the guild
+ * (from ?guildId=) AND the guild must be an active hosted bot.
+ */
+async function authHosted(req: NextRequest): Promise<{ guildId: string } | { error: NextResponse }> {
+  const auth = await authorizeGuild(req.nextUrl.searchParams.get('guildId'));
+  if (!auth.ok) return { error: NextResponse.json({ error: auth.error }, { status: auth.status }) };
+  if (!auth.guild.is_hosted || !auth.guild.active) {
+    return { error: NextResponse.json({ error: 'Not available' }, { status: 403 }) };
+  }
+  return { guildId: auth.guild.guild_id };
 }
 
 // Resolves and validates the bot directory path — same logic as bot-config route.
@@ -52,15 +42,11 @@ function botDir(guildId: string): string {
 }
 
 // GET /api/bot-control — current PM2 status for the guild's bot
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const guildId = await getSession();
-    if (!guildId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    if (!GUILD_ID_RE.test(guildId)) return NextResponse.json({ error: 'Invalid session' }, { status: 400 });
-
-    if (!await assertHosted(guildId)) {
-      return NextResponse.json({ error: 'Not available' }, { status: 403 });
-    }
+    const a = await authHosted(req);
+    if ('error' in a) return a.error;
+    const guildId = a.guildId;
 
     const appName    = `ticketbot-${guildId}`;
     const { stdout } = await execAsync('pm2 jlist');
@@ -77,13 +63,9 @@ export async function GET() {
 // POST /api/bot-control — { action: 'start' | 'stop' | 'restart' | 'update' }
 export async function POST(req: NextRequest) {
   try {
-    const guildId = await getSession();
-    if (!guildId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    if (!GUILD_ID_RE.test(guildId)) return NextResponse.json({ error: 'Invalid session' }, { status: 400 });
-
-    if (!await assertHosted(guildId)) {
-      return NextResponse.json({ error: 'Not available' }, { status: 403 });
-    }
+    const a = await authHosted(req);
+    if ('error' in a) return a.error;
+    const guildId = a.guildId;
 
     const body   = await req.json() as unknown;
     const action = typeof body === 'object' && body !== null

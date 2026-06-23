@@ -94,7 +94,7 @@ Diese Website betreibt die folgenden eigenständigen Dienste mit jeweils eigener
 
 **a) MSK Scripts Shop** — zum Kauf von FiveM-Ressourcen und Discord-Bots über Tebex.
 
-**b) MSK Ticket Bot Transcript Service** — ein optionaler gehosteter Dienst für Nutzer, die den MSK Ticket Bot selbst betreiben. Er speichert Ticket-Transkripte online und stellt öffentliche Links bereit. Nutzer authentifizieren sich über GitHub und Discord OAuth, um einen API Key zu erhalten.
+**b) MSK Ticket Bot Transcript Service** — ein optionaler gehosteter Dienst für Nutzer, die den MSK Ticket Bot selbst betreiben. Er speichert Ticket-Transkripte online und stellt öffentliche Links bereit. Nutzer authentifizieren sich über Discord OAuth, um einen API Key zu erhalten.
 
 **c) Hosted Bot Management** — ein optionaler, vollständig verwalteter Hosting-Dienst für Premium- und Premium+-Kunden. Der Bot läuft auf den Servern von MSK Scripts; die Verwaltung erfolgt über das Web-Dashboard.
 
@@ -110,16 +110,15 @@ Diese Website betreibt die folgenden eigenständigen Dienste mit jeweils eigener
 
 ### Vom Ticket Bot Transcript Service erhobene Daten
 
-- **GitHub-Nutzername** — über GitHub OAuth während der Verifizierung erhoben, zur Identitäts- und Sponsoring-Prüfung
-- **Discord-Nutzer-ID** — über Discord OAuth während der Verifizierung erhoben
+- **Discord-Nutzer-ID** — über Discord OAuth während der Verifizierung erhoben, zur Identität und Kontoinhaberschaft
 - **Discord-Server-ID (Guild-ID)** — mit dem API Key verknüpft, um Transkripte dem richtigen Server zuzuordnen
-- **Abo-Tier** — ermittelt anhand des GitHub-Sponsors-Status (Basic, Premium, Premium+)
+- **Abo-Tier** — ermittelt anhand Ihres Stripe-Abo-Status (Basic, Premium, Premium+)
+- **Stripe-Kunden-/Abo-IDs** — in unserer Datenbank gespeicherte Referenzen, um ein Abo Ihrem Server zuzuordnen; wir speichern keine Zahlungsdaten
 - **API Key** — zufällig generiertes Token, in unserer Datenbank gespeichert, zur Authentifizierung von Transcript-Uploads
 - **Eigene Domain** (optional, Premium und Premium+) — gespeichert, wenn eine Custom Domain konfiguriert wird
 - **Ticket-Transkriptinhalt** — HTML-Dateien, vom Bot generiert und auf unseren Server hochgeladen; je nach Tier 30–365 Tage gespeichert
 - **Ticket-Anhänge** (Premium und Premium+) — im Ticket verschickte Dateien, neben dem Transkript gespeichert
 - **Rate-Limiting-Daten** — Anfragezähler pro API Key pro Stunde zur Missbrauchsverhinderung
-- **GitHub-Sponsoring-Daten** — über GitHub Sponsors Webhook empfangen (GitHub-Nutzername und Tier); zur Aktivierung oder Aktualisierung des Abos verarbeitet
 
 ### Vom Hosted Bot Management Service erhobene Daten
 
@@ -159,7 +158,7 @@ Nach Ende eines Giveaways werden die **Nutzernamen der Gewinner** einmalig aufge
 | Webserver-Logs, Betrugsprävention | Art. 6 Abs. 1 lit. f DSGVO — berechtigte Interessen |
 | Transcript Service — Kontoerstellung (Verify) | Art. 6 Abs. 1 lit. b DSGVO — Vertragserfüllung |
 | Transcript Service — Transkript- und Anhangsspeicherung | Art. 6 Abs. 1 lit. b DSGVO — Vertragserfüllung |
-| Transcript Service — GitHub Sponsors Webhook | Art. 6 Abs. 1 lit. b DSGVO — Vertragserfüllung |
+| Transcript Service — Stripe-Abo-Verarbeitung | Art. 6 Abs. 1 lit. b DSGVO — Vertragserfüllung |
 | Rate Limiting | Art. 6 Abs. 1 lit. f DSGVO — berechtigte Interessen (Missbrauchsschutz) |
 | Hosted Bot Management — Speicherung von Konfigurationsdateien und Zugangsdaten | Art. 6 Abs. 1 lit. b DSGVO — Vertragserfüllung |
 | Hosted Bot Management — Bot-Prozess-Logs | Art. 6 Abs. 1 lit. b DSGVO — Vertragserfüllung |
@@ -177,7 +176,7 @@ Während des Verifizierungsprozesses unter **www.msk-scripts.de/verify** werden 
 | Cookie-Name | Zweck | Dauer |
 |---|---|---|
 | `msk_oauth_state` | CSRF-Schutz während des OAuth-Ablaufs | 10 Minuten |
-| `msk_verify_session` | Speichert verifizierten GitHub-Nutzernamen und Discord-Server-Liste | 1 Stunde |
+| `msk_verify_session` | Speichert Ihre verifizierte Discord-Nutzer-ID und Server-Liste | 1 Stunde |
 | `msk_dashboard_session` | Authentifizierung im Dashboard nach abgeschlossener Verifizierung | 30 Tage |
 
 Alle Session-Cookies sind:
@@ -241,8 +240,6 @@ Diese Website verwendet **keine** Tracking-Cookies, Analysewerkzeuge (z.B. Googl
 
 Bei der Registrierung unter **www.msk-scripts.de/verify** finden folgende Datenverarbeitungen statt:
 
-**GitHub OAuth:** Sie werden zu GitHub weitergeleitet und autorisieren unsere Anwendung. GitHub übermittelt daraufhin Ihren GitHub-Nutzernamen an uns. Dieser wird vorübergehend in einem signierten Session-Cookie und nach Abschluss des Verify-Ablaufs dauerhaft in unserer Datenbank gespeichert.
-
 **Discord OAuth:** Sie werden zu Discord weitergeleitet. Nach der Autorisierung übermittelt Discord Ihre Discord-Nutzer-ID sowie eine Liste der Server, auf denen Sie Administrator-Rechte haben (Server-Namen, -IDs und -Icons). Server-Namen und -Icons dienen ausschließlich der Anzeige der Auswahl und werden **nicht gespeichert**. Ihre Discord-Nutzer-ID und die ausgewählte Server-ID werden in unserer Datenbank gespeichert.
 
 **In unserer Datenbank gespeicherte Daten nach erfolgreicher Verifizierung:**
@@ -252,8 +249,8 @@ Bei der Registrierung unter **www.msk-scripts.de/verify** finden folgende Datenv
 | `guild_id` | Ihre Discord-Server-ID | Bis zur Kontolöschung |
 | `api_key` | Zufällig generiertes Authentifizierungstoken | Bis zur Neugenerierung oder Kontolöschung |
 | `tier` | Abo-Tier (basic/premium/premium_plus) | Bis zur Kontolöschung |
-| `github_username` | Ihr GitHub-Nutzername | Bis zur Kontolöschung |
 | `discord_user_id` | Ihre Discord-Nutzer-ID | Bis zur Kontolöschung |
+| `stripe_customer_id` / `stripe_subscription_id` | Stripe-Referenzen für Ihr Abo (keine Zahlungsdaten) | Bis zur Kontolöschung |
 | `custom_domain` | Eigene Domain (falls konfiguriert) | Bis zur Entfernung |
 | `domain_status` | Status der eigenen Domain | Bis zur Kontolöschung |
 
@@ -274,11 +271,11 @@ Für Premium- und Premium+-Nutzer werden Dateianhänge aus Tickets (Bilder, PDFs
 
 Basic-Nutzer haben keinen Zugriff auf die Anhangsspeicherung; bei diesem Tier werden keine Dateianhänge auf unseren Servern gespeichert.
 
-### GitHub Sponsors Webhook
+### Stripe Abo-Webhook
 
-Wir betreiben einen Webhook-Endpunkt, der Ereignisse von **GitHub Sponsors** empfängt, wenn Sie ein Sponsoring starten, ändern oder kündigen. Das Ereignis enthält Ihren GitHub-Nutzernamen und den monatlichen Betrag. Wir verarbeiten diese Daten, um Ihr Abo-Tier automatisch zu aktivieren, upzugraden oder downzugraden.
+Wir betreiben einen Webhook-Endpunkt, der Ereignisse von **Stripe** empfängt, wenn Ihr Abo erstellt, verlängert, geändert oder gekündigt wird. Wir verarbeiten diese Ereignisse, um Ihr Abo-Tier automatisch zu aktivieren, upzugraden oder downzugraden und den Testphasen-Status zu erfassen. Über diesen Webhook erhalten wir keine Karten- oder Zahlungsdaten.
 
-**Verarbeitete Daten:** GitHub-Nutzername, Abo-Tier (abgeleitet aus dem monatlichen Betrag), Aktion (created/cancelled/tier_changed).
+**Verarbeitete Daten:** Stripe-Kunden- und Abo-ID, Abo-Status und -Tier, Periodenende, Ihre Discord-Nutzer-ID und Server-ID (als Metadaten übergeben).
 
 Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO — zur Erbringung des gebuchten Dienstes erforderlich.
 
@@ -352,13 +349,13 @@ Alle Shop-Käufe werden über **Tebex Limited**, 201 Haverstock Hill, Second Flo
 
 ---
 
-## Abo-Zahlungen (GitHub Sponsors)
+## Abo-Zahlungen (Stripe)
 
-Das Premium- und Premium+-Abo für den Ticket Bot Transcript Service wird über **GitHub Sponsors** (GitHub, Inc., 88 Colin P Kelly Jr St, San Francisco, CA 94107, USA) abgewickelt.
+Das Premium- und Premium+-Abo für den Ticket Bot Transcript Service wird über **Stripe** (Stripe Payments Europe, Ltd., 1 Grand Canal Street Lower, Grand Canal Dock, Dublin, Irland) abgewickelt.
 
-GitHub Sponsors übernimmt die gesamte Zahlungsabwicklung, Rechnungsstellung und Rückerstattung. Wir erhalten ausschließlich Ihren GitHub-Nutzernamen und das Abo-Tier über Webhook — keine Zahlungsdaten.
+Zur Einrichtung eines Abos geben Sie Ihren **Namen, Ihre Rechnungsadresse, Ihre E-Mail-Adresse und Ihre Zahlungsdaten** während des Checkouts direkt bei Stripe ein. Stripe übernimmt die gesamte Zahlungsabwicklung, Rechnungsstellung und Rückerstattung. Wir erhalten und speichern **keine** Kartendaten — wir speichern lediglich die Stripe-Kunden- und Abo-ID sowie Ihr Abo-Tier, um den Dienst bereitzustellen.
 
-Datenschutzerklärung von GitHub: [docs.github.com/site-policy](https://docs.github.com/de/site-policy/privacy-policies/github-privacy-statement)
+Datenschutzerklärung von Stripe: [stripe.com/privacy](https://stripe.com/privacy)
 
 ---
 
@@ -403,7 +400,7 @@ Unsere Startseite zeigt die aktuelle Online-Mitgliederzahl unseres Discord-Serve
 | Rate-Limiting-Daten | 1 Stunde (gleitendes Fenster) |
 | Transkript-HTML-Dateien | 30 Tage (Basic) / 180 Tage (Premium) / 365 Tage (Premium+) |
 | Anhangsdateien | Wie Transkript |
-| GitHub-Sponsoring-Daten | Bis zur Kontolöschung |
+| Stripe-Abo-Daten (Kunden-/Abo-ID, Tier, Testphasen-Status) | Bis zur Kontolöschung |
 | Hosted Bot Konfigurationsdateien (`config.jsonc`, `snippets.jsonc`, `.env`) | Bis zur Beendigung des Hostings + 14 Tage |
 | Hosted Bot Log-Ausgabe | Nicht dauerhaft gespeichert (nur Live-Puffer) |
 | Giveaway Bot — Server-Einstellungen | Werden beim Entfernen des Bots vom Server umgehend gelöscht; andernfalls bis zur Änderung oder Löschanfrage |
@@ -415,7 +412,7 @@ Unsere Startseite zeigt die aktuelle Online-Mitgliederzahl unseres Discord-Serve
 
 **Tebex Limited** (UK): Das Vereinigte Königreich verfügt über einen Angemessenheitsbeschluss der EU-Kommission. Übermittlungen an Tebex gelten als DSGVO-konform.
 
-**GitHub, Inc.** (USA): GitHub Sponsors und OAuth-Dienste werden von GitHub betrieben. Übermittlungen erfolgen auf Grundlage von Standardvertragsklauseln. Siehe: [github.com/site-policy](https://docs.github.com/de/site-policy/privacy-policies/github-privacy-statement)
+**Stripe Payments Europe, Ltd.** (Irland): Abo-Zahlungen werden von Stripe innerhalb der EU verarbeitet. Soweit Stripe Daten an sein US-Mutterunternehmen übermittelt, erfolgt dies auf Grundlage von Standardvertragsklauseln. Siehe: [stripe.com/privacy](https://stripe.com/privacy)
 
 Unser Webserver sowie alle Transkript- und Anhangsdaten sind innerhalb der **Europäischen Union** gespeichert.
 

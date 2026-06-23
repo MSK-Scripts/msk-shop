@@ -40,8 +40,6 @@ export const metadata: Metadata = {
   },
 }
 
-const SPONSORS_URL = 'https://github.com/sponsors/MSK-Scripts'
-
 const HIGHLIGHTS = ['Self-hosted', 'No telemetry', 'No external DB', 'Discord.js v14', 'German & English']
 
 // ── Hub cards: Verify · Dashboard · Stats ──────────────────────────────────────
@@ -135,9 +133,9 @@ interface TierCard {
 }
 
 const TIER_CARDS: TierCard[] = [
-  { key: 'basic',        name: 'Basic',    price: 'Free', priceSub: 'forever',  badge: null,            accent: false, hosted: false, variant: 'outline', cta: 'Get API Key',         href: '/ticketbot/verify' },
-  { key: 'premium',      name: 'Premium',  price: '$4',   priceSub: '/ month',  badge: 'Most popular',  accent: true,  hosted: true,  variant: 'primary', cta: 'Become a Sponsor',    href: SPONSORS_URL },
-  { key: 'premium_plus', name: 'Premium+', price: '$8',   priceSub: '/ month',  badge: null,            accent: false, hosted: true,  variant: 'outline', cta: 'Become a Sponsor',    href: SPONSORS_URL },
+  { key: 'basic',        name: 'Basic',    price: 'Free',   priceSub: 'forever',  badge: null,            accent: false, hosted: false, variant: 'outline', cta: 'Get API Key',     href: '/ticketbot/verify' },
+  { key: 'premium',      name: 'Premium',  price: '€3.99',  priceSub: '/ month',  badge: 'Most popular',  accent: true,  hosted: true,  variant: 'primary', cta: 'Start free trial', href: '/ticketbot/verify' },
+  { key: 'premium_plus', name: 'Premium+', price: '€6.99',  priceSub: '/ month',  badge: null,            accent: false, hosted: true,  variant: 'outline', cta: 'Start free trial', href: '/ticketbot/verify' },
 ]
 
 function tierFeatures(card: TierCard) {
@@ -389,10 +387,9 @@ export default function TicketBotPage() {
             Choose your tier
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-sm text-[var(--color-muted-foreground)] md:text-base">
-            Host transcripts as public links. Premium tiers are unlocked via{' '}
-            <a href={SPONSORS_URL} target="_blank" rel="noopener noreferrer" className="font-medium text-[var(--color-primary)] hover:underline">
-              GitHub Sponsors
-            </a>.
+            Host transcripts as public links. Premium tiers come with a{' '}
+            <span className="font-medium text-[var(--color-primary)]">14-day free trial</span>
+            {' '}— cancel anytime, billed monthly afterwards.
           </p>
         </div>
 

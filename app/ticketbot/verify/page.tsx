@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 
 export const metadata = {
   title: 'Verify Server – MSK Scripts',
-  description: 'Link your GitHub account and Discord server to receive your MSK Ticket Bot API key.',
+  description: 'Link your Discord server to receive your MSK Ticket Bot API key.',
 }
 
 export default async function VerifyPage({

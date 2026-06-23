@@ -1,20 +1,14 @@
-import { cookies }               from 'next/headers';
-import { NextResponse }          from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { exec }                  from 'child_process';
 import { promisify }             from 'util';
 import { open }                   from 'fs/promises';
-import { parseDashboardSession } from '@/lib/dashboardSession';
-import { queryOne }              from '@/lib/db';
+import { authorizeGuild }        from '@/lib/dashboardAuth';
 
 const execAsync = promisify(exec);
-
-const GUILD_ID_RE = /^\d{17,20}$/;
 
 // Read at most 50 KB from the end of the log file.
 // Prevents loading a potentially multi-GB log file into memory.
 const MAX_READ_BYTES = 50_000;
-
-interface GuildRow { is_hosted: number }
 
 interface Pm2Process {
   name:    string;
@@ -24,19 +18,14 @@ interface Pm2Process {
   };
 }
 
-async function getSession(): Promise<string | null> {
-  const cookieStore = await cookies();
-  const token       = cookieStore.get('msk_dashboard_session')?.value;
-  const session     = token ? parseDashboardSession(token) : null;
-  return session?.guildId ?? null;
-}
-
-async function assertHosted(guildId: string): Promise<boolean> {
-  const guild = await queryOne<GuildRow>(
-    'SELECT is_hosted FROM ticketbot_guilds WHERE guild_id = ? AND active = 1',
-    [guildId],
-  );
-  return !!guild?.is_hosted;
+/** Authorize a hosted-bot request (owner + active hosted bot). */
+async function authHosted(req: NextRequest): Promise<{ guildId: string } | { error: NextResponse }> {
+  const auth = await authorizeGuild(req.nextUrl.searchParams.get('guildId'));
+  if (!auth.ok) return { error: NextResponse.json({ error: auth.error }, { status: auth.status }) };
+  if (!auth.guild.is_hosted || !auth.guild.active) {
+    return { error: NextResponse.json({ error: 'Not available' }, { status: 403 }) };
+  }
+  return { guildId: auth.guild.guild_id };
 }
 
 // Reads the last MAX_READ_BYTES of a file without loading the whole file.
@@ -65,15 +54,11 @@ async function readTail(filePath: string): Promise<string[]> {
 
 // GET /api/bot-logs — returns last 100 lines of the PM2 error log for the guild's bot.
 // The log file path is sourced from PM2's own process list (not from user input).
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const guildId = await getSession();
-    if (!guildId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    if (!GUILD_ID_RE.test(guildId)) return NextResponse.json({ error: 'Invalid session' }, { status: 400 });
-
-    if (!await assertHosted(guildId)) {
-      return NextResponse.json({ error: 'Not available' }, { status: 403 });
-    }
+    const a = await authHosted(req);
+    if ('error' in a) return a.error;
+    const guildId = a.guildId;
 
     const appName    = `ticketbot-${guildId}`;
     const { stdout } = await execAsync('pm2 jlist');

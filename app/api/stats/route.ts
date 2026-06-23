@@ -25,8 +25,8 @@ export async function GET() {
       avgTranscript,
       attachments,
       avgAttachment,
-      sponsors,
-      sponsorTierRows,
+      subscriptions,
+      subscriptionTierRows,
       customDomains,
       hostedBots,
       newGuilds30d,
@@ -42,8 +42,8 @@ export async function GET() {
       queryOne<AvgRow>('SELECT AVG(file_size_bytes) AS avg_bytes FROM ticketbot_transcripts'),
       queryOne<CountRow>('SELECT COUNT(*) AS total FROM ticketbot_attachments'),
       queryOne<AvgRow>('SELECT AVG(file_size_bytes) AS avg_bytes FROM ticketbot_attachments'),
-      queryOne<CountRow>('SELECT COUNT(*) AS total FROM ticketbot_sponsors WHERE active = TRUE'),
-      query<TierRow>('SELECT tier, COUNT(*) AS count FROM ticketbot_sponsors WHERE active = TRUE GROUP BY tier'),
+      queryOne<CountRow>(`SELECT COUNT(*) AS total FROM ticketbot_guilds WHERE active = TRUE AND stripe_subscription_id IS NOT NULL AND tier <> 'basic' ${exclude}`, ignored),
+      query<TierRow>(`SELECT tier, COUNT(*) AS count FROM ticketbot_guilds WHERE active = TRUE AND stripe_subscription_id IS NOT NULL AND tier <> 'basic' ${exclude} GROUP BY tier`, ignored),
       queryOne<CountRow>(`SELECT COUNT(*) AS total FROM ticketbot_guilds WHERE active = TRUE AND domain_status = 'active' ${exclude}`, ignored),
       queryOne<CountRow>(`SELECT COUNT(*) AS total FROM ticketbot_guilds WHERE active = TRUE AND is_hosted = 1 ${exclude}`, ignored),
       queryOne<CountRow>(`SELECT COUNT(*) AS total FROM ticketbot_guilds WHERE active = TRUE AND created_at >= NOW() - INTERVAL 30 DAY ${exclude}`, ignored),
@@ -57,8 +57,8 @@ export async function GET() {
     const tierMap: Record<string, number> = { basic: 0, premium: 0, premium_plus: 0 }
     for (const row of tierRows) tierMap[row.tier] = Number(row.count)
 
-    const sponsorTierMap: Record<string, number> = { basic: 0, premium: 0, premium_plus: 0 }
-    for (const row of sponsorTierRows) sponsorTierMap[row.tier] = Number(row.count)
+    const subscriptionTierMap: Record<string, number> = { basic: 0, premium: 0, premium_plus: 0 }
+    for (const row of subscriptionTierRows) subscriptionTierMap[row.tier] = Number(row.count)
 
     return NextResponse.json({
       transcripts:         Number(transcripts?.total ?? 0),
@@ -71,11 +71,11 @@ export async function GET() {
       avgTranscriptBytes:  avgTranscript?.avg_bytes ? Math.round(Number(avgTranscript.avg_bytes)) : 0,
       attachments:         Number(attachments?.total ?? 0),
       avgAttachmentBytes:  avgAttachment?.avg_bytes ? Math.round(Number(avgAttachment.avg_bytes)) : 0,
-      sponsors:            Number(sponsors?.total ?? 0),
-      sponsorTiers: {
-        basic:             sponsorTierMap.basic,
-        premium:           sponsorTierMap.premium,
-        premium_plus:      sponsorTierMap.premium_plus,
+      subscriptions:       Number(subscriptions?.total ?? 0),
+      subscriptionTiers: {
+        basic:             subscriptionTierMap.basic,
+        premium:           subscriptionTierMap.premium,
+        premium_plus:      subscriptionTierMap.premium_plus,
       },
       customDomains:              Number(customDomains?.total ?? 0),
       hostedBots:                 Number(hostedBots?.total ?? 0),

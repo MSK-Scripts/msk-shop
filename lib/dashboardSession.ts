@@ -12,14 +12,13 @@ function getSecret(): string {
 }
 
 export interface DashboardSession {
-  guildId: string;
   /**
-   * GitHub account the guild is registered to. Bound into the signed token at
-   * issuance for traceability and defense-in-depth (the cookie already proves
-   * ownership via the signature). Optional for backwards-compatibility with
-   * tokens issued before this field existed.
+   * The person (Discord user id) the dashboard session belongs to. The dashboard
+   * is account-scoped: one signed session grants management of ALL guilds owned
+   * by this Discord user. Each guild-scoped API route must additionally verify
+   * `WHERE guild_id = ? AND discord_user_id = ?` before acting.
    */
-  githubUsername?: string;
+  discordUserId: string;
 }
 
 export function signDashboardSession(data: DashboardSession): string {

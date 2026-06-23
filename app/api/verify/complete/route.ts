@@ -6,8 +6,7 @@ import { signDashboardSession } from '@/lib/dashboardSession';
 import { query, queryOne } from '@/lib/db';
 import type { Tier }      from '@/lib/tiers';
 
-interface SponsorRow { tier: Tier; active: number; }
-interface GuildRow   { guild_id: string; api_key: string; tier: Tier; github_username: string | null; }
+interface GuildRow { guild_id: string; api_key: string; tier: Tier; discord_user_id: string | null; }
 
 function generateApiKey(): string {
   return randomBytes(32).toString('hex');
@@ -18,8 +17,8 @@ export async function POST(req: Request) {
   const sessionRaw  = cookieStore.get('msk_verify_session')?.value;
   const session     = sessionRaw ? parseSession(sessionRaw) : null;
 
-  // Must have completed both GitHub and Discord steps
-  if (!session?.githubUsername || !session?.guilds || !session?.discordUserId) {
+  // Must have completed the Discord step (guild list + user id)
+  if (!session?.guilds || !session?.discordUserId) {
     return NextResponse.json({ error: 'Incomplete verification. Please start from the beginning.' }, { status: 401 });
   }
 
@@ -38,47 +37,46 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Invalid or unauthorized guild.' }, { status: 403 });
   }
 
-  // Check if this guild is already registered by a DIFFERENT GitHub account
+  // Check if this guild is already registered by a DIFFERENT Discord account
   const existingGuild = await queryOne<GuildRow>(
-    `SELECT guild_id, api_key, tier, github_username FROM ticketbot_guilds WHERE guild_id = ?`,
+    `SELECT guild_id, api_key, tier, discord_user_id FROM ticketbot_guilds WHERE guild_id = ?`,
     [guildId],
   );
 
-  if (existingGuild && existingGuild.github_username !== null &&
-      existingGuild.github_username !== session.githubUsername) {
+  if (existingGuild && existingGuild.discord_user_id !== null &&
+      existingGuild.discord_user_id !== session.discordUserId) {
     return NextResponse.json({ error: 'This server is already registered to another account.' }, { status: 409 });
   }
 
-  // Check sponsor tier from the sponsors lookup table
-  const sponsor = await queryOne<SponsorRow>(
-    `SELECT tier, active FROM ticketbot_sponsors WHERE github_username = ? AND active = TRUE`,
-    [session.githubUsername],
-  );
-  const tier: Tier = sponsor?.tier ?? 'basic';
-
-  let apiKey: string;
+  // The paid tier is now driven entirely by Stripe (checkout + webhook). Re-verify
+  // never changes the tier or billing fields: a new guild starts on `basic`, an
+  // existing one keeps whatever tier/subscription it already has.
+  const apiKey = generateApiKey();
+  let tier: Tier;
 
   if (existingGuild) {
-    // Guild exists — update tier, github_username, discord_user_id and reset API key
-    apiKey = generateApiKey();
+    // Guild exists — rotate the API key and (re)bind ownership; do NOT touch
+    // tier / expires_at / stripe_* so an active subscription survives re-verify.
+    tier = existingGuild.tier;
     await query(
       `UPDATE ticketbot_guilds
-       SET tier = ?, github_username = ?, discord_user_id = ?, api_key = ?, active = TRUE, expires_at = NULL
+       SET discord_user_id = ?, api_key = ?, active = TRUE
        WHERE guild_id = ?`,
-      [tier, session.githubUsername, session.discordUserId, apiKey, guildId],
+      [session.discordUserId, apiKey, guildId],
     );
   } else {
-    // New guild — create record
-    apiKey = generateApiKey();
+    // New guild — create record on the free tier
+    tier = 'basic';
     await query(
-      `INSERT INTO ticketbot_guilds (guild_id, api_key, tier, github_username, discord_user_id, active)
-       VALUES (?, ?, ?, ?, ?, TRUE)`,
-      [guildId, apiKey, tier, session.githubUsername, session.discordUserId],
+      `INSERT INTO ticketbot_guilds (guild_id, api_key, tier, discord_user_id, active)
+       VALUES (?, ?, 'basic', ?, TRUE)`,
+      [guildId, apiKey, session.discordUserId],
     );
   }
 
-  // Clear the verify session cookie — flow is complete
-  const dashboardToken = signDashboardSession({ guildId, githubUsername: session.githubUsername });
+  // Clear the verify session cookie — flow is complete. The dashboard session is
+  // account-scoped (covers all of this user's guilds).
+  const dashboardToken = signDashboardSession({ discordUserId: session.discordUserId });
   const res = NextResponse.json({ success: true, apiKey, tier });
   res.cookies.delete('msk_verify_session');
   res.cookies.set('msk_dashboard_session', dashboardToken, {

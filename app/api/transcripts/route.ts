@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies }                   from 'next/headers';
-import { parseDashboardSession }     from '@/lib/dashboardSession';
+import { authorizeGuild }            from '@/lib/dashboardAuth';
 import { query, queryOne }           from '@/lib/db';
 
 // Session-/Cookie-abhängig → niemals cachen.
@@ -32,15 +31,13 @@ function parseDate(value: string | null): string | null {
 }
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
-  // Auth — guildId kommt AUSSCHLIESSLICH aus dem signierten Session-Cookie.
-  const cookieStore = await cookies();
-  const token       = cookieStore.get('msk_dashboard_session')?.value;
-  const session     = token ? parseDashboardSession(token) : null;
-  if (!session?.guildId) {
-    return NextResponse.json({ error: 'Not authenticated.' }, { status: 401 });
-  }
-
   const sp = req.nextUrl.searchParams;
+
+  // Auth — guildId comes from the request but must be OWNED by the session's
+  // Discord user (account-scoped dashboard).
+  const auth = await authorizeGuild(sp.get('guildId'));
+  if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status });
+  const guildId = auth.guild.guild_id;
 
   // Filter
   const ticketId       = parsePositiveInt(sp.get('ticketId'));
@@ -55,7 +52,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
   // WHERE-Klausel dynamisch aufbauen — guild_id immer aus der Session.
   const where: string[] = ['guild_id = ?'];
-  const params: unknown[] = [session.guildId];
+  const params: unknown[] = [guildId];
 
   if (ticketId !== null) {
     where.push('ticket_id = ?');

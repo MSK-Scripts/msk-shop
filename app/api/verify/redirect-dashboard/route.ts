@@ -4,14 +4,14 @@ import { parseSession }           from '@/lib/session';
 import { signDashboardSession }   from '@/lib/dashboardSession';
 import { queryOne }               from '@/lib/db';
 
-interface GuildRow { github_username: string | null; }
+interface GuildRow { discord_user_id: string | null; }
 
 export async function POST(req: Request) {
   const cookieStore = await cookies();
   const sessionRaw  = cookieStore.get('msk_verify_session')?.value;
   const session     = sessionRaw ? parseSession(sessionRaw) : null;
 
-  if (!session?.githubUsername || !session?.guilds) {
+  if (!session?.discordUserId || !session?.guilds) {
     return NextResponse.json({ error: 'No active verify session.' }, { status: 401 });
   }
 
@@ -29,9 +29,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Invalid or unauthorized guild.' }, { status: 403 });
   }
 
-  // Verify the guild is actually registered to the current GitHub account
+  // Verify the guild is actually registered to the current Discord account
   const existing = await queryOne<GuildRow>(
-    `SELECT github_username FROM ticketbot_guilds WHERE guild_id = ?`,
+    `SELECT discord_user_id FROM ticketbot_guilds WHERE guild_id = ?`,
     [guildId],
   );
 
@@ -39,12 +39,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Guild not found.' }, { status: 404 });
   }
 
-  if (existing.github_username !== session.githubUsername) {
+  if (existing.discord_user_id !== session.discordUserId) {
     return NextResponse.json({ error: 'This server is registered to another account.' }, { status: 403 });
   }
 
-  // Set dashboard session without touching the API key
-  const dashboardToken = signDashboardSession({ guildId, githubUsername: session.githubUsername });
+  // Set the account-scoped dashboard session (covers all the user's guilds)
+  const dashboardToken = signDashboardSession({ discordUserId: session.discordUserId });
   const res = NextResponse.json({ success: true });
   res.cookies.delete('msk_verify_session');
   res.cookies.set('msk_dashboard_session', dashboardToken, {

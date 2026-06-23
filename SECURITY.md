@@ -34,11 +34,13 @@ security updates. There are no maintained older release branches.
 | HTTP headers | HSTS (2 years, `includeSubDomains; preload`), `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy`, `Cross-Origin-Opener-Policy` / `Cross-Origin-Resource-Policy: same-origin`. The HTTP/CSP hardening targets an **A+** rating on Mozilla Observatory. |
 | Input / path traversal | Allowlist-based file reads for the legal markdown content; no user input in file paths. |
 | API authentication | Transcript uploads require an API key; the `guild_id` is always resolved from the DB, never taken from the request body. |
+| Dashboard authorization | The dashboard session is account-scoped (signed, Discord user id only). Every guild-scoped route (`bot-*`, `domain/*`, `transcripts`, `stripe/*`) re-verifies ownership with `WHERE guild_id = ? AND discord_user_id = ?` (`lib/dashboardAuth.ts`) before acting, so one account cannot read or mutate another account's guild. |
+| Payments (Stripe) | No card data is ever received or stored — checkout/billing happens on Stripe's hosted pages; we persist only the Stripe customer/subscription IDs. Checkout and customer-portal sessions are created server-side and bound to an owned guild. |
 | File uploads (transcripts) | Strict **extension allowlist** (no `html` / `svg` / `php`); files are written as `<uuid>.<ext>`, so attacker-controlled names, multi-extensions and path traversal cannot reach the web root. **Image attachments are decoded and re-encoded via `sharp`** (strips polyglots / payloads / metadata and rejects non-images). Per-tier size limits. |
 | Static file serving | Custom-domain transcript vhosts are locked down: `Options -Indexes`, `Require all denied` by default, a `FilesMatch` extension allowlist, no PHP handler. |
 | Deployment | Server-side git deploy driven by an SSH key pinned with `ForceCommand` (can only run `deploy.sh`) and strict known-hosts checking. Operational scripts stay `root:root` (not writable by the app user), so the app user's `sudo` rights cannot be abused for privilege escalation. |
 | Debug endpoint | `/api/debug` returns `404` in production. |
-| Webhooks | The GitHub Sponsors webhook is verified via HMAC-SHA256. |
+| Webhooks | The Stripe webhook is verified via the Stripe signature (`constructEvent` over the raw body); handlers are idempotent ("set state to X", never incremental). |
 
 ## Known, Accepted Findings
 
