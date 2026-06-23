@@ -159,14 +159,15 @@ async function authHosted(req: NextRequest): Promise<{ guildId: string } | { err
 
 export async function GET(req: NextRequest) {
   try {
+    // Authorize first — never branch on user-controlled input before the security check.
+    const a = await authHosted(req);
+    if ('error' in a) return a.error;
+    const guildId = a.guildId;
+
     const fileKey = req.nextUrl.searchParams.get('file');
     if (!fileKey || !VALID_KEYS.has(fileKey)) {
       return NextResponse.json({ error: 'Invalid file parameter' }, { status: 400 });
     }
-
-    const a = await authHosted(req);
-    if ('error' in a) return a.error;
-    const guildId = a.guildId;
 
     if (fileKey === 'locale') {
       const resolution = await resolveLocaleFile(guildId);
@@ -209,14 +210,15 @@ export async function GET(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
   try {
+    // Authorize first — never branch on user-controlled input before the security check.
+    const a = await authHosted(req);
+    if ('error' in a) return a.error;
+    const guildId = a.guildId;
+
     const fileKey = req.nextUrl.searchParams.get('file');
     if (!fileKey || !VALID_KEYS.has(fileKey)) {
       return NextResponse.json({ error: 'Invalid file parameter' }, { status: 400 });
     }
-
-    const a = await authHosted(req);
-    if ('error' in a) return a.error;
-    const guildId = a.guildId;
 
     const body = await req.json() as unknown;
     if (
