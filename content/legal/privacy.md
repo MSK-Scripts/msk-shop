@@ -240,13 +240,14 @@ This website uses **no** tracking cookies, analytics tools (e.g. Google Analytic
 
 When registering at **www.msk-scripts.de/verify**, the following data processing takes place:
 
-**Discord OAuth:** You are redirected to Discord. After authorisation, Discord transmits your Discord user ID and a list of servers on which you have administrator rights (server names, IDs, and icons). Server names and icons are used exclusively for displaying the selection and are **not stored**. Your Discord user ID and the selected server ID are stored in our database.
+**Discord OAuth:** You are redirected to Discord. After authorisation, Discord transmits your Discord user ID and a list of servers on which you have administrator rights (server names, IDs, and icons). Server icons and the list of non-selected servers are used exclusively for displaying the selection and are **not stored**. Your Discord user ID, the selected server's ID **and its name** are stored in our database — the name is shown in your dashboard so you can tell your servers apart.
 
 **Data stored in our database upon successful verification:**
 
 | Field | Description | Storage period |
 |---|---|---|
 | `guild_id` | Your Discord server ID | Until account deletion |
+| `guild_name` | Your Discord server name (for dashboard display) | Until account deletion |
 | `api_key` | Randomly generated authentication token | Until regeneration or account deletion |
 | `tier` | Subscription tier (basic/premium/premium_plus) | Until account deletion |
 | `discord_user_id` | Your Discord user ID | Until account deletion |

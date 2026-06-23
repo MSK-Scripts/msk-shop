@@ -54,23 +54,27 @@ export async function POST(req: Request) {
   const apiKey = generateApiKey();
   let tier: Tier;
 
+  // Capture the human-readable server name from the OAuth guild list so the
+  // dashboard can show it instead of the raw ID. Truncated to the column length.
+  const guildName = session.guilds.find(g => g.id === guildId)?.name?.slice(0, 120) ?? null;
+
   if (existingGuild) {
     // Guild exists — rotate the API key and (re)bind ownership; do NOT touch
     // tier / expires_at / stripe_* so an active subscription survives re-verify.
     tier = existingGuild.tier;
     await query(
       `UPDATE ticketbot_guilds
-       SET discord_user_id = ?, api_key = ?, active = TRUE
+       SET discord_user_id = ?, api_key = ?, active = TRUE, guild_name = ?
        WHERE guild_id = ?`,
-      [session.discordUserId, apiKey, guildId],
+      [session.discordUserId, apiKey, guildName, guildId],
     );
   } else {
     // New guild — create record on the free tier
     tier = 'basic';
     await query(
-      `INSERT INTO ticketbot_guilds (guild_id, api_key, tier, discord_user_id, active)
-       VALUES (?, ?, 'basic', ?, TRUE)`,
-      [guildId, apiKey, session.discordUserId],
+      `INSERT INTO ticketbot_guilds (guild_id, api_key, tier, discord_user_id, guild_name, active)
+       VALUES (?, ?, 'basic', ?, ?, TRUE)`,
+      [guildId, apiKey, session.discordUserId, guildName],
     );
   }
 

@@ -35,6 +35,7 @@ function safeDomainHref(domain: string): string | null {
 
 interface Guild {
   guild_id:               string
+  guild_name:             string | null
   tier:                   Tier
   custom_domain:          string | null
   domain_status:          'none' | 'pending_dns' | 'active'
@@ -108,7 +109,7 @@ export default function DashboardClient({ guilds, serverIp, nonce }: Props) {
               >
                 {guilds.map(g => (
                   <option key={g.guild_id} value={g.guild_id}>
-                    {g.guild_id} — {t[`tier_${g.tier}` as 'tier_basic' | 'tier_premium' | 'tier_premium_plus']}
+                    {(g.guild_name || g.guild_id)} — {t[`tier_${g.tier}` as 'tier_basic' | 'tier_premium' | 'tier_premium_plus']}
                   </option>
                 ))}
               </select>

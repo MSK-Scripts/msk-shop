@@ -14,6 +14,7 @@ export const metadata = {
 
 export interface DashboardGuild {
   guild_id:               string;
+  guild_name:             string | null;
   tier:                   Tier;
   custom_domain:          string | null;
   domain_status:          'none' | 'pending_dns' | 'active';
@@ -32,7 +33,7 @@ export default async function DashboardPage() {
 
   // Account-scoped: load ALL guilds owned by this Discord user.
   const guilds = await query<DashboardGuild>(
-    `SELECT guild_id, tier, custom_domain, domain_status, is_hosted, stripe_subscription_id
+    `SELECT guild_id, guild_name, tier, custom_domain, domain_status, is_hosted, stripe_subscription_id
        FROM ticketbot_guilds
       WHERE discord_user_id = ?
       ORDER BY created_at ASC`,

@@ -240,13 +240,14 @@ Diese Website verwendet **keine** Tracking-Cookies, Analysewerkzeuge (z.B. Googl
 
 Bei der Registrierung unter **www.msk-scripts.de/verify** finden folgende Datenverarbeitungen statt:
 
-**Discord OAuth:** Sie werden zu Discord weitergeleitet. Nach der Autorisierung übermittelt Discord Ihre Discord-Nutzer-ID sowie eine Liste der Server, auf denen Sie Administrator-Rechte haben (Server-Namen, -IDs und -Icons). Server-Namen und -Icons dienen ausschließlich der Anzeige der Auswahl und werden **nicht gespeichert**. Ihre Discord-Nutzer-ID und die ausgewählte Server-ID werden in unserer Datenbank gespeichert.
+**Discord OAuth:** Sie werden zu Discord weitergeleitet. Nach der Autorisierung übermittelt Discord Ihre Discord-Nutzer-ID sowie eine Liste der Server, auf denen Sie Administrator-Rechte haben (Server-Namen, -IDs und -Icons). Server-Icons und die nicht ausgewählten Server dienen ausschließlich der Anzeige der Auswahl und werden **nicht gespeichert**. Ihre Discord-Nutzer-ID, die ID des ausgewählten Servers **und dessen Name** werden in unserer Datenbank gespeichert — der Name wird in Ihrem Dashboard angezeigt, damit Sie Ihre Server unterscheiden können.
 
 **In unserer Datenbank gespeicherte Daten nach erfolgreicher Verifizierung:**
 
 | Feld | Beschreibung | Speicherdauer |
 |---|---|---|
 | `guild_id` | Ihre Discord-Server-ID | Bis zur Kontolöschung |
+| `guild_name` | Ihr Discord-Server-Name (zur Anzeige im Dashboard) | Bis zur Kontolöschung |
 | `api_key` | Zufällig generiertes Authentifizierungstoken | Bis zur Neugenerierung oder Kontolöschung |
 | `tier` | Abo-Tier (basic/premium/premium_plus) | Bis zur Kontolöschung |
 | `discord_user_id` | Ihre Discord-Nutzer-ID | Bis zur Kontolöschung |

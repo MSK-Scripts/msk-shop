@@ -10,6 +10,9 @@ CREATE TABLE IF NOT EXISTS ticketbot_guilds (
     api_key                VARCHAR(64)  UNIQUE NOT NULL,
     tier                   ENUM('basic', 'premium', 'premium_plus') NOT NULL DEFAULT 'basic',
     discord_user_id        VARCHAR(20),
+    -- Human-readable Discord server name, captured at verify time for dashboard
+    -- display (falls back to guild_id in the UI when null).
+    guild_name             VARCHAR(120),
     -- Stripe billing: the subscription is bound to this guild (one sub per guild)
     -- via stripe_subscription_id; stripe_customer_id is NOT unique because one
     -- customer (person) may own several guilds. expires_at carries the current
@@ -28,6 +31,7 @@ CREATE TABLE IF NOT EXISTS ticketbot_guilds (
 -- ALTER TABLE ticketbot_guilds ADD COLUMN is_hosted TINYINT(1) NOT NULL DEFAULT 0;
 -- ALTER TABLE ticketbot_guilds ADD COLUMN stripe_subscription_id VARCHAR(64) NULL UNIQUE;
 -- ALTER TABLE ticketbot_guilds ADD COLUMN stripe_customer_id     VARCHAR(64) NULL;
+-- ALTER TABLE ticketbot_guilds ADD COLUMN guild_name             VARCHAR(120) NULL;
 -- Stripe migration (GitHub Sponsors fully removed — no active sponsors existed):
 --   ALTER TABLE ticketbot_guilds DROP COLUMN github_username;
 --   DROP TABLE IF EXISTS ticketbot_sponsors;
