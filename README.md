@@ -19,14 +19,14 @@ A headless storefront for [MSK Scripts](https://www.msk-scripts.de) — built wi
 | State | Zustand 5 (persisted to localStorage) |
 | Data Fetching | SWR 2 |
 | Database | MariaDB / MySQL (via mysql2) |
-| Payments | Tebex Headless API |
+| Payments | Tebex Headless API (shop) + Stripe (Ticket Bot subscriptions) |
 | Editor | CodeMirror (`@uiw/react-codemirror`) — Bot-Config editor |
 | JSONC parsing | `jsonc-parser` |
 | Icons | `lucide-react` |
 | Image processing | `sharp` — re-encodes uploaded image attachments |
 | Cookies (client) | `js-cookie` |
 | Auth | CFX.re (FiveM) + Discord OAuth via Tebex |
-| Verify Flow | Discord OAuth + GitHub OAuth + signed session cookies |
+| Verify Flow | Discord OAuth + signed session cookies |
 | Server | Debian + Apache2 reverse proxy + systemd |
 | Bot process manager | PM2 (`pm2-musiker15.service`) |
 | CI/CD | GitHub Actions — CI gate + **server-side git deploy** on push to `main` |
@@ -46,11 +46,11 @@ A headless storefront for [MSK Scripts](https://www.msk-scripts.de) — built wi
 - 🟢 Live Discord online member count
 - 📰 News popup with optional coupon code display (configurable, shown on every page load)
 - 📊 Public Ticket Bot statistics page (`/ticketbot/stats`) — with allowlist via `STATS_IGNORED_API_KEYS`
-- 🎟️ Ticket Bot verify flow — Discord + GitHub OAuth, API key issuance, tier management
+- 🎟️ Ticket Bot verify flow — Discord OAuth, API key issuance, account-scoped ownership
 - 🗂️ Ticket transcript hosting with attachment support (MariaDB-backed) — uploads hardened with an extension allowlist, `<uuid>.<ext>` filenames and `sharp` image re-encoding
 - 🌍 Custom domain support per guild with DNS validation and Let's Encrypt SSL
-- 💰 GitHub Sponsors webhook — auto-assigns tiers on sponsorship events
-- 📊 Dashboard page for managing API keys, domains and transcripts
+- 💳 Stripe subscriptions — in-app checkout, **14-day free trial for new customers**, Stripe customer portal for self-service cancellation, webhook-driven tier assignment
+- 📊 Account dashboard — manage **all** your servers from one login (guild switcher), subscriptions (upgrade / manage via Stripe portal), API keys, domains and transcripts
 - 🤖 Hosted bot management for `is_hosted` customers:
   - Config editor for `config.jsonc`, `snippets.jsonc`, `.env` **and the active locale file** (`locales/<lang>.json`, with `en.json` fallback)
   - Bot control: start / stop / restart / update (git pull) via PM2
@@ -73,9 +73,7 @@ A headless storefront for [MSK Scripts](https://www.msk-scripts.de) — built wi
 ```
 app/                        Next.js App Router pages & API routes
 ├── api/auth/
-│   ├── discord-verify/     Discord OAuth for the verify flow (scopes: identify, guilds)
-│   │   └── callback/
-│   └── github/             GitHub OAuth for sponsor tier detection
+│   └── discord-verify/     Discord OAuth for the verify flow (scopes: identify, guilds)
 │       └── callback/
 ├── api/basket/             Tebex basket API proxy (private key stays server-side)
 │   ├── auth.ts             Shared auth helper for basket routes
@@ -100,10 +98,13 @@ app/                        Next.js App Router pages & API routes
 ├── api/giveaway-stats/     Live giveaway stats (read-only giveaway_bot DB)
 ├── api/packages/           Package list endpoint
 ├── api/stats/              Public Ticket Bot statistics
+├── api/stripe/
+│   ├── checkout/           Create a Stripe Checkout session (subscription + 14-day trial)
+│   └── portal/             Create a Stripe customer-portal session (manage / cancel)
 ├── api/transcript/upload/  Ticket transcript upload (authenticated via API key)
 ├── api/verify/             Verify status / complete / check-guild / redirect-dashboard
 ├── api/webhook/
-│   └── github-sponsors/    GitHub Sponsors webhook handler (HMAC-SHA256 verified)
+│   └── stripe/             Stripe webhook handler (signature-verified)
 ├── account/                User account page
 ├── auth/discord/           Discord OAuth callback handler (purchase flow)
 ├── cart/                   Cart page
@@ -217,7 +218,7 @@ Single source of truth for all limits. Tiers: `basic` · `premium` · `premium_p
 
 ## Database
 
-The shop uses **MariaDB / MySQL** for the Ticket Bot feature (API keys, transcripts, custom domains, GitHub Sponsors). The Tebex shop itself does **not** require a database.
+The shop uses **MariaDB / MySQL** for the Ticket Bot feature (API keys, transcripts, custom domains, Stripe subscriptions). The Tebex shop itself does **not** require a database.
 
 ```bash
 # Create the database and run the schema
@@ -229,14 +230,19 @@ Tables created by `database/schema.sql`:
 
 | Table | Purpose |
 |---|---|
-| `ticketbot_guilds` | Guild registrations, API keys, tier, custom domain status, `is_hosted` flag |
+| `ticketbot_guilds` | Guild registrations, API keys, tier, custom domain status, `is_hosted` flag, Stripe customer/subscription IDs |
+| `ticketbot_customers` | One row per person (Discord user ↔ Stripe customer) + free-trial eligibility (`trial_used`) |
 | `ticketbot_transcripts` | Ticket transcript metadata + expiry |
 | `ticketbot_attachments` | File attachments for Premium transcripts |
 | `ticketbot_rate_limits` | Per-API-key request rate limiting (hourly window) |
-| `ticketbot_sponsors` | GitHub Sponsors mirror (written by webhook, read during verify) |
 
 > Migration for existing databases:
-> `ALTER TABLE ticketbot_guilds ADD COLUMN is_hosted TINYINT(1) NOT NULL DEFAULT 0;`
+> ```sql
+> ALTER TABLE ticketbot_guilds ADD COLUMN is_hosted TINYINT(1) NOT NULL DEFAULT 0;
+> ALTER TABLE ticketbot_guilds ADD COLUMN stripe_subscription_id VARCHAR(64) NULL UNIQUE;
+> ALTER TABLE ticketbot_guilds ADD COLUMN stripe_customer_id     VARCHAR(64) NULL;
+> -- + CREATE TABLE ticketbot_customers (see database/schema.sql)
+> ```
 
 ---
 
@@ -403,12 +409,11 @@ SESSION_SECRET=<openssl rand -hex 32>
 DISCORD_VERIFY_CLIENT_ID=your_client_id
 DISCORD_VERIFY_CLIENT_SECRET=your_client_secret
 
-# GitHub OAuth
-GITHUB_CLIENT_ID=your_client_id
-GITHUB_CLIENT_SECRET=your_client_secret
-
-# GitHub Sponsors webhook
-GITHUB_SPONSORS_WEBHOOK_SECRET=your_webhook_secret
+# Stripe (Ticket Bot subscriptions)
+STRIPE_SECRET_KEY=sk_live_xxx
+STRIPE_WEBHOOK_SECRET=whsec_xxx
+STRIPE_PRICE_PREMIUM=price_xxx
+STRIPE_PRICE_PREMIUM_PLUS=price_xxx
 
 # Transcripts (served by Apache under /transcripts)
 TRANSCRIPT_BASE_PATH=/var/www/html/transcripts
@@ -511,7 +516,8 @@ sudo -u musiker15 pm2 list
   - The root layout (`app/layout.tsx`) opts into Dynamic Rendering via
     `await headers()` so Next.js can inject the nonce into its hydration scripts.
 - **Debug route** (`/api/debug`) returns 404 in production
-- **GitHub Sponsors webhook** is verified via HMAC-SHA256 signature
+- **Stripe webhook** is verified via the Stripe signature (`constructEvent`, raw body); handlers are idempotent. No card data is received or stored — only Stripe customer/subscription IDs.
+- **Dashboard authorization** is account-scoped: every guild-scoped route re-checks `WHERE guild_id = ? AND discord_user_id = ?` against the signed session (`lib/dashboardAuth.ts`), so one account cannot act on another's guild.
 - **OAuth flows** use a random `state` token (CSRF protection)
 
 ---

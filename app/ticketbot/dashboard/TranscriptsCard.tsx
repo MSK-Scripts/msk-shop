@@ -39,7 +39,7 @@ function safeUrl(url: string): string | null {
   }
 }
 
-export default function TranscriptsCard({ lang }: { lang: Lang }) {
+export default function TranscriptsCard({ lang, guildId }: { lang: Lang; guildId: string }) {
   const t = dashboardTranslations[lang]
   const locale = lang === 'de' ? 'de-DE' : 'en-GB'
 
@@ -64,6 +64,7 @@ export default function TranscriptsCard({ lang }: { lang: Lang }) {
     setLoading(true)
     setError(false)
     const qs = new URLSearchParams()
+    qs.set('guildId', guildId)
     qs.set('page', String(opts.page))
     qs.set('pageSize', String(PAGE_SIZE))
     if (opts.ticketId.trim()) qs.set('ticketId', opts.ticketId.trim())
@@ -81,7 +82,7 @@ export default function TranscriptsCard({ lang }: { lang: Lang }) {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [guildId])
 
   // Initial load.
   useEffect(() => {

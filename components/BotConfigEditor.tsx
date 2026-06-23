@@ -160,7 +160,7 @@ function Banner({ msg, onClose }: { msg: Msg; onClose?: () => void }) {
 
 // ── Main Component ─────────────────────────────────────────────────────────────
 
-export default function BotConfigEditor({ lang, nonce }: { lang: Lang; nonce?: string }) {
+export default function BotConfigEditor({ lang, nonce, guildId }: { lang: Lang; nonce?: string; guildId: string }) {
   const t = dashboardTranslations[lang]
 
   const STATUS_LABEL: Record<BotStatus, string> = {
@@ -231,7 +231,7 @@ export default function BotConfigEditor({ lang, nonce }: { lang: Lang; nonce?: s
     setEditorMsg(null)
     if (file === 'locale') setLocaleMeta(null)
     try {
-      const res  = await fetch(`/api/bot-config?file=${file}`)
+      const res  = await fetch(`/api/bot-config?file=${file}&guildId=${guildId}`)
       const data = await res.json() as {
         content?: string; error?: string;
         filename?: string; fallback?: boolean; reason?: LocaleReason; requested?: string;
@@ -252,7 +252,7 @@ export default function BotConfigEditor({ lang, nonce }: { lang: Lang; nonce?: s
     } catch {
       setEditorMsg({ type: 'error', text: t.bot_err_network_load })
     } finally { setLoadingGet(false) }
-  }, [t])
+  }, [t, guildId])
 
   useEffect(() => { loadFile(activeFile) }, [activeFile, loadFile])
 
@@ -268,7 +268,7 @@ export default function BotConfigEditor({ lang, nonce }: { lang: Lang; nonce?: s
 
     setLoadingSave(true); setEditorMsg(null)
     try {
-      const res  = await fetch(`/api/bot-config?file=${activeFile}`, {
+      const res  = await fetch(`/api/bot-config?file=${activeFile}&guildId=${guildId}`, {
         method: 'PUT', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content }),
       })
@@ -293,18 +293,18 @@ export default function BotConfigEditor({ lang, nonce }: { lang: Lang; nonce?: s
   const fetchLogs = useCallback(async () => {
     setLogsLoading(true)
     try {
-      const res  = await fetch('/api/bot-logs')
+      const res  = await fetch(`/api/bot-logs?guildId=${guildId}`)
       const data = await res.json() as { lines?: string[]; error?: string }
       setLogs(data.lines ?? [])
     } catch {
       setLogs([])
     } finally { setLogsLoading(false) }
-  }, [])
+  }, [guildId])
 
   const fetchStatus = useCallback(async (): Promise<BotStatus | null> => {
     setStatusLoading(true)
     try {
-      const res  = await fetch('/api/bot-control')
+      const res  = await fetch(`/api/bot-control?guildId=${guildId}`)
       const data = await res.json() as { status?: string; error?: string }
       const s    = res.ok ? (data.status as BotStatus ?? 'unknown') : 'unknown'
       setBotStatus(s)
@@ -312,7 +312,7 @@ export default function BotConfigEditor({ lang, nonce }: { lang: Lang; nonce?: s
     } catch {
       setBotStatus('unknown'); return null
     } finally { setStatusLoading(false) }
-  }, [])
+  }, [guildId])
 
   useEffect(() => { fetchStatus() }, [fetchStatus])
 
@@ -323,7 +323,7 @@ export default function BotConfigEditor({ lang, nonce }: { lang: Lang; nonce?: s
     setLiveLines([])
     setLiveStatus('disconnected')
 
-    const es = new EventSource('/api/bot-logs-stream')
+    const es = new EventSource(`/api/bot-logs-stream?guildId=${guildId}`)
     esRef.current = es
 
     es.onmessage = (e: MessageEvent<string>) => {
@@ -351,7 +351,7 @@ export default function BotConfigEditor({ lang, nonce }: { lang: Lang; nonce?: s
     }
 
     es.onopen = () => setLiveStatus('connected')
-  }, [])
+  }, [guildId])
 
   const disconnectLiveLogs = useCallback(() => {
     esRef.current?.close()
@@ -383,7 +383,7 @@ export default function BotConfigEditor({ lang, nonce }: { lang: Lang; nonce?: s
   const handleAction = async (action: 'start' | 'stop' | 'restart') => {
     setActionLoading(action); setControlMsg(null); setShowLogs(false); setLogs(null)
     try {
-      const res  = await fetch('/api/bot-control', {
+      const res  = await fetch(`/api/bot-control?guildId=${guildId}`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action }),
       })
@@ -419,7 +419,7 @@ export default function BotConfigEditor({ lang, nonce }: { lang: Lang; nonce?: s
   const handleUpdate = async () => {
     setUpdateLoading(true); setUpdateMsg(null)
     try {
-      const res  = await fetch('/api/bot-control', {
+      const res  = await fetch(`/api/bot-control?guildId=${guildId}`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'update' }),
       })

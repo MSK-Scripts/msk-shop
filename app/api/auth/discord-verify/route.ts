@@ -1,18 +1,9 @@
 import { NextResponse }    from 'next/server';
-import { cookies }         from 'next/headers';
-import { generateState, parseSession } from '@/lib/session';
+import { generateState }   from '@/lib/session';
 
+// Discord OAuth is the first (and only sign-in) step of the verify flow.
 export async function GET() {
-  const baseUrl     = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://www.msk-scripts.de';
-
-  // Make sure GitHub is already verified before allowing Discord step
-  const cookieStore = await cookies();
-  const sessionRaw  = cookieStore.get('msk_verify_session')?.value;
-  const session     = sessionRaw ? parseSession(sessionRaw) : null;
-
-  if (!session?.githubUsername) {
-    return NextResponse.redirect(`${baseUrl}/ticketbot/verify?error=github_required`);
-  }
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://www.msk-scripts.de';
 
   const state   = generateState();
   const params  = new URLSearchParams({

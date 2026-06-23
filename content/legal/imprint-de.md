@@ -48,7 +48,13 @@ USt-IdNr.: GB167189962 & EU372035465
 
 ### Zahlungsabwicklung
 
-Alle Käufe werden über Tebex Limited abgewickelt. Mit dem Kauf stimmen Sie auch den [Tebex Nutzungsbedingungen](https://checkout.tebex.io/terms) und der [Tebex Datenschutzerklärung](https://checkout.tebex.io/privacy) zu.
+Shop-Käufe werden über Tebex Limited abgewickelt. Mit dem Kauf stimmen Sie auch den [Tebex Nutzungsbedingungen](https://checkout.tebex.io/terms) und der [Tebex Datenschutzerklärung](https://checkout.tebex.io/privacy) zu.
+
+**Stripe Payments Europe, Ltd.**
+1 Grand Canal Street Lower, Grand Canal Dock  
+Dublin, Irland
+
+Ticket-Bot Premium- und Premium+-Abos werden über Stripe abgewickelt. Mit dem Abschluss eines Abos stimmen Sie auch der [Stripe Datenschutzerklärung](https://stripe.com/privacy) zu. Wir erhalten und speichern keine Kartendaten.
 
 ---
 

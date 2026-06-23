@@ -1,18 +1,11 @@
 import { NextResponse }          from 'next/server';
-import { cookies }               from 'next/headers';
 import { promises as dns }       from 'dns';
 import { execFile }              from 'child_process';
 import { promisify }             from 'util';
-import { parseDashboardSession } from '@/lib/dashboardSession';
-import { query, queryOne }       from '@/lib/db';
+import { authorizeGuild }        from '@/lib/dashboardAuth';
+import { query }                 from '@/lib/db';
 
 const execFileAsync = promisify(execFile);
-
-interface GuildRow {
-  guild_id:      string;
-  custom_domain: string | null;
-  domain_status: string;
-}
 
 async function checkDns(domain: string): Promise<boolean> {
   const expected = process.env.SERVER_PUBLIC_IP ?? '';
@@ -25,19 +18,20 @@ async function checkDns(domain: string): Promise<boolean> {
   }
 }
 
-export async function POST(_req: Request): Promise<NextResponse> {
-  // Auth
-  const cookieStore = await cookies();
-  const token       = cookieStore.get('msk_dashboard_session')?.value;
-  const session     = token ? parseDashboardSession(token) : null;
-  if (!session?.guildId) {
-    return NextResponse.json({ error: 'Not authenticated.' }, { status: 401 });
+export async function POST(req: Request): Promise<NextResponse> {
+  // Parse body
+  let guildId: string;
+  try {
+    const body = await req.json();
+    guildId    = String(body.guildId ?? '').trim();
+  } catch {
+    return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 });
   }
 
-  const guild = await queryOne<GuildRow>(
-    `SELECT guild_id, custom_domain, domain_status FROM ticketbot_guilds WHERE guild_id = ?`,
-    [session.guildId],
-  );
+  // Auth — the session's Discord user must own this guild
+  const auth = await authorizeGuild(guildId);
+  if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status });
+  const guild = auth.guild;
 
   if (!guild?.custom_domain) {
     return NextResponse.json({ error: 'No domain configured.' }, { status: 400 });
@@ -62,7 +56,7 @@ export async function POST(_req: Request): Promise<NextResponse> {
       await execFileAsync('sudo', [
         '/opt/msk-shop/scripts/vhost-create.sh',
         guild.custom_domain,
-        session.guildId,
+        guildId,
         process.env.ADMIN_EMAIL ?? 'info@msk-scripts.de',
       ]);
     } catch (err) {
@@ -72,7 +66,7 @@ export async function POST(_req: Request): Promise<NextResponse> {
 
     await query(
       `UPDATE ticketbot_guilds SET domain_status = 'active' WHERE guild_id = ?`,
-      [session.guildId],
+      [guildId],
     );
   }
 

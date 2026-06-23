@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import {
-  CheckCircle, Github, Copy, Check, AlertCircle, Loader2,
+  CheckCircle, Copy, Check, AlertCircle, Loader2,
   ExternalLink, Globe, RefreshCw, LayoutDashboard,
 } from 'lucide-react'
 import type { DiscordGuild, VerifySession } from '@/lib/session'
@@ -16,8 +16,8 @@ import { cn } from '@/lib/utils'
 
 // ── Step Indicator ─────────────────────────────────────────────────────────────
 
-function StepIndicator({ current, t }: { current: number; t: { step_github: string; step_discord: string; step_select: string; step_done: string } }) {
-  const steps = [t.step_github, t.step_discord, t.step_select, t.step_done]
+function StepIndicator({ current, t }: { current: number; t: { step_discord: string; step_select: string; step_done: string } }) {
+  const steps = [t.step_discord, t.step_select, t.step_done]
   return (
     <div className="mx-auto mb-8 flex w-full max-w-md items-center justify-center gap-0">
       {steps.map((label, i) => {
@@ -135,17 +135,13 @@ export default function VerifyClient({ session, step: _step, errorCode }: Props)
 
   const errorMap: Record<string, keyof typeof t> = {
     invalid_state:         'err_invalid_state',
-    github_token_failed:   'err_github_token_failed',
-    github_user_failed:    'err_github_user_failed',
     discord_token_failed:  'err_discord_token_failed',
     discord_guilds_failed: 'err_discord_guilds_failed',
-    github_required:       'err_github_required',
   }
   const errorMessage = errorCode ? t[errorMap[errorCode] ?? 'err_invalid_state'] : null
 
-  const hasGitHub = !!session?.githubUsername
   const hasDiscord = !!session?.guilds
-  const currentStep = result ? 4 : hasDiscord ? 3 : hasGitHub ? 2 : 1
+  const currentStep = result ? 3 : hasDiscord ? 2 : 1
 
   const handleContinue = async () => {
     if (!selectedGuildId) return
@@ -250,34 +246,13 @@ export default function VerifyClient({ session, step: _step, errorCode }: Props)
 
           {errorMessage && <ErrorBanner message={errorMessage as string} />}
 
-          {/* Step 1 — GitHub */}
+          {/* Step 1 — Discord */}
           {currentStep === 1 && (
-            <div className="text-center">
-              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-[var(--color-border)] bg-[var(--color-muted)]">
-                <Github className="h-7 w-7 text-[var(--color-muted-foreground)]" />
-              </div>
-              <h2 className="mb-2 text-lg font-bold">{t.github_title}</h2>
-              <p className="mb-6 text-sm text-[var(--color-muted-foreground)]">{t.github_desc}</p>
-              <Button asChild className="w-full">
-                <a href="/api/auth/github">
-                  <Github className="h-4 w-4" />
-                  {t.github_btn}
-                </a>
-              </Button>
-            </div>
-          )}
-
-          {/* Step 2 — Discord */}
-          {currentStep === 2 && (
             <div className="text-center">
               <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-[var(--color-discord)]/30 bg-[var(--color-discord)]/15 text-[var(--color-discord)]">
                 <DiscordIcon size={28} />
               </div>
               <h2 className="mb-1 text-lg font-bold">{t.discord_title}</h2>
-              <p className="mb-1 text-sm text-[var(--color-muted-foreground)]">
-                {t.discord_signed_as}{' '}
-                <span className="font-semibold text-[var(--color-primary)]">@{session?.githubUsername}</span>
-              </p>
               <p className="mb-6 text-sm text-[var(--color-muted-foreground)]">{t.discord_desc}</p>
 
               {discordStatus && discordStatus !== 'none' && (
@@ -319,8 +294,8 @@ export default function VerifyClient({ session, step: _step, errorCode }: Props)
             </div>
           )}
 
-          {/* Step 3 — Select Server */}
-          {currentStep === 3 && !result && !existingGuild && (
+          {/* Step 2 — Select Server */}
+          {currentStep === 2 && !result && !existingGuild && (
             <div>
               <h2 className="mb-1 text-lg font-bold">{t.select_title}</h2>
               <p className="mb-3 text-sm text-[var(--color-muted-foreground)]">{t.select_desc}</p>
@@ -373,8 +348,8 @@ export default function VerifyClient({ session, step: _step, errorCode }: Props)
             </div>
           )}
 
-          {/* Step 3 — Already registered */}
-          {currentStep === 3 && !result && existingGuild && (
+          {/* Step 2 — Already registered */}
+          {currentStep === 2 && !result && existingGuild && (
             <div>
               <div className="mb-4 flex items-center gap-2.5">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-yellow-500/30 bg-yellow-500/15 text-yellow-500">

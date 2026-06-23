@@ -68,21 +68,21 @@ The MSK Ticket Bot Transcript Service allows users who self-host the MSK Ticket 
 | Tier | Price | Storage | Max Transcript | Attachments | Custom Domain |
 |---|---|---|---|---|---|
 | **Basic** | Free | 30 days | 10 MB | No | No |
-| **Premium** | $4/month | 180 days | 100 MB | Yes (150 MB/ticket) | Yes |
-| **Premium+** | $8/month | 365 days | 250 MB | Yes (500 MB/ticket) | Yes |
+| **Premium** | €3.99/month | 180 days | 100 MB | Yes (150 MB/ticket) | Yes |
+| **Premium+** | €6.99/month | 365 days | 250 MB | Yes (500 MB/ticket) | Yes |
 
 ### 7.2 Subscription and Payment
 
-Premium and Premium+ subscriptions are managed exclusively via **GitHub Sponsors** ([github.com/sponsors/MSK-Scripts](https://github.com/sponsors/MSK-Scripts)). GitHub processes all payments. By subscribing, you also agree to GitHub's Terms of Service.
+Premium and Premium+ subscriptions are billed via **Stripe** (Stripe Payments Europe, Ltd.). Stripe processes all payments; we never receive or store your card details. By subscribing, you also agree to Stripe's terms.
 
-Subscription fees are billed monthly by GitHub. Your tier is activated automatically when your sponsorship is registered and deactivated upon cancellation.
+Subscription fees are billed monthly. Your tier is activated automatically once the subscription is confirmed and remains active for as long as payment succeeds.
 
-We have no influence over GitHub's payment processing, billing intervals, or refund policies for sponsorships.
+**14-day free trial:** New customers receive a 14-day free trial. If you do not cancel before the trial ends, the subscription automatically converts to a paid monthly plan and the first monthly fee is charged. The trial is available once per customer.
 
 ### 7.3 Cancellation and Downgrade
 
-You may cancel your GitHub Sponsors subscription at any time through GitHub. Upon cancellation:
-- Your tier is downgraded to **Basic** at the end of the billing period
+You may cancel your subscription at any time via the **"Manage subscription"** button in your dashboard (Stripe customer portal). Upon cancellation:
+- Your tier is downgraded to **Basic** at the end of the current billing period (or immediately if you cancel during the free trial — no charge is made)
 - Existing transcripts remain accessible until their individual expiry date
 - Custom domains are deactivated at the time of downgrade
 - No partial refunds are provided for unused subscription time

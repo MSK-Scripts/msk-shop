@@ -1,7 +1,5 @@
-import { cookies }                from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
-import { parseDashboardSession }  from '@/lib/dashboardSession';
-import { queryOne }               from '@/lib/db';
+import { authorizeGuild }         from '@/lib/dashboardAuth';
 import { readFile, writeFile, copyFile, access } from 'fs/promises';
 import { join, resolve }          from 'path';
 import { parse as parseJsonc, type ParseError } from 'jsonc-parser';
@@ -19,18 +17,12 @@ const STATIC_FILE_MAP: Record<string, string> = {
 
 const VALID_KEYS = new Set([...Object.keys(STATIC_FILE_MAP), 'locale']);
 
-// Discord snowflakes are 17–20 digit numbers.
-// Consistent with bot-control and bot-logs routes — defense in depth.
-const GUILD_ID_RE = /^\d{17,20}$/;
-
 // Whitelist for the "lang" value extracted from config.jsonc.
 // Accepts ISO-639-1 codes (en, de) and optional ISO-3166 region suffix (pt-br).
 const LANG_RE = /^[a-z]{2}(-[a-z]{2})?$/i;
 
 // Whitelist for resolved locale filenames before any filesystem access.
 const LOCALE_FILENAME_RE = /^[a-z]{2}(-[a-z]{2})?\.json$/i;
-
-interface GuildRow { is_hosted: number }
 
 // ── Path builders ──────────────────────────────────────────────────────────────
 
@@ -147,39 +139,34 @@ async function resolveLocaleFile(guildId: string): Promise<LocaleResolution> {
   }
 }
 
-// ── Auth helpers ───────────────────────────────────────────────────────────────
+// ── Auth helper ────────────────────────────────────────────────────────────────
 
-async function getSession(): Promise<string | null> {
-  const cookieStore = await cookies();
-  const token       = cookieStore.get('msk_dashboard_session')?.value;
-  const session     = token ? parseDashboardSession(token) : null;
-  return session?.guildId ?? null;
-}
-
-async function assertHosted(guildId: string): Promise<boolean> {
-  const guild = await queryOne<GuildRow>(
-    'SELECT is_hosted FROM ticketbot_guilds WHERE guild_id = ? AND active = 1',
-    [guildId],
-  );
-  return !!guild?.is_hosted;
+/**
+ * Authorize a hosted-bot request: the session's Discord user must own the guild
+ * (from ?guildId=) AND the guild must be an active hosted bot. Returns the guild
+ * id on success or a ready-made error response.
+ */
+async function authHosted(req: NextRequest): Promise<{ guildId: string } | { error: NextResponse }> {
+  const auth = await authorizeGuild(req.nextUrl.searchParams.get('guildId'));
+  if (!auth.ok) return { error: NextResponse.json({ error: auth.error }, { status: auth.status }) };
+  if (!auth.guild.is_hosted || !auth.guild.active) {
+    return { error: NextResponse.json({ error: 'Not available for this account' }, { status: 403 }) };
+  }
+  return { guildId: auth.guild.guild_id };
 }
 
 // ── GET ────────────────────────────────────────────────────────────────────────
 
 export async function GET(req: NextRequest) {
   try {
-    const guildId = await getSession();
-    if (!guildId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    if (!GUILD_ID_RE.test(guildId)) return NextResponse.json({ error: 'Invalid session' }, { status: 400 });
-
     const fileKey = req.nextUrl.searchParams.get('file');
     if (!fileKey || !VALID_KEYS.has(fileKey)) {
       return NextResponse.json({ error: 'Invalid file parameter' }, { status: 400 });
     }
 
-    if (!await assertHosted(guildId)) {
-      return NextResponse.json({ error: 'Not available for this account' }, { status: 403 });
-    }
+    const a = await authHosted(req);
+    if ('error' in a) return a.error;
+    const guildId = a.guildId;
 
     if (fileKey === 'locale') {
       const resolution = await resolveLocaleFile(guildId);
@@ -222,18 +209,14 @@ export async function GET(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
   try {
-    const guildId = await getSession();
-    if (!guildId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    if (!GUILD_ID_RE.test(guildId)) return NextResponse.json({ error: 'Invalid session' }, { status: 400 });
-
     const fileKey = req.nextUrl.searchParams.get('file');
     if (!fileKey || !VALID_KEYS.has(fileKey)) {
       return NextResponse.json({ error: 'Invalid file parameter' }, { status: 400 });
     }
 
-    if (!await assertHosted(guildId)) {
-      return NextResponse.json({ error: 'Not available for this account' }, { status: 403 });
-    }
+    const a = await authHosted(req);
+    if ('error' in a) return a.error;
+    const guildId = a.guildId;
 
     const body = await req.json() as unknown;
     if (

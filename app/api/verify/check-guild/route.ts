@@ -4,14 +4,14 @@ import { parseSession }   from '@/lib/session';
 import { queryOne }       from '@/lib/db';
 import type { Tier }      from '@/lib/tiers';
 
-interface GuildRow { tier: Tier; github_username: string | null; }
+interface GuildRow { tier: Tier; discord_user_id: string | null; }
 
 export async function POST(req: Request) {
   const cookieStore = await cookies();
   const sessionRaw  = cookieStore.get('msk_verify_session')?.value;
   const session     = sessionRaw ? parseSession(sessionRaw) : null;
 
-  if (!session?.githubUsername || !session?.guilds) {
+  if (!session?.discordUserId || !session?.guilds) {
     return NextResponse.json({ error: 'No active verify session.' }, { status: 401 });
   }
 
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
   }
 
   const existing = await queryOne<GuildRow>(
-    `SELECT tier, github_username FROM ticketbot_guilds WHERE guild_id = ?`,
+    `SELECT tier, discord_user_id FROM ticketbot_guilds WHERE guild_id = ?`,
     [guildId],
   );
 
@@ -38,8 +38,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ exists: false });
   }
 
-  // Registered to a different GitHub account → let the complete route handle the error
-  if (existing.github_username !== null && existing.github_username !== session.githubUsername) {
+  // Registered to a different Discord account → let the complete route handle the error
+  if (existing.discord_user_id !== null && existing.discord_user_id !== session.discordUserId) {
     return NextResponse.json({ exists: true, ownedByCurrentUser: false, tier: existing.tier });
   }
 

@@ -1,21 +1,16 @@
-import { cookies }               from 'next/headers';
-import { NextResponse }          from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { exec }                  from 'child_process';
 import { promisify }             from 'util';
 import { spawn, type ChildProcess } from 'child_process';
-import { parseDashboardSession } from '@/lib/dashboardSession';
-import { queryOne }              from '@/lib/db';
+import { authorizeGuild }        from '@/lib/dashboardAuth';
 
 const execAsync   = promisify(exec);
-const GUILD_ID_RE = /^\d{17,20}$/;
 
 // Strips all ANSI escape sequences (colors, cursor movement, etc.) from a string.
 const ANSI_RE = /\x1b\[[0-9;]*[mGKHFJA-Za-z]/g;
 function stripAnsi(str: string): string {
   return str.replace(ANSI_RE, '');
 }
-
-interface GuildRow { is_hosted: number }
 
 interface Pm2Process {
   name:    string;
@@ -25,30 +20,19 @@ interface Pm2Process {
   };
 }
 
-async function getSession(): Promise<string | null> {
-  const cookieStore = await cookies();
-  const token       = cookieStore.get('msk_dashboard_session')?.value;
-  const session     = token ? parseDashboardSession(token) : null;
-  return session?.guildId ?? null;
-}
-
-async function assertHosted(guildId: string): Promise<boolean> {
-  const guild = await queryOne<GuildRow>(
-    'SELECT is_hosted FROM ticketbot_guilds WHERE guild_id = ? AND active = 1',
-    [guildId],
-  );
-  return !!guild?.is_hosted;
-}
-
 // GET /api/bot-logs-stream
 // Server-Sent Events endpoint — streams the bot's PM2 log files in real time.
 // Log file paths come exclusively from PM2's own process list, never from user input.
-export async function GET() {
+export async function GET(req: NextRequest) {
   // All auth + data fetching must happen before the ReadableStream is created.
-  const guildId = await getSession();
-  if (!guildId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  if (!GUILD_ID_RE.test(guildId)) return NextResponse.json({ error: 'Invalid session' }, { status: 400 });
-  if (!await assertHosted(guildId)) return NextResponse.json({ error: 'Not available' }, { status: 403 });
+  // The session's Discord user must own the guild (?guildId=) and it must be an
+  // active hosted bot.
+  const auth = await authorizeGuild(req.nextUrl.searchParams.get('guildId'));
+  if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status });
+  if (!auth.guild.is_hosted || !auth.guild.active) {
+    return NextResponse.json({ error: 'Not available' }, { status: 403 });
+  }
+  const guildId = auth.guild.guild_id;
 
   const appName = `ticketbot-${guildId}`;
 

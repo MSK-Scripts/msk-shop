@@ -5,22 +5,44 @@
 
 -- Guilds & API Keys
 CREATE TABLE IF NOT EXISTS ticketbot_guilds (
-    id              INT AUTO_INCREMENT PRIMARY KEY,
-    guild_id        VARCHAR(20)  UNIQUE NOT NULL,
-    api_key         VARCHAR(64)  UNIQUE NOT NULL,
-    tier            ENUM('basic', 'premium', 'premium_plus') NOT NULL DEFAULT 'basic',
-    github_username VARCHAR(100),
-    discord_user_id VARCHAR(20),
-    custom_domain   VARCHAR(255),
-    domain_status   ENUM('none', 'pending_dns', 'active') NOT NULL DEFAULT 'none',
-    is_hosted       TINYINT(1)   NOT NULL DEFAULT 0,
-    active          BOOLEAN      NOT NULL DEFAULT TRUE,
-    created_at      DATETIME     NOT NULL DEFAULT NOW(),
-    expires_at      DATETIME     NULL
+    id                     INT AUTO_INCREMENT PRIMARY KEY,
+    guild_id               VARCHAR(20)  UNIQUE NOT NULL,
+    api_key                VARCHAR(64)  UNIQUE NOT NULL,
+    tier                   ENUM('basic', 'premium', 'premium_plus') NOT NULL DEFAULT 'basic',
+    discord_user_id        VARCHAR(20),
+    -- Stripe billing: the subscription is bound to this guild (one sub per guild)
+    -- via stripe_subscription_id; stripe_customer_id is NOT unique because one
+    -- customer (person) may own several guilds. expires_at carries the current
+    -- subscription/trial period end.
+    stripe_subscription_id VARCHAR(64)  UNIQUE,
+    stripe_customer_id     VARCHAR(64),
+    custom_domain          VARCHAR(255),
+    domain_status          ENUM('none', 'pending_dns', 'active') NOT NULL DEFAULT 'none',
+    is_hosted              TINYINT(1)   NOT NULL DEFAULT 0,
+    active                 BOOLEAN      NOT NULL DEFAULT TRUE,
+    created_at             DATETIME     NOT NULL DEFAULT NOW(),
+    expires_at             DATETIME     NULL
 );
 
 -- Migration (run once on existing databases):
 -- ALTER TABLE ticketbot_guilds ADD COLUMN is_hosted TINYINT(1) NOT NULL DEFAULT 0;
+-- ALTER TABLE ticketbot_guilds ADD COLUMN stripe_subscription_id VARCHAR(64) NULL UNIQUE;
+-- ALTER TABLE ticketbot_guilds ADD COLUMN stripe_customer_id     VARCHAR(64) NULL;
+-- Stripe migration (GitHub Sponsors fully removed — no active sponsors existed):
+--   ALTER TABLE ticketbot_guilds DROP COLUMN github_username;
+--   DROP TABLE IF EXISTS ticketbot_sponsors;
+
+-- Stripe customers (one row per person) + free-trial eligibility.
+-- A person is identified by their Discord user id (the dashboard/verify identity).
+-- trial_used enforces "14-day trial for NEW customers only" — Stripe does not
+-- enforce first-time-only trials, so we track it ourselves.
+CREATE TABLE IF NOT EXISTS ticketbot_customers (
+    discord_user_id    VARCHAR(20)  PRIMARY KEY,
+    stripe_customer_id VARCHAR(64)  NOT NULL UNIQUE,
+    trial_used         BOOLEAN      NOT NULL DEFAULT FALSE,
+    created_at         DATETIME     NOT NULL DEFAULT NOW(),
+    updated_at         DATETIME     NOT NULL DEFAULT NOW() ON UPDATE NOW()
+);
 
 -- Transcripts
 CREATE TABLE IF NOT EXISTS ticketbot_transcripts (
@@ -56,14 +78,6 @@ CREATE TABLE IF NOT EXISTS ticketbot_rate_limits (
     PRIMARY KEY (api_key, window_start)
 );
 
--- GitHub Sponsors lookup (written by webhook, read during verify)
-CREATE TABLE IF NOT EXISTS ticketbot_sponsors (
-    github_username VARCHAR(100) PRIMARY KEY,
-    tier            ENUM('basic', 'premium', 'premium_plus') NOT NULL DEFAULT 'basic',
-    active          BOOLEAN      NOT NULL DEFAULT TRUE,
-    updated_at      DATETIME     NOT NULL DEFAULT NOW() ON UPDATE NOW()
-);
-
 -- ============================================================
 -- Giveaway Bot – public results pages
 -- The giveaway bot pushes a giveaway's winners + participant COUNT here when it
@@ -92,4 +106,6 @@ CREATE TABLE IF NOT EXISTS giveaway_results (
 CREATE INDEX IF NOT EXISTS idx_transcripts_guild   ON ticketbot_transcripts(guild_id);
 CREATE INDEX IF NOT EXISTS idx_transcripts_expires ON ticketbot_transcripts(expires_at);
 CREATE INDEX IF NOT EXISTS idx_guilds_api_key      ON ticketbot_guilds(api_key);
+CREATE INDEX IF NOT EXISTS idx_guilds_discord_user ON ticketbot_guilds(discord_user_id);
+CREATE INDEX IF NOT EXISTS idx_guilds_stripe_cust  ON ticketbot_guilds(stripe_customer_id);
 CREATE INDEX IF NOT EXISTS idx_giveaway_results_guild ON giveaway_results(guild_id);

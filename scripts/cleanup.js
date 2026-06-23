@@ -61,27 +61,23 @@ async function main() {
   }
 
   // ── Enforce membership expiry (auto-downgrade) ───────────────────────────────
-  // Downgrade any guild whose paid membership has lapsed. A guild is only
-  // downgraded when BOTH hold:
-  //   • expires_at is in the past (NULL never counts as expired — that is the
+  // Time-based safety net for lapsed paid memberships. Stripe subscriptions are
+  // primarily kept in sync by the webhook (+ stripe-reconcile.js); this only
+  // catches guilds that have NO Stripe subscription on file yet still carry a
+  // paid tier with a past expiry. A guild is downgraded only when ALL hold:
+  //   • tier is not basic, AND
+  //   • expires_at is in the past (NULL never counts as expired — the
   //     "freshly verified / basic" state), AND
-  //   • there is NO active premium sponsor backing it.
-  // The active-sponsor guard makes this safe regardless of cron ordering: a
-  // still-paying GitHub sponsor (active=TRUE in ticketbot_sponsors, kept fresh
-  // by sponsors-reconcile.js) is never wrongly downgraded even if their
-  // webhook-set expires_at has drifted into the past. This is the time-based
-  // safety net for ended/de-sponsored memberships and runs independently of the
-  // GitHub API. Hosted bots are only flagged here — never auto-archived.
+  //   • there is no Stripe subscription bound to it (stripe_subscription_id IS
+  //     NULL) — guilds WITH a subscription are owned by the webhook/reconcile and
+  //     left untouched here so a missed webhook can never wrongly downgrade a
+  //     paying customer.
+  // Hosted bots are only flagged here — never auto-archived.
   const EXPIRED_GUILD_PREDICATE = `
     g.tier <> 'basic'
     AND g.expires_at IS NOT NULL
     AND g.expires_at < NOW()
-    AND NOT EXISTS (
-      SELECT 1 FROM ticketbot_sponsors s
-      WHERE s.github_username = g.github_username
-        AND s.active = TRUE
-        AND s.tier <> 'basic'
-    )`;
+    AND g.stripe_subscription_id IS NULL`;
 
   const [expiredGuilds] = await pool.execute(
     `SELECT g.guild_id, g.is_hosted, g.tier

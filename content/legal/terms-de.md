@@ -68,21 +68,21 @@ Der MSK Ticket Bot Transcript Service ermöglicht Nutzern, die den MSK Ticket Bo
 | Tier | Preis | Speicherdauer | Max. Transkript | Anhänge | Eigene Domain |
 |---|---|---|---|---|---|
 | **Basic** | Kostenlos | 30 Tage | 10 MB | Nein | Nein |
-| **Premium** | 4 $/Monat | 180 Tage | 100 MB | Ja (150 MB/Ticket) | Ja |
-| **Premium+** | 8 $/Monat | 365 Tage | 250 MB | Ja (500 MB/Ticket) | Ja |
+| **Premium** | 3,99 €/Monat | 180 Tage | 100 MB | Ja (150 MB/Ticket) | Ja |
+| **Premium+** | 6,99 €/Monat | 365 Tage | 250 MB | Ja (500 MB/Ticket) | Ja |
 
 ### 7.2 Abonnement und Zahlung
 
-Premium- und Premium+-Abonnements werden ausschließlich über **GitHub Sponsors** ([github.com/sponsors/MSK-Scripts](https://github.com/sponsors/MSK-Scripts)) verwaltet. GitHub wickelt alle Zahlungen ab. Mit dem Sponsoring stimmen Sie auch den Nutzungsbedingungen von GitHub zu.
+Premium- und Premium+-Abonnements werden über **Stripe** (Stripe Payments Europe, Ltd.) abgerechnet. Stripe wickelt alle Zahlungen ab; wir erhalten und speichern keine Kartendaten. Mit dem Abschluss stimmen Sie zusätzlich den Bedingungen von Stripe zu.
 
-Abo-Gebühren werden monatlich durch GitHub in Rechnung gestellt. Ihr Tier wird automatisch aktiviert, sobald das Sponsoring registriert ist, und bei Kündigung deaktiviert.
+Abo-Gebühren werden monatlich abgerechnet. Ihr Tier wird automatisch aktiviert, sobald das Abonnement bestätigt ist, und bleibt aktiv, solange die Zahlung erfolgreich ist.
 
-Wir haben keinen Einfluss auf die Zahlungsabwicklung, Abrechnungsintervalle oder Rückerstattungsrichtlinien von GitHub für Sponsorings.
+**14 Tage kostenlos testen:** Neukunden erhalten eine 14-tägige kostenlose Testphase. Wird vor Ablauf der Testphase nicht gekündigt, wandelt sich das Abonnement automatisch in ein kostenpflichtiges Monatsabo um und die erste Monatsgebühr wird berechnet. Die Testphase ist einmal pro Kunde verfügbar.
 
 ### 7.3 Kündigung und Downgrade
 
-Sie können Ihr GitHub Sponsors-Abonnement jederzeit über GitHub kündigen. Bei Kündigung gilt:
-- Ihr Tier wird zum Ende des Abrechnungszeitraums auf **Basic** downgegradet
+Sie können Ihr Abonnement jederzeit über die Schaltfläche **„Abo verwalten"** in Ihrem Dashboard (Stripe Kundenportal) kündigen. Bei Kündigung gilt:
+- Ihr Tier wird zum Ende des laufenden Abrechnungszeitraums auf **Basic** downgegradet (oder sofort, wenn Sie während der Testphase kündigen — es erfolgt keine Abbuchung)
 - Bestehende Transkripte bleiben bis zu ihrem individuellen Ablaufdatum abrufbar
 - Eigene Domains werden zum Zeitpunkt des Downgrades deaktiviert
 - Keine anteiligen Erstattungen für nicht genutzte Abo-Zeit

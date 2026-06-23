@@ -1,6 +1,6 @@
 'use client'
 
-import { FileText, Key, HardDrive, Paperclip, Github, BarChart3, Globe, Server, TrendingUp, Database, Activity, Files, Maximize2, Gift } from 'lucide-react'
+import { FileText, Key, HardDrive, Paperclip, CreditCard, BarChart3, Globe, Server, TrendingUp, Database, Activity, Files, Maximize2, Gift } from 'lucide-react'
 import { statsTranslations, type Lang } from '@/lib/i18n'
 import { useLang } from '@/components/i18n/LangProvider'
 import { Card } from '@/components/ui/Card'
@@ -14,8 +14,8 @@ export interface Stats {
   avgTranscriptBytes:         number
   attachments:                number
   avgAttachmentBytes:         number
-  sponsors:                   number
-  sponsorTiers:               Record<string, number>
+  subscriptions:              number
+  subscriptionTiers:          Record<string, number>
   customDomains:              number
   hostedBots:                 number
   newGuilds30d:               number
@@ -126,11 +126,11 @@ export default function StatsClient({ stats }: { stats: Stats }) {
   const { lang } = useLang()
   const t = statsTranslations[lang]
 
-  // Paid-tier API keys (premium + premium+) that are NOT backed by an active
-  // GitHub sponsor were granted via giveaways. Clamp at 0 for safety.
+  // Paid-tier API keys (premium + premium+) that are NOT backed by a paid Stripe
+  // subscription were granted via giveaways. Clamp at 0 for safety.
   const giveawayKeys = Math.max(
     0,
-    stats.tiers.premium + stats.tiers.premium_plus - stats.sponsors,
+    stats.tiers.premium + stats.tiers.premium_plus - stats.subscriptions,
   )
 
   const cards = [
@@ -146,7 +146,7 @@ export default function StatsClient({ stats }: { stats: Stats }) {
     { icon: HardDrive,  label: t.card_avg_transcript,    value: formatBytes(stats.avgTranscriptBytes),              sub: t.card_avg_transcript_sub,     accent: false },
     { icon: HardDrive,  label: t.card_avg_attachment,    value: formatBytes(stats.avgAttachmentBytes),              sub: t.card_avg_attachment_sub,     accent: false },
     { icon: Maximize2,  label: t.card_max_transcript,    value: formatBytes(stats.maxTranscriptBytes),              sub: t.card_max_transcript_sub,     accent: false },
-    { icon: Github,     label: t.card_sponsors,          value: formatNum(stats.sponsors, lang),                    sub: t.card_sponsors_sub,           accent: true  },
+    { icon: CreditCard, label: t.card_subscriptions,     value: formatNum(stats.subscriptions, lang),               sub: t.card_subscriptions_sub,      accent: true  },
     { icon: Gift,       label: t.card_giveaway_keys,     value: formatNum(giveawayKeys, lang),                      sub: t.card_giveaway_keys_sub,      accent: false },
   ]
 
@@ -194,9 +194,9 @@ export default function StatsClient({ stats }: { stats: Stats }) {
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <TierBreakdown tiers={stats.tiers}        total={stats.apiKeys}  label={t.tier_distribution}    lang={lang} />
           <TierBreakdown
-            tiers={stats.sponsorTiers}
-            total={stats.sponsors}
-            label={t.sponsor_distribution}
+            tiers={stats.subscriptionTiers}
+            total={stats.subscriptions}
+            label={t.subscription_distribution}
             lang={lang}
             hideBasic
           />

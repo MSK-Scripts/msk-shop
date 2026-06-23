@@ -1,22 +1,12 @@
 import { NextResponse }              from 'next/server';
-import { cookies }                   from 'next/headers';
-import { promises as dns }           from 'dns';
 import { execFile }                  from 'child_process';
 import { promisify }                 from 'util';
-import { parseDashboardSession }     from '@/lib/dashboardSession';
+import { promises as dns }           from 'dns';
+import { authorizeGuild }            from '@/lib/dashboardAuth';
 import { query, queryOne }           from '@/lib/db';
 import { TIER_CONFIG }               from '@/lib/tiers';
-import type { Tier }                 from '@/lib/tiers';
 
 const execFileAsync = promisify(execFile);
-
-interface GuildRow {
-  guild_id:      string;
-  tier:          Tier;
-  custom_domain: string | null;
-  domain_status: string;
-  active:        number;
-}
 
 // Domain format: e.g. tickets.example.com — no protocol, no path, no port
 const DOMAIN_REGEX = /^[a-zA-Z0-9][a-zA-Z0-9.-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/;
@@ -33,34 +23,28 @@ async function checkDns(domain: string): Promise<boolean> {
 }
 
 export async function POST(req: Request): Promise<NextResponse> {
-  // Auth
-  const cookieStore = await cookies();
-  const token       = cookieStore.get('msk_dashboard_session')?.value;
-  const session     = token ? parseDashboardSession(token) : null;
-  if (!session?.guildId) {
-    return NextResponse.json({ error: 'Not authenticated.' }, { status: 401 });
-  }
-
   // Parse body
   let domain: string;
+  let guildId: string;
   try {
     const body = await req.json();
     domain     = String(body.domain ?? '').trim().toLowerCase();
+    guildId    = String(body.guildId ?? '').trim();
   } catch {
     return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 });
   }
+
+  // Auth — the session's Discord user must own this guild
+  const auth = await authorizeGuild(guildId);
+  if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status });
+  const guild = auth.guild;
 
   // Validate format
   if (!DOMAIN_REGEX.test(domain)) {
     return NextResponse.json({ error: 'Invalid domain format. Use e.g. tickets.example.com' }, { status: 400 });
   }
 
-  // Check guild exists and has premium
-  const guild = await queryOne<GuildRow>(
-    `SELECT guild_id, tier, custom_domain, domain_status, active FROM ticketbot_guilds WHERE guild_id = ?`,
-    [session.guildId],
-  );
-  if (!guild || !guild.active) {
+  if (!guild.active) {
     return NextResponse.json({ error: 'Guild not found.' }, { status: 404 });
   }
   if (!TIER_CONFIG[guild.tier].customDomain) {
@@ -70,7 +54,7 @@ export async function POST(req: Request): Promise<NextResponse> {
   // Check domain not already taken by another guild
   const existing = await queryOne<{ guild_id: string }>(
     `SELECT guild_id FROM ticketbot_guilds WHERE custom_domain = ? AND guild_id != ?`,
-    [domain, session.guildId],
+    [domain, guildId],
   );
   if (existing) {
     return NextResponse.json({ error: 'This domain is already registered to another server.' }, { status: 409 });
@@ -92,7 +76,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     // Save domain as pending_dns — user needs to set DNS first
     await query(
       `UPDATE ticketbot_guilds SET custom_domain = ?, domain_status = 'pending_dns' WHERE guild_id = ?`,
-      [domain, session.guildId],
+      [domain, guildId],
     );
     return NextResponse.json({
       success:      false,
@@ -108,7 +92,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     await execFileAsync('sudo', [
       '/opt/msk-shop/scripts/vhost-create.sh',
       domain,
-      session.guildId,
+      guildId,
       process.env.ADMIN_EMAIL ?? 'info@msk-scripts.de',
     ]);
   } catch (err) {
@@ -118,7 +102,7 @@ export async function POST(req: Request): Promise<NextResponse> {
 
   await query(
     `UPDATE ticketbot_guilds SET custom_domain = ?, domain_status = 'active' WHERE guild_id = ?`,
-    [domain, session.guildId],
+    [domain, guildId],
   );
 
   return NextResponse.json({ success: true, status: 'active', domain });
