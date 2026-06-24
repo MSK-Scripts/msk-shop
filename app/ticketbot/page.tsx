@@ -450,6 +450,20 @@ export default function TicketBotPage() {
             </Card>
           ))}
         </div>
+
+        {/* Per-guild note */}
+        <div className="mx-auto mt-8 flex max-w-3xl items-start gap-4 rounded-xl border border-[var(--color-primary)]/25 bg-[var(--color-primary)]/[0.04] p-5">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--color-primary)]/15 text-[var(--color-primary)]">
+            <ServerCog className="h-5 w-5" />
+          </div>
+          <div>
+            <h3 className="mb-1 font-bold tracking-tight">Plans are per guild</h3>
+            <p className="text-sm text-[var(--color-muted-foreground)]">
+              A subscription applies to a single Discord server. Each guild you manage has its own plan —
+              upgrade them independently from each guild&rsquo;s dashboard.
+            </p>
+          </div>
+        </div>
       </section>
 
       {/* ── Final CTA ─────────────────────────────────────────────────────── */}
