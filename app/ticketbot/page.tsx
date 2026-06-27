@@ -4,7 +4,7 @@ import {
   ArrowRight, KeyRound, LayoutDashboard, BarChart3, Ticket, ClipboardList,
   UserCheck, Flag, Star, Clock, FileText, MessageSquareText, Globe, Lock,
   Megaphone, Bell, Github, MessageSquare,
-  Check, X, ServerCog, RefreshCw, Terminal, RotateCcw,
+  Check, X, ServerCog, RefreshCw, Terminal, RotateCcw, Database,
 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
@@ -15,7 +15,7 @@ import { TIER_CONFIG, type Tier } from '@/lib/tiers'
 export const metadata: Metadata = {
   title: { absolute: 'Discord Ticket Bot – Self-Hosted Support Tickets | MSK Scripts' },
   description:
-    'Free, self-hosted Discord ticket bot built on Discord.js v14 & SQLite. Custom ticket types, claim system, HTML transcripts, ratings, auto-close and a hosted dashboard. Get your API key in minutes.',
+    'Free, self-hosted Discord ticket bot built on Discord.js v14 — runs on SQLite, MySQL/MariaDB or PostgreSQL. Custom ticket types, claim system, HTML transcripts, ratings, auto-close and a hosted dashboard. Get your API key in minutes.',
   keywords: [
     'Discord ticket bot', 'Discord support bot', 'self-hosted ticket bot',
     'Discord.js ticket system', 'ticket transcripts', 'open source ticket bot',
@@ -35,12 +35,12 @@ export const metadata: Metadata = {
     card:        'summary_large_image',
     title:       'Discord Ticket Bot – Self-Hosted Support Tickets',
     description:
-      'Free, self-hosted Discord ticket bot built on Discord.js v14 & SQLite — tickets, transcripts, ratings and a hosted dashboard.',
+      'Free, self-hosted Discord ticket bot built on Discord.js v14 — SQLite, MySQL or PostgreSQL, tickets, transcripts, ratings and a hosted dashboard.',
     images: ['/discord_ticketbot_banner.png'],
   },
 }
 
-const HIGHLIGHTS = ['Self-hosted', 'No telemetry', 'No external DB', 'Discord.js v14', 'German & English']
+const HIGHLIGHTS = ['Self-hosted', 'No telemetry', 'SQLite · MySQL · PostgreSQL', 'Discord.js v14', 'German & English']
 
 // ── Hub cards: Verify · Dashboard · Stats ──────────────────────────────────────
 
@@ -104,6 +104,7 @@ const FEATURES = [
   { icon: RotateCcw,         title: 'Reopen Tickets',      text: 'Reopen a closed ticket with one click or /reopen — restores access and moves it back, no need to recreate.' },
   { icon: Bell,              title: 'User Notifications',  text: 'Users can opt in to a DM when staff first replies — rate-limited to avoid spam.' },
   { icon: Megaphone,         title: 'Broadcast',           text: 'Send a single message to every open ticket channel at once.' },
+  { icon: Database,          title: 'Flexible Database',   text: 'Runs on SQLite with zero setup, or connect your own MySQL, MariaDB or PostgreSQL — with a migration script to move existing data.' },
 ]
 
 // ── Verify flow (4 steps) ───────────────────────────────────────────────────────
@@ -171,10 +172,11 @@ export default function TicketBotPage() {
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-pretty text-lg text-[var(--color-muted-foreground)] md:text-xl">
-            Self-hosted, built on Discord.js v14 and SQLite — no external
-            database, no telemetry, full feature set out of the box. Verify to
-            get your API key, run and configure your bot from the dashboard, and
-            keep an eye on the live stats.
+            Self-hosted, built on Discord.js v14 — runs on SQLite out of the
+            box or your own MySQL, MariaDB or PostgreSQL. No telemetry, full
+            feature set out of the box. Verify to get your API key, run and
+            configure your bot from the dashboard, and keep an eye on the live
+            stats.
           </p>
 
           <div className="mt-7 flex flex-wrap justify-center gap-2">
