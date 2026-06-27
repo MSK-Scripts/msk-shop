@@ -165,10 +165,17 @@ export function middleware(request: NextRequest) {
 // Middleware läuft auf allen Routen außer statischen Assets — diese liefert
 // Next.js bzw. Apache direkt aus und brauchen die Header-Pipeline nicht.
 // Prefetch-Requests werden ausgeschlossen, damit der Nonce nicht gecacht wird.
+//
+// `api/transcript/upload` ist BEWUSST ausgenommen: läuft Middleware auf einer
+// Route, puffert Next.js 15 den Request-Body (Default 10 MB) und schneidet ihn
+// darüber hinaus ab → bei Premium+-Uploads (großes Transkript + Anhänge) wird
+// der JSON-Body abgeschnitten → "Invalid JSON body". Die Route ist eine
+// Bot-API mit eigener API-Key-Auth + tier-basierten Größenlimits; CSP/Nonce
+// sind für die JSON-Antwort irrelevant. Ohne Middleware kein Body-Limit.
 export const config = {
   matcher: [
     {
-      source: '/((?!_next/static|_next/image|favicon.ico|logo.png|robots.txt|sitemap.xml).*)',
+      source: '/((?!_next/static|_next/image|favicon.ico|logo.png|robots.txt|sitemap.xml|api/transcript/upload).*)',
       missing: [
         { type: 'header', key: 'next-router-prefetch' },
         { type: 'header', key: 'purpose', value: 'prefetch' },
