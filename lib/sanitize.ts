@@ -25,6 +25,77 @@ const OPTIONS: sanitizeHtml.IOptions = {
   },
 }
 
+// ── Emoji shortcodes ────────────────────────────────────────────────────────
+// Tebex' markdown renderer does NOT convert GitHub-style `:shortcode:` emoji,
+// so they leak into the page as literal text (e.g. ":star2: The new …").
+// We map the shortcodes that actually appear in our descriptions to Unicode.
+// Unknown shortcodes are left untouched on purpose (no accidental replacements).
+const EMOJI: Record<string, string> = {
+  star2: '🌟', sparkles: '✨', clipboard: '📋', rocket: '🚀', fire: '🔥',
+  gear: '⚙️', wrench: '🔧', hammer: '🔨', lock: '🔒', key: '🔑',
+  shield: '🛡️', package: '📦', books: '📚', book: '📖', art: '🎨',
+  zap: '⚡', tada: '🎉', warning: '⚠️', bulb: '💡', gem: '💎',
+  globe_with_meridians: '🌐', computer: '💻', video_game: '🎮', car: '🚗',
+  white_check_mark: '✅', heavy_check_mark: '✔️', x: '❌', star: '⭐',
+  link: '🔗', bell: '🔔', money_with_wings: '💸', credit_card: '💳',
+  page_facing_up: '📄', wave: '👋', point_right: '👉', mag: '🔍',
+  floppy_disk: '💾', satellite: '📡', construction: '🚧', new: '🆕',
+}
+
+function replaceEmojiShortcodes(html: string): string {
+  return html.replace(/:([a-z0-9_+-]+):/gi, (full, name: string) => {
+    const emoji = EMOJI[name.toLowerCase()]
+    return emoji ?? full
+  })
+}
+
+// ── GFM pipe tables ─────────────────────────────────────────────────────────
+// Tebex does not support GitHub-flavoured pipe tables either: the whole table
+// arrives as raw pipe text inside a single <p>. We detect those paragraphs and
+// rebuild a real <table>. Cell content may already contain inline HTML (links),
+// which survives because '|' never appears inside the cells.
+function splitPipeRow(line: string): string[] {
+  // Strip a single leading/trailing pipe, then split on the remaining pipes.
+  const trimmed = line.trim().replace(/^\|/, '').replace(/\|$/, '')
+  return trimmed.split('|').map(c => c.trim())
+}
+
+const SEPARATOR_CELL = /^:?-{1,}:?$/
+
+function convertPipeTables(html: string): string {
+  return html.replace(/<p>([\s\S]*?)<\/p>/g, (full, inner: string) => {
+    const lines = inner
+      .split('\n')
+      .map(l => l.trim())
+      .filter(l => l.length > 0)
+
+    // Need at least a header row + separator row, all starting with a pipe.
+    if (lines.length < 2 || !lines.every(l => l.startsWith('|'))) return full
+
+    const sepCells = splitPipeRow(lines[1])
+    const isSeparator = sepCells.length > 0 && sepCells.every(c => SEPARATOR_CELL.test(c))
+    if (!isSeparator) return full
+
+    const headerCells = splitPipeRow(lines[0])
+    const bodyLines = lines.slice(2)
+
+    // If the header row is entirely empty (common for "spec" key/value tables),
+    // skip <thead> and render every row as a plain key/value body row.
+    const headerEmpty = headerCells.every(c => c.length === 0)
+
+    const cell = (tag: 'th' | 'td', c: string) => `<${tag}>${c}</${tag}>`
+    const row = (tag: 'th' | 'td', cells: string[]) =>
+      `<tr>${cells.map(c => cell(tag, c)).join('')}</tr>`
+
+    const thead = headerEmpty ? '' : `<thead>${row('th', headerCells)}</thead>`
+    const bodyRows = bodyLines.map(l => row('td', splitPipeRow(l))).join('')
+    const tbody = `<tbody>${bodyRows}</tbody>`
+
+    return `<table>${thead}${tbody}</table>`
+  })
+}
+
 export function sanitizeTebexHtml(html: string | null | undefined): string {
-  return sanitizeHtml(html ?? '', OPTIONS)
+  const pre = convertPipeTables(replaceEmojiShortcodes(html ?? ''))
+  return sanitizeHtml(pre, OPTIONS)
 }

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ZoomIn, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { TebexPackage } from '@/types/tebex'
 
@@ -43,6 +43,7 @@ export function PackageGallery({ media, image, alt, overlay, className }: Packag
   const images = resolveImages(media, image)
   const count = images.length
   const [index, setIndex] = useState(0)
+  const [zoomed, setZoomed] = useState(false)
   const touchStartX = useRef<number | null>(null)
 
   // Keep the index valid if the image set ever changes.
@@ -54,6 +55,23 @@ export function PackageGallery({ media, image, alt, overlay, className }: Packag
     (dir: number) => setIndex(i => (i + dir + count) % count),
     [count],
   )
+
+  // Lightbox: lock body scroll + keyboard controls (Esc to close, arrows to navigate).
+  useEffect(() => {
+    if (!zoomed) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setZoomed(false)
+      else if (e.key === 'ArrowLeft') go(-1)
+      else if (e.key === 'ArrowRight') go(1)
+    }
+    document.addEventListener('keydown', onKey)
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = prevOverflow
+    }
+  }, [zoomed, go])
 
   // ── No image → placeholder ────────────────────────────────────────────────
   if (count === 0) {
@@ -98,7 +116,8 @@ export function PackageGallery({ media, image, alt, overlay, className }: Packag
           : undefined
       }
     >
-      {/* Slides — only the active one is rendered; cross-faded via key */}
+      {/* Slides — only the active one is rendered; cross-faded via key.
+          Click opens the lightbox (button overlay keeps the image accessible). */}
       <Image
         key={images[index]}
         src={images[index]}
@@ -108,6 +127,16 @@ export function PackageGallery({ media, image, alt, overlay, className }: Packag
         sizes="(max-width: 1024px) 100vw, 66vw"
         className="animate-fade-in object-cover"
       />
+      <button
+        type="button"
+        onClick={() => setZoomed(true)}
+        aria-label="Enlarge image"
+        className="group absolute inset-0 z-10 cursor-zoom-in"
+      >
+        <span className="absolute right-3 bottom-3 flex h-8 w-8 items-center justify-center rounded-full border border-[var(--color-border)] bg-[color-mix(in_oklab,var(--color-background)_70%,transparent)] text-[var(--color-foreground)] opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100">
+          <ZoomIn className="h-4 w-4" />
+        </span>
+      </button>
 
       {multiple && (
         <>
@@ -156,6 +185,65 @@ export function PackageGallery({ media, image, alt, overlay, className }: Packag
       )}
 
       {overlay}
+
+      {/* ── Lightbox ──────────────────────────────────────────────────────── */}
+      {zoomed && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${alt} — enlarged image`}
+          onClick={() => setZoomed(false)}
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-[color-mix(in_oklab,#000_88%,transparent)] p-4 backdrop-blur-sm md:p-10"
+        >
+          {/* Close */}
+          <button
+            type="button"
+            onClick={() => setZoomed(false)}
+            aria-label="Close"
+            className="absolute right-4 top-4 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition-colors hover:bg-white/20"
+          >
+            <X className="h-5 w-5" />
+          </button>
+
+          {/* Enlarged image — stop propagation so clicks on it don't close */}
+          <div
+            className="relative h-full w-full"
+            onClick={e => e.stopPropagation()}
+          >
+            <Image
+              src={images[index]}
+              alt={multiple ? `${alt} (${index + 1}/${count})` : alt}
+              fill
+              sizes="100vw"
+              className="object-contain"
+            />
+          </div>
+
+          {multiple && (
+            <>
+              <button
+                type="button"
+                onClick={e => { e.stopPropagation(); go(-1) }}
+                aria-label="Previous image"
+                className="absolute left-4 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition-colors hover:bg-white/20"
+              >
+                <ChevronLeft className="h-6 w-6" />
+              </button>
+              <button
+                type="button"
+                onClick={e => { e.stopPropagation(); go(1) }}
+                aria-label="Next image"
+                className="absolute right-4 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition-colors hover:bg-white/20"
+              >
+                <ChevronRight className="h-6 w-6" />
+              </button>
+              <div className="absolute bottom-5 left-1/2 z-20 -translate-x-1/2 rounded-full border border-white/20 bg-white/10 px-3 py-1 font-mono text-xs font-bold tabular-nums text-white">
+                {index + 1} / {count}
+              </div>
+            </>
+          )}
+        </div>
+      )}
     </div>
   )
 }

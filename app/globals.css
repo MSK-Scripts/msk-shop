@@ -282,14 +282,34 @@
   .tebex-description table {
     width: 100%;
     border-collapse: collapse;
-    margin: 0.75rem 0;
-    font-size: 0.75rem;
+    margin: 1rem 0;
+    font-size: 0.8125rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
   }
   .tebex-description table td,
   .tebex-description table th {
     border: 1px solid var(--color-border);
-    padding: 0.375rem 0.75rem;
+    padding: 0.5rem 0.75rem;
     color: var(--color-muted-foreground);
+    text-align: left;
+    vertical-align: top;
+  }
+  .tebex-description table th {
+    background-color: var(--color-muted);
+    color: var(--color-foreground);
+    font-weight: 600;
+  }
+  /* Key/value "spec" tables (no <thead>): emphasise the first column as label. */
+  .tebex-description table tbody tr td:first-child {
+    color: var(--color-foreground);
+    font-weight: 500;
+    background-color: color-mix(in oklab, var(--color-muted) 50%, transparent);
+    white-space: nowrap;
+  }
+  .tebex-description table tr:nth-child(even) td {
+    background-color: color-mix(in oklab, var(--color-muted) 25%, transparent);
   }
 }
 
