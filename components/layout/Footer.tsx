@@ -41,6 +41,7 @@ export function Footer() {
 
   const shopLinks = [
     { label: t.footer_all_packages, href: '/packages' },
+    { label: t.footer_resource_stats, href: '/resources' },
     { label: 'Github', href: GITHUB_URL, external: true },
     { label: t.footer_documentation, href: 'https://docu.msk-scripts.de/', external: true },
   ]

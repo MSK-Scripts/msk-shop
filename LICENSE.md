@@ -1,160 +1,160 @@
 # MSK SOURCE AVAILABLE LICENSE (MSK-SAL)
-### Version 1.0 — 2026
+### Version 1.0 (2026)
 
-> **Copyright (c) 2026 MSK Scripts — All Rights Reserved.**
+> **Copyright (c) 2026 MSK Scripts. All rights reserved.**
 
-This license governs the use, access, and distribution of all source code, designs, graphics, user interfaces, logic, and any other components of every project (hereinafter referred to as "the Project") published under the **MSK-Scripts GitHub organization** ([github.com/MSK-Scripts](https://github.com/MSK-Scripts)) or by the Author under the names *musiker15* / *Moritz Kohm* — **unless the individual repository explicitly contains a different license file (`LICENSE`, `LICENSE.md`, or equivalent), in which case that repository's license takes precedence over this one.**
+This license covers the use, access and distribution of all source code, designs, graphics, user interfaces, logic and any other components of every project (from here on "the Project") published under the **MSK-Scripts GitHub organization** ([github.com/MSK-Scripts](https://github.com/MSK-Scripts)) or by the Author under the names *musiker15* / *Moritz Kohm*. The one exception is when an individual repository explicitly ships a different license file (`LICENSE`, `LICENSE.md` or something equivalent). In that case, that repository's license takes precedence over this one.
 
-This includes — by way of example, not exhaustively — the following currently maintained projects:
+That includes, as examples rather than an exhaustive list, the following projects currently being maintained:
 
 - MSK Shop / MSK Website
 - MSK Documentation
-- MSK Ticketbot (Verify / Transcript System only)
-- All related configuration files, scripts, and assets
+- MSK Ticketbot (the Verify and Transcript system only)
+- All related configuration files, scripts and assets
 
-By accessing any repository covered by this license — whether by cloning, forking, reading, or any other means — you agree to the terms and conditions set forth below.
+By accessing any repository covered by this license, whether you clone it, fork it, read it or reach it in any other way, you agree to the terms and conditions below.
 
 📄 [License (EN)](LICENSE.md) · [License (DE)](LICENSE_DE.md)
 
 ---
 
-## § 1 — Definitions
+## § 1 Definitions
 
 | Term | Definition |
 |---|---|
-| **Author** | MSK Scripts and any named contributors who have been explicitly acknowledged in writing as authors. |
-| **The Project** | All source code, configurations, designs, texts, graphics, data structures, and other content contained in this repository. |
-| **Protected Components** | Specifically including, but not limited to: (a) the visual design, (b) the Verify System, (c) the Dashboard, (d) the database structure & API architecture, (e) all proprietary algorithms and business logic. |
-| **Use** | Any form of access, reading, copying, executing, modifying, distributing, or deriving. |
+| **Author** | MSK Scripts and any named contributors who have been explicitly recognized in writing as authors. |
+| **The Project** | All source code, configurations, designs, texts, graphics, data structures and other content contained in this repository. |
+| **Protected Components** | Including in particular, but not limited to: (a) the visual design, (b) the Verify System, (c) the Dashboard, (d) the database structure and API architecture, (e) all proprietary algorithms and business logic. |
+| **Use** | Any form of access, reading, copying, executing, modifying, distributing or deriving. |
 | **Third Parties** | Any natural or legal person other than the Author. |
-| **Commercial Use** | Any use that directly or indirectly aims at financial compensation, profit, or business advantage. |
+| **Commercial Use** | Any use that directly or indirectly aims at financial compensation, profit or business advantage. |
 
 ---
 
-## § 2 — Granted Rights
+## § 2 Granted Rights
 
-Subject to the restrictions in § 3, the Author grants you a **limited, non-exclusive, non-transferable, revocable right** to:
+Subject to the restrictions in § 3, the Author grants you a **limited, non-exclusive, non-transferable and revocable right** to:
 
 - **(a)** read and view the source code;
-- **(b)** run the Project locally on your own device solely for private, non-commercial study purposes;
+- **(b)** run the Project locally on your own device, solely for private, non-commercial study;
 - **(c)** submit issues (bug reports) in the official repository;
-- **(d)** submit pull requests that explicitly benefit the Project — whereby all submitted contributions transfer fully to the Author (see § 5).
+- **(d)** submit pull requests that clearly benefit the Project, whereby every submitted contribution transfers in full to the Author (see § 5).
 
 ---
 
-## § 3 — Prohibited Actions
+## § 3 Prohibited Actions
 
-Without the express, written permission of the Author, the following actions are expressly **PROHIBITED**:
+Without the express, written permission of the Author, the following are expressly **PROHIBITED**:
 
 ### 3.1 Copying & Reproduction
-Any complete or partial reproduction of the source code, designs, user interfaces, or logic — regardless of whether it is verbatim or in modified form.
+Any full or partial reproduction of the source code, designs, user interfaces or logic, whether verbatim or in modified form.
 
 ### 3.2 Derivative Works
-The creation of works that are based on, derived from, or contain substantial portions of the Project, including restructurings, translations, or ports to other programming languages.
+Creating works that are based on, derived from or that contain substantial parts of the Project, including restructurings, translations or ports to other programming languages.
 
 ### 3.3 Public Operation
-The public operation, hosting, or provision of the Project or substantial parts thereof as a service, bot, website, API, or in any other form to third parties — regardless of whether free of charge or paid.
+Publicly running, hosting or providing the Project or substantial parts of it as a service, bot, website, API or in any other form to third parties, whether free of charge or paid.
 
 ### 3.4 Commercial Exploitation
 Any commercial use, in particular:
-- (a) selling, licensing, or renting the Project or parts thereof,
-- (b) incorporating it into paid products or services,
-- (c) monetizing through advertising, subscriptions, or donations based on the Project without express consent.
+- (a) selling, licensing or renting the Project or parts of it,
+- (b) building it into paid products or services,
+- (c) monetizing it through advertising, subscriptions or donations based on the Project without express consent.
 
 ### 3.5 Distribution & Redistribution
-The distribution of source code, binaries, configurations, or other components to third parties — neither publicly nor privately.
+Passing the source code, binaries, configurations or any other components on to third parties, whether publicly or privately.
 
 ### 3.6 Design Imitation
-The deliberate imitation, copying, or recreation of the visual design, UI layouts, color schemes, animations, or other aesthetic elements of the Protected Components — even if no source code is directly copied.
+Deliberately imitating, copying or recreating the visual design, UI layouts, color schemes, animations or other aesthetic elements of the Protected Components, even when no source code is copied directly.
 
 ### 3.7 Reverse Engineering
-The reverse engineering, decompilation, or analysis of the Project with the aim of reproducing the underlying algorithms, structures, or business logic for one's own purposes.
+Reverse engineering, decompiling or analyzing the Project in order to reproduce the underlying algorithms, structures or business logic for your own purposes.
 
 ### 3.8 Removal of Copyright Notices
-The removal, concealment, or alteration of copyright notices, license notices, or attribution information in any project files.
+Removing, hiding or altering copyright notices, license notices or attribution information in any of the project files.
 
 ### 3.9 Transfer of Rights
-The transfer, sublicensing, or assignment of the rights granted under § 2 to third parties.
+Transferring, sublicensing or assigning the rights granted under § 2 to third parties.
 
 ---
 
-## § 4 — Special Protection of Protected Components
+## § 4 Special Protection of Protected Components
 
-The following components of the Project enjoy **special protection** and may under no circumstances be used, copied, imitated, or integrated into third-party products without individual written permission from the Author:
+The following parts of the Project enjoy **special protection**. Under no circumstances may they be used, copied, imitated or built into third-party products without individual written permission from the Author:
 
 ### 4.1 MSK Verify System
-The entire verification system of the MSK Ticketbot, including verification logic, user flow, data processing, database structure, and visual representation.
+The entire verification system of the MSK Ticketbot, including its verification logic, user flow, data processing, database structure and visual presentation.
 
 ### 4.2 MSK Dashboard
-The administrative dashboard of the MSK Ticketbot, including all views, controls, data visualizations, API endpoints, and the underlying architecture.
+The administrative dashboard of the MSK Ticketbot, including all views, controls, data visualizations, API endpoints and the underlying architecture.
 
 ### 4.3 MSK Shop Design
-The complete visual appearance of the MSK Shop, including product presentation, UI components, and animations.
+The complete visual appearance of the MSK Shop, including its product presentation, UI components and animations.
 
 ### 4.4 MSK Website Design
-The complete visual appearance of the MSK Website, including page structures, navigation concepts, typography, and media usage.
+The complete visual appearance of the MSK Website, including its page structures, navigation concepts, typography and use of media.
 
-> ⚠️ Any violation of these special protection provisions entitles the Author to immediately initiate legal proceedings and claim damages.
+> ⚠️ Any violation of these special protection provisions entitles the Author to start legal proceedings immediately and to claim damages.
 
 ---
 
-## § 5 — Contributions
+## § 5 Contributions
 
-If you submit a contribution (e.g., pull request, patch, code suggestion):
+If you submit a contribution (for example a pull request, patch or code suggestion):
 
-- **(a)** you irrevocably, worldwide, royalty-free, and non-exclusively grant the Author all rights to your contribution, including the right to use, modify, publish, and commercially exploit it;
+- **(a)** you grant the Author, irrevocably, worldwide, royalty-free and non-exclusively, all rights to your contribution, including the right to use, modify, publish and commercially exploit it;
 - **(b)** you confirm that you are entitled to grant these rights and that your contribution does not infringe any third-party rights;
-- **(c)** you do not acquire any license or ownership rights to the Project itself beyond the rights described in § 2 through your contribution.
+- **(c)** your contribution does not earn you any license or ownership rights to the Project itself beyond the rights described in § 2.
 
 ---
 
-## § 6 — Disclaimer of Warranties & Liability
+## § 6 Disclaimer of Warranties & Liability
 
-> **THE PROJECT IS PROVIDED "AS IS"**, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT OF THIRD-PARTY RIGHTS.
+> **THE PROJECT IS PROVIDED "AS IS"**, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE OR NON-INFRINGEMENT OF THIRD-PARTY RIGHTS.
 >
-> IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES (INCLUDING BUT NOT LIMITED TO LOSS OF DATA, LOSS OF PROFITS, OR BUSINESS INTERRUPTION) ARISING OUT OF OR IN CONNECTION WITH THE USE OR INABILITY TO USE THE PROJECT — EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+> IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL OR CONSEQUENTIAL DAMAGES (INCLUDING BUT NOT LIMITED TO LOSS OF DATA, LOSS OF PROFITS OR BUSINESS INTERRUPTION) ARISING OUT OF OR IN CONNECTION WITH THE USE OR INABILITY TO USE THE PROJECT, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
 
 ---
 
-## § 7 — License Violations & Enforcement
+## § 7 License Violations & Enforcement
 
-- **7.1** Upon any violation of this license, all rights granted under § 2 shall **terminate automatically and without notice**.
-- **7.2** The Author reserves the right, in the event of license violations, to: (a) assert injunctive relief, (b) claim damages — including lost profits, (c) demand the removal of infringing content from platforms, (d) pursue further legal action under applicable law.
-- **7.3** Failure to pursue a violation does not constitute a waiver of the right to pursue it at a later time.
-
----
-
-## § 8 — Governing Law & Jurisdiction
-
-- **8.1** This license shall be governed by and construed in accordance with the laws of the **Federal Republic of Germany**, excluding the UN Convention on Contracts for the International Sale of Goods (CISG).
-- **8.2** The exclusive place of jurisdiction for all disputes arising from or in connection with this license shall be — to the extent permitted by law — the Author's place of residence or business.
-- **8.3** Should any provision of this license be or become wholly or partially invalid or unenforceable, the validity of the remaining provisions shall remain unaffected. The invalid provision shall be replaced by a valid provision that most closely achieves the economic purpose of the original **(Severability Clause)**.
+- **7.1** On any violation of this license, all rights granted under § 2 **terminate automatically and without notice**.
+- **7.2** In the event of a violation, the Author reserves the right to: (a) seek injunctive relief, (b) claim damages, including lost profits, (c) demand the removal of the infringing content from any platform, (d) pursue further legal action under applicable law.
+- **7.3** Not pursuing a violation does not waive the right to pursue it later.
 
 ---
 
-## § 9 — Licensing Inquiries
+## § 8 Governing Law & Jurisdiction
 
-For commercial licenses, collaborations, white-label requests, or any use beyond the scope of § 2, please contact:
+- **8.1** This license is governed by and construed under the laws of the **Federal Republic of Germany**, excluding the UN Convention on Contracts for the International Sale of Goods (CISG).
+- **8.2** As far as the law allows, the exclusive place of jurisdiction for any dispute arising from or in connection with this license is the Author's place of residence or business.
+- **8.3** Should any provision of this license be or become wholly or partly invalid or unenforceable, the remaining provisions stay valid. The invalid provision is replaced by a valid one that comes closest to its economic purpose **(severability clause)**.
 
-> **Contact:** `info@msk-scripts.de`  
+---
+
+## § 9 Licensing Inquiries
+
+For commercial licenses, collaborations, white-label requests or any use beyond the scope of § 2, please get in touch:
+
+> **Contact:** `info@msk-scripts.de`
 > **Subject:** `MSK License Request`
 
-Requests are typically answered within 7 business days.
+Requests are usually answered within 7 business days.
 
 ---
 
-## § 10 — Amendments to this License
+## § 10 Amendments to this License
 
-The Author reserves the right to update this license at any time. The most current version is available in the repository under the path `LICENSE.md`. For already concluded usage agreements, the version valid at the time of conclusion shall apply.
+The Author may update this license at any time. The current version is always available in the repository at `LICENSE.md`. For usage agreements that have already been concluded, the version that was valid at the time of conclusion applies.
 
 ---
 
 <div align="center">
 
-**Copyright (c) 2026 MSK Scripts — All Rights Reserved.**
+**Copyright (c) 2026 MSK Scripts. All rights reserved.**
 
-*This project is not an open-source project.*  
-*The source code is viewable, but not freely usable.*  
-*"Source Available" ≠ "Open Source"*
+*This is not an open-source project.*
+*You can read the source, but you cannot use it freely.*
+*"Source Available" is not "Open Source".*
 
 </div>

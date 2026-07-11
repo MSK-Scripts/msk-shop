@@ -69,6 +69,7 @@ const NAV_ITEMS_SECONDARY: NavItem[] = [
       { label: 'Statistics', href: '/giveaway/stats' },
     ],
   },
+  { label: 'Resource Stats', href: '/resources' },
   { label: 'Documentation', href: 'https://docu.msk-scripts.de' },
 ]
 
@@ -87,10 +88,11 @@ function HeaderInner() {
   // Nav-Labels übersetzen; Marken-/Produktnamen (Ticket Bot, Giveaway Bot,
   // Dashboard) bleiben bewusst unverändert (kein Mapping-Eintrag → Fallback).
   const navLabel = (label: string): string => ({
-    'Home':          t.nav_home,
-    'Verify':        t.nav_verify,
-    'Statistics':    t.nav_statistics,
-    'Documentation': t.nav_documentation,
+    'Home':           t.nav_home,
+    'Verify':         t.nav_verify,
+    'Statistics':     t.nav_statistics,
+    'Resource Stats': t.nav_resources,
+    'Documentation':  t.nav_documentation,
   } as Record<string, string>)[label] ?? label
 
   const pathname = usePathname()
