@@ -386,6 +386,16 @@ Unsere Startseite zeigt die aktuelle Online-Mitgliederzahl unseres Discord-Serve
 
 ---
 
+## Resource-Statistiken (fivestats.io)
+
+Die öffentliche Seite unter **www.msk-scripts.de/resources** zeigt die Live-Verbreitung unserer FiveM-Ressourcen, also die Anzahl der Server, die eine Ressource nutzen, deren Rang und einen 7-Tage-Trend. Diese Zahlen stammen vom Drittanbieter-Dienst **fivestats.io** (betrieben von fivestats.io).
+
+Der Abruf erfolgt ausschließlich **server-seitig**. Unser Server fragt bei fivestats.io die Statistiken zu unseren eigenen Ressourcen ab und zeigt sie an. Ihr Browser verbindet sich dabei zu **keinem** Zeitpunkt direkt mit fivestats.io. Es werden **keine** personenbezogenen Daten von Ihnen an fivestats.io übermittelt, weder Ihre IP-Adresse noch Cookies oder sonstige Kennungen. Übertragen werden lediglich die Namen unserer eigenen Ressourcen sowie unser API-Schlüssel; die Antwort besteht aus aggregierten Server-Zahlen ohne Personenbezug. Das Ergebnis wird für kurze Zeit auf unserem Server zwischengespeichert.
+
+**Rechtsgrundlage:** Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an der Darstellung der Verbreitung unserer Ressourcen; es werden keine personenbezogenen Daten übermittelt).
+
+---
+
 ## Speicherdauer
 
 | Daten | Speicherdauer |

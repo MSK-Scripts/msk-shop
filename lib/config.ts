@@ -74,7 +74,7 @@ export const PACKAGE_TAGS: Record<number, string[]> = {
 // Set enabled: false to hide it completely.
 
 export const NEWS_POPUP = {
-  enabled: true,
+  enabled: false,
 
   title: 'Discord Ticket Bot',
 

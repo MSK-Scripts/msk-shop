@@ -386,6 +386,16 @@ Our homepage displays the current online member count of our Discord server. The
 
 ---
 
+## Resource Statistics (fivestats.io)
+
+The public page at **www.msk-scripts.de/resources** shows the live adoption of our FiveM resources, meaning the number of servers running a resource, its rank and a 7-day trend. These figures come from the third-party service **fivestats.io** (operated by fivestats.io).
+
+The data is fetched **server-side only**. Our server queries fivestats.io for statistics about our own resources and displays them. Your browser never connects to fivestats.io directly. **No** personal data of yours is transmitted to fivestats.io, neither your IP address nor cookies or any other identifiers. Only the names of our own resources and our API key are sent, and the response consists of aggregated server counts with no personal reference. The result is briefly cached on our server.
+
+**Legal basis:** Art. 6(1)(f) GDPR (legitimate interest in showing the adoption of our resources; no personal data is transmitted).
+
+---
+
 ## Storage Period
 
 | Data | Storage period |
