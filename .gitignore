@@ -6,6 +6,9 @@ node_modules/
 out/
 next-env.d.ts
 
+# Test coverage output
+coverage/
+
 # Environment variables — NEVER commit these
 .env
 .env.local
