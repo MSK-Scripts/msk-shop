@@ -1,11 +1,12 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import { Loader2, AlertCircle, Gift, Undo2 } from 'lucide-react'
+import { Loader2, AlertCircle, Gift, Undo2, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { StatusBadge } from './StatusBadge'
+import { selectClass } from './styles'
 
 interface Payment {
   id:       string
@@ -18,9 +19,19 @@ interface Payment {
   packages: { name: string }[]
 }
 
+interface CatalogPackage { id: number; name: string }
+
+const PAGE_SIZES = [10, 25, 50, 100]
+
 export default function PaymentsTab({ canCreate, canRefund }: { canCreate: boolean; canRefund: boolean }) {
   const [payments, setPayments] = useState<Payment[] | null>(null)
   const [error, setError]       = useState<string | null>(null)
+
+  const [catalog, setCatalog]   = useState<CatalogPackage[]>([])
+
+  // pagination
+  const [pageSize, setPageSize] = useState(25)
+  const [page, setPage]         = useState(1)
 
   // "Give package" modal state
   const [showGive, setShowGive]     = useState(false)
@@ -51,6 +62,17 @@ export default function PaymentsTab({ canCreate, canRefund }: { canCreate: boole
   }, [])
 
   useEffect(() => { load() }, [load])
+
+  // Load the package list for the picker (only if the user can give packages).
+  useEffect(() => {
+    if (!canCreate) return
+    let cancelled = false
+    fetch('/api/admin/catalog')
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (!cancelled && d) setCatalog(d.packages as CatalogPackage[]) })
+      .catch(() => { /* picker just stays empty */ })
+    return () => { cancelled = true }
+  }, [canCreate])
 
   const givePackage = async () => {
     if (submitting) return
@@ -98,6 +120,12 @@ export default function PaymentsTab({ canCreate, canRefund }: { canCreate: boole
     }
   }
 
+  const total      = payments?.length ?? 0
+  const totalPages = Math.max(1, Math.ceil(total / pageSize))
+  const current    = Math.min(page, totalPages)
+  const start      = (current - 1) * pageSize
+  const pageItems  = payments ? payments.slice(start, start + pageSize) : []
+
   return (
     <div className="space-y-4">
       {canCreate && (
@@ -140,7 +168,7 @@ export default function PaymentsTab({ canCreate, canRefund }: { canCreate: boole
                 </tr>
               </thead>
               <tbody>
-                {payments.map(p => (
+                {pageItems.map(p => (
                   <tr key={p.id} className="border-b border-[var(--color-border)] last:border-0">
                     <td className="whitespace-nowrap px-4 py-3">{p.date}</td>
                     <td className="px-4 py-3">{p.player?.name ?? '—'}</td>
@@ -149,8 +177,8 @@ export default function PaymentsTab({ canCreate, canRefund }: { canCreate: boole
                     <td className="px-4 py-3"><StatusBadge status={p.status} /></td>
                     <td className="px-4 py-3 text-[var(--color-muted-foreground)]">{p.email}</td>
                     {canRefund && (
-                      <td className="px-4 py-3 text-right">
-                        {p.status.toLowerCase() === 'complete' && (
+                      <td className="whitespace-nowrap px-4 py-3 text-right">
+                        {String(p.status).toLowerCase() === 'complete' && (
                           <Button variant="outline" size="sm" onClick={() => refund(p.id)} disabled={refundingId !== null}>
                             {refundingId === p.id
                               ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -163,6 +191,31 @@ export default function PaymentsTab({ canCreate, canRefund }: { canCreate: boole
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* Pagination */}
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--color-border)] px-4 py-3 text-sm">
+            <div className="flex items-center gap-2">
+              <span className="text-[var(--color-muted-foreground)]">Rows per page:</span>
+              <select
+                value={pageSize}
+                onChange={e => { setPageSize(Number(e.target.value)); setPage(1) }}
+                className="rounded-md border border-[var(--color-border)] bg-[var(--color-muted)] px-2 py-1 text-sm outline-none focus:border-[var(--color-primary)]"
+              >
+                {PAGE_SIZES.map(n => <option key={n} value={n}>{n}</option>)}
+              </select>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-[var(--color-muted-foreground)]">
+                {start + 1}–{Math.min(start + pageSize, total)} of {total}
+              </span>
+              <Button variant="outline" size="sm" disabled={current <= 1} onClick={() => setPage(current - 1)}>
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <Button variant="outline" size="sm" disabled={current >= totalPages} onClick={() => setPage(current + 1)}>
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </Card>
       )}
@@ -181,8 +234,11 @@ export default function PaymentsTab({ canCreate, canRefund }: { canCreate: boole
                 <Input value={ign} onChange={e => setIgn(e.target.value)} placeholder="Notch" className="mt-1" />
               </div>
               <div>
-                <label className="text-sm font-medium">Package ID</label>
-                <Input value={packageId} onChange={e => setPackageId(e.target.value)} inputMode="numeric" placeholder="123456" className="mt-1" />
+                <label className="text-sm font-medium">Package</label>
+                <select value={packageId} onChange={e => setPackageId(e.target.value)} className={`mt-1 ${selectClass}`}>
+                  <option value="">Select a package…</option>
+                  {catalog.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                </select>
               </div>
               <div>
                 <label className="text-sm font-medium">Price</label>
@@ -196,7 +252,7 @@ export default function PaymentsTab({ canCreate, canRefund }: { canCreate: boole
             {formError && <p className="mt-3 text-sm text-[var(--color-danger)]">{formError}</p>}
             <div className="mt-5 flex justify-end gap-2">
               <Button variant="outline" onClick={closeGive} disabled={submitting}>Cancel</Button>
-              <Button onClick={givePackage} disabled={submitting || !ign.trim() || !packageId.trim()}>
+              <Button onClick={givePackage} disabled={submitting || !ign.trim() || !packageId}>
                 {submitting && <Loader2 className="h-4 w-4 animate-spin" />} Create
               </Button>
             </div>

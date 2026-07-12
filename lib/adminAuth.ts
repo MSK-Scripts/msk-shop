@@ -59,7 +59,7 @@ export type AdminAuthResult =
  */
 export async function authorizeAdmin(
   sessionToken: string | undefined,
-  required?: AdminPermission,
+  required?: AdminPermission | AdminPermission[],
 ): Promise<AdminAuthResult> {
   if (!sessionToken) return { ok: false, status: 401 };
 
@@ -69,8 +69,12 @@ export async function authorizeAdmin(
   const member = await loadAdminMember(session.discordUserId);
   if (!member) return { ok: false, status: 401 };
 
-  if (required && !memberHasPermission(member, required)) {
-    return { ok: false, status: 403 };
+  if (required) {
+    // Array = "any of these permissions"; single = that permission.
+    const perms = Array.isArray(required) ? required : [required];
+    if (!perms.some(p => memberHasPermission(member, p))) {
+      return { ok: false, status: 403 };
+    }
   }
   return { ok: true, member };
 }

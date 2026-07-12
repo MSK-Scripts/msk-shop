@@ -52,6 +52,9 @@ export default function BansTab() {
 
   return (
     <div className="space-y-4">
+      <p className="text-sm text-[var(--color-muted-foreground)]">
+        Note: Tebex&apos;s API can create and list bans but cannot lift them. To remove a ban, use the Tebex control panel.
+      </p>
       <Card className="p-6">
         <h3 className="text-lg font-bold tracking-tight">Ban a player</h3>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">

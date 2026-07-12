@@ -22,7 +22,7 @@ interface AdminCtx<P> {
  * cookies that is what provides the CSRF protection.
  */
 export function adminRoute<P = Record<string, string>>(
-  perm: AdminPermission,
+  perm: AdminPermission | AdminPermission[],
   handler: (ctx: AdminCtx<P>) => Promise<NextResponse>,
 ) {
   // `context` is typed required (Next's route validator rejects `| undefined`),

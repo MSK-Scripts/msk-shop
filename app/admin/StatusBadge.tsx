@@ -1,8 +1,9 @@
 import { cn } from '@/lib/utils'
 
 /** Colored badge for a Tebex payment status (complete / refund / chargeback / …). */
-export function StatusBadge({ status }: { status: string }) {
-  const s = status.toLowerCase()
+export function StatusBadge({ status }: { status: unknown }) {
+  const label = String(status ?? '')
+  const s = label.toLowerCase()
   const color =
     s === 'complete'
       ? 'border-[var(--color-primary)]/30 bg-[var(--color-primary)]/10 text-[var(--color-primary)]'
@@ -11,7 +12,7 @@ export function StatusBadge({ status }: { status: string }) {
         : 'border-[var(--color-border)] bg-[var(--color-muted)] text-[var(--color-muted-foreground)]'
   return (
     <span className={cn('inline-block rounded-full border px-2.5 py-0.5 text-xs font-semibold capitalize', color)}>
-      {status}
+      {label}
     </span>
   )
 }

@@ -5,25 +5,29 @@ import { Loader2, AlertCircle, Trash2 } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { selectClass } from './styles'
 
 interface Coupon {
   id:        number
   code:      string
   discount:  { type: string; percentage: number; value: number }
   effective: { type: string }
+  expire?:   { expire_never?: boolean; date?: string | null }
 }
 
-const selectClass =
-  'w-full rounded-md border border-[var(--color-border)] bg-[var(--color-muted)] px-3 py-2.5 text-sm text-[var(--color-foreground)] outline-none focus:border-[var(--color-primary)]'
+interface CatalogItem { id: number; name: string }
 
 export default function CouponsTab() {
   const [coupons, setCoupons]         = useState<Coupon[] | null>(null)
   const [error, setError]             = useState<string | null>(null)
+  const [packages, setPackages]       = useState<CatalogItem[]>([])
+  const [categories, setCategories]   = useState<CatalogItem[]>([])
+
   const [code, setCode]               = useState('')
   const [discountType, setDiscountType] = useState<'percentage' | 'value'>('percentage')
   const [amount, setAmount]           = useState('')
   const [effectiveOn, setEffectiveOn] = useState<'cart' | 'package' | 'category'>('cart')
-  const [ids, setIds]                 = useState('')
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [busy, setBusy]               = useState(false)
   const [formError, setFormError]     = useState<string | null>(null)
 
@@ -38,6 +42,16 @@ export default function CouponsTab() {
   }, [])
   useEffect(() => { load() }, [load])
 
+  // Catalog for the package/category picker.
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/admin/catalog')
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (!cancelled && d) { setPackages(d.packages); setCategories(d.categories) } })
+      .catch(() => { /* pickers stay empty */ })
+    return () => { cancelled = true }
+  }, [])
+
   const create = async () => {
     if (busy) return
     setBusy(true); setFormError(null)
@@ -45,11 +59,11 @@ export default function CouponsTab() {
       const r = await fetch('/api/admin/coupons', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ code: code.trim(), discountType, amount: Number(amount), effectiveOn, ids }),
+        body:    JSON.stringify({ code: code.trim(), discountType, amount: Number(amount), effectiveOn, ids: selectedIds.join(',') }),
       })
       const d = await r.json()
       if (!r.ok) throw new Error(d.error ?? 'Failed to create coupon.')
-      setCode(''); setAmount(''); setIds(''); setEffectiveOn('cart')
+      setCode(''); setAmount(''); setSelectedIds([]); setEffectiveOn('cart')
       await load()
     } catch (e) { setFormError(e instanceof Error ? e.message : 'Failed to create coupon.') }
     finally { setBusy(false) }
@@ -64,6 +78,8 @@ export default function CouponsTab() {
       await load()
     } catch (e) { window.alert(e instanceof Error ? e.message : 'Delete failed.') }
   }
+
+  const options = effectiveOn === 'package' ? packages : categories
 
   return (
     <div className="space-y-4">
@@ -87,7 +103,7 @@ export default function CouponsTab() {
           </div>
           <div>
             <label className="text-sm font-medium">Applies to</label>
-            <select value={effectiveOn} onChange={e => setEffectiveOn(e.target.value as 'cart' | 'package' | 'category')} className={`mt-1 ${selectClass}`}>
+            <select value={effectiveOn} onChange={e => { setEffectiveOn(e.target.value as 'cart' | 'package' | 'category'); setSelectedIds([]) }} className={`mt-1 ${selectClass}`}>
               <option value="cart">Whole cart</option>
               <option value="package">Package(s)</option>
               <option value="category">Category(ies)</option>
@@ -95,8 +111,16 @@ export default function CouponsTab() {
           </div>
           {effectiveOn !== 'cart' && (
             <div className="sm:col-span-2">
-              <label className="text-sm font-medium">{effectiveOn === 'package' ? 'Package' : 'Category'} IDs (comma separated)</label>
-              <Input value={ids} onChange={e => setIds(e.target.value)} placeholder="123, 456" className="mt-1" />
+              <label className="text-sm font-medium">Select {effectiveOn === 'package' ? 'package(s)' : 'category(ies)'}</label>
+              <select
+                multiple
+                value={selectedIds}
+                onChange={e => setSelectedIds(Array.from(e.target.selectedOptions, o => o.value))}
+                className={`mt-1 h-40 ${selectClass}`}
+              >
+                {options.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
+              </select>
+              <p className="mt-1 text-xs text-[var(--color-muted-foreground)]">Hold Ctrl/Cmd to select more than one.</p>
             </div>
           )}
         </div>
@@ -133,6 +157,7 @@ export default function CouponsTab() {
                   <th className="px-4 py-3 font-medium">Code</th>
                   <th className="px-4 py-3 font-medium">Discount</th>
                   <th className="px-4 py-3 font-medium">Applies to</th>
+                  <th className="px-4 py-3 font-medium">Expires</th>
                   <th className="px-4 py-3 font-medium" />
                 </tr>
               </thead>
@@ -144,6 +169,9 @@ export default function CouponsTab() {
                       {c.discount?.type === 'percentage' ? `${c.discount.percentage}%` : c.discount?.value}
                     </td>
                     <td className="px-4 py-3 capitalize">{c.effective?.type ?? '—'}</td>
+                    <td className="whitespace-nowrap px-4 py-3 text-[var(--color-muted-foreground)]">
+                      {c.expire?.expire_never ? 'Never' : (c.expire?.date || '—')}
+                    </td>
                     <td className="px-4 py-3 text-right">
                       <Button variant="outline" size="sm" onClick={() => remove(c.id)}>
                         <Trash2 className="h-3.5 w-3.5" /> Delete
