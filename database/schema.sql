@@ -113,3 +113,43 @@ CREATE INDEX IF NOT EXISTS idx_guilds_api_key      ON ticketbot_guilds(api_key);
 CREATE INDEX IF NOT EXISTS idx_guilds_discord_user ON ticketbot_guilds(discord_user_id);
 CREATE INDEX IF NOT EXISTS idx_guilds_stripe_cust  ON ticketbot_guilds(stripe_customer_id);
 CREATE INDEX IF NOT EXISTS idx_giveaway_results_guild ON giveaway_results(guild_id);
+
+-- ============================================================
+-- Admin Dashboard – team allowlist + audit log
+-- Powers the self-hosted Tebex admin dashboard (Discord login + own Discord-ID
+-- permission system). See docs/ADMIN_DASHBOARD_PLAN.md and
+-- docs/TEBEX_API_REFERENCE.md. Tebex team accounts are NOT involved — this is
+-- our own access layer in front of the Tebex Plugin API.
+-- ============================================================
+
+-- Who may log into /admin and what they may do. Permissions are a JSON array of
+-- the permission strings defined in lib/adminPerms.ts. is_owner = 1 implies all
+-- permissions and must not be strippable by others.
+CREATE TABLE IF NOT EXISTS msk_admin_team (
+    discord_user_id  VARCHAR(32)  NOT NULL PRIMARY KEY,
+    display_name     VARCHAR(100) NULL,
+    is_owner         TINYINT(1)   NOT NULL DEFAULT 0,
+    permissions      JSON         NOT NULL,
+    active           TINYINT(1)   NOT NULL DEFAULT 1,
+    created_at       TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_by       VARCHAR(32)  NULL
+);
+
+-- Append-only record of every write action performed in the admin dashboard.
+CREATE TABLE IF NOT EXISTS msk_admin_audit (
+    id               BIGINT AUTO_INCREMENT PRIMARY KEY,
+    discord_user_id  VARCHAR(32)  NOT NULL,
+    action           VARCHAR(64)  NOT NULL,   -- e.g. "payment.create_free", "coupon.delete"
+    target           VARCHAR(190) NULL,       -- txn id / coupon id / username, …
+    detail           JSON         NULL,
+    created_at       TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_admin_audit_created ON msk_admin_audit(created_at);
+CREATE INDEX IF NOT EXISTS idx_admin_audit_user    ON msk_admin_audit(discord_user_id);
+
+-- Seed the owner once. Replace <OWNER_DISCORD_ID> with ADMIN_OWNER_DISCORD_ID.
+-- (Automating this from the env var is done at app boot; this is the manual form.)
+--   INSERT INTO msk_admin_team (discord_user_id, display_name, is_owner, permissions, active)
+--   VALUES ('<OWNER_DISCORD_ID>', 'Owner', 1, JSON_ARRAY(), 1)
+--   ON DUPLICATE KEY UPDATE is_owner = 1, active = 1;
