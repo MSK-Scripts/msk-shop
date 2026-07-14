@@ -3,6 +3,7 @@ import { authorizeGuild }         from '@/lib/dashboardAuth';
 import { readFile, writeFile, copyFile, access } from 'fs/promises';
 import { join, resolve }          from 'path';
 import { parse as parseJsonc, type ParseError } from 'jsonc-parser';
+import { validateBotConfig } from '@/lib/botconfig/validateConfig';
 
 // Explicit mapping: URL parameter → actual filename on disk.
 // The filename NEVER comes from user input — only the key is user-supplied,
@@ -237,9 +238,20 @@ export async function PUT(req: NextRequest) {
     // ── Content validation per file type ─────────────────────────────────────
     if (fileKey === 'config' || fileKey === 'snippet') {
       const errors: ParseError[] = [];
-      parseJsonc(content, errors, { allowTrailingComma: true });
+      const parsed = parseJsonc(content, errors, { allowTrailingComma: true });
       if (errors.length > 0) {
         return NextResponse.json({ error: 'Syntaxfehler in der JSONC-Datei' }, { status: 400 });
+      }
+      // Semantic backstop (mirrors the bot's validateConfig): even a raw
+      // file-mode save must never ship a config that crashes the bot on restart.
+      if (fileKey === 'config') {
+        const blocking = validateBotConfig(parsed).filter(i => i.severity === 'error');
+        if (blocking.length > 0) {
+          return NextResponse.json(
+            { error: 'Invalid configuration', detail: blocking.map(i => i.message.en).join('\n') },
+            { status: 400 },
+          );
+        }
       }
     } else if (fileKey === 'env') {
       const invalid = content.split('\n').some(line => {

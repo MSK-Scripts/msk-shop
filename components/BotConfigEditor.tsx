@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import CodeMirror from '@uiw/react-codemirror'
 import { json } from '@codemirror/lang-json'
 import { EditorView } from '@codemirror/view'
@@ -10,6 +10,11 @@ import {
   Play, Square, RotateCcw, Terminal, Download, X, ScrollText, Activity,
 } from 'lucide-react'
 import { dashboardTranslations, type Lang } from '@/lib/i18n'
+import ConfigForm, { type FormFile } from './botconfig/ConfigForm'
+import EnvEditor from './botconfig/EnvEditor'
+import ModeSwitch, { type ViewMode } from './botconfig/ModeSwitch'
+import { safeParse } from '@/lib/botconfig/jsoncEdit'
+import { validateBotConfig, type SemanticIssue } from '@/lib/botconfig/validateConfig'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -181,6 +186,7 @@ export default function BotConfigEditor({ lang, nonce, guildId }: { lang: Lang; 
   const [loadingSave, setLoadingSave]   = useState(false)
   const [editorMsg, setEditorMsg]       = useState<Msg | null>(null)
   const [localeMeta, setLocaleMeta]     = useState<LocaleMeta | null>(null)
+  const [viewMode, setViewMode]         = useState<ViewMode>('form')
 
   // CSP nonce for CodeMirror's runtime-injected <style> elements. The server
   // passes a `nonce` prop, but on SOFT navigation that value is stale: the
@@ -224,6 +230,19 @@ export default function BotConfigEditor({ lang, nonce, guildId }: { lang: Lang; 
 
   const isDirty = content !== savedContent
 
+  // Form mode is available for every file except locales (raw only).
+  const formAvailable = activeFile !== 'locale'
+  const effectiveMode: ViewMode = formAvailable ? viewMode : 'file'
+
+  // Semantic issues (mirrored from the bot's validateConfig) — used to show
+  // inline field errors and to block Save in form mode before a bad config can
+  // reach the bot. Only config.jsonc is semantically validated.
+  const configIssues = useMemo<SemanticIssue[]>(
+    () => (activeFile === 'config' ? validateBotConfig(safeParse(content)) : []),
+    [activeFile, content],
+  )
+  const hasBlockingErrors = effectiveMode === 'form' && configIssues.some(i => i.severity === 'error')
+
   // ── Config loading ─────────────────────────────────────────────────────────
 
   const loadFile = useCallback(async (file: ConfigFile) => {
@@ -262,9 +281,20 @@ export default function BotConfigEditor({ lang, nonce, guildId }: { lang: Lang; 
     setActiveFile(file)
   }
 
+  // Switching the view mode while dirty would visually swap the editor and risk
+  // losing track of unsaved edits — guard it the same way as tab switching.
+  const handleModeSwitch = (next: ViewMode) => {
+    if (next === viewMode) return
+    if (isDirty && !confirm(t.bot_unsaved_confirm)) return
+    setViewMode(next)
+  }
+
+  const handleDiscard = () => { setContent(savedContent); setEditorMsg(null) }
+
   const handleSave = async () => {
     const err = validate(activeFile, content, lang)
     if (err) { setEditorMsg({ type: 'error', text: err }); return }
+    if (hasBlockingErrors) { setEditorMsg({ type: 'error', text: t.bot_form_errors }); return }
 
     setLoadingSave(true); setEditorMsg(null)
     try {
@@ -631,8 +661,9 @@ export default function BotConfigEditor({ lang, nonce, guildId }: { lang: Lang; 
         </div>
         <p className="text-muted-foreground text-sm mb-5">{t.bot_config_desc}</p>
 
-        {/* Tabs */}
-        <div className="flex gap-1 bg-surface2 border border-borderlt rounded-lg p-1 mb-4 w-fit">
+        {/* Tabs + mode switch */}
+        <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
+        <div className="flex gap-1 bg-surface2 border border-borderlt rounded-lg p-1 w-fit">
           {FILES.map(f => {
             const isLocale = f === 'locale'
             const label = isLocale && localeMeta?.filename
@@ -653,6 +684,8 @@ export default function BotConfigEditor({ lang, nonce, guildId }: { lang: Lang; 
           >
             {loadingGet ? <Loader2 size={13} className="animate-spin" /> : <RefreshCw size={13} />}
           </button>
+        </div>
+        {formAvailable && <ModeSwitch value={viewMode} onChange={handleModeSwitch} lang={lang} />}
         </div>
 
         {/* .env warning */}
@@ -685,13 +718,27 @@ export default function BotConfigEditor({ lang, nonce, guildId }: { lang: Lang; 
 
         {editorMsg && <div className="mb-3"><Banner msg={editorMsg} onClose={() => setEditorMsg(null)} /></div>}
 
-        {/* Editor */}
-        <div className="border border-borderlt rounded-lg overflow-hidden mb-4">
-          {loadingGet ? (
-            <div className="flex items-center justify-center h-64 bg-bg">
-              <Loader2 size={20} className="animate-spin text-muted-foreground" />
-            </div>
-          ) : (
+        {/* Editor — form or raw file, sharing the same `content` string */}
+        {loadingGet ? (
+          <div className="flex items-center justify-center h-64 bg-bg border border-borderlt rounded-lg mb-4">
+            <Loader2 size={20} className="animate-spin text-muted-foreground" />
+          </div>
+        ) : effectiveMode === 'form' && activeFile === 'env' ? (
+          <div className="mb-4">
+            <EnvEditor content={content} onChange={c => { setContent(c); setEditorMsg(null) }} lang={lang} />
+          </div>
+        ) : effectiveMode === 'form' ? (
+          <div className="mb-4">
+            <ConfigForm
+              file={activeFile as FormFile}
+              content={content}
+              onContentChange={c => { setContent(c); setEditorMsg(null) }}
+              lang={lang}
+              issues={configIssues}
+            />
+          </div>
+        ) : (
+          <div className="border border-borderlt rounded-lg overflow-hidden mb-4">
             <CodeMirror
               value={content} height="700px"
               extensions={[
@@ -711,17 +758,32 @@ export default function BotConfigEditor({ lang, nonce, guildId }: { lang: Lang; 
                 indentOnInput: true,
               }}
             />
-          )}
-        </div>
+          </div>
+        )}
 
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-dim">{isDirty && !loadingGet ? t.bot_unsaved : ''}</span>
-          <button onClick={handleSave} disabled={loadingSave || loadingGet || !isDirty} className="msk-btn-primary">
-            {loadingSave
-              ? <><Loader2 size={15} className="animate-spin" /> {t.bot_saving}</>
-              : <><Save size={15} /> {t.bot_save}</>
-            }
-          </button>
+        <div className="flex items-center justify-between gap-3">
+          <span className="text-xs text-dim">
+            {hasBlockingErrors
+              ? <span className="text-danger">{t.bot_form_errors}</span>
+              : (isDirty && !loadingGet ? t.bot_unsaved : '')}
+          </span>
+          <div className="flex items-center gap-2">
+            {isDirty && !loadingGet && (
+              <button onClick={handleDiscard} disabled={loadingSave} className="msk-btn-ghost">
+                {t.bot_discard}
+              </button>
+            )}
+            <button
+              onClick={handleSave}
+              disabled={loadingSave || loadingGet || !isDirty || hasBlockingErrors}
+              className="msk-btn-primary"
+            >
+              {loadingSave
+                ? <><Loader2 size={15} className="animate-spin" /> {t.bot_saving}</>
+                : <><Save size={15} /> {t.bot_save}</>
+              }
+            </button>
+          </div>
         </div>
       </div>
 
