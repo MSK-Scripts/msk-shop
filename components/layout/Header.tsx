@@ -82,6 +82,7 @@ function HeaderInner() {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
   const [searchOpen, setSearchOpen] = useState(false)
   const [hydrated, setHydrated] = useState(false)
+  const [isMac, setIsMac] = useState(false)
 
   const { lang } = useLang()
   const t = layoutTranslations[lang]
@@ -109,7 +110,11 @@ function HeaderInner() {
   // identisch bleiben (sonst → Hydration-Mismatch → React hängt keine
   // Event-Listener mehr an die Subtree → tote Buttons), zeigen wir
   // persistierte Werte erst nach dem Mount.
-  useEffect(() => { setHydrated(true) }, [])
+  useEffect(() => {
+    setHydrated(true)
+    // Shortcut-Hinweis im Such-Feld: ⌘K auf dem Mac, sonst Ctrl+K.
+    setIsMac(/mac/i.test(navigator.platform))
+  }, [])
 
   // Effective-Werte: identisch zwischen SSR + Client-First-Render
   const effectiveItemCount = hydrated ? itemCount : 0
@@ -441,20 +446,29 @@ function HeaderInner() {
 
           {/* Actions */}
           <div className="flex items-center gap-1.5">
-            {/* Search */}
-            <Button
-              variant="outline"
-              size="sm"
+            {/* Search — ab lg als Input-Look, darunter Icon-only */}
+            <button
+              type="button"
               onClick={() => setSearchOpen(true)}
-              className="h-8 w-8 shrink-0 p-0 sm:w-auto sm:px-3"
-              aria-label="Search packages"
-              title="Search packages (⌘K)"
+              aria-label={t.action_search}
+              className="hidden h-8 min-w-[200px] items-center gap-2 rounded-md border border-[var(--color-border)] bg-[color-mix(in_oklab,var(--color-muted)_40%,transparent)] px-3 text-sm text-[var(--color-muted-foreground)] transition-colors hover:bg-[var(--color-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)] lg:inline-flex"
+            >
+              <Search className="h-3.5 w-3.5" />
+              <span className="flex-1 text-left">{t.action_search_placeholder}</span>
+              <kbd className="inline-flex items-center gap-0.5 rounded border border-[var(--color-border)] bg-[var(--color-background)] px-1.5 py-0.5 font-mono text-[0.625rem]">
+                <span>{isMac ? '⌘' : 'Ctrl'}</span>
+                <span>K</span>
+              </kbd>
+            </button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setSearchOpen(true)}
+              className="h-8 w-8 shrink-0 lg:hidden"
+              aria-label={t.action_search}
+              title={t.action_search}
             >
               <Search className="h-4 w-4" />
-              <span className="hidden sm:inline">{t.action_search}</span>
-              <kbd className="ml-1 hidden rounded border border-[var(--color-border)] bg-[var(--color-muted)] px-1.5 py-0.5 font-mono text-[0.625rem] text-[var(--color-muted-foreground)] lg:inline">
-                ⌘K
-              </kbd>
             </Button>
 
             <LanguageDropdown />

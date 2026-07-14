@@ -1,65 +1,85 @@
 'use client'
 
-import { useState } from 'react'
-import { ChevronDown, Check } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { Languages } from 'lucide-react'
 import { useLang } from './LangProvider'
 import { Button } from '@/components/ui/Button'
+import { layoutTranslations } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
 
 const languages = [
-  { code: 'en', label: 'English', flag: '🇬🇧' },
-  { code: 'de', label: 'Deutsch', flag: '🇩🇪' },
+  { code: 'de', label: 'Deutsch' },
+  { code: 'en', label: 'English' },
 ] as const
 
-/** Single global language switcher — lives in the Header (top right). */
+/**
+ * Single global language switcher — lives in the Header (top right).
+ *
+ * Icon-only trigger plus a small menu (same look as the theme menu next to it).
+ * Bewusst ein eigenes useState-Dropdown statt Radix: die strikte Nonce-CSP
+ * blockt zur Laufzeit injizierte <style>-Tags (Radix' Scroll-Lock).
+ */
 export function LanguageDropdown() {
   const { lang, setLang } = useLang()
+  const t = layoutTranslations[lang]
   const [open, setOpen] = useState(false)
-  const current = languages.find(l => l.code === lang) ?? languages[0]
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    function onClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('mousedown', onClick)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('mousedown', onClick)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [open])
 
   return (
-    <div className="relative">
+    <div className="relative" ref={ref}>
       <Button
-        variant="outline"
-        size="sm"
+        variant="ghost"
+        size="icon"
         onClick={() => setOpen(v => !v)}
+        className="h-8 w-8 shrink-0"
         aria-haspopup="menu"
         aria-expanded={open}
-        aria-label="Change language"
+        aria-label={t.action_language}
+        title={t.action_language}
       >
-        <span aria-hidden>{current.flag}</span>
-        {/* Label erst ab lg — auf Mobile/Tablet kompakt (nur Flagge), damit die
-            Action-Leiste im sm–md-Bereich nicht überläuft. */}
-        <span className="hidden font-medium lg:inline">{current.label}</span>
-        <ChevronDown className={cn('h-3 w-3 transition-transform', open && 'rotate-180')} />
+        <Languages className="h-4 w-4" />
       </Button>
 
       {open && (
-        <>
-          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} aria-hidden="true" />
-          <div
-            role="menu"
-            className="absolute right-0 top-full z-50 mt-1 w-36 overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] p-1 shadow-xl"
-          >
-            {languages.map(l => (
-              <button
-                key={l.code}
-                onClick={() => { setLang(l.code); setOpen(false) }}
-                role="menuitem"
-                className={cn(
-                  'flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-xs transition-colors',
-                  lang === l.code
-                    ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)]'
-                    : 'text-[var(--color-muted-foreground)] hover:bg-[var(--color-muted)] hover:text-[var(--color-foreground)]',
-                )}
-              >
-                <span aria-hidden>{l.flag}</span>
-                <span>{l.label}</span>
-                {lang === l.code && <Check className="ml-auto h-3 w-3 text-[var(--color-primary)]" />}
-              </button>
-            ))}
-          </div>
-        </>
+        <div
+          role="menu"
+          className="absolute right-0 top-full z-[60] mt-1 min-w-[10rem] overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] p-1 shadow-xl"
+        >
+          {languages.map(l => (
+            <button
+              key={l.code}
+              type="button"
+              role="menuitem"
+              onClick={() => { setLang(l.code); setOpen(false) }}
+              className={cn(
+                'flex w-full items-center justify-between gap-4 rounded-md px-3 py-2 text-sm outline-none transition-colors',
+                'hover:bg-[var(--color-muted)] focus-visible:bg-[var(--color-muted)]',
+                lang === l.code
+                  ? 'font-medium text-[var(--color-primary)]'
+                  : 'text-[var(--color-foreground)]',
+              )}
+            >
+              <span>{l.label}</span>
+              <span className="font-mono text-xs uppercase opacity-70">{l.code}</span>
+            </button>
+          ))}
+        </div>
       )}
     </div>
   )
