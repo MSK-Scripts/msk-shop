@@ -16,7 +16,13 @@ const KEY_LINE_RE = /^(\s*)([A-Za-z_][A-Za-z0-9_]*)\s*=(.*)$/;
 /** Strip a single layer of matching surrounding quotes from a raw .env value. */
 function unquote(raw: string): string {
   const t = raw.trim();
-  if (t.length >= 2 && ((t[0] === '"' && t.at(-1) === '"') || (t[0] === "'" && t.at(-1) === "'"))) {
+  // Double-quoted values are escaped on write (see setEnvValue) — reverse both
+  // the backslash and quote escaping so the value round-trips exactly.
+  if (t.length >= 2 && t[0] === '"' && t.at(-1) === '"') {
+    return t.slice(1, -1).replace(/\\(["\\])/g, '$1');
+  }
+  // Single-quoted .env values are literal (no escaping).
+  if (t.length >= 2 && t[0] === "'" && t.at(-1) === "'") {
     return t.slice(1, -1);
   }
   return t;
@@ -42,7 +48,10 @@ export function parseEnv(content: string): Map<string, EnvEntry> {
  */
 export function setEnvValue(content: string, key: string, value: string): string {
   const lines = content.split('\n');
-  const quoted = `${key}="${value.replace(/"/g, '\\"')}"`;
+  // Escape backslashes FIRST, then double-quotes, so a value can never break out
+  // of the surrounding quotes (e.g. a trailing "\" would otherwise escape the
+  // closing quote). Reversed on read in unquote().
+  const quoted = `${key}="${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
 
   for (let i = 0; i < lines.length; i++) {
     const m = KEY_LINE_RE.exec(lines[i]);
