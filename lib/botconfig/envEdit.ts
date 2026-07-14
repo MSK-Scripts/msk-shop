@@ -13,6 +13,17 @@ export interface EnvEntry {
 
 const KEY_LINE_RE = /^(\s*)([A-Za-z_][A-Za-z0-9_]*)\s*=(.*)$/;
 
+// CRLF handling is load-bearing, not cosmetic.
+//
+// Splitting on '\n' leaves a trailing '\r' on every line of a Windows-authored
+// file. KEY_LINE_RE ends in `(.*)$`, and in JavaScript `.` does not match '\r'
+// while `$` does not match before it — so the regex FAILS on every line, the
+// patcher concludes the key is absent, and APPENDS a duplicate instead of
+// updating it. Splitting on /\r?\n/ drops the '\r'; we then write the file back
+// with whatever line ending it originally used.
+const splitLines = (content: string): string[] => content.split(/\r?\n/);
+const detectEol = (content: string): string => (content.includes('\r\n') ? '\r\n' : '\n');
+
 /** Strip a single layer of matching surrounding quotes from a raw .env value. */
 function unquote(raw: string): string {
   const t = raw.trim();
@@ -31,7 +42,7 @@ function unquote(raw: string): string {
 /** Parse a .env document into a map of KEY → { value, line }. Comments/blanks ignored. */
 export function parseEnv(content: string): Map<string, EnvEntry> {
   const map = new Map<string, EnvEntry>();
-  content.split('\n').forEach((line, i) => {
+  splitLines(content).forEach((line, i) => {
     const trimmed = line.trim();
     if (trimmed === '' || trimmed.startsWith('#')) return;
     const m = KEY_LINE_RE.exec(line);
@@ -47,7 +58,8 @@ export function parseEnv(content: string): Map<string, EnvEntry> {
  * are kept verbatim. Values are always written double-quoted.
  */
 export function setEnvValue(content: string, key: string, value: string): string {
-  const lines = content.split('\n');
+  const eol = detectEol(content);
+  const lines = splitLines(content);
   // Escape backslashes FIRST, then double-quotes, so a value can never break out
   // of the surrounding quotes (e.g. a trailing "\" would otherwise escape the
   // closing quote). Reversed on read in unquote().
@@ -57,7 +69,7 @@ export function setEnvValue(content: string, key: string, value: string): string
     const m = KEY_LINE_RE.exec(lines[i]);
     if (m && m[2] === key) {
       lines[i] = `${m[1]}${quoted}`;
-      return lines.join('\n');
+      return lines.join(eol);
     }
   }
 
@@ -68,5 +80,5 @@ export function setEnvValue(content: string, key: string, value: string): string
   } else {
     lines.push(quoted);
   }
-  return lines.join('\n');
+  return lines.join(eol);
 }
