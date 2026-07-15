@@ -40,7 +40,7 @@ describe('setEnvValue / parseEnv', () => {
 describe('CRLF line endings', () => {
   const CRLF = 'TOKEN="abc"\r\n# comment\r\nCLIENT_ID="123"\r\n'
   const countKey = (content: string, key: string) =>
-    content.split(/\r?\n/).filter(l => new RegExp(`^\s*${key}\s*=`).test(l)).length
+    content.split(/\r?\n/).filter(l => new RegExp(`^\\s*${key}\\s*=`).test(l)).length
 
   it('updates an existing key instead of appending a duplicate', () => {
     const out = setEnvValue(CRLF, 'CLIENT_ID', '999')
