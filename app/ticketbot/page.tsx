@@ -5,6 +5,7 @@ import {
   UserCheck, Flag, Star, Clock, FileText, MessageSquareText, Globe, Lock,
   Megaphone, Bell, Github, MessageSquare,
   Check, X, ServerCog, RefreshCw, Terminal, RotateCcw, Database,
+  ShieldCheck, Users,
 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
@@ -105,6 +106,7 @@ const FEATURES = [
   { icon: Bell,              title: 'User Notifications',  text: 'Users can opt in to a DM when staff first replies — rate-limited to avoid spam.' },
   { icon: Megaphone,         title: 'Broadcast',           text: 'Send a single message to every open ticket channel at once.' },
   { icon: Database,          title: 'Flexible Database',   text: 'Runs on SQLite with zero setup, or connect your own MySQL, MariaDB or PostgreSQL — with a migration script to move existing data.' },
+  { icon: LayoutDashboard,   title: 'Self-Hosted Dashboard', text: 'Optional built-in web dashboard to manage tickets, stats, config and the bot itself from the browser. Disabled by default, secure by default.' },
 ]
 
 // ── Verify flow (4 steps) ───────────────────────────────────────────────────────
@@ -329,6 +331,67 @@ export default function TicketBotPage() {
         </div>
       </section>
 
+      {/* ── Self-hosted dashboard ─────────────────────────────────────────── */}
+      <section className="border-t border-[var(--color-border)]">
+        <div className="container-page py-14 md:py-20">
+          <div className="grid items-center gap-10 lg:grid-cols-2">
+            <div>
+              <span className="eyebrow">New &middot; self-hosted</span>
+              <h2 className="mt-3 text-2xl font-bold tracking-tight md:text-3xl">
+                A web dashboard, right in your bot
+              </h2>
+              <p className="mt-4 text-sm leading-relaxed text-[var(--color-muted-foreground)] md:text-base">
+                Start the bot with{' '}
+                <code className="rounded bg-[var(--color-muted)] px-1.5 py-0.5 font-mono text-[0.8125rem] text-[var(--color-foreground)]">npm run dashboard</code>
+                {' '}and manage everything from the browser instead of over SSH —
+                tickets, statistics, the full config and the bot process itself. It
+                ships with the bot and works on every tier, including the free one.
+                It stays fully optional:{' '}
+                <code className="rounded bg-[var(--color-muted)] px-1.5 py-0.5 font-mono text-[0.8125rem] text-[var(--color-foreground)]">npm start</code>
+                {' '}keeps running the plain bot with no web server at all.
+              </p>
+              <p className="mt-4 flex items-start gap-2.5 text-sm leading-relaxed text-[var(--color-muted-foreground)] md:text-base">
+                <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-primary)]" />
+                <span>
+                  Secure by default: off until you enable it, bound to localhost so
+                  it is never exposed by accident, and it refuses to start on a
+                  public interface without HTTPS. Login is Discord OAuth, access is
+                  granted per role and per user, and every change is written to an
+                  audit log.
+                </span>
+              </p>
+              <div className="mt-7 flex flex-wrap gap-3">
+                <Button asChild variant="outline">
+                  <a href={`${SITE_CONFIG.docs}/discord/discord_ticketbot/dashboard`} target="_blank" rel="noopener noreferrer">
+                    <FileText className="h-4 w-4" />
+                    Dashboard docs
+                  </a>
+                </Button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {[
+                { icon: LayoutDashboard,   title: 'Tickets & Stats',   text: 'Browse and filter tickets, claim, close, reopen, move and reply — with live team statistics.' },
+                { icon: Terminal,          title: 'Config & Locales',  text: 'Edit config.jsonc, snippets, .env and the language files in a form or raw view with syntax highlighting.' },
+                { icon: Users,             title: 'Permissions',       text: 'Grant dashboard access per role or per user, each with fine-grained rights, backed by an audit log.' },
+                { icon: UserCheck,         title: 'Reply as yourself', text: 'Answers you send from the dashboard appear in Discord under your own name and avatar, not the bot.' },
+              ].map(item => (
+                <div key={item.title} className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
+                  <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--color-primary)]/15 text-[var(--color-primary)]">
+                    <item.icon className="h-4 w-4" />
+                  </div>
+                  <h3 className="mb-1.5 text-sm font-bold tracking-tight">{item.title}</h3>
+                  <p className="text-xs leading-relaxed text-[var(--color-muted-foreground)]">
+                    {item.text}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── Hosted bot management ─────────────────────────────────────────── */}
       <section className="border-t border-[var(--color-border)] bg-[color-mix(in_oklab,var(--color-muted)_40%,var(--color-background))]">
         <div className="container-page py-14 md:py-20">
@@ -336,12 +399,12 @@ export default function TicketBotPage() {
             <div>
               <span className="eyebrow">Premium &amp; Premium+</span>
               <h2 className="mt-3 text-2xl font-bold tracking-tight md:text-3xl">
-                Let us host it for you
+                Or let us host it for you
               </h2>
               <p className="mt-4 text-sm leading-relaxed text-[var(--color-muted-foreground)] md:text-base">
-                Premium customers can have their bot instance fully hosted by MSK
-                Scripts and manage everything from the dashboard — no SSH access
-                or server knowledge required.
+                Prefer not to run a server at all? Premium customers can have their
+                bot instance fully hosted by MSK Scripts and manage everything from
+                the same dashboard — no SSH access or server knowledge required.
               </p>
               <div className="mt-7 flex flex-wrap gap-3">
                 <Button asChild>
