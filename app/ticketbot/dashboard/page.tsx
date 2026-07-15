@@ -20,6 +20,7 @@ export interface DashboardGuild {
   domain_status:          'none' | 'pending_dns' | 'active';
   is_hosted:              number;
   stripe_subscription_id: string | null;
+  bot_port:               number | null;
 }
 
 export default async function DashboardPage() {
@@ -33,7 +34,7 @@ export default async function DashboardPage() {
 
   // Account-scoped: load ALL guilds owned by this Discord user.
   const guilds = await query<DashboardGuild>(
-    `SELECT guild_id, guild_name, tier, custom_domain, domain_status, is_hosted, stripe_subscription_id
+    `SELECT guild_id, guild_name, tier, custom_domain, domain_status, is_hosted, stripe_subscription_id, bot_port
        FROM ticketbot_guilds
       WHERE discord_user_id = ?
       ORDER BY created_at ASC`,

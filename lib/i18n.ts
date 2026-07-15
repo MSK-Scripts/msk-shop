@@ -472,6 +472,12 @@ export const dashboardTranslations = {
     tab_transcripts:      'Transcripts',
     tab_hosting:          'Bot Hosting',
 
+    // Proxied bot dashboard
+    botdash_open:         'Open bot dashboard',
+    botdash_opening:      'Opening…',
+    botdash_hint:         'Manage tickets, statistics and settings in the full bot dashboard (opens in a new tab).',
+    botdash_error:        'Could not open the bot dashboard. Please try again.',
+
     // Account / subscription (Stripe)
     switch_server:        'Server',
     sub_manage:           'Manage subscription',
@@ -615,6 +621,12 @@ export const dashboardTranslations = {
     tab_domain:           'Eigene Domain',
     tab_transcripts:      'Transkripte',
     tab_hosting:          'Bot-Hosting',
+
+    // Proxied bot dashboard
+    botdash_open:         'Bot-Dashboard öffnen',
+    botdash_opening:      'Öffne…',
+    botdash_hint:         'Tickets, Statistiken und Einstellungen im vollen Bot-Dashboard verwalten (öffnet in neuem Tab).',
+    botdash_error:        'Bot-Dashboard konnte nicht geöffnet werden. Bitte erneut versuchen.',
 
     // Account / subscription (Stripe)
     switch_server:        'Server',

@@ -22,12 +22,17 @@ CREATE TABLE IF NOT EXISTS ticketbot_guilds (
     custom_domain          VARCHAR(255),
     domain_status          ENUM('none', 'pending_dns', 'active') NOT NULL DEFAULT 'none',
     is_hosted              TINYINT(1)   NOT NULL DEFAULT 0,
+    -- Loopback port the hosted bot's self-hosted dashboard listens on (only set
+    -- for is_hosted bots that run dashboard.js). The bot-dashboard reverse proxy
+    -- forwards to http://127.0.0.1:<bot_port>. NULL = no proxied dashboard.
+    bot_port               SMALLINT UNSIGNED NULL,
     active                 BOOLEAN      NOT NULL DEFAULT TRUE,
     created_at             DATETIME     NOT NULL DEFAULT NOW(),
     expires_at             DATETIME     NULL
 );
 
 -- Migration (run once on existing databases):
+-- ALTER TABLE ticketbot_guilds ADD COLUMN bot_port SMALLINT UNSIGNED NULL;
 -- ALTER TABLE ticketbot_guilds ADD COLUMN is_hosted TINYINT(1) NOT NULL DEFAULT 0;
 -- ALTER TABLE ticketbot_guilds ADD COLUMN stripe_subscription_id VARCHAR(64) NULL UNIQUE;
 -- ALTER TABLE ticketbot_guilds ADD COLUMN stripe_customer_id     VARCHAR(64) NULL;

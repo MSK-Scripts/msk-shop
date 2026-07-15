@@ -41,6 +41,7 @@ interface Guild {
   domain_status:          'none' | 'pending_dns' | 'active'
   is_hosted:              number
   stripe_subscription_id: string | null
+  bot_port:               number | null
 }
 
 interface Props {
@@ -532,8 +533,47 @@ function GuildPanel({
 
       {/* Bot Config Editor — nur für hosted customers */}
       {tab === 'hosting' && !!guild.is_hosted && (
-        <BotConfigEditor lang={lang} nonce={nonce} guildId={guildId} />
+        <>
+          {guild.bot_port != null && <BotDashboardLauncher guildId={guildId} t={t} />}
+          <BotConfigEditor lang={lang} nonce={nonce} guildId={guildId} />
+        </>
       )}
     </>
+  )
+}
+
+// ── Launcher for the full proxied bot dashboard ──────────────────────────────
+// Asks msk-shop for a short-lived handoff URL (auth is re-checked server-side)
+// and opens it in a new tab. Only rendered when the guild has a bot_port set.
+function BotDashboardLauncher({ guildId, t }: { guildId: string; t: T }) {
+  const [loading, setLoading] = useState(false)
+  const [error, setError]     = useState<string | null>(null)
+
+  async function launch() {
+    setLoading(true)
+    setError(null)
+    try {
+      const res  = await fetch(`/api/bot-dashboard/open?guildId=${encodeURIComponent(guildId)}`, { cache: 'no-store' })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok || !data?.url) throw new Error(data?.error || 'failed')
+      window.open(data.url, '_blank', 'noopener,noreferrer')
+    } catch {
+      setError(t.botdash_error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="mb-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-sm text-[var(--color-muted-foreground)]">{t.botdash_hint}</p>
+        <Button onClick={launch} disabled={loading} className="shrink-0">
+          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ExternalLink className="h-4 w-4" />}
+          {loading ? t.botdash_opening : t.botdash_open}
+        </Button>
+      </div>
+      {error && <p className="mt-3 text-xs text-[var(--color-danger)]">{error}</p>}
+    </div>
   )
 }

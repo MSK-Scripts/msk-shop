@@ -21,6 +21,7 @@ export interface DashboardGuild {
   active:                 number;
   stripe_customer_id:     string | null;
   stripe_subscription_id: string | null;
+  bot_port:               number | null;
 }
 
 /** Discord user id from the signed dashboard session cookie, or null. */
@@ -49,7 +50,7 @@ export async function authorizeGuild(guildId: string | null | undefined): Promis
 
   const guild = await queryOne<DashboardGuild>(
     `SELECT guild_id, tier, custom_domain, domain_status, is_hosted, active,
-            stripe_customer_id, stripe_subscription_id
+            stripe_customer_id, stripe_subscription_id, bot_port
        FROM ticketbot_guilds
       WHERE guild_id = ? AND discord_user_id = ?`,
     [id, discordUserId],

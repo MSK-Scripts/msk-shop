@@ -74,9 +74,30 @@ function sweep(now: number): void {
 // eine Nonce-Direktive enthalten ist.
 // =============================================================================
 
+// The dedicated host the hosted bot dashboards are proxied under. Requests to it
+// are handed to the /_botproxy route, which forwards them to the bot's loopback
+// port. Crucially this happens BEFORE the msk-shop CSP/security headers below:
+// the proxied responses carry the BOT's own CSP and headers, and wrapping them in
+// msk-shop's strict nonce CSP would break the bot's app.
+const BOT_DASHBOARD_HOST = (process.env.BOT_DASHBOARD_HOST || 'bot-dashboard.msk-scripts.de').toLowerCase()
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   const now = Date.now()
+
+  // ── Bot-dashboard proxy host: rewrite every path to the proxy route ─────────
+  const host = (request.headers.get('host') || '').toLowerCase().split(':')[0]
+  if (host === BOT_DASHBOARD_HOST) {
+    const url = request.nextUrl.clone()
+    const requestHeaders = new Headers(request.headers)
+    // Carry the real path across the rewrite; the query string stays on the URL.
+    // NOTE: the target folder must NOT start with '_' — App Router treats an
+    // underscore-prefixed folder as a private folder and excludes it from routing.
+    requestHeaders.set('x-proxy-path', url.pathname)
+    url.pathname = '/botproxy'
+    return NextResponse.rewrite(url, { request: { headers: requestHeaders } })
+  }
+
   sweep(now)
 
   // ── Body-Limit: übergroße Mutations-Requests früh abweisen ──────────────────
