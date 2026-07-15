@@ -26,7 +26,7 @@ async function authHosted(req: NextRequest): Promise<{ guildId: string } | { err
   return { guildId: auth.guild.guild_id };
 }
 
-// Resolves and validates the bot directory path — same logic as bot-config route.
+// Resolves and validates the bot directory path under BOT_CONFIG_BASE_PATH.
 function botDir(guildId: string): string {
   const base = process.env.BOT_CONFIG_BASE_PATH;
   if (!base) throw new Error('BOT_CONFIG_BASE_PATH not configured');

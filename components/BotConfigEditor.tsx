@@ -1,108 +1,25 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
-import CodeMirror from '@uiw/react-codemirror'
-import { json } from '@codemirror/lang-json'
-import { EditorView } from '@codemirror/view'
-import { parse, type ParseError } from 'jsonc-parser'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import {
-  Save, FileText, AlertCircle, CheckCircle, Info, Loader2, RefreshCw,
+  AlertCircle, CheckCircle, Info, Loader2, RefreshCw,
   Play, Square, RotateCcw, Terminal, Download, X, ScrollText, Activity,
 } from 'lucide-react'
 import { dashboardTranslations, type Lang } from '@/lib/i18n'
-import ConfigForm, { type FormFile } from './botconfig/ConfigForm'
-import EnvEditor from './botconfig/EnvEditor'
-import ModeSwitch, { type ViewMode } from './botconfig/ModeSwitch'
-import { safeParse } from '@/lib/botconfig/jsoncEdit'
-import { validateBotConfig, type SemanticIssue } from '@/lib/botconfig/validateConfig'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
-
-const FILES = ['config', 'snippet', 'env', 'locale'] as const
-type ConfigFile = typeof FILES[number]
-
-const FILE_LABEL: Record<ConfigFile, string> = {
-  config:  'config.jsonc',
-  snippet: 'snippets.jsonc',
-  env:     '.env',
-  locale:  'locale.json', // placeholder — overridden by server response
-}
-
-type LocaleReason = 'missing' | 'no_lang' | 'invalid_lang' | 'config_parse_error' | 'config_missing'
-
-interface LocaleMeta {
-  filename:  string
-  fallback:  boolean
-  reason?:   LocaleReason
-  requested?: string
-}
+//
+// This panel is the OUT-OF-BAND recovery layer for a hosted bot: it drives the
+// PM2 process (the supervisor / dashboard.js) and streams its logs. Editing the
+// bot's configuration, tickets, stats and per-user permissions now lives in the
+// bot's own dashboard, reached via the "Open bot dashboard" button, so it is not
+// duplicated here. Keeping start/stop/restart/update + logs at the PM2 level is
+// deliberate: it still works when the supervisor or the bot dashboard is down,
+// which is exactly when you need to bring things back up.
 
 type BotStatus = 'online' | 'stopped' | 'stopping' | 'launching' | 'errored' | 'not_found' | 'unknown'
 
 type Msg = { type: 'success' | 'error' | 'info'; text: string; detail?: string }
-
-// ── CodeMirror theme ───────────────────────────────────────────────────────────
-
-const mskTheme = EditorView.theme({
-  '&': { backgroundColor: '#1b1b1d', fontSize: '13px' },
-  '.cm-content': {
-    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
-    padding: '12px 0',
-  },
-  '.cm-gutters': { backgroundColor: '#242526', borderRight: '1px solid #2e2f31', color: '#5c6370' },
-  '.cm-activeLineGutter': { backgroundColor: '#2a2b2e' },
-  '.cm-activeLine':       { backgroundColor: 'rgba(255,255,255,0.03)' },
-  '.cm-cursor':           { borderLeftColor: '#5eb131' },
-  '.cm-selectionBackground, ::selection': { backgroundColor: 'rgba(94,177,49,0.25) !important' },
-  '.cm-focused .cm-selectionBackground': { backgroundColor: 'rgba(94,177,49,0.25)' },
-  '.cm-foldPlaceholder': { backgroundColor: '#2a2b2e', border: '1px solid #3d3d3f', color: '#8d9096' },
-  '.cm-scroller': { fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace' },
-}, { dark: true })
-
-// ── Validation ─────────────────────────────────────────────────────────────────
-
-function validateJsonc(content: string, lang: Lang): string | null {
-  const errors: ParseError[] = []
-  parse(content, errors, { allowTrailingComma: true })
-  if (errors.length === 0) return null
-  return lang === 'de'
-    ? `Syntaxfehler gefunden (${errors.length} Fehler). Kommentare mit // und /* */ sind erlaubt.`
-    : `Syntax error found (${errors.length} error(s)). Comments with // and /* */ are allowed.`
-}
-
-function validateEnv(content: string, lang: Lang): string | null {
-  const invalid: number[] = []
-  content.split('\n').forEach((line, i) => {
-    const t = line.trim()
-    if (t === '' || t.startsWith('#')) return
-    if (!/^[A-Za-z_][A-Za-z0-9_]*=/.test(t)) invalid.push(i + 1)
-  })
-  if (invalid.length === 0) return null
-  if (lang === 'de') {
-    const where = invalid.length === 1 ? `Zeile ${invalid[0]}` : `Zeilen ${invalid.join(', ')}`
-    return `Ungültiges .env-Format in ${where}. Erlaubt: SCHLÜSSEL=WERT, leere Zeilen und # Kommentare.`
-  }
-  const where = invalid.length === 1 ? `line ${invalid[0]}` : `lines ${invalid.join(', ')}`
-  return `Invalid .env format on ${where}. Allowed: KEY=VALUE, empty lines and # comments.`
-}
-
-function validateJsonStrict(content: string, lang: Lang): string | null {
-  try {
-    JSON.parse(content)
-    return null
-  } catch (e) {
-    const detail = e instanceof Error ? e.message : 'parse error'
-    return lang === 'de'
-      ? `JSON-Syntaxfehler: ${detail}. Locale-Dateien erlauben keine Kommentare.`
-      : `JSON syntax error: ${detail}. Locale files do not allow comments.`
-  }
-}
-
-const validate = (file: ConfigFile, content: string, lang: Lang) => {
-  if (file === 'env')    return validateEnv(content, lang)
-  if (file === 'locale') return validateJsonStrict(content, lang)
-  return validateJsonc(content, lang)
-}
 
 // ── Log line styling ───────────────────────────────────────────────────────────
 
@@ -165,7 +82,9 @@ function Banner({ msg, onClose }: { msg: Msg; onClose?: () => void }) {
 
 // ── Main Component ─────────────────────────────────────────────────────────────
 
-export default function BotConfigEditor({ lang, nonce, guildId }: { lang: Lang; nonce?: string; guildId: string }) {
+// `nonce` is still accepted for call-site compatibility but is no longer used
+// (it was only needed by the removed CodeMirror config editor).
+export default function BotConfigEditor({ lang, guildId }: { lang: Lang; nonce?: string; guildId: string }) {
   const t = dashboardTranslations[lang]
 
   const STATUS_LABEL: Record<BotStatus, string> = {
@@ -177,34 +96,6 @@ export default function BotConfigEditor({ lang, nonce, guildId }: { lang: Lang; 
     not_found: t.bot_status_not_found,
     unknown:   t.bot_status_unknown,
   }
-
-  // Config editor
-  const [activeFile, setActiveFile]     = useState<ConfigFile>('config')
-  const [content, setContent]           = useState('')
-  const [savedContent, setSavedContent] = useState('')
-  const [loadingGet, setLoadingGet]     = useState(false)
-  const [loadingSave, setLoadingSave]   = useState(false)
-  const [editorMsg, setEditorMsg]       = useState<Msg | null>(null)
-  const [localeMeta, setLocaleMeta]     = useState<LocaleMeta | null>(null)
-  const [viewMode, setViewMode]         = useState<ViewMode>('form')
-
-  // CSP nonce for CodeMirror's runtime-injected <style> elements. The server
-  // passes a `nonce` prop, but on SOFT navigation that value is stale: the
-  // browser enforces the CSP of the *current* document, whose nonce differs from
-  // the one generated for the RSC request — so the injected styles get blocked
-  // and the editor renders blank until a hard reload (F5). Instead resolve the
-  // nonce the browser actually enforces from an existing nonced element (Next
-  // injects its <script>/<style> with it). Read synchronously (lazy init) so the
-  // value is set BEFORE CodeMirror creates the EditorView — reconfiguring
-  // cspNonce afterwards would not re-inject the already-blocked styles. Falls
-  // back to the server prop during SSR (where there is no document).
-  const [effectiveNonce] = useState<string | undefined>(() => {
-    if (typeof document === 'undefined') return nonce
-    const el = document.querySelector<HTMLElement>('style[nonce], script[nonce]')
-    // Chrome hides the nonce *attribute* after applying the CSP, but the .nonce
-    // IDL property still returns it for same-origin elements.
-    return el?.nonce || el?.getAttribute('nonce') || nonce
-  })
 
   // Bot control
   const [botStatus, setBotStatus]           = useState<BotStatus | null>(null)
@@ -227,96 +118,6 @@ export default function BotConfigEditor({ lang, nonce, guildId }: { lang: Lang; 
   const [liveStatus, setLiveStatus]         = useState<'disconnected' | 'connected' | 'error'>('disconnected')
   const liveScrollRef = useRef<HTMLDivElement>(null)
   const esRef         = useRef<EventSource | null>(null)
-
-  const isDirty = content !== savedContent
-
-  // Form mode is available for every file except locales (raw only).
-  const formAvailable = activeFile !== 'locale'
-  const effectiveMode: ViewMode = formAvailable ? viewMode : 'file'
-
-  // Semantic issues (mirrored from the bot's validateConfig) — used to show
-  // inline field errors and to block Save in form mode before a bad config can
-  // reach the bot. Only config.jsonc is semantically validated.
-  const configIssues = useMemo<SemanticIssue[]>(
-    () => (activeFile === 'config' ? validateBotConfig(safeParse(content)) : []),
-    [activeFile, content],
-  )
-  const hasBlockingErrors = effectiveMode === 'form' && configIssues.some(i => i.severity === 'error')
-
-  // ── Config loading ─────────────────────────────────────────────────────────
-
-  const loadFile = useCallback(async (file: ConfigFile) => {
-    setLoadingGet(true)
-    setEditorMsg(null)
-    if (file === 'locale') setLocaleMeta(null)
-    try {
-      const res  = await fetch(`/api/bot-config?file=${file}&guildId=${guildId}`)
-      const data = await res.json() as {
-        content?: string; error?: string;
-        filename?: string; fallback?: boolean; reason?: LocaleReason; requested?: string;
-      }
-      if (!res.ok) {
-        setEditorMsg({ type: 'error', text: data.error ?? t.bot_err_load })
-        setContent(''); setSavedContent(''); return
-      }
-      setContent(data.content ?? ''); setSavedContent(data.content ?? '')
-      if (file === 'locale' && data.filename) {
-        setLocaleMeta({
-          filename:  data.filename,
-          fallback:  !!data.fallback,
-          reason:    data.reason,
-          requested: data.requested,
-        })
-      }
-    } catch {
-      setEditorMsg({ type: 'error', text: t.bot_err_network_load })
-    } finally { setLoadingGet(false) }
-  }, [t, guildId])
-
-  useEffect(() => { loadFile(activeFile) }, [activeFile, loadFile])
-
-  const handleTabSwitch = (file: ConfigFile) => {
-    if (file === activeFile) return
-    if (isDirty && !confirm(t.bot_unsaved_confirm)) return
-    setActiveFile(file)
-  }
-
-  // Switching the view mode while dirty would visually swap the editor and risk
-  // losing track of unsaved edits — guard it the same way as tab switching.
-  const handleModeSwitch = (next: ViewMode) => {
-    if (next === viewMode) return
-    if (isDirty && !confirm(t.bot_unsaved_confirm)) return
-    setViewMode(next)
-  }
-
-  const handleDiscard = () => { setContent(savedContent); setEditorMsg(null) }
-
-  const handleSave = async () => {
-    const err = validate(activeFile, content, lang)
-    if (err) { setEditorMsg({ type: 'error', text: err }); return }
-    if (hasBlockingErrors) { setEditorMsg({ type: 'error', text: t.bot_form_errors }); return }
-
-    setLoadingSave(true); setEditorMsg(null)
-    try {
-      const res  = await fetch(`/api/bot-config?file=${activeFile}&guildId=${guildId}`, {
-        method: 'PUT', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content }),
-      })
-      const data = await res.json() as { ok?: boolean; error?: string }
-      if (!res.ok) { setEditorMsg({ type: 'error', text: data.error ?? t.bot_err_load }); return }
-      setSavedContent(content)
-      const fileLabel = activeFile === 'locale' && localeMeta?.filename
-        ? localeMeta.filename
-        : FILE_LABEL[activeFile]
-      setEditorMsg({ type: 'success', text: `${fileLabel} ${t.bot_saved_msg}` })
-      // After saving a fallback file, refresh meta so the banner disappears.
-      if (activeFile === 'locale' && localeMeta?.fallback) {
-        void loadFile('locale')
-      }
-    } catch {
-      setEditorMsg({ type: 'error', text: t.bot_err_network_save })
-    } finally { setLoadingSave(false) }
-  }
 
   // ── Bot status ─────────────────────────────────────────────────────────────
 
@@ -479,9 +280,6 @@ export default function BotConfigEditor({ lang, nonce, guildId }: { lang: Lang; 
 
   return (
     <div className="flex flex-col gap-4">
-
-      {/* ── Bot Control + Live Logs — side by side ────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
 
       {/* ── Bot Control Card ──────────────────────────────────────────────── */}
       <div className="bg-surface border border-borderlt rounded-xl p-6">
@@ -649,142 +447,6 @@ export default function BotConfigEditor({ lang, nonce, guildId }: { lang: Lang; 
             )}
           </div>
         )}
-      </div>
-
-      </div>{/* end grid: Bot Control + Live Logs */}
-
-      {/* ── Config Editor Card ────────────────────────────────────────────── */}
-      <div className="bg-surface border border-borderlt rounded-xl p-6">
-        <div className="flex items-center gap-2 mb-1">
-          <FileText size={18} className="text-accent" />
-          <h2 className="text-foreground font-bold text-base">{t.bot_config_title}</h2>
-        </div>
-        <p className="text-muted-foreground text-sm mb-5">{t.bot_config_desc}</p>
-
-        {/* Tabs + mode switch */}
-        <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
-        <div className="flex gap-1 bg-surface2 border border-borderlt rounded-lg p-1 w-fit">
-          {FILES.map(f => {
-            const isLocale = f === 'locale'
-            const label = isLocale && localeMeta?.filename
-              ? (localeMeta.fallback ? `${localeMeta.filename} (fallback)` : localeMeta.filename)
-              : FILE_LABEL[f]
-            return (
-              <button key={f} onClick={() => handleTabSwitch(f)}
-                className={`px-3 py-1.5 rounded text-xs font-mono font-semibold transition-colors ${
-                  f === activeFile ? 'bg-accent text-black' : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                {label}
-              </button>
-            )
-          })}
-          <button onClick={() => loadFile(activeFile)} disabled={loadingGet}
-            className="ml-1 px-2 py-1.5 rounded text-dim hover:text-muted-foreground transition-colors" title={t.bot_reload}
-          >
-            {loadingGet ? <Loader2 size={13} className="animate-spin" /> : <RefreshCw size={13} />}
-          </button>
-        </div>
-        {formAvailable && <ModeSwitch value={viewMode} onChange={handleModeSwitch} lang={lang} />}
-        </div>
-
-        {/* .env warning */}
-        {activeFile === 'env' && (
-          <div className="flex items-start gap-2 bg-yellow-500/10 border border-yellow-500/30 rounded-lg px-3 py-2.5 mb-4 text-xs text-yellow-400">
-            <AlertCircle size={14} className="shrink-0 mt-0.5" />
-            <span>{t.bot_env_warning}</span>
-          </div>
-        )}
-
-        {/* Locale fallback banner */}
-        {activeFile === 'locale' && localeMeta?.fallback && (() => {
-          const fname = localeMeta.filename
-          const req   = localeMeta.requested ?? fname
-          const text =
-            localeMeta.reason === 'missing'
-              ? t.bot_locale_fb_missing.replace('{requested}', req).replace('{filename}', fname)
-              : localeMeta.reason === 'no_lang'
-                ? t.bot_locale_fb_no_lang
-                : localeMeta.reason === 'invalid_lang'
-                  ? t.bot_locale_fb_invalid
-                  : t.bot_locale_fb_cfg_err // config_missing / config_parse_error
-          return (
-            <div className="flex items-start gap-2 bg-yellow-500/10 border border-yellow-500/30 rounded-lg px-3 py-2.5 mb-4 text-xs text-yellow-400">
-              <Info size={14} className="shrink-0 mt-0.5" />
-              <span>{text}</span>
-            </div>
-          )
-        })()}
-
-        {editorMsg && <div className="mb-3"><Banner msg={editorMsg} onClose={() => setEditorMsg(null)} /></div>}
-
-        {/* Editor — form or raw file, sharing the same `content` string */}
-        {loadingGet ? (
-          <div className="flex items-center justify-center h-64 bg-bg border border-borderlt rounded-lg mb-4">
-            <Loader2 size={20} className="animate-spin text-muted-foreground" />
-          </div>
-        ) : effectiveMode === 'form' && activeFile === 'env' ? (
-          <div className="mb-4">
-            <EnvEditor content={content} onChange={c => { setContent(c); setEditorMsg(null) }} lang={lang} />
-          </div>
-        ) : effectiveMode === 'form' ? (
-          <div className="mb-4">
-            <ConfigForm
-              file={activeFile as FormFile}
-              content={content}
-              onContentChange={c => { setContent(c); setEditorMsg(null) }}
-              lang={lang}
-              issues={configIssues}
-            />
-          </div>
-        ) : (
-          <div className="border border-borderlt rounded-lg overflow-hidden mb-4">
-            <CodeMirror
-              value={content} height="700px"
-              extensions={[
-                // Nonce CodeMirror's runtime-injected <style> elements so the
-                // strict `style-src 'self' 'nonce-…'` CSP doesn't block them
-                // (without this the editor renders blank). effectiveNonce is the
-                // nonce the browser actually enforces — see its useState above.
-                ...(effectiveNonce ? [EditorView.cspNonce.of(effectiveNonce)] : []),
-                ...(activeFile !== 'env' ? [json(), mskTheme] : [mskTheme]),
-              ]}
-              theme="dark"
-              onChange={(val) => { setContent(val); setEditorMsg(null) }}
-              basicSetup={{
-                lineNumbers: true, highlightActiveLineGutter: true, highlightActiveLine: true,
-                foldGutter: activeFile !== 'env', autocompletion: false,
-                bracketMatching: activeFile !== 'env', closeBrackets: activeFile !== 'env',
-                indentOnInput: true,
-              }}
-            />
-          </div>
-        )}
-
-        <div className="flex items-center justify-between gap-3">
-          <span className="text-xs text-dim">
-            {hasBlockingErrors
-              ? <span className="text-danger">{t.bot_form_errors}</span>
-              : (isDirty && !loadingGet ? t.bot_unsaved : '')}
-          </span>
-          <div className="flex items-center gap-2">
-            {isDirty && !loadingGet && (
-              <button onClick={handleDiscard} disabled={loadingSave} className="msk-btn-ghost">
-                {t.bot_discard}
-              </button>
-            )}
-            <button
-              onClick={handleSave}
-              disabled={loadingSave || loadingGet || !isDirty || hasBlockingErrors}
-              className="msk-btn-primary"
-            >
-              {loadingSave
-                ? <><Loader2 size={15} className="animate-spin" /> {t.bot_saving}</>
-                : <><Save size={15} /> {t.bot_save}</>
-              }
-            </button>
-          </div>
-        </div>
       </div>
 
     </div>
