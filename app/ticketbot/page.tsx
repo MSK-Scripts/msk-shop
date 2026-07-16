@@ -112,10 +112,9 @@ const FEATURES = [
 // ── Verify flow (4 steps) ───────────────────────────────────────────────────────
 
 const VERIFY_STEPS = [
-  { n: '1', icon: Github,          title: 'Sign in with GitHub', text: 'Used to detect your sponsor tier.' },
-  { n: '2', icon: MessageSquare,   title: 'Connect Discord',     text: 'Link your Discord account and servers.' },
-  { n: '3', icon: ServerCog,       title: 'Select your server',  text: 'Pick the guild the bot runs on.' },
-  { n: '4', icon: KeyRound,        title: 'Get your API key',    text: 'Generated instantly — drop it into .env.' },
+  { n: '1', icon: MessageSquare,   title: 'Connect Discord',     text: 'Link your Discord account and servers.' },
+  { n: '2', icon: ServerCog,       title: 'Select your server',  text: 'Pick the guild the bot runs on.' },
+  { n: '3', icon: KeyRound,        title: 'Get your API key',    text: 'Generated instantly — drop it into .env.' },
 ]
 
 // ── Tiers (limits sourced from lib/tiers.ts) ────────────────────────────────────
@@ -304,7 +303,7 @@ export default function TicketBotPage() {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {VERIFY_STEPS.map(step => (
             <div key={step.n} className="relative rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
               <span className="absolute right-4 top-4 font-mono text-3xl font-bold leading-none text-[var(--color-border)]">

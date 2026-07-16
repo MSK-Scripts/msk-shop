@@ -150,7 +150,7 @@ export default function GiveawayBotPage() {
           </div>
 
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Button asChild size="lg" variant="discord">
+            <Button asChild size="lg">
               <a href={INVITE_URL} target="_blank" rel="noopener noreferrer">
                 <MessageSquare className="h-4 w-4" />
                 Invite the bot
@@ -162,19 +162,7 @@ export default function GiveawayBotPage() {
                 Documentation
               </a>
             </Button>
-            <Button asChild size="lg" variant="outline">
-              <Link href="/giveaway/dashboard">
-                <LayoutDashboard className="h-4 w-4" />
-                Dashboard
-              </Link>
-            </Button>
-            <Button asChild size="lg" variant="outline">
-              <Link href="/giveaway/stats">
-                <BarChart3 className="h-4 w-4" />
-                Live Stats
-              </Link>
-            </Button>
-            <Button asChild size="lg" variant="outline">
+            <Button asChild size="lg" variant="discord">
               <a href={SITE_CONFIG.discord} target="_blank" rel="noopener noreferrer">
                 <MessageSquare className="h-4 w-4" />
                 Join Discord
