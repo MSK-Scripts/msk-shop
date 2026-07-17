@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { TEBEX_BASE, TEBEX_HEADERS } from '../../auth'
+import { rateLimit, getClientIp } from '@/lib/rateLimit'
 
 const PUBLIC_TOKEN = process.env.NEXT_PUBLIC_TEBEX_PUBLIC_TOKEN!
 
@@ -8,6 +9,12 @@ export async function GET(
   { params }: { params: Promise<{ ident: string }> }
 ) {
   try {
+    // Rate limit: max 30 basket auth lookups per IP per minute — each call hits
+    // Tebex, so cap it in line with the other basket routes.
+    if (!rateLimit(getClientIp(req), { limit: 30, windowMs: 60_000 })) {
+      return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+    }
+
     const { ident } = await params
     const returnUrl = req.nextUrl.searchParams.get('returnUrl') ?? ''
     const res = await fetch(
