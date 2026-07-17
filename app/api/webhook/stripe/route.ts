@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
 import type Stripe      from 'stripe';
-import { query, queryOne, withTransaction } from '@/lib/db';
+import { queryOne, withTransaction } from '@/lib/db';
 import {
   getStripe, resolveTierFromPrice, isActiveSubStatus,
   priceIdFromSubscription, periodEndFromSubscription,
 } from '@/lib/stripe';
 import { archiveHostedBot } from '@/lib/hostedBot';
-import type { Tier }        from '@/lib/tiers';
+import { TIER_CONFIG, type Tier } from '@/lib/tiers';
 
 // ── Stripe Webhook ───────────────────────────────────────────────────────────
 //
@@ -96,12 +96,26 @@ async function applySubscription(sub: Stripe.Subscription): Promise<void> {
 
 /** Downgrade a guild to basic and archive its hosted bot (if any). */
 async function downgradeGuild(guildId: string): Promise<void> {
-  await query(
-    `UPDATE ticketbot_guilds
-        SET tier = 'basic', expires_at = NULL, stripe_subscription_id = NULL
-      WHERE guild_id = ?`,
-    [guildId],
-  );
+  // basicDays is a hard-coded number from our own config, safe to inline.
+  const basicDays = TIER_CONFIG.basic.storageDays;
+  await withTransaction(async (conn) => {
+    await conn.execute(
+      `UPDATE ticketbot_guilds
+          SET tier = 'basic', expires_at = NULL, stripe_subscription_id = NULL
+        WHERE guild_id = ?`,
+      [guildId],
+    );
+    // Clamp existing transcripts so paid-tier retention (e.g. 180d) never
+    // outlives the paid membership, but grant a basic-length grace period from
+    // the downgrade instant (NOW() + basic days), not from upload — so a customer
+    // never loses transcripts the moment they cancel. LEAST() only ever shortens.
+    await conn.execute(
+      `UPDATE ticketbot_transcripts
+          SET expires_at = LEAST(expires_at, NOW() + INTERVAL ${basicDays} DAY)
+        WHERE guild_id = ?`,
+      [guildId],
+    );
+  });
   console.info(`[stripe] guild ${guildId} → basic (subscription ended)`);
   await archiveHostedBot(guildId);
 }

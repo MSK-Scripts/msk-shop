@@ -21,6 +21,11 @@
 const { rm } = require('fs/promises');
 const mysql  = require('mysql2/promise');
 
+// Basic-tier transcript retention in days. Keep in sync with
+// lib/tiers.ts → TIER_CONFIG.basic.storageDays (this script is plain JS run via
+// cron and cannot import the TS module).
+const BASIC_STORAGE_DAYS = 30;
+
 async function main() {
   const pool = mysql.createPool({
     host:     process.env.DB_HOST     ?? 'localhost',
@@ -90,6 +95,18 @@ async function main() {
       `UPDATE ticketbot_guilds g
           SET g.tier = 'basic', g.expires_at = NULL
         WHERE ${EXPIRED_GUILD_PREDICATE}`
+    );
+    // Clamp the downgraded guilds' existing transcripts so paid-tier retention
+    // never outlives the lapsed membership, granting a basic-length grace period
+    // from the downgrade instant (NOW() + basic days), not from upload. LEAST()
+    // only ever shortens; rows past the new expiry are removed on the next run.
+    const ids          = expiredGuilds.map(g => g.guild_id);
+    const placeholders = ids.map(() => '?').join(',');
+    await pool.execute(
+      `UPDATE ticketbot_transcripts
+          SET expires_at = LEAST(expires_at, NOW() + INTERVAL ${BASIC_STORAGE_DAYS} DAY)
+        WHERE guild_id IN (${placeholders})`,
+      ids,
     );
     for (const g of expiredGuilds) {
       console.log(`[cleanup] Membership expired → downgraded guild ${g.guild_id} (${g.tier} → basic)`);
