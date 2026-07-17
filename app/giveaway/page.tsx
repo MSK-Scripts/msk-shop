@@ -1,10 +1,9 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import {
   Gift, Sparkles, RefreshCw, Globe, Palette, Layers,
   Shield, Users, PauseCircle, ScrollText, ClipboardList, Star,
   Check, MessageSquare, FileText, Github, Terminal, UserCheck,
-  CalendarClock, ListChecks, BarChart3, Mail, Bell, Pencil,
+  CalendarClock, ListChecks, Mail, Bell, Pencil,
   LayoutDashboard, Trophy,
 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
