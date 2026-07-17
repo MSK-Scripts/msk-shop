@@ -6,6 +6,9 @@ node_modules/
 out/
 next-env.d.ts
 
+# Graphify
+graphify-out/
+
 # Test coverage output
 coverage/
 
@@ -38,6 +41,7 @@ desktop.ini
 .claude/
 CLAUDE.md
 Stripe_Umstruktuierung.md
+Customer-Create-Bot.md
 
 # TypeScript
 *.tsbuildinfo
@@ -58,4 +62,3 @@ Stripe_Umstruktuierung.md
 # Apache server configs — server-specific, must not be committed
 msk-shop.conf
 msk-shop_ssl.conf
-Customer-Create-Bot.md
