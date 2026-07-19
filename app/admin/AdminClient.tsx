@@ -18,13 +18,14 @@ import CouponsTab from './CouponsTab'
 import GiftCardsTab from './GiftCardsTab'
 import BansTab from './BansTab'
 import PackagesTab from './PackagesTab'
+import ApiKeysTab from './ApiKeysTab'
 import TeamTab from './TeamTab'
 import AuditTab from './AuditTab'
 
 interface TabDef {
   id:    string
   label: string
-  perm?: AdminPermission   // tab is hidden unless the member has this permission
+  perm?: AdminPermission | AdminPermission[]   // tab is hidden unless the member has this permission (array = any of)
 }
 
 const ALL_TABS: TabDef[] = [
@@ -35,12 +36,15 @@ const ALL_TABS: TabDef[] = [
   { id: 'giftcards', label: 'Gift cards', perm: 'giftcards.manage' },
   { id: 'bans',      label: 'Bans',       perm: 'bans.manage' },
   { id: 'packages',  label: 'Packages',   perm: 'packages.edit' },
+  { id: 'apikeys',   label: 'API keys',   perm: ['api_key.view', 'api_key.change'] },
   { id: 'team',      label: 'Team',       perm: 'team.manage' },
   { id: 'audit',     label: 'Audit log',  perm: 'team.manage' },
 ]
 
 export default function AdminClient({ member }: { member: AdminTeamMember }) {
-  const tabs = ALL_TABS.filter(t => !t.perm || memberHasPermission(member, t.perm))
+  const tabs = ALL_TABS.filter(t =>
+    !t.perm || (Array.isArray(t.perm) ? t.perm : [t.perm]).some(p => memberHasPermission(member, p)),
+  )
   const [active, setActive] = useState(tabs[0].id)
 
   const handleLogout = async () => {
@@ -131,6 +135,7 @@ export default function AdminClient({ member }: { member: AdminTeamMember }) {
           {active === 'giftcards' && <GiftCardsTab />}
           {active === 'bans'      && <BansTab />}
           {active === 'packages'  && <PackagesTab />}
+          {active === 'apikeys'   && <ApiKeysTab canChange={memberHasPermission(member, 'api_key.change')} />}
           {active === 'team'      && <TeamTab selfId={member.discordUserId} />}
           {active === 'audit'     && <AuditTab />}
         </div>

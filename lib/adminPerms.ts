@@ -15,6 +15,8 @@ export const ADMIN_PERMISSIONS = [
   'giftcards.manage',
   'bans.manage',
   'packages.edit',
+  'api_key.view',
+  'api_key.change',
   'team.manage',
 ] as const;
 
@@ -29,6 +31,8 @@ export const PERMISSION_LABELS: Record<AdminPermission, { label: string; descrip
   'giftcards.manage': { label: 'Manage gift cards', description: 'Create, top up and void gift cards' },
   'bans.manage':      { label: 'Manage bans',     description: 'Create and list bans' },
   'packages.edit':    { label: 'Edit packages',   description: 'Change package name, price and visibility' },
+  'api_key.view':     { label: 'View API keys',   description: 'See ticket bot API keys, guilds, tiers and custom domains' },
+  'api_key.change':   { label: 'Change API key tier', description: 'Change the tier of a ticket bot API key' },
   'team.manage':      { label: 'Manage team',     description: 'Add/remove team members and set permissions' },
 };
 
