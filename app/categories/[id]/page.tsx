@@ -65,7 +65,7 @@ export default async function CategoryPage({
         <h1 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">{category.name}</h1>
         {category.description && (
           <div
-            className="mt-3 max-w-3xl text-base text-[var(--color-muted-foreground)]"
+            className="tebex-description mt-3 max-w-3xl"
             dangerouslySetInnerHTML={{ __html: sanitizeTebexHtml(category.description) }}
           />
         )}
