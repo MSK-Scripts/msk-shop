@@ -45,7 +45,11 @@ fi
 
 TRANSCRIPT_DIR="/var/www/html/transcripts/$GUILD_ID"
 VHOST_FILE="/etc/apache2/sites-available/$DOMAIN.conf"
-WEBROOT="/var/www/html/acme-challenge"
+# ACME http-01 webroot. MUST be /var/www/html — that is where this server's default
+# vhost (000-default) and the forms wildcard vhost (ServerAlias *) already serve
+# /.well-known/acme-challenge/ from. Any other path means the wildcard catch-all
+# answers the challenge from /var/www/html, 404s, and the certificate never issues.
+WEBROOT="/var/www/html"
 
 # ── Rollback trap ─────────────────────────────────────────────────────────────
 # If anything goes wrong after we've created the VHost but before we finish,
@@ -73,22 +77,29 @@ mkdir -p "$TRANSCRIPT_DIR"
 chown "$SERVICE_USER:www-data" "$TRANSCRIPT_DIR"
 chmod 2775 "$TRANSCRIPT_DIR"
 
-# ── Create webroot for certbot challenge ──────────────────────────────────────
-
-mkdir -p "$WEBROOT"
-chown www-data:www-data "$WEBROOT"
+# ── Ensure the ACME challenge dir exists ──────────────────────────────────────
+# certbot --webroot creates it too; this is just insurance. NOTE: never chown
+# /var/www/html itself — only make sure the challenge subdir is present.
+mkdir -p "$WEBROOT/.well-known/acme-challenge"
 
 # ── Step 1: Temporary HTTP-only VHost for certbot challenge ───────────────────
+# Exact-ServerName vhost so the domain resolves predictably during provisioning.
+# Serves ONLY the ACME challenge from the shared web root (same convention as
+# 000-default) and denies everything else. Even if the forms wildcard vhost
+# (ServerAlias *) handles the request instead, it serves the challenge from the
+# same /var/www/html — so issuance works either way.
 
 cat > "$VHOST_FILE" << APACHE
 <VirtualHost *:80>
     ServerName $DOMAIN
     DocumentRoot $WEBROOT
 
-    <Directory $WEBROOT>
-        AllowOverride None
+    <Location />
+        Require all denied
+    </Location>
+    <Location /.well-known/acme-challenge/>
         Require all granted
-    </Directory>
+    </Location>
 </VirtualHost>
 APACHE
 
