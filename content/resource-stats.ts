@@ -41,11 +41,25 @@ const GITHUB_ORG = 'https://github.com/MSK-Scripts'
 
 export const RESOURCE_STATS: ResourceStatEntry[] = [
   // ─── Free ────────────────────────────────────────────────────
+  // msk_core is always listed first; the remaining free resources follow
+  // alphabetically.
   {
     resourceName: 'msk_core',
     displayName: 'MSK Core',
     tier: 'free',
     github: `${GITHUB_ORG}/msk_core`,
+  },
+  {
+    resourceName: 'msk_aimedic',
+    displayName: 'MSK AI Medic',
+    tier: 'free',
+    github: `${GITHUB_ORG}/msk_aimedic`,
+  },
+  {
+    resourceName: 'msk_aitaxi',
+    displayName: 'MSK AI Taxi',
+    tier: 'free',
+    github: `${GITHUB_ORG}/msk_aitaxi`,
   },
   {
     resourceName: 'msk_enginetoggle',
