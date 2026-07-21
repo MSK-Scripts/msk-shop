@@ -23,16 +23,19 @@ if ! [[ "$DOMAIN" =~ ^[a-zA-Z0-9][a-zA-Z0-9.-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$ ]
 fi
 
 VHOST_FILE="/etc/apache2/sites-available/$DOMAIN.conf"
+ENABLED_LINK="/etc/apache2/sites-enabled/$DOMAIN.conf"
 
 # ── Disable and remove VHost ──────────────────────────────────────────────────
+# Always disable and clean up BOTH locations, even if the sites-available file is
+# already gone. A domain replacement (set → delete-old + create-new) or a prior
+# partial run can leave a dangling sites-enabled symlink behind, and a dangling
+# symlink makes `apache2ctl configtest` fail for the WHOLE server — which then
+# blocks every future reload/deploy, not just this one domain. Guarding a2dissite
+# behind `[ -f "$VHOST_FILE" ]` is exactly what let that orphan survive.
 
-if [ -f "$VHOST_FILE" ]; then
-    a2dissite "$DOMAIN.conf" >/dev/null || true
-    rm -f "$VHOST_FILE"
-    echo "Removed VHost config: $VHOST_FILE"
-else
-    echo "VHost config not found (already removed?): $VHOST_FILE"
-fi
+a2dissite "$DOMAIN.conf" >/dev/null 2>&1 || true
+rm -f "$VHOST_FILE" "$ENABLED_LINK"
+echo "Removed VHost config for $DOMAIN (sites-available + sites-enabled)."
 
 # ── Reload Apache safely ──────────────────────────────────────────────────────
 
