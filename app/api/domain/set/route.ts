@@ -5,6 +5,7 @@ import { promises as dns }           from 'dns';
 import { authorizeGuild }            from '@/lib/dashboardAuth';
 import { query, queryOne }           from '@/lib/db';
 import { TIER_CONFIG }               from '@/lib/tiers';
+import { rateLimit, getClientIp }    from '@/lib/rateLimit';
 
 const execFileAsync = promisify(execFile);
 
@@ -49,6 +50,14 @@ export async function POST(req: Request): Promise<NextResponse> {
   }
   if (!TIER_CONFIG[guild.tier].customDomain) {
     return NextResponse.json({ error: 'Custom domains require Premium or Premium+.' }, { status: 403 });
+  }
+
+  // Rate limit — this shells out to certbot (shared Let's Encrypt ACME quota) and
+  // apache reload. Cap tightly per guild and per IP so one tenant cannot exhaust
+  // the server-wide new-order budget or fork-storm the host for everyone.
+  if (!rateLimit(`domain-set:${guildId}`, { limit: 3, windowMs: 3600_000 }) ||
+      !rateLimit(`domain-set-ip:${getClientIp(req)}`, { limit: 6, windowMs: 3600_000 })) {
+    return NextResponse.json({ error: 'Too many domain changes. Try again later.' }, { status: 429 });
   }
 
   // Check domain not already taken by another guild

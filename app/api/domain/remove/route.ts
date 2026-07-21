@@ -3,6 +3,7 @@ import { execFile }              from 'child_process';
 import { promisify }             from 'util';
 import { authorizeGuild }        from '@/lib/dashboardAuth';
 import { query }                 from '@/lib/db';
+import { rateLimit, getClientIp } from '@/lib/rateLimit';
 
 const execFileAsync = promisify(execFile);
 
@@ -20,6 +21,12 @@ export async function POST(req: Request): Promise<NextResponse> {
   const auth = await authorizeGuild(guildId);
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status });
   const guild = auth.guild;
+
+  // Rate limit — shells out to vhost-delete.sh (apache reload). Cap per guild + IP.
+  if (!rateLimit(`domain-remove:${guildId}`, { limit: 5, windowMs: 3600_000 }) ||
+      !rateLimit(`domain-remove-ip:${getClientIp(req)}`, { limit: 10, windowMs: 3600_000 })) {
+    return NextResponse.json({ error: 'Too many domain changes. Try again later.' }, { status: 429 });
+  }
 
   if (!guild?.custom_domain) {
     return NextResponse.json({ error: 'No domain configured.' }, { status: 400 });

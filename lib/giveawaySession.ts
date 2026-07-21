@@ -16,8 +16,14 @@ function getSecret(): string {
   return secret;
 }
 
-function sign(scope: string, data: unknown): string {
-  const payload = Buffer.from(JSON.stringify(data)).toString('base64url');
+// Signed tokens carry an absolute expiry (`exp`, ms epoch) inside the HMAC-signed
+// envelope, enforced on parse — so a leaked/copied token string is not valid
+// forever, independent of the client-controlled cookie maxAge.
+interface Envelope<T> { d: T; exp: number; }
+
+function sign(scope: string, data: unknown, ttlMs: number): string {
+  const envelope: Envelope<unknown> = { d: data, exp: Date.now() + ttlMs };
+  const payload = Buffer.from(JSON.stringify(envelope)).toString('base64url');
   const sig     = createHmac('sha256', getSecret()).update(`${scope}:${payload}`).digest('base64url');
   return `${payload}.${sig}`;
 }
@@ -33,7 +39,9 @@ function parse<T>(scope: string, token: string | undefined): T | null {
   const expBuf = Buffer.from(expected);
   if (sigBuf.length !== expBuf.length || !timingSafeEqual(sigBuf, expBuf)) return null;
   try {
-    return JSON.parse(Buffer.from(payload, 'base64url').toString()) as T;
+    const env = JSON.parse(Buffer.from(payload, 'base64url').toString()) as Envelope<T>;
+    if (typeof env.exp !== 'number' || env.exp < Date.now()) return null;
+    return env.d;
   } catch {
     return null;
   }
@@ -44,8 +52,13 @@ export interface GiveawaySession {
   guildId: string;
 }
 
+// Final dashboard session lives 30 days; the intermediate post-OAuth token is
+// short-lived (just the guild-selection step).
+const SESSION_TTL_MS = 30 * 24 * 3600_000;   // 30 days
+const VERIFY_TTL_MS  = 15 * 60_000;          // 15 minutes
+
 export function signGiveawaySession(data: GiveawaySession): string {
-  return sign('giveaway', data);
+  return sign('giveaway', data, SESSION_TTL_MS);
 }
 
 export function parseGiveawaySession(token: string | undefined): GiveawaySession | null {
@@ -60,7 +73,7 @@ export interface GiveawayVerifyData {
 }
 
 export function signGiveawayVerify(data: GiveawayVerifyData): string {
-  return sign('giveaway-verify', data);
+  return sign('giveaway-verify', data, VERIFY_TTL_MS);
 }
 
 export function parseGiveawayVerify(token: string | undefined): GiveawayVerifyData | null {

@@ -147,7 +147,7 @@ export function middleware(request: NextRequest) {
     `style-src-attr 'unsafe-inline'`,
     `img-src 'self' blob: data: cdn.tebex.io *.tebex.io dunb17ur4ymx4.cloudfront.net *.cloudfront.net *.msk-scripts.de cdn.discordapp.com`,
     `font-src 'self' data:`,
-    `connect-src 'self' ws: wss: https://headless.tebex.io https://ident.tebex.io https://discord.com`,
+    `connect-src 'self' https://headless.tebex.io https://ident.tebex.io https://discord.com`,
     // Next.js verwendet blob:-Worker für sein Streaming-Hydration-System
     `worker-src 'self' blob:`,
     `manifest-src 'self'`,

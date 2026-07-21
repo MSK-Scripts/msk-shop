@@ -18,13 +18,25 @@
  *     >> /var/log/msk-cleanup.log 2>&1
  */
 
-const { rm } = require('fs/promises');
-const mysql  = require('mysql2/promise');
+const { rm, readdir, stat } = require('fs/promises');
+const { execFile }          = require('child_process');
+const { promisify }         = require('util');
+const path                  = require('path');
+const mysql                 = require('mysql2/promise');
+
+const execFileAsync = promisify(execFile);
 
 // Basic-tier transcript retention in days. Keep in sync with
 // lib/tiers.ts → TIER_CONFIG.basic.storageDays (this script is plain JS run via
-// cron and cannot import the TS module).
+// cron and cannot import the TS module). tests/basicStorageDays.test.ts guards
+// against drift.
 const BASIC_STORAGE_DAYS = 30;
+
+// Archived hosted-bot directories (<guildId>_archived_<ts>) are hard-deleted
+// after this many days. The Stripe cancel webhook only RENAMES the dir (keeping
+// its .env secrets + ticket PII on disk); the privacy policy promises deletion
+// within 14 days of cancellation, so this cron enforces it.
+const ARCHIVE_MAX_AGE_DAYS = 14;
 
 async function main() {
   const pool = mysql.createPool({
@@ -85,7 +97,7 @@ async function main() {
     AND g.stripe_subscription_id IS NULL`;
 
   const [expiredGuilds] = await pool.execute(
-    `SELECT g.guild_id, g.is_hosted, g.tier
+    `SELECT g.guild_id, g.is_hosted, g.tier, g.custom_domain, g.domain_status
        FROM ticketbot_guilds g
       WHERE ${EXPIRED_GUILD_PREDICATE}`
   );
@@ -111,9 +123,32 @@ async function main() {
     for (const g of expiredGuilds) {
       console.log(`[cleanup] Membership expired → downgraded guild ${g.guild_id} (${g.tier} → basic)`);
       if (g.is_hosted) {
+        // Hosted-bot teardown (PM2 stop + dir archive) stays in the webhook: it
+        // runs as the app user that owns the PM2 daemon, which this root cron
+        // cannot manage. Flag it loudly so it can be reconciled.
         console.warn(`[cleanup] ⚠ guild ${g.guild_id} is still HOSTED after downgrade — archive it manually or via the cancel webhook.`);
       }
     }
+
+    // Reclaim premium-only custom domains: tear down the vhost for any that were
+    // active, then demote status to pending_dns (keep custom_domain so a later
+    // re-subscribe restores it; the /api/domain/validate tier gate blocks any
+    // re-activation while the guild is basic). Best-effort — never abort cleanup.
+    for (const g of expiredGuilds) {
+      if (g.domain_status === 'active' && g.custom_domain) {
+        try {
+          await execFileAsync('/opt/msk-shop/scripts/vhost-delete.sh', [g.custom_domain]);
+          console.log(`[cleanup] Tore down custom domain vhost for guild ${g.guild_id} (${g.custom_domain})`);
+        } catch (err) {
+          console.error(`[cleanup] vhost teardown failed for guild ${g.guild_id}:`, err.message);
+        }
+      }
+    }
+    await pool.execute(
+      `UPDATE ticketbot_guilds SET domain_status = 'pending_dns'
+        WHERE guild_id IN (${placeholders}) AND custom_domain IS NOT NULL AND domain_status = 'active'`,
+      ids,
+    );
   }
   console.log(`[cleanup] Expired memberships downgraded: ${expiredGuilds.length}`);
 
@@ -121,6 +156,36 @@ async function main() {
   await pool.execute(
     `DELETE FROM ticketbot_rate_limits WHERE window_start < DATE_SUB(NOW(), INTERVAL 2 HOUR)`
   );
+
+  // ── Purge archived hosted-bot directories past retention ─────────────────────
+  // The Stripe cancel webhook renames a hosted bot's dir to <guildId>_archived_<ts>
+  // (its .env secrets + ticket PII stay on disk). Hard-delete those once they are
+  // older than ARCHIVE_MAX_AGE_DAYS so we honor the privacy policy's 14-day promise.
+  const botBase = process.env.BOT_CONFIG_BASE_PATH;
+  if (botBase) {
+    let purged = 0;
+    try {
+      const entries = await readdir(botBase, { withFileTypes: true });
+      const cutoff  = Date.now() - ARCHIVE_MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
+      for (const e of entries) {
+        if (!e.isDirectory() || !e.name.includes('_archived_')) continue;
+        const full = path.join(botBase, e.name);
+        try {
+          const st = await stat(full);
+          if (st.mtimeMs < cutoff) {
+            await rm(full, { recursive: true, force: true });
+            purged++;
+            console.log(`[cleanup] Purged archived bot dir: ${e.name}`);
+          }
+        } catch (err) {
+          console.error(`[cleanup] Failed to purge ${e.name}:`, err.message);
+        }
+      }
+    } catch (err) {
+      console.error('[cleanup] Could not scan BOT_CONFIG_BASE_PATH for archives:', err.message);
+    }
+    console.log(`[cleanup] Archived bot dirs purged: ${purged}`);
+  }
 
   await pool.end();
   console.log(`[cleanup] Done. Deleted: ${deleted}, Errors: ${errors}`);

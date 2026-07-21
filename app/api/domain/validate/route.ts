@@ -4,6 +4,8 @@ import { execFile }              from 'child_process';
 import { promisify }             from 'util';
 import { authorizeGuild }        from '@/lib/dashboardAuth';
 import { query }                 from '@/lib/db';
+import { TIER_CONFIG }           from '@/lib/tiers';
+import { rateLimit, getClientIp } from '@/lib/rateLimit';
 
 const execFileAsync = promisify(execFile);
 
@@ -32,6 +34,21 @@ export async function POST(req: Request): Promise<NextResponse> {
   const auth = await authorizeGuild(guildId);
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status });
   const guild = auth.guild;
+
+  // Tier gate — custom domains are Premium/Premium+ only. This MUST be enforced
+  // here too (not just in /api/domain/set): a guild that saved a domain while
+  // premium keeps its custom_domain row after a downgrade, and without this gate
+  // could re-provision the vhost + SSL for free by calling validate directly.
+  if (!TIER_CONFIG[guild.tier].customDomain) {
+    return NextResponse.json({ error: 'Custom domains require Premium or Premium+.' }, { status: 403 });
+  }
+
+  // Rate limit — validate provisions a vhost + Let's Encrypt cert (shared ACME
+  // quota), so cap it per guild and per IP.
+  if (!rateLimit(`domain-validate:${guildId}`, { limit: 5, windowMs: 3600_000 }) ||
+      !rateLimit(`domain-validate-ip:${getClientIp(req)}`, { limit: 10, windowMs: 3600_000 })) {
+    return NextResponse.json({ error: 'Too many domain checks. Try again later.' }, { status: 429 });
+  }
 
   if (!guild?.custom_domain) {
     return NextResponse.json({ error: 'No domain configured.' }, { status: 400 });

@@ -7,12 +7,13 @@ export async function POST(
   { params }: { params: Promise<{ ident: string }> }
 ) {
   try {
-    // Rate limit: max 30 basket mutations per IP per minute
-    if (!rateLimit(getClientIp(req), { limit: 30, windowMs: 60_000 })) {
+    const { ident } = await params
+
+    // Rate limit: max 30 add-package mutations per IP per minute (route-namespaced).
+    if (!rateLimit(`basket-pkg:${getClientIp(req)}`, { limit: 30, windowMs: 60_000 })) {
       return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
     }
 
-    const { ident } = await params
     const body = await req.json()
 
     // Coerce quantity to a positive integer; reject negative/zero/non-integer
@@ -31,7 +32,7 @@ export async function POST(
     if (Object.keys(variableData).length > 0) payload.variable_data = variableData
     if (body.gift_username) payload.gift_username = body.gift_username
 
-    const res = await fetch(`${TEBEX_BASE}/baskets/${ident}/packages`, {
+    const res = await fetch(`${TEBEX_BASE}/baskets/${encodeURIComponent(ident)}/packages`, {
       method: 'POST',
       headers: { ...TEBEX_HEADERS, Authorization: getTebexAuth() },
       body: JSON.stringify(payload),

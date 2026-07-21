@@ -54,6 +54,11 @@ CREATE TABLE IF NOT EXISTS ticketbot_customers (
 );
 
 -- Transcripts
+-- One transcript per (guild_id, ticket_id): a re-close of the same ticket
+-- REPLACES the transcript in place (stable public URL). The UNIQUE key enforces
+-- that invariant at the DB level and serializes two concurrent uploads for the
+-- same ticket (the loser's INSERT fails → the route returns 409 instead of
+-- minting a duplicate row/URL).
 CREATE TABLE IF NOT EXISTS ticketbot_transcripts (
     id              VARCHAR(36)  PRIMARY KEY,         -- UUID
     guild_id        VARCHAR(20)  NOT NULL,
@@ -64,8 +69,18 @@ CREATE TABLE IF NOT EXISTS ticketbot_transcripts (
     has_attachments BOOLEAN      NOT NULL DEFAULT FALSE,
     created_at      DATETIME     NOT NULL DEFAULT NOW(),
     expires_at      DATETIME     NOT NULL,
+    UNIQUE KEY uniq_transcript_guild_ticket (guild_id, ticket_id),
     FOREIGN KEY (guild_id) REFERENCES ticketbot_guilds(guild_id) ON DELETE CASCADE
 );
+
+-- Migration for existing databases — dedupe first (keep the newest per ticket),
+-- then add the unique key. Adding the constraint fails if duplicates still exist:
+--   DELETE t FROM ticketbot_transcripts t
+--     JOIN ticketbot_transcripts n
+--       ON n.guild_id = t.guild_id AND n.ticket_id = t.ticket_id
+--      AND (n.created_at > t.created_at OR (n.created_at = t.created_at AND n.id > t.id));
+--   ALTER TABLE ticketbot_transcripts
+--     ADD UNIQUE KEY uniq_transcript_guild_ticket (guild_id, ticket_id);
 
 -- Attachments (Premium)
 CREATE TABLE IF NOT EXISTS ticketbot_attachments (

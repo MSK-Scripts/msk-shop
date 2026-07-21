@@ -1,22 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { exec }                  from 'child_process';
-import { promisify }             from 'util';
 import { open }                   from 'fs/promises';
 import { authorizeGuild }        from '@/lib/dashboardAuth';
-
-const execAsync = promisify(exec);
+import { rateLimit, getClientIp } from '@/lib/rateLimit';
+import { getPm2List }             from '@/lib/pm2';
 
 // Read at most 50 KB from the end of the log file.
 // Prevents loading a potentially multi-GB log file into memory.
 const MAX_READ_BYTES = 50_000;
-
-interface Pm2Process {
-  name:    string;
-  pm2_env: {
-    status:           string;
-    pm_err_log_path?: string;
-  };
-}
 
 /** Authorize a hosted-bot request (owner + active hosted bot). */
 async function authHosted(req: NextRequest): Promise<{ guildId: string } | { error: NextResponse }> {
@@ -60,10 +50,14 @@ export async function GET(req: NextRequest) {
     if ('error' in a) return a.error;
     const guildId = a.guildId;
 
-    const appName    = `ticketbot-${guildId}`;
-    const { stdout } = await execAsync('pm2 jlist');
-    const list       = JSON.parse(stdout) as Pm2Process[];
-    const bot        = list.find(p => p.name === appName);
+    if (!rateLimit(`bot-logs:${guildId}`, { limit: 60, windowMs: 60_000 }) ||
+        !rateLimit(`bot-logs-ip:${getClientIp(req)}`, { limit: 120, windowMs: 60_000 })) {
+      return NextResponse.json({ error: 'Zu viele Anfragen. Bitte kurz warten.' }, { status: 429 });
+    }
+
+    const appName = `ticketbot-${guildId}`;
+    const list    = await getPm2List();
+    const bot     = list.find(p => p.name === appName);
 
     if (!bot) return NextResponse.json({ lines: [] });
 

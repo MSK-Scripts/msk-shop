@@ -41,5 +41,7 @@ export const GET = adminRoute(['api_key.view', 'api_key.change'], async () => {
     expiresAt:    r.expires_at,
   }));
 
-  return NextResponse.json({ keys });
+  // Response carries raw guild API keys → never let any cache (even a private
+  // browser cache on a shared machine) persist it.
+  return NextResponse.json({ keys }, { headers: { 'Cache-Control': 'no-store' } });
 });

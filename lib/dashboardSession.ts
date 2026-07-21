@@ -21,8 +21,18 @@ export interface DashboardSession {
   discordUserId: string;
 }
 
+/** Session lifetime — matches the cookie maxAge, but enforced server-side too so
+ *  a leaked/copied token string is not valid forever (independent of the cookie). */
+const SESSION_TTL_MS = 30 * 24 * 3600_000;   // 30 days
+
+/** Payload actually written to the token: session data + an absolute expiry. */
+interface SignedPayload extends DashboardSession {
+  exp: number;   // ms epoch; enforced in parseDashboardSession
+}
+
 export function signDashboardSession(data: DashboardSession): string {
-  const payload = Buffer.from(JSON.stringify(data)).toString('base64url');
+  const body: SignedPayload = { discordUserId: data.discordUserId, exp: Date.now() + SESSION_TTL_MS };
+  const payload = Buffer.from(JSON.stringify(body)).toString('base64url');
   const sig     = createHmac('sha256', getSecret()).update(payload).digest('base64url');
   return `${payload}.${sig}`;
 }
@@ -39,7 +49,11 @@ export function parseDashboardSession(token: string): DashboardSession | null {
   const expBuf = Buffer.from(expected);
   if (sigBuf.length !== expBuf.length || !timingSafeEqual(sigBuf, expBuf)) return null;
   try {
-    return JSON.parse(Buffer.from(payload, 'base64url').toString()) as DashboardSession;
+    const data = JSON.parse(Buffer.from(payload, 'base64url').toString()) as SignedPayload;
+    // Enforce expiry server-side — a leaked token string is not valid forever.
+    if (typeof data.exp !== 'number' || data.exp < Date.now()) return null;
+    if (!data.discordUserId) return null;
+    return { discordUserId: data.discordUserId };
   } catch {
     return null;
   }

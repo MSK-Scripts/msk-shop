@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { adminRoute }   from '@/lib/adminApi';
 import { writeAudit }   from '@/lib/adminAudit';
 import { query, queryOne } from '@/lib/db';
-import { isAdminPermission, parseAdminPermissions } from '@/lib/adminPerms';
+import { isAdminPermission, parseAdminPermissions, type AdminPermission } from '@/lib/adminPerms';
 
 // Session-/cookie-dependent → never cache.
 export const dynamic = 'force-dynamic';
@@ -37,10 +37,19 @@ export const POST = adminRoute('team.manage', async ({ req, member }) => {
   const body          = await req.json().catch(() => null);
   const discordUserId = typeof body?.discordUserId === 'string' ? body.discordUserId.trim() : '';
   const displayName   = typeof body?.displayName === 'string' ? (body.displayName.trim() || null) : null;
-  const permissions   = (Array.isArray(body?.permissions) ? body.permissions : []).filter(isAdminPermission);
+  const permissions: AdminPermission[] = (Array.isArray(body?.permissions) ? body.permissions : []).filter(isAdminPermission);
 
   if (!/^\d{5,32}$/.test(discordUserId)) {
     return NextResponse.json({ error: 'A valid Discord user id is required.' }, { status: 400 });
+  }
+
+  // Self-guard: a member must not edit their own row through POST. The PATCH
+  // route blocks self-escalation, but POST's INSERT ... ON DUPLICATE KEY UPDATE
+  // would otherwise let a non-owner re-write their OWN permissions to the full
+  // set (real privilege escalation). Editing yourself is not a valid team
+  // operation here — the owner seed / PATCH cover legitimate cases.
+  if (discordUserId === member.discordUserId) {
+    return NextResponse.json({ error: 'You cannot modify your own account here.' }, { status: 403 });
   }
 
   // Never let the owner row be overwritten through this route.

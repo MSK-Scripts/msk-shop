@@ -9,14 +9,14 @@ export async function POST(
   { params }: { params: Promise<{ ident: string }> }
 ) {
   try {
-    // Rate limit: max 30 basket mutations per IP per minute
-    if (!rateLimit(getClientIp(req), { limit: 30, windowMs: 60_000 })) {
+    // Rate limit: max 30 coupon mutations per IP per minute (route-namespaced).
+    if (!rateLimit(`basket-coupon:${getClientIp(req)}`, { limit: 30, windowMs: 60_000 })) {
       return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
     }
 
     const { ident } = await params
     const body = await req.json()
-    const res = await fetch(`${TEBEX_BASE}/accounts/${PUBLIC_TOKEN}/baskets/${ident}/coupons`, {
+    const res = await fetch(`${TEBEX_BASE}/accounts/${PUBLIC_TOKEN}/baskets/${encodeURIComponent(ident)}/coupons`, {
       method: 'POST',
       headers: { ...TEBEX_HEADERS, Authorization: getTebexAuth() },
       body: JSON.stringify({ coupon_code: body.coupon_code }),

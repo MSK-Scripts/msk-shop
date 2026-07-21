@@ -10,7 +10,7 @@ export async function GET(
   try {
     const { ident } = await params
     const res = await fetch(
-      `${TEBEX_BASE}/accounts/${PUBLIC_TOKEN}/baskets/${ident}`,
+      `${TEBEX_BASE}/accounts/${PUBLIC_TOKEN}/baskets/${encodeURIComponent(ident)}`,
       { headers: { ...TEBEX_HEADERS, Authorization: getTebexAuth() }, cache: 'no-store' }
     )
     const data = await res.json()

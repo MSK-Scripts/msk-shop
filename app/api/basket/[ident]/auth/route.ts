@@ -9,16 +9,16 @@ export async function GET(
   { params }: { params: Promise<{ ident: string }> }
 ) {
   try {
-    // Rate limit: max 30 basket auth lookups per IP per minute — each call hits
-    // Tebex, so cap it in line with the other basket routes.
-    if (!rateLimit(getClientIp(req), { limit: 30, windowMs: 60_000 })) {
+    // Rate limit: max 30 basket auth lookups per IP per minute (route-namespaced) —
+    // each call hits Tebex, so cap it in line with the other basket routes.
+    if (!rateLimit(`basket-auth:${getClientIp(req)}`, { limit: 30, windowMs: 60_000 })) {
       return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
     }
 
     const { ident } = await params
     const returnUrl = req.nextUrl.searchParams.get('returnUrl') ?? ''
     const res = await fetch(
-      `${TEBEX_BASE}/accounts/${PUBLIC_TOKEN}/baskets/${ident}/auth?returnUrl=${encodeURIComponent(returnUrl)}`,
+      `${TEBEX_BASE}/accounts/${PUBLIC_TOKEN}/baskets/${encodeURIComponent(ident)}/auth?returnUrl=${encodeURIComponent(returnUrl)}`,
       { headers: TEBEX_HEADERS, cache: 'no-store' }
     )
     const data = await res.json()

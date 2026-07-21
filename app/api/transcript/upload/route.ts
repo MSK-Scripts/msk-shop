@@ -3,9 +3,12 @@ import { randomUUID }                  from 'crypto';
 import { writeFile, mkdir, rm }        from 'fs/promises';
 import path                            from 'path';
 import sharp                           from 'sharp';
-import { query, queryOne }             from '@/lib/db';
+import { query, queryOne, withTransaction } from '@/lib/db';
 import { TIER_CONFIG, getExpiresAt }   from '@/lib/tiers';
 import type { Tier }                   from '@/lib/tiers';
+import {
+  UUID_RE, extractApiKey, safeAttachmentExt, isAllowedMime, IMAGE_EXTS,
+} from '@/lib/transcriptGuards';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -36,19 +39,11 @@ interface AttachmentInput {
                        // (attachments/<id>.<ext>). Strictly validated below.
 }
 
-/** Lowercase UUID (any version) — the only shape we accept as a bot-supplied
- *  attachment id. Anything else falls back to a server-generated UUID, so a
- *  malicious value can never influence the on-disk filename. */
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
-
 // ── Helpers ────────────────────────────────────────────────────────────────────
-
-/** Extract and validate the Bearer token from the Authorization header. */
-function extractApiKey(req: Request): string | null {
-  const auth = req.headers.get('authorization') ?? '';
-  const match = auth.match(/^Bearer\s+([A-Za-z0-9_\-]{32,128})$/);
-  return match ? match[1] : null;
-}
+//
+// The pure validation guards (UUID_RE, extractApiKey, safeAttachmentExt,
+// isAllowedMime, IMAGE_EXTS) live in @/lib/transcriptGuards so they can be
+// unit-tested independently of this route.
 
 /** Validate that the guild was found and is active. */
 function isValidGuild(guild: GuildRow | null): guild is GuildRow {
@@ -78,22 +73,16 @@ function transcriptUrlPrefix(guild: GuildRow): string {
   return `${base}/transcripts/${guild.guild_id}`;
 }
 
-/** Enforce rate limiting – max N uploads per rolling 60-minute window per API key. */
+/** Enforce rate limiting – max N uploads per rolling 60-minute window per API key.
+ *  Increments FIRST, then checks the window sum, so two concurrent uploads at the
+ *  limit boundary cannot both read an under-limit count and both slip through
+ *  (closes the check-then-act TOCTOU). The request that tips the window over is
+ *  counted but rejected — the count self-heals as the window rolls forward. */
 async function checkRateLimit(apiKey: string, maxPerHour: number): Promise<boolean> {
   const windowStart = new Date();
   windowStart.setMinutes(windowStart.getMinutes() - 60);
 
-  const rows = await query<RateLimitRow>(
-    `SELECT SUM(request_count) AS request_count
-     FROM ticketbot_rate_limits
-     WHERE api_key = ? AND window_start >= ?`,
-    [apiKey, windowStart],
-  );
-
-  const count = Number(rows[0]?.request_count ?? 0);
-  if (count >= maxPerHour) return false;
-
-  // Record this request (upsert into current minute bucket)
+  // Record this request first (upsert into current minute bucket).
   const bucket = new Date();
   bucket.setSeconds(0, 0);
   await query(
@@ -103,34 +92,25 @@ async function checkRateLimit(apiKey: string, maxPerHour: number): Promise<boole
     [apiKey, bucket],
   );
 
-  // Prune old buckets (keep DB clean)
+  // Now read the window total INCLUDING this request. If it exceeds the cap,
+  // reject — concurrent requests each increment before reading, so no batch of
+  // parallel uploads can collectively overshoot the limit.
+  const rows = await query<RateLimitRow>(
+    `SELECT SUM(request_count) AS request_count
+     FROM ticketbot_rate_limits
+     WHERE api_key = ? AND window_start >= ?`,
+    [apiKey, windowStart],
+  );
+  const count = Number(rows[0]?.request_count ?? 0);
+
+  // Prune old buckets (keep DB clean).
   await query(
     `DELETE FROM ticketbot_rate_limits WHERE window_start < ?`,
     [windowStart],
   );
 
-  return true;
+  return count <= maxPerHour;
 }
-
-/** Allow-listed attachment extensions — mirrors the Apache FilesMatch allowlist,
- *  minus html/svg (which can carry active content). The on-disk filename is
- *  rebuilt as `<uuid>.<ext>`, so an attacker-controlled name such as "x.php.png"
- *  (legacy AddHandler bypass), "../x" or a null-byte trick can never reach the
- *  web root — defense in depth, independent of the Apache config. */
-const ALLOWED_ATTACHMENT_EXTS = new Set([
-  'png', 'jpg', 'jpeg', 'gif', 'webp', 'pdf', 'mp4', 'mp3', 'zip', 'txt',
-]);
-
-/** Return a lowercased, allow-listed file extension, or null if not allowed. */
-function safeAttachmentExt(name: string): string | null {
-  const ext = path.extname(name).slice(1).toLowerCase();
-  return ALLOWED_ATTACHMENT_EXTS.has(ext) ? ext : null;
-}
-
-/** Image extensions we re-encode through sharp — strips embedded payloads /
- *  polyglots / metadata and proves the bytes are a real image. Non-image
- *  allow-listed types (pdf/mp4/mp3/zip/txt) are stored as-is. */
-const IMAGE_EXTS = new Set(['png', 'jpg', 'jpeg', 'webp', 'gif']);
 
 /** Re-encode an image attachment. Throws if the bytes are not a decodable image
  *  → the caller rejects the upload. */
@@ -147,24 +127,12 @@ async function reencodeImage(ext: string, raw: Buffer): Promise<Buffer> {
   }
 }
 
-/** Validate MIME type for attachments – block executables. */
-function isAllowedMime(mime: string): boolean {
-  const blocked = [
-    'application/x-msdownload',
-    'application/x-executable',
-    'application/x-sh',
-    'text/x-sh',
-    'application/x-bat',
-  ];
-  return !blocked.some(b => mime.toLowerCase().startsWith(b));
-}
-
 // ── Route Handler ──────────────────────────────────────────────────────────────
 
 export async function POST(req: Request): Promise<NextResponse> {
   try {
     // 1. Authenticate – API key from Authorization header
-    const apiKey = extractApiKey(req);
+    const apiKey = extractApiKey(req.headers.get('authorization'));
     if (!apiKey) {
       return NextResponse.json({ error: 'Missing or invalid Authorization header.' }, { status: 401 });
     }
@@ -186,7 +154,20 @@ export async function POST(req: Request): Promise<NextResponse> {
       return NextResponse.json({ error: 'Rate limit exceeded. Try again later.' }, { status: 429 });
     }
 
-    // 4. Parse body
+    // 4. Body-size ceiling BEFORE reading the body. This route is deliberately
+    //    exempt from the middleware body cap (large Premium+ uploads), and an
+    //    App Router handler has no default limit — so `await req.json()` would
+    //    otherwise buffer an arbitrarily large body into the shared heap and let
+    //    a single tenant OOM the whole process. Reject via Content-Length against
+    //    this tier's own ceiling (transcript + attachments) with a generous
+    //    margin for base64 (~1.34x) and JSON overhead.
+    const maxBodyBytes = Math.ceil((tierCfg.transcriptMaxBytes + tierCfg.attachmentMaxBytes) * 1.4) + 1024 * 1024;
+    const contentLength = Number(req.headers.get('content-length') ?? '');
+    if (Number.isFinite(contentLength) && contentLength > maxBodyBytes) {
+      return NextResponse.json({ error: 'Payload too large for your tier.' }, { status: 413 });
+    }
+
+    // 5. Parse body
     let body: RequestBody;
     try {
       body = await req.json() as RequestBody;
@@ -328,33 +309,47 @@ export async function POST(req: Request): Promise<NextResponse> {
     const expiresAt      = getExpiresAt(guild.tier);
     const transcriptUrl  = `${urlPrefix}/${transcriptId}/${htmlFilename}`;
 
-    // Replace in place when reusing an id (clears the old row + its attachment
-    // rows via cascade); a no-op for a brand-new id.
-    await query(`DELETE FROM ticketbot_transcripts WHERE id = ?`, [transcriptId]);
-
-    await query(
-      `INSERT INTO ticketbot_transcripts
-         (id, guild_id, ticket_id, file_path, transcript_url, file_size_bytes, has_attachments, expires_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        transcriptId,
-        guild.guild_id,
-        ticketId,
-        htmlFilePath,
-        transcriptUrl,
-        htmlBytes,
-        savedAttachments.length > 0 ? 1 : 0,
-        expiresAt,
-      ],
-    );
-
-    for (const att of savedAttachments) {
-      await query(
-        `INSERT INTO ticketbot_attachments
-           (id, transcript_id, original_name, file_path, download_url, file_size_bytes, mime_type)
-         VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [att.id, transcriptId, att.originalName, att.filePath, att.downloadUrl, att.sizeBytes, att.mimeType],
-      );
+    // Persist atomically. Replace-in-place when reusing an id (the DELETE clears
+    // the old row + its attachment rows via cascade; a no-op for a brand-new id),
+    // then insert the transcript and its attachments in ONE transaction so a
+    // partial failure never leaves a transcript row without its attachments.
+    // The UNIQUE(guild_id, ticket_id) constraint additionally serializes two
+    // concurrent uploads for the same ticket: the loser's INSERT hits the unique
+    // key, its transaction rolls back, and we return 409 instead of minting a
+    // duplicate transcript row + URL.
+    try {
+      await withTransaction(async (conn) => {
+        await conn.execute(`DELETE FROM ticketbot_transcripts WHERE id = ?`, [transcriptId]);
+        await conn.execute(
+          `INSERT INTO ticketbot_transcripts
+             (id, guild_id, ticket_id, file_path, transcript_url, file_size_bytes, has_attachments, expires_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+          [
+            transcriptId,
+            guild.guild_id,
+            ticketId,
+            htmlFilePath,
+            transcriptUrl,
+            htmlBytes,
+            savedAttachments.length > 0 ? 1 : 0,
+            expiresAt,
+          ],
+        );
+        for (const att of savedAttachments) {
+          await conn.execute(
+            `INSERT INTO ticketbot_attachments
+               (id, transcript_id, original_name, file_path, download_url, file_size_bytes, mime_type)
+             VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            [att.id, transcriptId, att.originalName, att.filePath, att.downloadUrl, att.sizeBytes, att.mimeType],
+          );
+        }
+      });
+    } catch (err) {
+      // Concurrent upload for the same (guild_id, ticket_id) won the race.
+      if ((err as { code?: string })?.code === 'ER_DUP_ENTRY') {
+        return NextResponse.json({ error: 'A transcript for this ticket is already being written. Retry.' }, { status: 409 });
+      }
+      throw err;
     }
 
     // 11. Return public URL

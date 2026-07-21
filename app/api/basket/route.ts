@@ -8,9 +8,10 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://www.msk-scripts.de
 
 export async function POST(req: NextRequest) {
   try {
-    // Rate limit: max 10 basket creations per IP per minute
+    // Rate limit: max 10 basket creations per IP per minute (route-namespaced so
+    // it is enforced independently of the mutation routes' shared counter).
     const ip = getClientIp(req)
-    if (!rateLimit(ip, { limit: 10, windowMs: 60_000 })) {
+    if (!rateLimit(`basket-create:${ip}`, { limit: 10, windowMs: 60_000 })) {
       return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
     }
 

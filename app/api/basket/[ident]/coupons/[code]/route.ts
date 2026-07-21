@@ -11,15 +11,15 @@ export async function DELETE(
   { params }: { params: Promise<{ ident: string; code: string }> }
 ) {
   try {
-    // Rate limit: max 30 basket mutations per IP per minute
-    if (!rateLimit(getClientIp(req), { limit: 30, windowMs: 60_000 })) {
+    // Rate limit: max 30 coupon mutations per IP per minute (route-namespaced).
+    if (!rateLimit(`basket-coupon-remove:${getClientIp(req)}`, { limit: 30, windowMs: 60_000 })) {
       return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
     }
 
     const { ident, code } = await params
 
     const res = await fetch(
-      `${TEBEX_BASE}/accounts/${PUBLIC_TOKEN}/baskets/${ident}/coupons/remove`,
+      `${TEBEX_BASE}/accounts/${PUBLIC_TOKEN}/baskets/${encodeURIComponent(ident)}/coupons/remove`,
       {
         method: 'POST',
         headers: { ...TEBEX_HEADERS, Authorization: getTebexAuth() },

@@ -91,6 +91,13 @@ describe('POST /admin/team', () => {
     expect(res.status).toBe(400)
   })
 
+  it('blocks a member modifying their OWN row via POST (403 self-escalation)', async () => {
+    serveAdminTeam(queryOne as Mock, [{ discord_user_id: '99999', permissions: TEAM_MANAGE }])
+    const res = await POST(adminReq('/api/admin/team', { method: 'POST', userId: '99999', body: { discordUserId: '99999', permissions: ['team.manage', 'payments.refund'] } }), staticCtx)
+    expect(res.status).toBe(403)
+    expect(query).not.toHaveBeenCalled()
+  })
+
   it('inserts with is_owner hardcoded to 0 (never from the body)', async () => {
     serveAdminTeam(queryOne as Mock, [{ discord_user_id: 'admin', permissions: TEAM_MANAGE }])
     const res = await POST(adminReq('/api/admin/team', { method: 'POST', userId: 'admin', body: { discordUserId: '123456', is_owner: 1, permissions: ['team.manage'] } }), staticCtx)

@@ -34,7 +34,7 @@ export async function POST(req: Request): Promise<NextResponse> {
   // Auth — the session's Discord user must own this guild
   const auth = await authorizeGuild(guildId);
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status });
-  const { discordUserId } = auth;
+  const { discordUserId, guild } = auth;
 
   // Only the two paid tiers are purchasable
   if (tier !== 'premium' && tier !== 'premium_plus') {
@@ -45,6 +45,28 @@ export async function POST(req: Request): Promise<NextResponse> {
   if (!price) {
     console.error('[stripe/checkout] Price id not configured for tier', tier);
     return NextResponse.json({ error: 'Billing is not configured.' }, { status: 500 });
+  }
+
+  // One active subscription per guild. Without this, a double-click / two tabs
+  // create two subscriptions both tagged with this guild_id; the webhook keeps
+  // only the last one (last-writer-wins), so the other keeps billing invisibly.
+  // If the guild already has a subscription on file that is still live, refuse a
+  // second checkout and point the customer at the billing portal (for tier
+  // changes / cancellation). A canceled/expired sub id is treated as stale and
+  // does not block a fresh purchase.
+  if (guild.stripe_subscription_id) {
+    try {
+      const existingSub = await getStripe().subscriptions.retrieve(guild.stripe_subscription_id);
+      const LIVE = ['active', 'trialing', 'past_due', 'unpaid', 'incomplete'];
+      if (LIVE.includes(existingSub.status)) {
+        return NextResponse.json(
+          { error: 'This server already has a subscription. Manage or cancel it in the billing portal first.' },
+          { status: 409 },
+        );
+      }
+    } catch {
+      // Subscription id not found in Stripe → stale reference, allow a fresh checkout.
+    }
   }
 
   // Reuse an existing Stripe customer for this person (if any) + trial eligibility

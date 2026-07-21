@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Loader2, AlertCircle, Pencil, Eye, EyeOff, Copy, Check, Globe } from 'lucide-react'
+import { Loader2, AlertCircle, Pencil, Eye, EyeOff, Copy, Check, Globe, X } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -53,6 +53,7 @@ export default function ApiKeysTab({ canChange }: { canChange: boolean }) {
   const [newTier, setNewTier]   = useState<Tier>('basic')
   const [busy, setBusy]         = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
+  const [notice, setNotice]     = useState<string | null>(null)
 
   const load = useCallback(async () => {
     setError(null)
@@ -109,6 +110,7 @@ export default function ApiKeysTab({ canChange }: { canChange: boolean }) {
       const d = await r.json()
       if (!r.ok) throw new Error(d.error ?? 'Update failed.')
       setEditing(null)
+      setNotice(typeof d.warning === 'string' ? d.warning : null)
       await load()
     } catch (e) { setFormError(e instanceof Error ? e.message : 'Update failed.') }
     finally { setBusy(false) }
@@ -122,6 +124,13 @@ export default function ApiKeysTab({ canChange }: { canChange: boolean }) {
           ? ' Changing a tier is a manual override — Stripe billing and the daily cleanup still apply.'
           : ' You can view API keys but not change them.'}
       </p>
+
+      {notice && (
+        <Card className="flex items-start justify-between gap-3 border-[var(--color-warning)]/30 bg-[var(--color-warning)]/10 p-4 text-sm text-[var(--color-warning)]">
+          <span className="flex items-start gap-2"><AlertCircle className="mt-0.5 h-4 w-4 shrink-0" /> {notice}</span>
+          <button onClick={() => setNotice(null)} className="shrink-0 opacity-70 hover:opacity-100"><X className="h-4 w-4" /></button>
+        </Card>
+      )}
 
       {error && (
         <Card className="flex items-center gap-2 p-6 text-sm text-[var(--color-danger)]">

@@ -3,15 +3,12 @@ import { exec }                   from 'child_process';
 import { promisify }              from 'util';
 import { join, resolve }          from 'path';
 import { authorizeGuild }         from '@/lib/dashboardAuth';
+import { rateLimit, getClientIp } from '@/lib/rateLimit';
+import { getPm2List }             from '@/lib/pm2';
 
 const execAsync = promisify(exec);
 
 const ALLOWED_ACTIONS = new Set(['start', 'stop', 'restart', 'update']);
-
-interface Pm2Process {
-  name:    string;
-  pm2_env: { status: string };
-}
 
 /**
  * Authorize a hosted-bot request: the session's Discord user must own the guild
@@ -48,13 +45,12 @@ export async function GET(req: NextRequest) {
     if ('error' in a) return a.error;
     const guildId = a.guildId;
 
-    const appName    = `ticketbot-${guildId}`;
-    const { stdout } = await execAsync('pm2 jlist');
-    const list       = JSON.parse(stdout) as Pm2Process[];
-    const bot        = list.find(p => p.name === appName);
+    const appName = `ticketbot-${guildId}`;
+    const list    = await getPm2List();
+    const bot     = list.find(p => p.name === appName);
 
     if (!bot) return NextResponse.json({ status: 'not_found' });
-    return NextResponse.json({ status: bot.pm2_env.status });
+    return NextResponse.json({ status: bot.pm2_env.status ?? 'unknown' });
   } catch {
     return NextResponse.json({ error: 'PM2 nicht erreichbar' }, { status: 500 });
   }
@@ -74,6 +70,16 @@ export async function POST(req: NextRequest) {
 
     if (typeof action !== 'string' || !ALLOWED_ACTIONS.has(action)) {
       return NextResponse.json({ error: 'Ungültige Aktion' }, { status: 400 });
+    }
+
+    // Rate limit — 'update' runs git pull + npm install (up to ~2 min of shared
+    // CPU), so cap it hard; start/stop/restart are cheap but still throttled.
+    const ip = getClientIp(req);
+    const updateOk = rateLimit(`bot-update:${guildId}`, { limit: 5, windowMs: 3600_000 }) &&
+                     rateLimit(`bot-update-ip:${ip}`,   { limit: 10, windowMs: 3600_000 });
+    const controlOk = rateLimit(`bot-control:${guildId}`, { limit: 20, windowMs: 60_000 });
+    if ((action === 'update' && !updateOk) || !controlOk) {
+      return NextResponse.json({ error: 'Zu viele Anfragen. Bitte kurz warten.' }, { status: 429 });
     }
 
     const appName = `ticketbot-${guildId}`;

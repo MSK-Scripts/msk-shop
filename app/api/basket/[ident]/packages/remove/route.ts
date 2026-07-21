@@ -7,14 +7,14 @@ export async function POST(
   { params }: { params: Promise<{ ident: string }> }
 ) {
   try {
-    // Rate limit: max 30 basket mutations per IP per minute
-    if (!rateLimit(getClientIp(req), { limit: 30, windowMs: 60_000 })) {
+    // Rate limit: max 30 remove-package mutations per IP per minute (route-namespaced).
+    if (!rateLimit(`basket-pkg-remove:${getClientIp(req)}`, { limit: 30, windowMs: 60_000 })) {
       return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
     }
 
     const { ident } = await params
     const body = await req.json()
-    const res = await fetch(`${TEBEX_BASE}/baskets/${ident}/packages/remove`, {
+    const res = await fetch(`${TEBEX_BASE}/baskets/${encodeURIComponent(ident)}/packages/remove`, {
       method: 'POST',
       headers: { ...TEBEX_HEADERS, Authorization: getTebexAuth() },
       body: JSON.stringify({ package_id: String(body.package_id) }),

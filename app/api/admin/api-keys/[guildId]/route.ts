@@ -24,18 +24,25 @@ export const PATCH = adminRoute<{ guildId: string }>('api_key.change', async ({ 
     return NextResponse.json({ error: 'Invalid tier.' }, { status: 400 });
   }
 
-  const existing = await queryOne<{ tier: string }>(
-    'SELECT tier FROM ticketbot_guilds WHERE guild_id = ?', [guildId],
+  const existing = await queryOne<{ tier: string; stripe_subscription_id: string | null }>(
+    'SELECT tier, stripe_subscription_id FROM ticketbot_guilds WHERE guild_id = ?', [guildId],
   );
   if (!existing) {
     return NextResponse.json({ error: 'API key not found.' }, { status: 404 });
   }
   if (existing.tier === tier) {
-    return NextResponse.json({ success: true, tier });
+    return NextResponse.json({ success: true, tier }, { headers: { 'Cache-Control': 'no-store' } });
   }
 
   await query('UPDATE ticketbot_guilds SET tier = ? WHERE guild_id = ?', [tier, guildId]);
   await writeAudit(member.discordUserId, 'api_key.change_tier', guildId, { from: existing.tier, to: tier });
 
-  return NextResponse.json({ success: true, tier });
+  // A manual override on a guild with a live Stripe subscription is transient: the
+  // next invoice.payment_succeeded webhook or the daily stripe-reconcile run will
+  // reset the tier from the subscription's price. Surface that so the admin knows.
+  const warning = existing.stripe_subscription_id
+    ? 'This guild has an active Stripe subscription. The manual tier will be reverted by the next billing sync — change the subscription in Stripe for a durable change.'
+    : undefined;
+
+  return NextResponse.json({ success: true, tier, warning }, { headers: { 'Cache-Control': 'no-store' } });
 });

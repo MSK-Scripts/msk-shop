@@ -6,6 +6,7 @@ import {
   priceIdFromSubscription, periodEndFromSubscription,
 } from '@/lib/stripe';
 import { archiveHostedBot } from '@/lib/hostedBot';
+import { teardownCustomDomain } from '@/lib/customDomain';
 import { TIER_CONFIG, type Tier } from '@/lib/tiers';
 
 // ── Stripe Webhook ───────────────────────────────────────────────────────────
@@ -117,7 +118,11 @@ async function downgradeGuild(guildId: string): Promise<void> {
     );
   });
   console.info(`[stripe] guild ${guildId} → basic (subscription ended)`);
+  // Reclaim premium-only resources: stop the hosted bot and tear down the custom
+  // domain vhost/cert (custom_domain is kept but demoted to pending_dns so a later
+  // re-subscribe restores it). Both are best-effort and never throw.
   await archiveHostedBot(guildId);
+  await teardownCustomDomain(guildId);
 }
 
 export async function POST(req: Request): Promise<NextResponse> {

@@ -1,23 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { exec }                  from 'child_process';
-import { promisify }             from 'util';
 import { spawn, type ChildProcess } from 'child_process';
 import { authorizeGuild }        from '@/lib/dashboardAuth';
-
-const execAsync   = promisify(exec);
+import { rateLimit, getClientIp } from '@/lib/rateLimit';
+import { getPm2List }             from '@/lib/pm2';
 
 // Strips all ANSI escape sequences (colors, cursor movement, etc.) from a string.
 const ANSI_RE = /\x1b\[[0-9;]*[mGKHFJA-Za-z]/g;
 function stripAnsi(str: string): string {
   return str.replace(ANSI_RE, '');
-}
-
-interface Pm2Process {
-  name:    string;
-  pm2_env: {
-    pm_out_log_path?: string;
-    pm_err_log_path?: string;
-  };
 }
 
 // GET /api/bot-logs-stream
@@ -34,17 +24,23 @@ export async function GET(req: NextRequest) {
   }
   const guildId = auth.guild.guild_id;
 
+  // Each connection spawns a persistent `tail -F`; cap how often a guild/IP may
+  // open a new stream so a reconnect loop cannot pile up tail processes.
+  if (!rateLimit(`bot-logs-stream:${guildId}`, { limit: 15, windowMs: 60_000 }) ||
+      !rateLimit(`bot-logs-stream-ip:${getClientIp(req)}`, { limit: 30, windowMs: 60_000 })) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+  }
+
   const appName = `ticketbot-${guildId}`;
 
-  let stdout: string;
+  let list;
   try {
-    ({ stdout } = await execAsync('pm2 jlist'));
+    list = await getPm2List();
   } catch {
     return NextResponse.json({ error: 'PM2 not available' }, { status: 503 });
   }
 
-  const list = JSON.parse(stdout) as Pm2Process[];
-  const bot  = list.find(p => p.name === appName);
+  const bot = list.find(p => p.name === appName);
   if (!bot) return NextResponse.json({ error: 'Bot not found' }, { status: 404 });
 
   // Collect only existing, non-empty log file paths from PM2's own metadata.

@@ -37,7 +37,10 @@
  * Flags: --dry-run   log intended changes without writing to the DB.
  */
 
-const mysql = require('mysql2/promise');
+const mysql         = require('mysql2/promise');
+const { execFile }  = require('child_process');
+const { promisify } = require('util');
+const execFileAsync = promisify(execFile);
 
 const DRY_RUN    = process.argv.includes('--dry-run');
 const STRIPE_KEY = process.env.STRIPE_SECRET_KEY;
@@ -133,7 +136,7 @@ async function main() {
     // 3. Downgrade guilds bound to a subscription that is NOT active anymore.
     //    Precise per-subscription check → never a blanket mass-downgrade.
     const [boundGuilds] = await pool.execute(
-      `SELECT guild_id, stripe_subscription_id, is_hosted
+      `SELECT guild_id, stripe_subscription_id, is_hosted, custom_domain, domain_status
          FROM ticketbot_guilds
         WHERE stripe_subscription_id IS NOT NULL AND tier <> 'basic'`,
     );
@@ -152,6 +155,21 @@ async function main() {
             WHERE guild_id = ?`,
           [row.guild_id],
         );
+        // Reclaim the premium-only custom domain: tear down the active vhost and
+        // demote status to pending_dns (keep custom_domain for a later re-sub;
+        // the /api/domain/validate tier gate blocks re-activation while basic).
+        if (row.domain_status === 'active' && row.custom_domain) {
+          try {
+            await execFileAsync('/opt/msk-shop/scripts/vhost-delete.sh', [row.custom_domain]);
+            console.log(`[stripe-reconcile] Tore down custom domain vhost for guild ${row.guild_id} (${row.custom_domain})`);
+          } catch (err) {
+            console.error(`[stripe-reconcile] vhost teardown failed for guild ${row.guild_id}:`, err.message ?? err);
+          }
+          await pool.execute(
+            `UPDATE ticketbot_guilds SET domain_status = 'pending_dns' WHERE guild_id = ?`,
+            [row.guild_id],
+          );
+        }
       }
       downgraded++;
       console.log(`[stripe-reconcile] Downgraded guild ${row.guild_id} → basic (sub ${subId} ${sub ? sub.status : 'missing'}).`);
