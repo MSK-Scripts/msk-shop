@@ -1,8 +1,14 @@
 # =============================================================================
 # Mirror to Codeberg
 # -----------------------------------------------------------------------------
-# GitHub bleibt die Quelle der Wahrheit. Bei jedem Push und bei jedem gelöschten
-# Branch oder Tag wird der komplette Ref-Stand nach Codeberg gespiegelt.
+# GitHub bleibt die Quelle der Wahrheit. Bei jedem Push auf `main`, jedem Tag und
+# jedem gelöschten Branch/Tag wird der komplette Ref-Stand nach Codeberg gespiegelt.
+#
+# Bewusst NICHT bei Pushes auf Feature-/Dependabot-Branches: sonst erschiene der
+# Mirror als (bei Codeberg-Ausfällen rot werdender) Check auf jedem PR. Der
+# Spiegel bleibt trotzdem vollständig, weil jeder Lauf ohnehin ALLE Refs pusht
+# (`refs/remotes/origin/*` mit --prune) — offene Branches wandern beim nächsten
+# main-/Tag-Lauf mit, gemergte/gelöschte werden dann drüben gepruned.
 #
 # Der Spiegel ist exakt: mit --prune verschwinden auf Codeberg auch die Branches
 # und Tags, die es auf GitHub nicht mehr gibt. Direkt auf Codeberg gepushte
@@ -19,7 +25,7 @@
 #        CODEBERG_REPO   → z. B. msk-scripts/msk-shop
 #        CODEBERG_USER   → der Codeberg-Benutzername
 #   4. Workflow einmal manuell über "Run workflow" starten, danach läuft er
-#      bei jedem Push von allein.
+#      bei jedem main-Push (und Tag) von allein.
 #
 # Repo-Name und Benutzername sind eigentlich keine Geheimnisse und wären als
 # Variables besser aufgehoben. Sie liegen hier trotzdem als Secrets, weil der
@@ -32,7 +38,7 @@ name: Mirror to Codeberg
 
 on:
   push:
-    branches: ["**"]
+    branches: ["main"]
     tags: ["**"]
   delete:
   workflow_dispatch:
