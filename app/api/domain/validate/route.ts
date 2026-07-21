@@ -43,18 +43,13 @@ export async function POST(req: Request): Promise<NextResponse> {
     return NextResponse.json({ error: 'Custom domains require Premium or Premium+.' }, { status: 403 });
   }
 
-  // Rate limit — validate provisions a vhost + Let's Encrypt cert (shared ACME
-  // quota), so cap it per guild and per IP.
-  if (!rateLimit(`domain-validate:${guildId}`, { limit: 5, windowMs: 3600_000 }) ||
-      !rateLimit(`domain-validate-ip:${getClientIp(req)}`, { limit: 10, windowMs: 3600_000 })) {
-    return NextResponse.json({ error: 'Too many domain checks. Try again later.' }, { status: 429 });
-  }
-
   if (!guild?.custom_domain) {
     return NextResponse.json({ error: 'No domain configured.' }, { status: 400 });
   }
 
-  // Re-check DNS
+  // Re-check DNS. This is a cheap DNS lookup that customers click repeatedly
+  // while waiting for propagation, so it is deliberately NOT rate limited —
+  // only the expensive provisioning below (certbot/vhost) is.
   const dnsOk = await checkDns(guild.custom_domain);
 
   if (!dnsOk) {
@@ -69,6 +64,19 @@ export async function POST(req: Request): Promise<NextResponse> {
 
   // DNS is now OK and status was pending — create VHost
   if (guild.domain_status !== 'active') {
+    // Rate limit ONLY the provisioning step — it runs certbot against the shared
+    // Let's Encrypt ACME quota. Shared bucket with /api/domain/set so the total
+    // number of cert-issuing attempts per guild is bounded, while normal DNS
+    // checks (the common repeated action) stay unlimited. Lenient + short window
+    // so a legitimate retry is never locked out for long.
+    if (!rateLimit(`domain-provision:${guildId}`, { limit: 6, windowMs: 15 * 60_000 }) ||
+        !rateLimit(`domain-provision-ip:${getClientIp(req)}`, { limit: 12, windowMs: 15 * 60_000 })) {
+      return NextResponse.json(
+        { error: 'Too many domain activations. Please wait a few minutes and try again.' },
+        { status: 429 },
+      );
+    }
+
     try {
       await execFileAsync('sudo', [
         '/opt/msk-shop/scripts/vhost-create.sh',

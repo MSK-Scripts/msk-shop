@@ -52,14 +52,6 @@ export async function POST(req: Request): Promise<NextResponse> {
     return NextResponse.json({ error: 'Custom domains require Premium or Premium+.' }, { status: 403 });
   }
 
-  // Rate limit — this shells out to certbot (shared Let's Encrypt ACME quota) and
-  // apache reload. Cap tightly per guild and per IP so one tenant cannot exhaust
-  // the server-wide new-order budget or fork-storm the host for everyone.
-  if (!rateLimit(`domain-set:${guildId}`, { limit: 3, windowMs: 3600_000 }) ||
-      !rateLimit(`domain-set-ip:${getClientIp(req)}`, { limit: 6, windowMs: 3600_000 })) {
-    return NextResponse.json({ error: 'Too many domain changes. Try again later.' }, { status: 429 });
-  }
-
   // Check domain not already taken by another guild
   const existing = await queryOne<{ guild_id: string }>(
     `SELECT guild_id FROM ticketbot_guilds WHERE custom_domain = ? AND guild_id != ?`,
@@ -96,7 +88,19 @@ export async function POST(req: Request): Promise<NextResponse> {
     });
   }
 
-  // DNS is OK → create VHost + SSL
+  // DNS is OK → create VHost + SSL. Rate limit ONLY this provisioning step — it
+  // runs certbot against the shared Let's Encrypt ACME quota. Shared bucket with
+  // /api/domain/validate so total cert-issuing attempts per guild are bounded,
+  // while saving a domain as pending_dns (above) stays unlimited. Lenient + short
+  // window so a legitimate retry is never locked out for long.
+  if (!rateLimit(`domain-provision:${guildId}`, { limit: 6, windowMs: 15 * 60_000 }) ||
+      !rateLimit(`domain-provision-ip:${getClientIp(req)}`, { limit: 12, windowMs: 15 * 60_000 })) {
+    return NextResponse.json(
+      { error: 'Too many domain activations. Please wait a few minutes and try again.' },
+      { status: 429 },
+    );
+  }
+
   try {
     await execFileAsync('sudo', [
       '/opt/msk-shop/scripts/vhost-create.sh',

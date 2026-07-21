@@ -22,10 +22,11 @@ export async function POST(req: Request): Promise<NextResponse> {
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status });
   const guild = auth.guild;
 
-  // Rate limit — shells out to vhost-delete.sh (apache reload). Cap per guild + IP.
-  if (!rateLimit(`domain-remove:${guildId}`, { limit: 5, windowMs: 3600_000 }) ||
-      !rateLimit(`domain-remove-ip:${getClientIp(req)}`, { limit: 10, windowMs: 3600_000 })) {
-    return NextResponse.json({ error: 'Too many domain changes. Try again later.' }, { status: 429 });
+  // Rate limit — shells out to vhost-delete.sh (apache reload). Short window so a
+  // legitimate retry is never locked out for long.
+  if (!rateLimit(`domain-remove:${guildId}`, { limit: 8, windowMs: 15 * 60_000 }) ||
+      !rateLimit(`domain-remove-ip:${getClientIp(req)}`, { limit: 16, windowMs: 15 * 60_000 })) {
+    return NextResponse.json({ error: 'Too many domain changes. Try again a few minutes later.' }, { status: 429 });
   }
 
   if (!guild?.custom_domain) {
