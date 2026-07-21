@@ -110,7 +110,12 @@ export async function POST(req: Request): Promise<NextResponse> {
     ]);
   } catch (err) {
     console.error('[domain/set] VHost creation failed:', err);
-    return NextResponse.json({ error: 'Failed to configure domain on the server. Please try again.' }, { status: 500 });
+    // vhost-create.sh exits 20 when certbot/SSL issuance failed (vs 10 for an
+    // Apache/vhost problem) — surface a precise, actionable message.
+    const msg = (err as { code?: unknown }).code === 20
+      ? 'Could not issue an SSL certificate for this domain. Make sure its A-record points to our server; if it already does, please contact support.'
+      : 'Failed to configure domain on the server. Please try again.';
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 
   await query(

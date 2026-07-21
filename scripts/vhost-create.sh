@@ -95,24 +95,30 @@ APACHE
 a2ensite "$DOMAIN.conf" >/dev/null
 CREATED_VHOST=1
 
-apache2ctl configtest
-apache2ctl graceful
+# Exit code convention (read by the /api/domain routes to show a precise message):
+#   10 = Apache / vhost setup failed
+#   20 = SSL certificate issuance failed (certbot)
+apache2ctl configtest || { echo "ERROR: apache config test failed for $DOMAIN" >&2; exit 10; }
+apache2ctl graceful   || { echo "ERROR: apache reload failed for $DOMAIN"      >&2; exit 10; }
 
 # ── Step 2: Obtain SSL certificate ────────────────────────────────────────────
 
-certbot certonly \
+if ! certbot certonly \
     --webroot \
     --webroot-path "$WEBROOT" \
     --domain "$DOMAIN" \
     --email "$EMAIL" \
     --agree-tos \
     --non-interactive \
-    --keep-until-expiring
+    --keep-until-expiring; then
+    echo "ERROR: SSL certificate issuance failed for $DOMAIN (certbot)." >&2
+    exit 20
+fi
 
 # Sanity check — make sure certbot actually produced the files
 if [[ ! -f "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" ]]; then
     echo "ERROR: Certbot did not produce a certificate for $DOMAIN" >&2
-    exit 1
+    exit 20
 fi
 
 # ── Step 3: Replace with full HTTPS VHost ─────────────────────────────────────
@@ -157,8 +163,8 @@ APACHE
 
 # ── Step 4: Final config check + reload ───────────────────────────────────────
 
-apache2ctl configtest
-apache2ctl graceful
+apache2ctl configtest || { echo "ERROR: apache config test failed for $DOMAIN" >&2; exit 10; }
+apache2ctl graceful   || { echo "ERROR: apache reload failed for $DOMAIN"      >&2; exit 10; }
 
 # Disarm the rollback trap on success
 CREATED_VHOST=0
