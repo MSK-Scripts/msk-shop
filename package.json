@@ -54,6 +54,7 @@
   "overrides": {
     "postcss": "$postcss",
     "eslint": "^9.0.0",
-    "js-yaml": "^4.2.0"
+    "js-yaml": "^4.2.0",
+    "sharp": "$sharp"
   }
 }
