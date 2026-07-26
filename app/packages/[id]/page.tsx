@@ -31,9 +31,9 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   try {
     const { id } = await params
     const pkg = await getPackage(id)
-    return { title: `${pkg.name} — MSK Scripts Shop` }
+    return { title: `${pkg.name} | MSK Scripts Shop` }
   } catch {
-    return { title: 'Package — MSK Scripts Shop' }
+    return { title: 'Package | MSK Scripts Shop' }
   }
 }
 

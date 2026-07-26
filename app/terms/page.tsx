@@ -1,7 +1,7 @@
 import { getLegalContent, renderMarkdown } from '@/lib/markdown'
 import { LegalContent } from '@/components/legal/LegalContent'
 
-export const metadata = { title: 'Terms & Conditions — MSK Scripts' }
+export const metadata = { title: 'Terms & Conditions | MSK Scripts' }
 
 export default function TermsPage() {
   return (

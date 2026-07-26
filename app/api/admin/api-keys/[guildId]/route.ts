@@ -41,7 +41,7 @@ export const PATCH = adminRoute<{ guildId: string }>('api_key.change', async ({ 
   // next invoice.payment_succeeded webhook or the daily stripe-reconcile run will
   // reset the tier from the subscription's price. Surface that so the admin knows.
   const warning = existing.stripe_subscription_id
-    ? 'This guild has an active Stripe subscription. The manual tier will be reverted by the next billing sync — change the subscription in Stripe for a durable change.'
+    ? 'This guild has an active Stripe subscription. The manual tier will be reverted by the next billing sync. Change the subscription in Stripe for a durable change.'
     : undefined;
 
   return NextResponse.json({ success: true, tier, warning }, { headers: { 'Cache-Control': 'no-store' } });

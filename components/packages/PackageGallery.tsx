@@ -94,7 +94,7 @@ export function PackageGallery({ media, image, alt, overlay, className }: Packag
       className={cn(FRAME, className)}
       role={multiple ? 'group' : undefined}
       aria-roledescription={multiple ? 'carousel' : undefined}
-      aria-label={multiple ? `${alt} — image gallery` : undefined}
+      aria-label={multiple ? `${alt} image gallery` : undefined}
       tabIndex={multiple ? 0 : undefined}
       onKeyDown={
         multiple
@@ -191,7 +191,7 @@ export function PackageGallery({ media, image, alt, overlay, className }: Packag
         <div
           role="dialog"
           aria-modal="true"
-          aria-label={`${alt} — enlarged image`}
+          aria-label={`${alt} enlarged image`}
           onClick={() => setZoomed(false)}
           className="fixed inset-0 z-[100] flex items-center justify-center bg-[color-mix(in_oklab,#000_88%,transparent)] p-4 backdrop-blur-sm md:p-10"
         >

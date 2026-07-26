@@ -27,9 +27,9 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   try {
     const { id } = await params
     const cat = await getCategory(id)
-    return { title: `${cat.name} — MSK Scripts Shop` }
+    return { title: `${cat.name} | MSK Scripts Shop` }
   } catch {
-    return { title: 'Category — MSK Scripts Shop' }
+    return { title: 'Category | MSK Scripts Shop' }
   }
 }
 

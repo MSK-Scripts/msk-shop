@@ -1,7 +1,7 @@
 import { getLegalContent, renderMarkdown } from '@/lib/markdown'
 import { LegalContent } from '@/components/legal/LegalContent'
 
-export const metadata = { title: 'Imprint — MSK Scripts' }
+export const metadata = { title: 'Imprint | MSK Scripts' }
 
 export default function ImprintPage() {
   return (

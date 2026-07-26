@@ -61,7 +61,7 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
   {
     id: 'discord_ticketbot',
     name: 'Discord Ticketbot',
-    description: 'Self-hosted, built on Discord.js v14 — runs on SQLite out of the box or your own MySQL, MariaDB or PostgreSQL. No telemetry, full feature set out of the box.',
+    description: 'Self-hosted, built on Discord.js v14. It runs on SQLite out of the box or your own MySQL, MariaDB or PostgreSQL. No telemetry, full feature set out of the box.',
     price: 'Free',
     isFree: true,
     image: 'discord_ticketbot_banner.png',

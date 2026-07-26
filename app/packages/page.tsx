@@ -18,7 +18,7 @@ export default async function PackagesPage() {
         <span className="eyebrow">Store</span>
         <h1 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">All Packages</h1>
         <p className="mt-3 text-base text-[var(--color-muted-foreground)]">
-          {packages.length} {packages.length === 1 ? 'package' : 'packages'} available — all prices include VAT.
+          {packages.length} {packages.length === 1 ? 'package' : 'packages'} available, all prices include VAT.
         </p>
       </header>
 

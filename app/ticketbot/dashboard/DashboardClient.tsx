@@ -110,7 +110,7 @@ export default function DashboardClient({ guilds, serverIp, nonce }: Props) {
               >
                 {guilds.map(g => (
                   <option key={g.guild_id} value={g.guild_id}>
-                    {(g.guild_name || g.guild_id)} — {t[`tier_${g.tier}` as 'tier_basic' | 'tier_premium' | 'tier_premium_plus']}
+                    {(g.guild_name || g.guild_id)} · {t[`tier_${g.tier}` as 'tier_basic' | 'tier_premium' | 'tier_premium_plus']}
                   </option>
                 ))}
               </select>
@@ -520,8 +520,8 @@ function GuildPanel({
               {lang === 'en' ? 'Make sure the A-Record points to ' : 'Stelle sicher, dass der A-Record auf '}
               <strong className="text-[var(--color-foreground)]">{serverIp}</strong>
               {lang === 'en'
-                ? ' before activating — set to “DNS only”, without a Cloudflare/other proxy.'
-                : ' zeigt bevor du die Domain aktivierst — als „DNS only“, ohne Cloudflare-/anderen Proxy.'}
+                ? ' before activating. Set it to “DNS only”, without a Cloudflare or other proxy.'
+                : ' zeigt, bevor du die Domain aktivierst. Setze ihn auf „DNS only“, ohne Cloudflare- oder anderen Proxy.'}
             </p>
           </>
         )}

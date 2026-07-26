@@ -22,7 +22,7 @@ We host the contents of our website with the following provider:
 
 When you visit our website, netcup, acting as a processor, automatically records the following information transmitted by your browser in server log files: browser type and version, operating system used, referrer URL, hostname of the accessing computer, time of the server request, and the IP address. This data is not merged with other data sources.
 
-**Storage Period:** Server logs are processed exclusively for the purposes of technical provision, stability, and security. They are deleted as soon as they are no longer required to achieve these purposes, or — in the event of a security incident — until the incident has been conclusively resolved. We do not associate this data with your person.
+**Storage Period:** Server logs are processed exclusively for the purposes of technical provision, stability, and security. They are deleted as soon as they are no longer required to achieve these purposes, or, in the event of a security incident, until the incident has been conclusively resolved. We do not associate this data with your person.
 
 **Legal basis:** Processing is based on the legitimate interest in the technically error-free provision and security of our website (Art. 6(1)(f) GDPR).
 
@@ -81,7 +81,7 @@ You have the right to request the restriction of the processing of your personal
 - If we no longer need your personal data, but you need it for the exercise, defence, or establishment of legal claims, you have the right to request the restriction of the processing of your personal data instead of deletion.
 - If you have lodged an objection pursuant to Art. 21(1) GDPR, a balance must be struck between your interests and ours. As long as it has not yet been determined whose interests prevail, you have the right to request the restriction of the processing of your personal data.
 
-If you have restricted the processing of your personal data, this data — apart from being stored — may only be processed with your consent or for the establishment, exercise, or defence of legal claims, or to protect the rights of another natural or legal person, or for reasons of important public interest of the European Union or a Member State.
+If you have restricted the processing of your personal data, this data, apart from being stored, may only be processed with your consent or for the establishment, exercise, or defence of legal claims, or to protect the rights of another natural or legal person, or for reasons of important public interest of the European Union or a Member State.
 
 ### SSL / TLS Encryption
 For security reasons, this site uses SSL or TLS encryption. You can recognise an encrypted connection by the fact that the address line of the browser changes from "http://" to "https://".
@@ -92,55 +92,55 @@ For security reasons, this site uses SSL or TLS encryption. You can recognise an
 
 This website operates the following distinct services, each with its own data processing:
 
-**a) MSK Scripts Shop** — for purchasing FiveM resources and Discord bots via Tebex.
+**a) MSK Scripts Shop**: for purchasing FiveM resources and Discord bots via Tebex.
 
-**b) MSK Ticket Bot Transcript Service** — an optional hosted service for users who self-host the MSK Ticket Bot. It stores ticket transcripts online and provides public links. Users authenticate via Discord OAuth to obtain an API key.
+**b) MSK Ticket Bot Transcript Service**: an optional hosted service for users who self-host the MSK Ticket Bot. It stores ticket transcripts online and provides public links. Users authenticate via Discord OAuth to obtain an API key.
 
-**c) Hosted Bot Management** — an optional, fully managed hosting service for Premium and Premium+ customers. The bot runs on MSK Scripts' servers; management is performed via the web dashboard.
+**c) Hosted Bot Management**: an optional, fully managed hosting service for Premium and Premium+ customers. The bot runs on MSK Scripts' servers; management is performed via the web dashboard.
 
-**d) MSK Giveaway Bot** — a free Discord bot operated by MSK Scripts as an official public instance. Once invited to your Discord server, it lets you create and run giveaways. It processes Discord identifiers (server, channel, role and user IDs) to manage entries and draw winners. A public, anonymous statistics page is available at **www.msk-scripts.de/giveaway/stats**. Server administrators can optionally manage their giveaways through a web dashboard (Discord login), and when a giveaway ends a public results page showing the **winners** and the **anonymous participant count** is hosted under **www.msk-scripts.de/giveaway/g/…**.
+**d) MSK Giveaway Bot**: a free Discord bot operated by MSK Scripts as an official public instance. Once invited to your Discord server, it lets you create and run giveaways. It processes Discord identifiers (server, channel, role and user IDs) to manage entries and draw winners. A public, anonymous statistics page is available at **www.msk-scripts.de/giveaway/stats**. Server administrators can optionally manage their giveaways through a web dashboard (Discord login), and when a giveaway ends a public results page showing the **winners** and the **anonymous participant count** is hosted under **www.msk-scripts.de/giveaway/g/…**.
 
 ### Data Collected by the Shop
 
-- **CFX.re / FiveM username and user ID** — required for authentication and delivery via the FiveM Asset Escrow system
-- **Discord ID** — required for packages with Discord role assignment
-- **IP address** — transmitted to Tebex for fraud prevention when creating a basket
-- **Basket data** — stored locally in the browser (localStorage)
-- **Technical log data** — web server access logs including IP address, browser type, date and time
+- **CFX.re / FiveM username and user ID**: required for authentication and delivery via the FiveM Asset Escrow system
+- **Discord ID**: required for packages with Discord role assignment
+- **IP address**: transmitted to Tebex for fraud prevention when creating a basket
+- **Basket data**: stored locally in the browser (localStorage)
+- **Technical log data**: web server access logs including IP address, browser type, date and time
 
 ### Data Collected by the Ticket Bot Transcript Service
 
-- **Discord user ID** — collected via Discord OAuth during the verification process, for identity and account ownership
-- **Discord server ID (guild ID)** — linked to the API key to assign transcripts to the correct server
-- **Subscription tier** — determined based on your Stripe subscription status (Basic, Premium, Premium+)
-- **Stripe customer / subscription IDs** — references stored in our database to link a subscription to your server; we store no payment data
-- **API key** — randomly generated token stored in our database to authenticate transcript uploads
-- **Custom domain** (optional, Premium and Premium+) — stored if a custom domain is configured
-- **Ticket transcript content** — HTML files generated by the bot and uploaded to our server; stored for 30–365 days depending on tier
-- **Ticket attachments** (Premium and Premium+) — files sent in the ticket, stored alongside the transcript
-- **Rate limiting data** — request counts per API key per hour to prevent abuse
+- **Discord user ID**: collected via Discord OAuth during the verification process, for identity and account ownership
+- **Discord server ID (guild ID)**: linked to the API key to assign transcripts to the correct server
+- **Subscription tier**: determined based on your Stripe subscription status (Basic, Premium, Premium+)
+- **Stripe customer / subscription IDs**: references stored in our database to link a subscription to your server; we store no payment data
+- **API key**: randomly generated token stored in our database to authenticate transcript uploads
+- **Custom domain** (optional, Premium and Premium+): stored if a custom domain is configured
+- **Ticket transcript content**: HTML files generated by the bot and uploaded to our server; stored for 30–365 days depending on tier
+- **Ticket attachments** (Premium and Premium+): files sent in the ticket, stored alongside the transcript
+- **Rate limiting data**: request counts per API key per hour to prevent abuse
 
 ### Data Collected by the Hosted Bot Management Service
 
-- **Bot configuration files** — `config.jsonc` and `snippets.jsonc` are stored on our server as part of providing the service
-- **`.env` file** — contains sensitive credentials of the customer (e.g. Discord bot token, MSK API key); stored on our server and required to operate the bot
-- **PM2 log output** — runtime output of the bot process; accessible live via the dashboard, not persistently stored
-- **Discord server ID (guild ID)** — used to identify the hosted bot instance; linked to the existing Transcript Service account
+- **Bot configuration files**: `config.jsonc` and `snippets.jsonc` are stored on our server as part of providing the service
+- **`.env` file**: contains sensitive credentials of the customer (e.g. Discord bot token, MSK API key); stored on our server and required to operate the bot
+- **PM2 log output**: runtime output of the bot process; accessible live via the dashboard, not persistently stored
+- **Discord server ID (guild ID)**: used to identify the hosted bot instance; linked to the existing Transcript Service account
 
 ### Data Collected by the Giveaway Bot
 
 When the official Giveaway Bot instance is added to a Discord server, the following data is stored in its database:
 
-- **Discord server ID (guild ID)** — to store the server's giveaway settings and assign giveaways to the correct server
-- **Discord channel and message IDs** — to locate the giveaway message and its entry button
-- **Discord role IDs** — server-wide and per-giveaway configuration (manager / notify role, whitelist / blacklist roles, bonus-entry roles)
-- **Discord user ID of the giveaway host** — the member who created the giveaway
-- **Discord user IDs of participants** — stored when a member joins a giveaway via the button; removed again immediately if they leave before it ends
-- **Discord user IDs of winners** — stored when winners are drawn (including rerolls)
-- **Giveaway content** — title, description, duration, number of winners and status
-- **Per-server settings** — language, embed colour, button style and emoji, and the configured eligibility rules (minimum account / membership age)
+- **Discord server ID (guild ID)**: to store the server's giveaway settings and assign giveaways to the correct server
+- **Discord channel and message IDs**: to locate the giveaway message and its entry button
+- **Discord role IDs**: server-wide and per-giveaway configuration (manager / notify role, whitelist / blacklist roles, bonus-entry roles)
+- **Discord user ID of the giveaway host**: the member who created the giveaway
+- **Discord user IDs of participants**: stored when a member joins a giveaway via the button; removed again immediately if they leave before it ends
+- **Discord user IDs of winners**: stored when winners are drawn (including rerolls)
+- **Giveaway content**: title, description, duration, number of winners and status
+- **Per-server settings**: language, embed colour, button style and emoji, and the configured eligibility rules (minimum account / membership age)
 
-When a giveaway ends, the **usernames of the winners** are resolved once and published on that giveaway's public results page (together with the anonymous participant count — never the participant list). Apart from this, we do **not** collect message content, email addresses, usernames or any other Discord profile data through the Giveaway Bot.
+When a giveaway ends, the **usernames of the winners** are resolved once and published on that giveaway's public results page (together with the anonymous participant count, never the participant list). Apart from this, we do **not** collect message content, email addresses, usernames or any other Discord profile data through the Giveaway Bot.
 
 ### Data We Do NOT Collect
 
@@ -154,16 +154,16 @@ When a giveaway ends, the **usernames of the winners** are resolved once and pub
 
 | Processing activity | Legal basis |
 |---|---|
-| Shop purchases, basket, delivery | Art. 6(1)(b) GDPR — contract performance |
-| Web server logs, fraud prevention | Art. 6(1)(f) GDPR — legitimate interests |
-| Transcript Service — account creation (verify) | Art. 6(1)(b) GDPR — contract performance |
-| Transcript Service — transcript and attachment storage | Art. 6(1)(b) GDPR — contract performance |
-| Transcript Service — Stripe subscription processing | Art. 6(1)(b) GDPR — contract performance |
-| Rate limiting | Art. 6(1)(f) GDPR — legitimate interests (abuse prevention) |
-| Hosted Bot Management — storage of configuration files and credentials | Art. 6(1)(b) GDPR — contract performance |
-| Hosted Bot Management — bot process logs | Art. 6(1)(b) GDPR — contract performance |
-| Giveaway Bot — server settings, giveaway management, entries and winners | Art. 6(1)(f) GDPR — legitimate interests (providing the requested bot functionality) |
-| Giveaway Bot — anonymous aggregate statistics | Art. 6(1)(f) GDPR — legitimate interests (no personal data is displayed) |
+| Shop purchases, basket, delivery | Art. 6(1)(b) GDPR: contract performance |
+| Web server logs, fraud prevention | Art. 6(1)(f) GDPR: legitimate interests |
+| Transcript Service: account creation (verify) | Art. 6(1)(b) GDPR: contract performance |
+| Transcript Service: transcript and attachment storage | Art. 6(1)(b) GDPR: contract performance |
+| Transcript Service: Stripe subscription processing | Art. 6(1)(b) GDPR: contract performance |
+| Rate limiting | Art. 6(1)(f) GDPR: legitimate interests (abuse prevention) |
+| Hosted Bot Management: storage of configuration files and credentials | Art. 6(1)(b) GDPR: contract performance |
+| Hosted Bot Management: bot process logs | Art. 6(1)(b) GDPR: contract performance |
+| Giveaway Bot: server settings, giveaway management, entries and winners | Art. 6(1)(f) GDPR: legitimate interests (providing the requested bot functionality) |
+| Giveaway Bot: anonymous aggregate statistics | Art. 6(1)(f) GDPR: legitimate interests (no personal data is displayed) |
 
 ---
 
@@ -180,11 +180,11 @@ During the verification process at **www.msk-scripts.de/verify**, **httpOnly ses
 | `msk_dashboard_session` | Authentication in the dashboard after completing verification | 30 days |
 
 All session cookies are:
-- **httpOnly** — not accessible via JavaScript
-- **Secure** — transmitted exclusively over HTTPS
-- **SameSite=Lax** — protected against cross-site request forgery
+- **httpOnly**: not accessible via JavaScript
+- **Secure**: transmitted exclusively over HTTPS
+- **SameSite=Lax**: protected against cross-site request forgery
 
-**Legal basis:** Art. 6(1)(b) GDPR — technically necessary to provide the verification service.
+**Legal basis:** Art. 6(1)(b) GDPR, technically necessary to provide the verification service.
 
 ### Session Cookies (Giveaway Dashboard)
 
@@ -198,15 +198,15 @@ When you use the giveaway dashboard at **www.msk-scripts.de/giveaway/dashboard**
 
 These cookies are **httpOnly**, **Secure** and **SameSite=Lax**, exactly like the verification cookies above.
 
-**Legal basis:** Art. 6(1)(b) GDPR — technically necessary to provide the dashboard.
+**Legal basis:** Art. 6(1)(b) GDPR, technically necessary to provide the dashboard.
 
-### Local Storage (Shop — Basket)
+### Local Storage (Shop: Basket)
 
 The browser's **localStorage** is used to store the basket identifier. This data does not leave your browser and is not transmitted to our servers.
 
-**Legal basis:** Art. 6(1)(b) GDPR — technically required for the basket.
+**Legal basis:** Art. 6(1)(b) GDPR, technically required for the basket.
 
-### Session Storage (Shop — Authentication)
+### Session Storage (Shop: Authentication)
 
 **sessionStorage** is used to temporarily store FiveM and Discord authentication status during the Tebex checkout flow. The data is automatically deleted when the browser tab is closed.
 
@@ -220,13 +220,13 @@ On the pages **/terms** (legal texts), **/stats**, **/giveaway/stats**, **/givea
 
 On your first visit, the language is detected automatically from your browser's `Accept-Language` header. As soon as you switch the language manually, your choice is stored in this cookie. The cookie is `SameSite=Lax` and is transmitted exclusively over HTTPS (`Secure`). It is **not httpOnly**, so the selection can be toggled directly in the browser without an additional server round-trip.
 
-**Legal basis:** Art. 6(1)(f) GDPR — legitimate interest in providing a consistent language presentation (technically necessary preference cookie, no tracking function).
+**Legal basis:** Art. 6(1)(f) GDPR, legitimate interest in providing a consistent language presentation (technically necessary preference cookie, no tracking function).
 
 ### Abuse Prevention (Rate Limiting)
 
-To protect the publicly reachable endpoints — the giveaway results pages (`/giveaway/g/…`) and the dashboard login (`/api/giveaway/auth`) — from automated abuse, the server **temporarily** processes your IP address **in memory** to count requests within a short time window. This IP-based counter is **not written to any database**, is **not** used for profiling or tracking, and is discarded automatically after the window elapses. (Separately, the web server keeps standard access logs as described under "Technical log data".)
+To protect the publicly reachable endpoints (the giveaway results pages `/giveaway/g/…` and the dashboard login `/api/giveaway/auth`) from automated abuse, the server **temporarily** processes your IP address **in memory** to count requests within a short time window. This IP-based counter is **not written to any database**, is **not** used for profiling or tracking, and is discarded automatically after the window elapses. (Separately, the web server keeps standard access logs as described under "Technical log data".)
 
-**Legal basis:** Art. 6(1)(f) GDPR — legitimate interest in the security, integrity and availability of the service.
+**Legal basis:** Art. 6(1)(f) GDPR, legitimate interest in the security, integrity and availability of the service.
 
 ### Tracking and Analytics
 
@@ -234,13 +234,13 @@ This website uses **no** tracking cookies, analytics tools (e.g. Google Analytic
 
 ---
 
-## Ticket Bot Transcript Service — Detailed Processing
+## Ticket Bot Transcript Service: Detailed Processing
 
 ### Verification and Account Creation
 
 When registering at **www.msk-scripts.de/verify**, the following data processing takes place:
 
-**Discord OAuth:** You are redirected to Discord. After authorisation, Discord transmits your Discord user ID and a list of servers on which you have administrator rights (server names, IDs, and icons). Server icons and the list of non-selected servers are used exclusively for displaying the selection and are **not stored**. Your Discord user ID, the selected server's ID **and its name** are stored in our database — the name is shown in your dashboard so you can tell your servers apart.
+**Discord OAuth:** You are redirected to Discord. After authorisation, Discord transmits your Discord user ID and a list of servers on which you have administrator rights (server names, IDs, and icons). Server icons and the list of non-selected servers are used exclusively for displaying the selection and are **not stored**. Your Discord user ID, the selected server's ID **and its name** are stored in our database. The name is shown in your dashboard so you can tell your servers apart.
 
 **Data stored in our database upon successful verification:**
 
@@ -262,7 +262,7 @@ When a ticket is closed on a self-hosted bot with a valid API key, the bot uploa
 - The **HTML file** of the transcript on our server's filesystem
 - Metadata in our database: upload timestamp, file size, expiry date, server reference
 
-The transcript HTML is generated by the self-hosted bot **before** upload and may contain personal data of the ticket participants — in particular their Discord usernames and display names, user avatars, custom server emojis, the message content of the ticket and timestamps (and, for Premium and Premium+, file attachments; see below). Avatars and custom emojis are embedded directly into the file. The operator of the self-hosted bot decides which tickets are uploaded and is responsible for the content of those transcripts; we store and serve the resulting file on their behalf.
+The transcript HTML is generated by the self-hosted bot **before** upload and may contain personal data of the ticket participants, in particular their Discord usernames and display names, user avatars, custom server emojis, the message content of the ticket and timestamps (and, for Premium and Premium+, file attachments; see below). Avatars and custom emojis are embedded directly into the file. The operator of the self-hosted bot decides which tickets are uploaded and is responsible for the content of those transcripts; we store and serve the resulting file on their behalf.
 
 Transcripts are automatically deleted after the retention period applicable to your tier (30, 180, or 365 days). Transcripts are publicly accessible via their unique URL (containing a random UUID), but are not indexed or linked.
 
@@ -278,7 +278,7 @@ We operate a webhook endpoint that receives events from **Stripe** when your sub
 
 **Data processed:** Stripe customer and subscription IDs, subscription status and tier, current period end, your Discord user ID and server ID (passed as metadata).
 
-Legal basis: Art. 6(1)(b) GDPR — necessary to deliver the subscribed service.
+Legal basis: Art. 6(1)(b) GDPR, necessary to deliver the subscribed service.
 
 ### Hosted Bot Management
 
@@ -289,17 +289,17 @@ For Premium and Premium+ customers who use the Hosted Bot Management service, th
 | `config.jsonc` | Bot configuration (ticket types, roles, settings) | Until hosting is terminated |
 | `snippets.jsonc` | Canned responses (if configured) | Until hosting is terminated |
 | `.env` | Bot credentials (Discord token, API keys) | Until hosting is terminated |
-| Bot log output | Runtime output of the bot process; accessible live via the dashboard | Not persistently stored — live buffer only |
+| Bot log output | Runtime output of the bot process; accessible live via the dashboard | Not persistently stored: live buffer only |
 
 **Sensitive credentials:** The `.env` file may contain your Discord bot token and other API keys. This file is stored on our server and is required to operate the bot. MSK Scripts personnel may access this file for maintenance and support purposes. You are responsible for ensuring that the credentials stored therein are not compromised.
 
-**Legal basis:** Art. 6(1)(b) GDPR — processing is necessary for the performance of the hosting contract.
+**Legal basis:** Art. 6(1)(b) GDPR, processing is necessary for the performance of the hosting contract.
 
 **Access control:** The configuration files can only be accessed by the service operator (MSK Scripts) and by you via the authenticated dashboard at **www.msk-scripts.de/dashboard**.
 
 ---
 
-## Giveaway Bot — Detailed Processing
+## Giveaway Bot: Detailed Processing
 
 MSK Scripts operates the official public instance of the Giveaway Bot. When a server administrator invites the bot to their Discord server, MSK Scripts acts as the controller for the data the bot stores in its database.
 
@@ -311,11 +311,11 @@ When a member leaves a giveaway before it ends (by pressing the button again), t
 
 ### Retention
 
-Giveaway data is retained only while the bot is a member of your server, so that commands such as `/ginfo` and `/greroll` continue to work. **When the bot is removed from a server, all of that server's data — per-server settings, giveaways, entries, winners and templates — is deleted immediately and automatically.** While the bot remains on the server, per-server settings persist until they are changed. You may also request erasure of your data at any time (see "Your Rights Under the GDPR" below).
+Giveaway data is retained only while the bot is a member of your server, so that commands such as `/ginfo` and `/greroll` continue to work. **When the bot is removed from a server, all of that server's data (per-server settings, giveaways, entries, winners and templates) is deleted immediately and automatically.** While the bot remains on the server, per-server settings persist until they are changed. You may also request erasure of your data at any time (see "Your Rights Under the GDPR" below).
 
 ### Public Statistics Page
 
-The page at **www.msk-scripts.de/giveaway/stats** displays only **anonymous, aggregated totals** — for example the number of servers using the bot, the total number of giveaways, entries and winners, and the distribution by language and status. It contains **no** server IDs, user IDs, usernames or other personal data.
+The page at **www.msk-scripts.de/giveaway/stats** displays only **anonymous, aggregated totals**, for example the number of servers using the bot, the total number of giveaways, entries and winners, and the distribution by language and status. It contains **no** server IDs, user IDs, usernames or other personal data.
 
 ### Public Results Pages
 
@@ -327,7 +327,7 @@ Server administrators may manage their giveaways at **www.msk-scripts.de/giveawa
 
 ### Responsibility of Server Administrators
 
-If you invite the bot to a server you manage, you are responsible for the giveaways you run on it — including their legality (prizes, eligibility, applicable promotion or sweepstakes law) and for informing your members that a third-party service (MSK Scripts) operates the bot.
+If you invite the bot to a server you manage, you are responsible for the giveaways you run on it, including their legality (prizes, eligibility, applicable promotion or sweepstakes law) and for informing your members that a third-party service (MSK Scripts) operates the bot.
 
 Upon termination of the hosting arrangement, all files in your bot directory (including the `.env` file) are deleted from our servers within **14 days**.
 
@@ -341,7 +341,7 @@ Your domain name may appear in public **Certificate Transparency logs** as a res
 
 ---
 
-## Payment Processing (Tebex — Shop)
+## Payment Processing (Tebex, Shop)
 
 All shop purchases are processed via **Tebex Limited**, 201 Haverstock Hill, Second Floor, London, NW3 4QG, United Kingdom. Tebex acts as the Merchant of Record and is solely responsible for payment processing.
 
@@ -354,7 +354,7 @@ All shop purchases are processed via **Tebex Limited**, 201 Haverstock Hill, Sec
 
 The Premium and Premium+ subscription for the Ticket Bot Transcript Service is processed via **Stripe** (Stripe Payments Europe, Ltd., 1 Grand Canal Street Lower, Grand Canal Dock, Dublin, Ireland).
 
-To set up a subscription, you enter your **name, billing address, email address and payment details** directly with Stripe during checkout. Stripe handles all payment processing, invoicing, and refunds. We do **not** receive or store your card details — we only store the Stripe customer and subscription IDs and your subscription tier to provide the service.
+To set up a subscription, you enter your **name, billing address, email address and payment details** directly with Stripe during checkout. Stripe handles all payment processing, invoicing, and refunds. We do **not** receive or store your card details. We only store the Stripe customer and subscription IDs and your subscription tier to provide the service.
 
 Stripe Privacy Policy: [stripe.com/privacy](https://stripe.com/privacy)
 
@@ -376,7 +376,7 @@ For packages with Discord role assignment, your **Discord ID** is collected via 
 
 Our server automatically records access logs containing: IP address, date and time, URL accessed, HTTP status code, browser/client type. These are used for security and operational purposes and are automatically deleted after a maximum of **14 days**.
 
-**Legal basis:** Art. 6(1)(f) GDPR — legitimate interest in operating and securing the website.
+**Legal basis:** Art. 6(1)(f) GDPR, legitimate interest in operating and securing the website.
 
 ---
 
@@ -414,8 +414,8 @@ The data is fetched **server-side only**. Our server queries fivestats.io for st
 | Stripe subscription data (customer/subscription IDs, tier, trial status) | Until account deletion |
 | Hosted bot configuration files (`config.jsonc`, `snippets.jsonc`, `.env`) | Until hosting is terminated + 14 days |
 | Hosted bot log output | Not persistently stored (live buffer only) |
-| Giveaway Bot — per-server settings | Deleted immediately when the bot is removed from the server; otherwise until changed or erasure request |
-| Giveaway Bot — giveaway, entry and winner records (Discord user IDs) | Deleted immediately when the bot is removed from the server, or on erasure request; participant entries removed on leave |
+| Giveaway Bot: per-server settings | Deleted immediately when the bot is removed from the server; otherwise until changed or erasure request |
+| Giveaway Bot: giveaway, entry and winner records (Discord user IDs) | Deleted immediately when the bot is removed from the server, or on erasure request; participant entries removed on leave |
 
 ---
 
@@ -433,13 +433,13 @@ Our web server, as well as all transcript and attachment data, are stored within
 
 As a data subject, you have the following rights:
 
-- **Right of access** (Art. 15 GDPR) — Request information about stored data
-- **Right to rectification** (Art. 16 GDPR) — Request correction of inaccurate data
-- **Right to erasure** (Art. 17 GDPR) — Request deletion of your data
-- **Right to restriction** (Art. 18 GDPR) — Request restriction of processing
-- **Right to data portability** (Art. 20 GDPR) — Receive data in a machine-readable format
-- **Right to object** (Art. 21 GDPR) — Object to processing based on legitimate interests
-- **Right to lodge a complaint** — with the competent supervisory authority (in Germany: the State Commissioner for Data Protection of your federal state)
+- **Right of access** (Art. 15 GDPR): Request information about stored data
+- **Right to rectification** (Art. 16 GDPR): Request correction of inaccurate data
+- **Right to erasure** (Art. 17 GDPR): Request deletion of your data
+- **Right to restriction** (Art. 18 GDPR): Request restriction of processing
+- **Right to data portability** (Art. 20 GDPR): Receive data in a machine-readable format
+- **Right to object** (Art. 21 GDPR): Object to processing based on legitimate interests
+- **Right to lodge a complaint**: with the competent supervisory authority (in Germany: the State Commissioner for Data Protection of your federal state)
 
 To exercise your rights, please contact: [info@msk-scripts.de](mailto:info@msk-scripts.de)
 

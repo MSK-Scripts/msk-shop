@@ -2,35 +2,29 @@ export type Lang = 'en' | 'de';
 
 export const translations = {
   en: {
-    // Verify — General
+    // Verify, general
     verify_label:       'Ticket Bot',
     verify_title:       'Verify your Server',
-    verify_subtitle:    'Link your GitHub account and Discord server to receive your API key.',
+    verify_subtitle:    'Connect your Discord account and pick your server to receive your API key.',
 
     // Steps
-    step_github:        'GitHub',
     step_discord:       'Discord',
     step_select:        'Select Server',
     step_done:          'Done',
 
-    // Step 1 — GitHub
-    github_title:       'Connect GitHub',
-    github_desc:        'To check your sponsorship status, you need to sign in with GitHub.',
-    github_btn:         'Sign in with GitHub',
-
-    // Step 2 — Discord
+    // Step 1, Discord
     discord_title:         'Connect Discord',
     discord_signed_as:     'Signed in as',
     discord_desc:          'Connect your Discord account to see your servers.',
     discord_btn:           'Sign in with Discord',
     discord_btn_checking:  'Checking Discord...',
     discord_status_minor:  'Discord is experiencing minor issues. Login may be affected.',
-    discord_status_major:  'Discord is currently experiencing major issues. Login is likely unavailable — please try again later.',
-    discord_status_critical: 'Discord is currently down. Login is unavailable — please try again later.',
+    discord_status_major:  'Discord is currently experiencing major issues. Login is likely unavailable. Please try again later.',
+    discord_status_critical: 'Discord is currently down. Login is unavailable. Please try again later.',
     discord_status_unknown:'Discord status could not be verified. Login may not work.',
     discord_try_anyway:    'Try anyway →',
 
-    // Step 3 — Select Server
+    // Step 2, select server
     select_title:       'Select Server',
     select_desc:        'Choose the Discord server you want to generate the API key for. You only see servers where you are an Administrator.',
     select_warning:     'If you have already verified this server, your current API key will become invalid immediately. You must update the key in your bot\'s .env and restart it.',
@@ -38,7 +32,7 @@ export const translations = {
     select_btn:         'Continue →',
     select_btn_loading: 'Checking...',
 
-    // Step 3 — Already registered
+    // Step 2, already registered
     existing_title:          'Server already registered',
     existing_desc:           'This server already has an active API key linked to your account.',
     existing_new_key_title:  'Generate new API key',
@@ -51,7 +45,7 @@ export const translations = {
     existing_dashboard_loading: 'Redirecting...',
     existing_back:           '← Back to server selection',
 
-    // Step 4 — Done
+    // Step 3, done
     done_title:         'Verification complete!',
     done_tier:          'Your tier:',
     done_instruction:   'Add the API key to your bot\'s',
@@ -64,43 +58,34 @@ export const translations = {
 
     // Errors
     err_invalid_state:        'Security check failed. Please try again.',
-    err_github_token_failed:  'GitHub authentication failed. Please try again.',
-    err_github_user_failed:   'Could not retrieve GitHub user data.',
     err_discord_token_failed: 'Discord authentication failed. Please try again.',
     err_discord_guilds_failed:'Could not retrieve Discord servers.',
-    err_github_required:      'Please connect your GitHub account first.',
   },
 
   de: {
-    // Verify — General
+    // Verify, general
     verify_label:       'Ticket Bot',
     verify_title:       'Server verifizieren',
-    verify_subtitle:    'Verknüpfe deinen GitHub-Account und Discord-Server um deinen API Key zu erhalten.',
+    verify_subtitle:    'Verbinde deinen Discord-Account und wähle deinen Server, um deinen API Key zu erhalten.',
 
     // Steps
-    step_github:        'GitHub',
     step_discord:       'Discord',
     step_select:        'Server auswählen',
     step_done:          'Fertig',
 
-    // Step 1 — GitHub
-    github_title:       'GitHub verbinden',
-    github_desc:        'Damit wir deinen Sponsoring-Status überprüfen können, musst du dich mit GitHub anmelden.',
-    github_btn:         'Mit GitHub anmelden',
-
-    // Step 2 — Discord
+    // Step 1, Discord
     discord_title:         'Discord verbinden',
     discord_signed_as:     'Angemeldet als',
     discord_desc:          'Verbinde nun deinen Discord-Account um deine Server zu sehen.',
     discord_btn:           'Mit Discord anmelden',
     discord_btn_checking:  'Discord wird geprüft...',
     discord_status_minor:  'Discord hat derzeit kleinere Probleme. Der Login könnte beeinträchtigt sein.',
-    discord_status_major:  'Discord hat derzeit größere Probleme. Der Login ist wahrscheinlich nicht möglich — bitte versuche es später erneut.',
-    discord_status_critical: 'Discord ist derzeit nicht erreichbar. Der Login ist nicht möglich — bitte versuche es später erneut.',
+    discord_status_major:  'Discord hat derzeit größere Probleme. Der Login ist wahrscheinlich nicht möglich. Bitte versuche es später erneut.',
+    discord_status_critical: 'Discord ist derzeit nicht erreichbar. Der Login ist nicht möglich. Bitte versuche es später erneut.',
     discord_status_unknown:'Der Discord-Status konnte nicht geprüft werden. Der Login funktioniert möglicherweise nicht.',
     discord_try_anyway:    'Trotzdem versuchen →',
 
-    // Step 3 — Select Server
+    // Step 2, select server
     select_title:       'Server auswählen',
     select_desc:        'Wähle den Discord-Server für den du den API Key generieren möchtest. Du siehst nur Server auf denen du Administrator bist.',
     select_warning:     'Falls du diesen Server bereits verifiziert hast, wird dein bisheriger API Key sofort ungültig. Du musst den neuen Key in der .env deines Bots eintragen und ihn neu starten.',
@@ -108,7 +93,7 @@ export const translations = {
     select_btn:         'Weiter →',
     select_btn_loading: 'Wird geprüft...',
 
-    // Step 3 — Already registered
+    // Step 2, already registered
     existing_title:          'Server bereits registriert',
     existing_desc:           'Dieser Server hat bereits einen aktiven API Key der mit deinem Account verknüpft ist.',
     existing_new_key_title:  'Neuen API Key generieren',
@@ -121,7 +106,7 @@ export const translations = {
     existing_dashboard_loading: 'Wird weitergeleitet...',
     existing_back:           '← Zurück zur Serverauswahl',
 
-    // Step 4 — Done
+    // Step 3, done
     done_title:         'Verifizierung abgeschlossen!',
     done_tier:          'Dein Tier:',
     done_instruction:   'Trage den API Key in die',
@@ -134,11 +119,8 @@ export const translations = {
 
     // Errors
     err_invalid_state:        'Sicherheitsüberprüfung fehlgeschlagen. Bitte versuche es erneut.',
-    err_github_token_failed:  'GitHub-Authentifizierung fehlgeschlagen. Bitte versuche es erneut.',
-    err_github_user_failed:   'GitHub-Nutzerdaten konnten nicht abgerufen werden.',
     err_discord_token_failed: 'Discord-Authentifizierung fehlgeschlagen. Bitte versuche es erneut.',
     err_discord_guilds_failed:'Discord-Server konnten nicht abgerufen werden.',
-    err_github_required:      'Bitte verbinde zuerst deinen GitHub-Account.',
   },
 } as const;
 
@@ -184,7 +166,7 @@ export const statsTranslations = {
     card_giveaway_keys_sub:  'Premium keys granted via giveaways',
     tier_distribution:       'API Key Distribution',
     subscription_distribution: 'Subscriptions by Tier',
-    footer_note:             'All statistics are anonymous — no server information or user data is stored or displayed.',
+    footer_note:             'All statistics are anonymous. No server information or user data is stored or displayed.',
   },
   de: {
     label:                   'Ticket Bot',
@@ -224,7 +206,7 @@ export const statsTranslations = {
     card_giveaway_keys_sub:  'Premium-Keys über Giveaways vergeben',
     tier_distribution:       'API Key Verteilung',
     subscription_distribution: 'Abos nach Tier',
-    footer_note:             'Alle Statistiken sind anonym — es werden keine Serverinformationen oder Nutzerdaten gespeichert oder angezeigt.',
+    footer_note:             'Alle Statistiken sind anonym. Es werden keine Serverinformationen oder Nutzerdaten gespeichert oder angezeigt.',
   },
 } as const;
 
@@ -260,7 +242,7 @@ export const giveawayStatsTranslations = {
     status_paused:         'Paused',
     status_ended:          'Ended',
     status_cancelled:      'Cancelled',
-    footer_note:           'All statistics are anonymous — no server information or user data is stored or displayed.',
+    footer_note:           'All statistics are anonymous. No server information or user data is stored or displayed.',
   },
   de: {
     label:                 'Giveaway Bot',
@@ -292,7 +274,7 @@ export const giveawayStatsTranslations = {
     status_paused:         'Pausiert',
     status_ended:          'Beendet',
     status_cancelled:      'Abgebrochen',
-    footer_note:           'Alle Statistiken sind anonym — es werden keine Serverinformationen oder Nutzerdaten gespeichert oder angezeigt.',
+    footer_note:           'Alle Statistiken sind anonym. Es werden keine Serverinformationen oder Nutzerdaten gespeichert oder angezeigt.',
   },
 } as const;
 
@@ -345,7 +327,7 @@ export const dashboardTranslations = {
     server_id:        'Server ID:',
     upgrade:          'Upgrade →',
     domain_title:     'Custom Domain',
-    domain_desc:      'Serve transcripts under your own domain — e.g.',
+    domain_desc:      'Serve transcripts under your own domain, e.g.',
     domain_instead:   'instead of',
     no_premium:       'Custom domains are available from',
     no_premium_link:  'Premium (€3.99/month)',
@@ -384,15 +366,15 @@ export const dashboardTranslations = {
     bot_discard:            'Discard',
     bot_form_errors:        'Please fix the highlighted errors before saving.',
     bot_unsaved_confirm:    'You have unsaved changes. Switch anyway?',
-    bot_saved_msg:          'saved — restart the bot for changes to take effect.',
+    bot_saved_msg:          'saved. Restart the bot for changes to take effect.',
     bot_err_load:           'Error loading file',
     bot_err_network_load:   'Network error while loading',
     bot_err_network_save:   'Network error while saving',
     bot_locale_err_json:    'Invalid JSON syntax. Locale files do not allow comments.',
-    bot_locale_fb_missing:  '{requested} does not exist yet — en.json is shown as a template. It will be created as {filename} on save.',
-    bot_locale_fb_no_lang:  'No "lang" entry found in config.jsonc — editing en.json.',
-    bot_locale_fb_invalid:  'Invalid "lang" value in config.jsonc — editing en.json.',
-    bot_locale_fb_cfg_err:  'config.jsonc is missing or has syntax errors — editing en.json. Please fix the config first.',
+    bot_locale_fb_missing:  '{requested} does not exist yet, so en.json is shown as a template. It will be created as {filename} on save.',
+    bot_locale_fb_no_lang:  'No "lang" entry found in config.jsonc, editing en.json.',
+    bot_locale_fb_invalid:  'Invalid "lang" value in config.jsonc, editing en.json.',
+    bot_locale_fb_cfg_err:  'config.jsonc is missing or has syntax errors, editing en.json. Please fix the config first.',
     bot_status_online:      'Online',
     bot_status_stopped:     'Stopped',
     bot_status_stopping:    'Stopping…',
@@ -426,7 +408,7 @@ export const dashboardTranslations = {
     bot_updating:           'Updating…',
     bot_update_btn:         'Update',
     bot_update_title_attr:  'Update to latest version',
-    bot_update_wait:        'Please wait — npm install can take up to 2 minutes…',
+    bot_update_wait:        'Please wait, npm install can take up to 2 minutes…',
     bot_update_failed:      'Update failed',
     bot_update_latest:      'The bot is already up to date.',
     bot_update_done:        'Update complete. Restart the bot to load the new version.',
@@ -440,7 +422,7 @@ export const dashboardTranslations = {
     bot_live_connected:    'Live',
     bot_live_clear:        'Clear',
     bot_live_empty:        'Waiting for log entries…',
-    bot_live_reconnecting: 'Connection lost — reconnecting…',
+    bot_live_reconnecting: 'Connection lost, reconnecting…',
 
     // Transcripts overview
     tx_title:             'Transcripts',
@@ -495,7 +477,7 @@ export const dashboardTranslations = {
     server_id:        'Server-ID:',
     upgrade:          'Upgrade →',
     domain_title:     'Eigene Domain',
-    domain_desc:      'Transkripte unter deiner eigenen Domain abrufbar — z.B.',
+    domain_desc:      'Transkripte unter deiner eigenen Domain abrufbar, z.B.',
     domain_instead:   'statt',
     no_premium:       'Eigene Domains sind ab',
     no_premium_link:  'Premium (3,99 €/Monat)',
@@ -509,7 +491,7 @@ export const dashboardTranslations = {
     dns_name:         'Name',
     dns_target:       'Ziel (IP)',
     dns_note:         '⏱ DNS-Änderungen können bis zu 24 Stunden dauern. Klicke danach auf „DNS prüfen".',
-    dns_cloudflare:   '⚠️ Cloudflare (oder anderer Proxy) im Einsatz? Stelle den Eintrag auf „DNS only" (graue Wolke). Ein proxied Eintrag (orange Wolke) löst auf die Proxy-IPs auf — dann trifft der Check niemals die IP dieses Servers und die Domain bleibt ausstehend.',
+    dns_cloudflare:   '⚠️ Cloudflare (oder anderer Proxy) im Einsatz? Stelle den Eintrag auf „DNS only" (graue Wolke). Ein proxied Eintrag (orange Wolke) löst auf die Proxy-IPs auf. Dann trifft der Check niemals die IP dieses Servers und die Domain bleibt ausstehend.',
     dns_check:        'DNS prüfen',
     dns_checking:     'Wird geprüft...',
     active_label:     'Aktiv',
@@ -534,15 +516,15 @@ export const dashboardTranslations = {
     bot_discard:            'Verwerfen',
     bot_form_errors:        'Bitte behebe die markierten Fehler vor dem Speichern.',
     bot_unsaved_confirm:    'Du hast ungespeicherte Änderungen. Trotzdem wechseln?',
-    bot_saved_msg:          'gespeichert — starte den Bot neu, damit die Änderungen aktiv werden.',
+    bot_saved_msg:          'gespeichert. Starte den Bot neu, damit die Änderungen aktiv werden.',
     bot_err_load:           'Fehler beim Laden der Datei',
     bot_err_network_load:   'Netzwerkfehler beim Laden',
     bot_err_network_save:   'Netzwerkfehler beim Speichern',
     bot_locale_err_json:    'Ungültige JSON-Syntax. Locale-Dateien erlauben keine Kommentare.',
-    bot_locale_fb_missing:  '{requested} existiert noch nicht — en.json wird als Vorlage angezeigt. Beim Speichern wird {filename} neu angelegt.',
-    bot_locale_fb_no_lang:  'Kein „lang"-Eintrag in config.jsonc — bearbeitet wird en.json.',
-    bot_locale_fb_invalid:  'Ungültiger „lang"-Wert in config.jsonc — bearbeitet wird en.json.',
-    bot_locale_fb_cfg_err:  'config.jsonc fehlt oder enthält Syntaxfehler — bearbeitet wird en.json. Bitte zuerst die Config korrigieren.',
+    bot_locale_fb_missing:  '{requested} existiert noch nicht, daher wird en.json als Vorlage angezeigt. Beim Speichern wird {filename} neu angelegt.',
+    bot_locale_fb_no_lang:  'Kein „lang"-Eintrag in config.jsonc, bearbeitet wird en.json.',
+    bot_locale_fb_invalid:  'Ungültiger „lang"-Wert in config.jsonc, bearbeitet wird en.json.',
+    bot_locale_fb_cfg_err:  'config.jsonc fehlt oder enthält Syntaxfehler, bearbeitet wird en.json. Bitte zuerst die Config korrigieren.',
     bot_status_online:      'Online',
     bot_status_stopped:     'Gestoppt',
     bot_status_stopping:    'Wird gestoppt…',
@@ -576,7 +558,7 @@ export const dashboardTranslations = {
     bot_updating:           'Aktualisiert…',
     bot_update_btn:         'Aktualisieren',
     bot_update_title_attr:  'Auf neueste Version aktualisieren',
-    bot_update_wait:        'Bitte warte — npm install kann bis zu 2 Minuten dauern…',
+    bot_update_wait:        'Bitte warte, npm install kann bis zu 2 Minuten dauern…',
     bot_update_failed:      'Update fehlgeschlagen',
     bot_update_latest:      'Der Bot ist bereits auf dem neuesten Stand.',
     bot_update_done:        'Update abgeschlossen. Starte den Bot neu, um die neue Version zu laden.',
@@ -590,7 +572,7 @@ export const dashboardTranslations = {
     bot_live_connected:    'Live',
     bot_live_clear:        'Leeren',
     bot_live_empty:        'Warte auf Log-Einträge…',
-    bot_live_reconnecting: 'Verbindung unterbrochen — wird neu verbunden…',
+    bot_live_reconnecting: 'Verbindung unterbrochen, wird neu verbunden…',
 
     // Transcripts overview
     tx_title:             'Transkripte',
@@ -708,7 +690,7 @@ export const giveawayDashboardTranslations = {
     s_claim:        'Winner claim message (DM)',
     s_save:         'Save settings',
     s_saved:        'Saved ✓',
-    s_none_option:  '— none —',
+    s_none_option:  '(none)',
     s_no_roles:     'No roles.',
     s_unavailable:  'Settings unavailable.',
 
@@ -789,7 +771,7 @@ export const giveawayDashboardTranslations = {
     s_claim:        'Gewinner-Claim-Nachricht (DM)',
     s_save:         'Einstellungen speichern',
     s_saved:        'Gespeichert ✓',
-    s_none_option:  '— keine —',
+    s_none_option:  '(keine)',
     s_no_roles:     'Keine Rollen.',
     s_unavailable:  'Einstellungen nicht verfügbar.',
 
@@ -841,7 +823,7 @@ export const homeTranslations = {
     hero_h1_line1:     'Premium FiveM',
     hero_h1_line2:     'Scripts.',
     hero_h1_accent:    'Built by a player.',
-    hero_subtitle:     'Clean code, regular updates, and real support — from the developer who codes every line himself.',
+    hero_subtitle:     'Clean code, regular updates and real support, from the developer who writes every line himself.',
     hero_btn_browse:   'Browse Packages',
     hero_btn_github:   'View on GitHub',
 
@@ -852,12 +834,12 @@ export const homeTranslations = {
 
     why_eyebrow:       'Benefits',
     why_heading:       'Why MSK Scripts?',
-    why_subtitle:      'No template farms. No corporate roadmap. Just well-crafted FiveM scripts you can trust.',
+    why_subtitle:      'No template farms and no corporate roadmap, just well-built FiveM scripts you can rely on.',
     why_features: [
-      { title: 'Quality over Quantity', description: 'Every script is personally coded, tested, and maintained — no template farms.' },
+      { title: 'Quality over Quantity', description: 'Every script is personally coded, tested and maintained. No template farms.' },
       { title: 'Regular Updates',       description: 'New features and bugfixes ship as they’re ready, not on a corporate roadmap.' },
       { title: 'Real Support',          description: 'Discord support from the person who actually wrote the code.' },
-      { title: 'Open Documentation',    description: 'Full guides, examples, and exports — no guessing how things work.' },
+      { title: 'Open Documentation',    description: 'Full guides, examples and exports, so you never have to guess how something works.' },
     ],
 
     featured_heading_featured: 'Featured Packages',
@@ -869,7 +851,7 @@ export const homeTranslations = {
     custom_subtitle:   'Free tools, Discord bots, and open-source libraries from the MSK ecosystem.',
 
     cta_heading:       'Join 500+ server owners already running MSK.',
-    cta_subtitle:      'Discord support, sneak peeks, and announcements — straight from the developer.',
+    cta_subtitle:      'Discord support, sneak peeks and announcements, straight from the developer.',
     cta_btn_discord:   'Join Discord',
     cta_btn_github:    'Browse GitHub',
   },
@@ -878,7 +860,7 @@ export const homeTranslations = {
     hero_h1_line1:     'Premium FiveM',
     hero_h1_line2:     'Scripts.',
     hero_h1_accent:    'Von einem Spieler entwickelt.',
-    hero_subtitle:     'Sauberer Code, regelmäßige Updates und echter Support — vom Entwickler, der jede Zeile selbst schreibt.',
+    hero_subtitle:     'Sauberer Code, regelmäßige Updates und echter Support, vom Entwickler, der jede Zeile selbst schreibt.',
     hero_btn_browse:   'Pakete ansehen',
     hero_btn_github:   'Auf GitHub ansehen',
 
@@ -889,12 +871,12 @@ export const homeTranslations = {
 
     why_eyebrow:       'Vorteile',
     why_heading:       'Warum MSK Scripts?',
-    why_subtitle:      'Keine Template-Farmen. Keine Konzern-Roadmap. Nur sorgfältig gebaute FiveM-Scripts, denen du vertrauen kannst.',
+    why_subtitle:      'Keine Template-Farmen und keine Konzern-Roadmap, sondern sorgfältig gebaute FiveM-Scripts, auf die du dich verlassen kannst.',
     why_features: [
-      { title: 'Qualität statt Quantität', description: 'Jedes Script wird persönlich programmiert, getestet und gepflegt — keine Template-Farmen.' },
-      { title: 'Regelmäßige Updates',      description: 'Neue Features und Bugfixes kommen, sobald sie fertig sind — nicht nach Konzern-Roadmap.' },
+      { title: 'Qualität statt Quantität', description: 'Jedes Script wird persönlich programmiert, getestet und gepflegt. Keine Template-Farmen.' },
+      { title: 'Regelmäßige Updates',      description: 'Neue Features und Bugfixes kommen, sobald sie fertig sind, nicht nach Konzern-Roadmap.' },
       { title: 'Echter Support',           description: 'Discord-Support von der Person, die den Code tatsächlich geschrieben hat.' },
-      { title: 'Offene Dokumentation',     description: 'Vollständige Anleitungen, Beispiele und Exports — kein Rätselraten, wie etwas funktioniert.' },
+      { title: 'Offene Dokumentation',     description: 'Vollständige Anleitungen, Beispiele und Exports, damit du nicht rätseln musst, wie etwas funktioniert.' },
     ],
 
     featured_heading_featured: 'Empfohlene Pakete',
@@ -906,7 +888,7 @@ export const homeTranslations = {
     custom_subtitle:   'Kostenlose Tools, Discord-Bots und Open-Source-Bibliotheken aus dem MSK-Ökosystem.',
 
     cta_heading:       'Schließe dich 500+ Server-Besitzern an, die bereits MSK nutzen.',
-    cta_subtitle:      'Discord-Support, Vorab-Einblicke und Ankündigungen — direkt vom Entwickler.',
+    cta_subtitle:      'Discord-Support, Vorab-Einblicke und Ankündigungen, direkt vom Entwickler.',
     cta_btn_discord:   'Discord beitreten',
     cta_btn_github:    'GitHub ansehen',
   },

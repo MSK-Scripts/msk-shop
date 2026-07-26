@@ -121,7 +121,7 @@ export default function ApiKeysTab({ canChange }: { canChange: boolean }) {
       <p className="text-sm text-[var(--color-muted-foreground)]">
         Every registered ticket bot API key with its guild, tier and custom domain.
         {canChange
-          ? ' Changing a tier is a manual override — Stripe billing and the daily cleanup still apply.'
+          ? ' Changing a tier is a manual override. Stripe billing and the daily cleanup still apply.'
           : ' You can view API keys but not change them.'}
       </p>
 

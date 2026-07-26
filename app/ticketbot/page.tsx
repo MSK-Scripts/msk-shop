@@ -16,7 +16,7 @@ import { TIER_CONFIG, type Tier } from '@/lib/tiers'
 export const metadata: Metadata = {
   title: { absolute: 'Discord Ticket Bot – Self-Hosted Support Tickets | MSK Scripts' },
   description:
-    'Free, self-hosted Discord ticket bot built on Discord.js v14 — runs on SQLite, MySQL/MariaDB or PostgreSQL. Custom ticket types, claim system, HTML transcripts, ratings, auto-close and a hosted dashboard. Get your API key in minutes.',
+    'Free, self-hosted Discord ticket bot built on Discord.js v14. It runs on SQLite, MySQL/MariaDB or PostgreSQL. Custom ticket types, claim system, HTML transcripts, ratings, auto-close and a hosted dashboard. Get your API key in minutes.',
   keywords: [
     'Discord ticket bot', 'Discord support bot', 'self-hosted ticket bot',
     'Discord.js ticket system', 'ticket transcripts', 'open source ticket bot',
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     card:        'summary_large_image',
     title:       'Discord Ticket Bot – Self-Hosted Support Tickets',
     description:
-      'Free, self-hosted Discord ticket bot built on Discord.js v14 — SQLite, MySQL or PostgreSQL, tickets, transcripts, ratings and a hosted dashboard.',
+      'Free, self-hosted Discord ticket bot built on Discord.js v14: SQLite, MySQL or PostgreSQL, tickets, transcripts, ratings and a hosted dashboard.',
     images: ['/discord_ticketbot_banner.png'],
   },
 }
@@ -61,7 +61,7 @@ const HUB_CARDS: HubCard[] = [
     icon:    KeyRound,
     eyebrow: 'Step 1',
     title:   'Verify',
-    text:    'Sign in with GitHub, connect your Discord account and select your server. Your personal API key is generated instantly and unlocks the MSK transcript service for your bot.',
+    text:    'Sign in with Discord and select your server. Your personal API key is generated instantly and unlocks the MSK transcript service for your bot.',
     href:    '/ticketbot/verify',
     cta:     'Get API Key',
     variant: 'primary',
@@ -71,7 +71,7 @@ const HUB_CARDS: HubCard[] = [
     icon:    LayoutDashboard,
     eyebrow: 'Manage',
     title:   'Dashboard',
-    text:    'Set up a custom domain for your transcripts and — on Premium — fully manage a hosted bot: edit config, snippets, .env & language files, start / stop / restart, one-click update and stream live logs.',
+    text:    'Set up a custom domain for your transcripts and, on Premium, fully manage a hosted bot: edit config, snippets, .env & language files, start / stop / restart, one-click update and stream live logs.',
     href:    '/ticketbot/dashboard',
     cta:     'Open Dashboard',
     variant: 'outline',
@@ -81,7 +81,7 @@ const HUB_CARDS: HubCard[] = [
     icon:    BarChart3,
     eyebrow: 'Insights',
     title:   'Stats',
-    text:    'Browse anonymous live statistics of the MSK Ticket Bot across all servers — hosted transcripts, active API keys, tier distribution and storage usage.',
+    text:    'Browse anonymous live statistics of the MSK Ticket Bot across all servers: hosted transcripts, active API keys, tier distribution and storage usage.',
     href:    '/ticketbot/stats',
     cta:     'View Stats',
     variant: 'outline',
@@ -92,20 +92,20 @@ const HUB_CARDS: HubCard[] = [
 // ── Feature highlights (from the bot README) ───────────────────────────────────
 
 const FEATURES = [
-  { icon: Ticket,            title: 'Ticket Types',        text: 'Up to 25 configurable types — each with its own emoji, color, category and questions.' },
+  { icon: Ticket,            title: 'Ticket Types',        text: 'Up to 25 configurable types, each with its own emoji, color, category and questions.' },
   { icon: ClipboardList,     title: 'Questionnaires',      text: 'Modal forms with up to 5 questions shown when a ticket is opened.' },
-  { icon: UserCheck,         title: 'Claim System',        text: 'Staff claim and release tickets — embed, topic and channel name update automatically.' },
-  { icon: Flag,              title: 'Priorities',          text: 'Low, Medium, High or Urgent — predefined per ticket type or set live via /priority, reflected in the channel topic and opening embed.' },
+  { icon: UserCheck,         title: 'Claim System',        text: 'Staff claim and release tickets. Embed, topic and channel name update automatically.' },
+  { icon: Flag,              title: 'Priorities',          text: 'Low, Medium, High or Urgent, predefined per ticket type or set live via /priority, reflected in the channel topic and opening embed.' },
   { icon: Star,              title: 'Rating System',       text: '1–5 star feedback after closing, posted automatically to a channel of your choice.' },
   { icon: Clock,             title: 'Auto-Close & Reminders', text: 'Close inactive tickets automatically and ping staff after X hours without a reply.' },
-  { icon: FileText,          title: 'HTML Transcripts',    text: 'Self-contained HTML with avatars embedded as Base64 — no CDN, served via a public link.' },
+  { icon: FileText,          title: 'HTML Transcripts',    text: 'Self-contained HTML with avatars embedded as Base64, no CDN needed, served via a public link.' },
   { icon: MessageSquareText, title: 'Canned Responses',    text: 'Pre-defined snippets sent with one command, with placeholders and autocomplete.' },
   { icon: Globe,             title: 'Custom Domain',       text: 'Premium servers serve transcripts under their own domain with automatic SSL.' },
   { icon: Lock,              title: 'Lock & Blacklist',    text: 'Lock a ticket to mute the user, or blacklist users from opening tickets entirely.' },
-  { icon: RotateCcw,         title: 'Reopen Tickets',      text: 'Reopen a closed ticket with one click or /reopen — restores access and moves it back, no need to recreate.' },
-  { icon: Bell,              title: 'User Notifications',  text: 'Users can opt in to a DM when staff first replies — rate-limited to avoid spam.' },
+  { icon: RotateCcw,         title: 'Reopen Tickets',      text: 'Reopen a closed ticket with one click or /reopen. It restores access and moves the ticket back, so you never have to recreate it.' },
+  { icon: Bell,              title: 'User Notifications',  text: 'Users can opt in to a DM when staff first replies, rate-limited to avoid spam.' },
   { icon: Megaphone,         title: 'Broadcast',           text: 'Send a single message to every open ticket channel at once.' },
-  { icon: Database,          title: 'Flexible Database',   text: 'Runs on SQLite with zero setup, or connect your own MySQL, MariaDB or PostgreSQL — with a migration script to move existing data.' },
+  { icon: Database,          title: 'Flexible Database',   text: 'Runs on SQLite with zero setup, or connect your own MySQL, MariaDB or PostgreSQL, with a migration script to move existing data.' },
   { icon: LayoutDashboard,   title: 'Self-Hosted Dashboard', text: 'Optional built-in web dashboard to manage tickets, stats, config and the bot itself from the browser. Disabled by default, secure by default.' },
 ]
 
@@ -114,7 +114,7 @@ const FEATURES = [
 const VERIFY_STEPS = [
   { n: '1', icon: MessageSquare,   title: 'Connect Discord',     text: 'Link your Discord account and servers.' },
   { n: '2', icon: ServerCog,       title: 'Select your server',  text: 'Pick the guild the bot runs on.' },
-  { n: '3', icon: KeyRound,        title: 'Get your API key',    text: 'Generated instantly — drop it into .env.' },
+  { n: '3', icon: KeyRound,        title: 'Get your API key',    text: 'Generated instantly, just drop it into .env.' },
 ]
 
 // ── Tiers (limits sourced from lib/tiers.ts) ────────────────────────────────────
@@ -173,7 +173,7 @@ export default function TicketBotPage() {
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-pretty text-lg text-[var(--color-muted-foreground)] md:text-xl">
-            Self-hosted, built on Discord.js v14 — runs on SQLite out of the
+            Self-hosted, built on Discord.js v14. It runs on SQLite out of the
             box or your own MySQL, MariaDB or PostgreSQL. No telemetry, full
             feature set out of the box. Verify to get your API key, run and
             configure your bot from the dashboard, and keep an eye on the live
@@ -271,7 +271,7 @@ export default function TicketBotPage() {
               A full feature set out of the box
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-sm text-[var(--color-muted-foreground)] md:text-base">
-              Everything a serious support team needs — no add-ons, no paywalled basics.
+              Everything a serious support team needs. No add-ons, no paywalled basics.
             </p>
           </div>
 
@@ -342,7 +342,7 @@ export default function TicketBotPage() {
               <p className="mt-4 text-sm leading-relaxed text-[var(--color-muted-foreground)] md:text-base">
                 Start the bot with{' '}
                 <code className="rounded bg-[var(--color-muted)] px-1.5 py-0.5 font-mono text-[0.8125rem] text-[var(--color-foreground)]">npm run dashboard</code>
-                {' '}and manage everything from the browser instead of over SSH —
+                {' '}and manage everything from the browser instead of over SSH:
                 tickets, statistics, the full config and the bot process itself. It
                 ships with the bot and works on every tier, including the free one.
                 It stays fully optional:{' '}
@@ -371,7 +371,7 @@ export default function TicketBotPage() {
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               {[
-                { icon: LayoutDashboard,   title: 'Tickets & Stats',   text: 'Browse and filter tickets, claim, close, reopen, move and reply — with live team statistics.' },
+                { icon: LayoutDashboard,   title: 'Tickets & Stats',   text: 'Browse and filter tickets, claim, close, reopen, move and reply, with live team statistics.' },
                 { icon: Terminal,          title: 'Config & Locales',  text: 'Edit config.jsonc, snippets, .env and the language files in a form or raw view with syntax highlighting.' },
                 { icon: Users,             title: 'Permissions',       text: 'Grant dashboard access per role or per user, each with fine-grained rights, backed by an audit log.' },
                 { icon: UserCheck,         title: 'Reply as yourself', text: 'Answers you send from the dashboard appear in Discord under your own name and avatar, not the bot.' },
@@ -403,7 +403,7 @@ export default function TicketBotPage() {
               <p className="mt-4 text-sm leading-relaxed text-[var(--color-muted-foreground)] md:text-base">
                 Prefer not to run a server at all? Premium customers can have their
                 bot instance fully hosted by MSK Scripts and manage everything from
-                the same dashboard — no SSH access or server knowledge required.
+                the same dashboard. No SSH access or server knowledge required.
               </p>
               <div className="mt-7 flex flex-wrap gap-3">
                 <Button asChild>
@@ -425,7 +425,7 @@ export default function TicketBotPage() {
               {[
                 { icon: Terminal,   title: 'Config Editor',    text: 'Edit config.jsonc, snippets, .env & the active language file in the browser with syntax highlighting.' },
                 { icon: ServerCog,  title: 'Bot Control',      text: 'Start, stop and restart the bot with a single click.' },
-                { icon: RefreshCw,  title: 'One-click Update', text: 'Pull the latest version, install deps and restart — no terminal.' },
+                { icon: RefreshCw,  title: 'One-click Update', text: 'Pull the latest version, install deps and restart, no terminal needed.' },
                 { icon: FileText,   title: 'Live Log Console', text: 'Real-time stream of the bot output right in the dashboard.' },
               ].map(item => (
                 <div key={item.title} className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
@@ -453,7 +453,7 @@ export default function TicketBotPage() {
           <p className="mx-auto mt-3 max-w-xl text-sm text-[var(--color-muted-foreground)] md:text-base">
             Host transcripts as public links. Premium tiers come with a{' '}
             <span className="font-medium text-[var(--color-primary)]">14-day free trial</span>
-            {' '}— cancel anytime, billed monthly afterwards.
+            . Cancel anytime, billed monthly afterwards.
           </p>
         </div>
 
@@ -523,7 +523,7 @@ export default function TicketBotPage() {
           <div>
             <h3 className="mb-1 font-bold tracking-tight">Plans are per guild</h3>
             <p className="text-sm text-[var(--color-muted-foreground)]">
-              A subscription applies to a single Discord server. Each guild you manage has its own plan —
+              A subscription applies to a single Discord server. Each guild you manage has its own plan,
               upgrade them independently from each guild&rsquo;s dashboard.
             </p>
           </div>
@@ -539,7 +539,7 @@ export default function TicketBotPage() {
               Ready to set up your ticket bot?
             </h2>
             <p className="mx-auto mt-3 max-w-lg text-sm text-[var(--color-muted-foreground)] md:text-base">
-              Verify your account to grab your API key — it only takes a minute.
+              Verify your account to grab your API key, it only takes a minute.
             </p>
             <div className="mt-7 flex flex-wrap justify-center gap-3">
               <Button asChild size="lg">

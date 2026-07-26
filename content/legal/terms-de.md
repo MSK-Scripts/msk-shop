@@ -6,16 +6,16 @@
 
 Diese Nutzungsbedingungen gelten für die Nutzung aller MSK Scripts-Dienste unter **www.msk-scripts.de**, einschließlich:
 
-- **MSK Scripts Shop** — Kauf digitaler Produkte (FiveM-Ressourcen und Discord-Bots) über Tebex
-- **MSK Ticket Bot Transcript Service** — ein optionaler, abonnementbasierter Hosting-Dienst für Nutzer, die den MSK Ticket Bot selbst betreiben
-- **Hosted Bot Management** — ein optionaler, vollständig verwalteter Hosting-Dienst für den MSK Ticket Bot, der Premium- und Premium+-Kunden auf individuelle Anfrage zur Verfügung steht
-- **MSK Giveaway Bot** — ein kostenloser, als offizielle öffentliche Instanz betriebener Discord-Bot, den Sie zu Ihrem eigenen Discord-Server hinzufügen können, um Giveaways durchzuführen
+- **MSK Scripts Shop**: Kauf digitaler Produkte (FiveM-Ressourcen und Discord-Bots) über Tebex
+- **MSK Ticket Bot Transcript Service**: ein optionaler, abonnementbasierter Hosting-Dienst für Nutzer, die den MSK Ticket Bot selbst betreiben
+- **Hosted Bot Management**: ein optionaler, vollständig verwalteter Hosting-Dienst für den MSK Ticket Bot, der Premium- und Premium+-Kunden auf individuelle Anfrage zur Verfügung steht
+- **MSK Giveaway Bot**: ein kostenloser, als offizielle öffentliche Instanz betriebener Discord-Bot, den Sie zu Ihrem eigenen Discord-Server hinzufügen können, um Giveaways durchzuführen
 
 Mit dem Abschluss eines Kaufs, der Registrierung für einen dieser Dienste oder dem Einladen des Giveaway Bots auf Ihren Discord-Server stimmen Sie diesen Bedingungen zu.
 
 ---
 
-## 2. Shop — Zahlungsabwicklung (Tebex)
+## 2. Shop: Zahlungsabwicklung (Tebex)
 
 Alle Shop-Käufe werden über **Tebex Limited** (früher Buycraft) als Zahlungsdienstleister und Merchant of Record abgewickelt. Mit dem Kauf stimmen Sie auch den eigenen Bedingungen von Tebex zu:
 
@@ -25,7 +25,7 @@ Alle Shop-Käufe werden über **Tebex Limited** (früher Buycraft) als Zahlungsd
 
 ---
 
-## 3. Shop — Lizenzbedingungen
+## 3. Shop: Lizenzbedingungen
 
 Mit dem Kauf einer MSK Scripts-Ressource erhalten Sie eine **nicht übertragbare, nicht exklusive Einzelserver-Lizenz** zur Nutzung der Ressource auf einem (1) FiveM-Server gleichzeitig.
 
@@ -39,7 +39,7 @@ Der Lizenzgeber (MSK Scripts) behält alle Rechte an der Software, einschließli
 
 ---
 
-## 4. Shop — Rückgaben & Erstattungen
+## 4. Shop: Rückgaben & Erstattungen
 
 Da es sich um digitale Produkte handelt, besteht nach der Lieferung kein Widerrufsrecht, sofern Sie beim Checkout ausdrücklich zugestimmt haben, dass die Lieferung vor Ablauf der Widerrufsfrist beginnt.
 
@@ -47,13 +47,13 @@ Bei technischen Problemen, die auf unsere Seite zurückzuführen sind, bieten wi
 
 ---
 
-## 5. Shop — FiveM Asset Escrow
+## 5. Shop: FiveM Asset Escrow
 
 Viele Ressourcen nutzen das [FiveM Asset Escrow System](https://forum.cfx.re/t/introducing-asset-escrow-for-your-resources/4777151). Die Nutzung setzt ein aktives CFX.re-Konto voraus. Eine Offline-Nutzung ist nicht möglich.
 
 ---
 
-## 6. Shop — Discord-Voraussetzungen
+## 6. Shop: Discord-Voraussetzungen
 
 Pakete mit Discord-Integration erfordern eine gültige Discord-ID. Sie müssen Mitglied des MSK Scripts Discord-Servers sein, um Discord-Rollen und andere Discord-basierte Leistungen zu erhalten.
 
@@ -82,7 +82,7 @@ Abo-Gebühren werden monatlich abgerechnet. Ihr Tier wird automatisch aktiviert,
 ### 7.3 Kündigung und Downgrade
 
 Sie können Ihr Abonnement jederzeit über die Schaltfläche **„Abo verwalten"** in Ihrem Dashboard (Stripe Kundenportal) kündigen. Bei Kündigung gilt:
-- Ihr Tier wird zum Ende des laufenden Abrechnungszeitraums auf **Basic** downgegradet (oder sofort, wenn Sie während der Testphase kündigen — es erfolgt keine Abbuchung)
+- Ihr Tier wird zum Ende des laufenden Abrechnungszeitraums auf **Basic** downgegradet (oder sofort, wenn Sie während der Testphase kündigen, es erfolgt keine Abbuchung)
 - Bestehende Transkripte bleiben bis zu ihrem individuellen Ablaufdatum abrufbar
 - Eigene Domains werden zum Zeitpunkt des Downgrades deaktiviert
 - Keine anteiligen Erstattungen für nicht genutzte Abo-Zeit
@@ -92,7 +92,7 @@ Sie können Ihr Abonnement jederzeit über die Schaltfläche **„Abo verwalten"
 Nach erfolgreicher Registrierung über **www.msk-scripts.de/verify** erhalten Sie einen persönlichen API Key.
 
 - Der API Key ist **mit einem Discord-Server verknüpft** und muss vertraulich behandelt werden
-- **Teilen Sie Ihren API Key nicht** mit anderen Personen — er ermöglicht das Hochladen von Transkripten im Namen Ihres Servers
+- **Teilen Sie Ihren API Key nicht** mit anderen Personen: er ermöglicht das Hochladen von Transkripten im Namen Ihres Servers
 - Wenn Sie den Verify-Prozess für denselben Server erneut durchführen, wird ein neuer API Key generiert und der vorherige **sofort ungültig**; Sie müssen den Key in der Konfiguration Ihres Bots aktualisieren
 - Wir behalten uns das Recht vor, API Keys bei Missbrauch oder Verstoß gegen diese Bedingungen zu widerrufen
 
@@ -109,7 +109,7 @@ Wir behalten uns das Recht vor, gegen diese Bedingungen verstoßende Inhalte ohn
 
 ### 7.6 Transkriptverfügbarkeit und öffentliche URLs
 
-Transkripte sind über eine URL mit zufällig generierter UUID abrufbar (z.B. `https://www.msk-scripts.de/transcripts/.../...`). Diese URLs werden nicht aufgelistet, indiziert oder verlinkt. Jede Person, die die URL kennt, kann das Transkript abrufen — es liegt in Ihrer Verantwortung, diese Links verantwortungsvoll weiterzugeben.
+Transkripte sind über eine URL mit zufällig generierter UUID abrufbar (z.B. `https://www.msk-scripts.de/transcripts/.../...`). Diese URLs werden nicht aufgelistet, indiziert oder verlinkt. Jede Person, die die URL kennt, kann das Transkript abrufen, es liegt also in Ihrer Verantwortung, diese Links verantwortungsvoll weiterzugeben.
 
 Wir garantieren keine dauerhafte Verfügbarkeit von Transkripten über die für Ihr Tier angegebene Speicherdauer hinaus.
 
@@ -135,7 +135,7 @@ Ist der Dienst zum Zeitpunkt eines Transkript-Uploads nicht erreichbar, sendet d
 
 ### 8.1 Leistungsbeschreibung
 
-Der Hosted Bot Management Service ermöglicht Premium- und Premium+-Kunden, ihren MSK Ticket Bot vollständig auf den Servern von MSK Scripts betreiben zu lassen. Der Dienst ist ausschließlich auf individuelle Anfrage über unseren [Discord-Server](https://discord.gg/5hHSBRHvJE) verfügbar und wird nicht automatisch durch ein GitHub-Sponsors-Abonnement aktiviert.
+Der Hosted Bot Management Service ermöglicht Premium- und Premium+-Kunden, ihren MSK Ticket Bot vollständig auf den Servern von MSK Scripts betreiben zu lassen. Der Dienst ist ausschließlich auf individuelle Anfrage über unseren [Discord-Server](https://discord.gg/5hHSBRHvJE) verfügbar und wird nicht automatisch durch ein Premium- oder Premium+-Abo aktiviert.
 
 Der Dienst umfasst:
 - Hosting des Bot-Prozesses auf MSK Scripts-Servern (verwaltet über PM2)
@@ -145,7 +145,7 @@ Der Dienst umfasst:
 
 Durch die Nutzung des Hosted Bot Management Service erkennen Sie an und stimmen zu, dass:
 
-- Ihre Bot-Konfigurationsdateien — einschließlich `config.jsonc`, `snippets.jsonc` und der **`.env`-Datei mit sensiblen Zugangsdaten** (z.B. Discord-Bot-Token und API-Keys) — auf den Servern von MSK Scripts in einem für den Dienstbetreiber zugänglichen Verzeichnis gespeichert werden
+- Ihre Bot-Konfigurationsdateien, einschließlich `config.jsonc`, `snippets.jsonc` und der **`.env`-Datei mit sensiblen Zugangsdaten** (z.B. Discord-Bot-Token und API-Keys), auf den Servern von MSK Scripts in einem für den Dienstbetreiber zugänglichen Verzeichnis gespeichert werden
 - Mitarbeiter von MSK Scripts diese Dateien für Support, Wartung und Sicherheitszwecke einsehen können
 - Sie allein verantwortlich sind für alle in der `.env`-Datei gespeicherten Zugangsdaten und dafür, dass Bot-Token und andere Geheimnisse nicht kompromittiert sind
 - Sie kompromittierte Zugangsdaten (z.B. Discord-Bot-Token) unverzüglich **neu generieren** und uns informieren müssen, damit wir die Konfiguration aktualisieren können
@@ -199,12 +199,12 @@ Bei der Nutzung des Giveaway Bots verpflichten Sie sich, ihn nicht zu verwenden,
 
 Sie sind allein verantwortlich für die auf Ihrem Server durchgeführten Giveaways, einschließlich:
 - der **Rechtmäßigkeit** jedes Giveaways (Preise, Teilnahmebedingungen sowie etwaiges anwendbares Gewinnspiel-, Preisausschreiben- oder Verbraucherschutzrecht)
-- der Aushändigung etwaiger angebotener Preise — MSK Scripts ist nicht Partei Ihrer Giveaways und stellt keine Preise bereit
+- der Aushändigung etwaiger angebotener Preise. MSK Scripts ist nicht Partei Ihrer Giveaways und stellt keine Preise bereit
 - der Information Ihrer Server-Mitglieder darüber, dass ein Drittanbieter (MSK Scripts) den Bot betreibt und Discord-Kennungen wie in unserer [Datenschutzerklärung](/terms/privacy) beschrieben verarbeitet
 
 ### 9.4 Verfügbarkeit und Änderungen
 
-Der Giveaway Bot wird kostenlos und **ohne garantierte Verfügbarkeit oder SLA** bereitgestellt. Wir können den Bot jederzeit und ohne Vorankündigung ändern, aussetzen oder einstellen — oder ihn bei Missbrauch von einzelnen Servern entfernen. Für Giveaways, die aufgrund von Ausfallzeiten, Wartung oder Einstellung des Dienstes unterbrochen, verzögert oder verloren gehen, übernehmen wir keine Haftung.
+Der Giveaway Bot wird kostenlos und **ohne garantierte Verfügbarkeit oder SLA** bereitgestellt. Wir können den Bot jederzeit und ohne Vorankündigung ändern, aussetzen oder einstellen oder ihn bei Missbrauch von einzelnen Servern entfernen. Für Giveaways, die aufgrund von Ausfallzeiten, Wartung oder Einstellung des Dienstes unterbrochen, verzögert oder verloren gehen, übernehmen wir keine Haftung.
 
 ---
 

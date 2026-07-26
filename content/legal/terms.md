@@ -6,16 +6,16 @@
 
 These Terms & Conditions apply to all use of the MSK Scripts services available at **www.msk-scripts.de**, including:
 
-- **MSK Scripts Shop** — purchase of digital products (FiveM resources and Discord bots) via Tebex
-- **MSK Ticket Bot Transcript Service** — an optional subscription-based hosted service for users who self-host the MSK Ticket Bot
-- **Hosted Bot Management** — an optional fully managed hosting service for the MSK Ticket Bot, available to Premium and Premium+ customers by individual arrangement
-- **MSK Giveaway Bot** — a free Discord bot, operated as an official public instance, that you can add to your own Discord server to run giveaways
+- **MSK Scripts Shop**: purchase of digital products (FiveM resources and Discord bots) via Tebex
+- **MSK Ticket Bot Transcript Service**: an optional subscription-based hosted service for users who self-host the MSK Ticket Bot
+- **Hosted Bot Management**: an optional fully managed hosting service for the MSK Ticket Bot, available to Premium and Premium+ customers by individual arrangement
+- **MSK Giveaway Bot**: a free Discord bot, operated as an official public instance, that you can add to your own Discord server to run giveaways
 
 By completing a purchase, registering for any of these services, or inviting the Giveaway Bot to your Discord server, you agree to these terms.
 
 ---
 
-## 2. Shop — Payment Processing (Tebex)
+## 2. Shop: Payment Processing (Tebex)
 
 All shop purchases are processed by **Tebex Limited** (formerly Buycraft), acting as payment service provider and merchant of record. By purchasing, you also agree to Tebex's own terms:
 
@@ -25,7 +25,7 @@ All shop purchases are processed by **Tebex Limited** (formerly Buycraft), actin
 
 ---
 
-## 3. Shop — License Terms
+## 3. Shop: License Terms
 
 Purchasing an MSK Scripts resource grants you a **non-transferable, non-exclusive single-server license** to use the resource on one (1) FiveM server at a time.
 
@@ -39,7 +39,7 @@ The licensor (MSK Scripts) retains all rights to the software, including all int
 
 ---
 
-## 4. Shop — Returns & Refunds
+## 4. Shop: Returns & Refunds
 
 As these are digital products, the statutory right of withdrawal does not apply once the product has been delivered, provided you explicitly agreed at checkout that delivery begins before the withdrawal period expires.
 
@@ -47,13 +47,13 @@ In the event of technical issues attributable to our side, we offer support and 
 
 ---
 
-## 5. Shop — FiveM Asset Escrow
+## 5. Shop: FiveM Asset Escrow
 
 Many resources use the [FiveM Asset Escrow System](https://forum.cfx.re/t/introducing-asset-escrow-for-your-resources/4777151). Usage requires an active CFX.re account. Offline use is not supported.
 
 ---
 
-## 6. Shop — Discord Requirements
+## 6. Shop: Discord Requirements
 
 Packages with Discord integration require a valid Discord ID. You must be a member of the MSK Scripts Discord server to receive Discord roles and other Discord-based deliverables.
 
@@ -82,7 +82,7 @@ Subscription fees are billed monthly. Your tier is activated automatically once 
 ### 7.3 Cancellation and Downgrade
 
 You may cancel your subscription at any time via the **"Manage subscription"** button in your dashboard (Stripe customer portal). Upon cancellation:
-- Your tier is downgraded to **Basic** at the end of the current billing period (or immediately if you cancel during the free trial — no charge is made)
+- Your tier is downgraded to **Basic** at the end of the current billing period (or immediately if you cancel during the free trial, no charge is made)
 - Existing transcripts remain accessible until their individual expiry date
 - Custom domains are deactivated at the time of downgrade
 - No partial refunds are provided for unused subscription time
@@ -92,7 +92,7 @@ You may cancel your subscription at any time via the **"Manage subscription"** b
 Upon successful registration via **www.msk-scripts.de/verify**, you receive a personal API key.
 
 - The API key is **linked to one Discord server** and must be kept confidential
-- **Do not share your API key** with anyone — it grants the ability to upload transcripts on behalf of your server
+- **Do not share your API key** with anyone: it grants the ability to upload transcripts on behalf of your server
 - If you re-verify for the same server, a new API key is generated and the previous one is **immediately invalidated**; you must update the key in your bot's configuration
 - We reserve the right to revoke API keys in cases of abuse or violation of these terms
 
@@ -109,7 +109,7 @@ We reserve the right to delete content that violates these terms without prior n
 
 ### 7.6 Transcript Availability and Public URLs
 
-Transcripts are accessible via a URL containing a randomly generated UUID (e.g. `https://www.msk-scripts.de/transcripts/.../...`). These URLs are not listed, indexed, or linked. Anyone who knows the URL can access the transcript — it is your responsibility to handle these links appropriately.
+Transcripts are accessible via a URL containing a randomly generated UUID (e.g. `https://www.msk-scripts.de/transcripts/.../...`). These URLs are not listed, indexed, or linked. Anyone who knows the URL can access the transcript, so it is your responsibility to handle these links appropriately.
 
 We do not guarantee permanent availability of transcripts beyond the stated retention period for your tier.
 
@@ -135,7 +135,7 @@ If the service is unavailable at the time a transcript is uploaded by the bot, t
 
 ### 8.1 Service Description
 
-The Hosted Bot Management Service allows Premium and Premium+ customers to have their MSK Ticket Bot instance fully hosted and operated on MSK Scripts' servers. The service is only available by individual arrangement via our [Discord server](https://discord.gg/5hHSBRHvJE) and is not automatically activated by a GitHub Sponsors subscription.
+The Hosted Bot Management Service allows Premium and Premium+ customers to have their MSK Ticket Bot instance fully hosted and operated on MSK Scripts' servers. The service is only available by individual arrangement via our [Discord server](https://discord.gg/5hHSBRHvJE) and is not activated automatically by a Premium or Premium+ subscription.
 
 The service includes:
 - Hosting of the bot process on MSK Scripts' servers (managed via PM2)
@@ -145,7 +145,7 @@ The service includes:
 
 By using the Hosted Bot Management Service, you acknowledge and agree that:
 
-- Your bot's configuration files — including `config.jsonc`, `snippets.jsonc`, and the **`.env` file containing sensitive credentials** (such as your Discord bot token and API keys) — are stored on MSK Scripts' servers in a directory accessible to the service operator
+- Your bot's configuration files, including `config.jsonc`, `snippets.jsonc`, and the **`.env` file containing sensitive credentials** (such as your Discord bot token and API keys), are stored on MSK Scripts' servers in a directory accessible to the service operator
 - MSK Scripts personnel may access these files for support, maintenance, and security purposes
 - You are solely responsible for any credentials stored in the `.env` file and for ensuring that the bot token and other secrets have not been compromised
 - You must **immediately regenerate** any compromised credentials (e.g. Discord bot token) and notify us so we can update the configuration
@@ -199,12 +199,12 @@ When using the Giveaway Bot, you agree that you will not use it to:
 
 You are solely responsible for the giveaways you run on your server, including:
 - The **legality** of each giveaway (prizes, eligibility conditions, and any applicable promotion, sweepstakes, or consumer-protection law)
-- Delivering any prizes you offer — MSK Scripts is not a party to your giveaways and provides no prizes
+- Delivering any prizes you offer. MSK Scripts is not a party to your giveaways and provides no prizes
 - Informing your server members that a third-party service (MSK Scripts) operates the bot and processes Discord identifiers as described in our [Privacy Policy](/terms/privacy)
 
 ### 9.4 Service Availability and Changes
 
-The Giveaway Bot is provided free of charge and **without any guaranteed uptime or SLA**. We may modify, suspend, or discontinue the bot — or remove it from individual servers in cases of abuse — at any time and without notice. We accept no liability for giveaways that are interrupted, delayed, or lost due to downtime, maintenance, or discontinuation of the service.
+The Giveaway Bot is provided free of charge and **without any guaranteed uptime or SLA**. We may modify, suspend, or discontinue the bot, or remove it from individual servers in cases of abuse, at any time and without notice. We accept no liability for giveaways that are interrupted, delayed, or lost due to downtime, maintenance, or discontinuation of the service.
 
 ---
 

@@ -192,7 +192,7 @@ export function AddToCartButton({ pkg }: { pkg: TebexPackage }) {
               <div>
                 <label className="mb-1.5 block text-xs text-[var(--color-muted-foreground)]">
                   Recipient Discord ID
-                  <span className="ml-1 text-[var(--color-muted-foreground)]">(optional — for Discord roles)</span>
+                  <span className="ml-1 text-[var(--color-muted-foreground)]">(optional, for Discord roles)</span>
                 </label>
                 <Input
                   type="text"

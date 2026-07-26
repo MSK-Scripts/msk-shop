@@ -115,7 +115,7 @@ export default function AdminClient({ member }: { member: AdminTeamMember }) {
                       )}
                       <span className={cn('text-sm', !granted && 'text-[var(--color-muted-foreground)]')}>
                         <span className="font-medium">{PERMISSION_LABELS[perm].label}</span>
-                        <span className="text-[var(--color-muted-foreground)]"> — {PERMISSION_LABELS[perm].description}</span>
+                        <span className="text-[var(--color-muted-foreground)]"> {PERMISSION_LABELS[perm].description}</span>
                       </span>
                     </li>
                   )
