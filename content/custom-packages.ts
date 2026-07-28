@@ -94,7 +94,7 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
     description: 'Our core library for our resources, providing common utilities, and more.',
     price: 'Free',
     isFree: true,
-    image: 'msk_core_banner.png',
+    image: 'msk_core-banner.png',
     link: 'https://github.com/MSK-Scripts/msk_core',
     linkLabel: 'View on GitHub',
     badges: [
@@ -110,7 +110,7 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
     description: 'A simple resource for toggling the FiveM engine on and off.',
     price: 'Free',
     isFree: true,
-    image: 'msk_enginetoggle.png',
+    image: 'msk_enginetoggle-banner.png',
     link: 'https://github.com/MSK-Scripts/msk_enginetoggle',
     linkLabel: 'View on GitHub',
     badges: [
@@ -127,7 +127,7 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
     description: 'Give, spawn, delete & manage vehicles through an in-game admin dashboard',
     price: 'Free',
     isFree: true,
-    image: '',
+    image: 'msk_givevehicle-banner.png',
     link: 'https://github.com/MSK-Scripts/msk_givevehicle',
     linkLabel: 'View on GitHub',
     badges: [
@@ -161,7 +161,7 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
     description: 'The complete fuel state (level, max volume, fuel type) is stored on StateBags and is therefore fully network-synchronized between all players.',
     price: 'Free',
     isFree: true,
-    image: '',
+    image: 'msk_fuel-banner.png',
     link: 'https://github.com/MSK-Scripts/msk_fuel',
     linkLabel: 'View on GitHub',
     badges: [
