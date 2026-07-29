@@ -20,6 +20,18 @@ export const RESOURCE_STATS_GAME = 'gta5' as const
 // 168 = 7 days.
 export const RESOURCE_STATS_PERIOD_HOURS = 168
 
+/**
+ * Resource whose live server count is shown in the homepage hero badge.
+ *
+ * Deliberately a **single** resource, not a sum: a server running msk_core and
+ * msk_handcuffs would otherwise be counted twice, and the total would overstate
+ * the real reach. msk_core is the shared library behind the other scripts, so it
+ * is both the highest and the most representative number.
+ *
+ * Must match a `resourceName` in RESOURCE_STATS below.
+ */
+export const RESOURCE_STATS_HEADLINE = 'msk_core'
+
 export interface ResourceStatEntry {
   /** Exact FiveM resource folder name = fivestats `resource_name`. */
   resourceName: string

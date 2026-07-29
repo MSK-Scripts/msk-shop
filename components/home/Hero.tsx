@@ -3,9 +3,20 @@ import { ArrowRight, Github } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { homeTranslations, type Lang } from '@/lib/i18n'
+import type { HeadlineStat } from '@/lib/fivestats'
 
-export function Hero({ lang }: { lang: Lang }) {
+export function Hero({ lang, stat }: { lang: Lang; stat?: HeadlineStat | null }) {
   const t = homeTranslations[lang]
+
+  // Mit Live-Daten die echte Zahl zeigen und aufs /resources-Dashboard
+  // verlinken, damit sie nachprüfbar ist. Ohne Daten (kein API-Key, fivestats
+  // nicht erreichbar) bleibt der statische Text stehen.
+  const liveLabel = stat
+    ? t.hero_badge_live
+        .replace('{resource}', stat.displayName)
+        .replace('{count}', stat.serverCount.toLocaleString(lang === 'de' ? 'de-DE' : 'en-US'))
+    : null
+
   return (
     <section className="relative overflow-hidden border-b border-[var(--color-border)]">
       <div aria-hidden className="hero-decor-gradient pointer-events-none absolute inset-0" />
@@ -14,10 +25,19 @@ export function Hero({ lang }: { lang: Lang }) {
 
         {/* Text-Spalte */}
         <div>
-          <Badge variant="outline" className="mb-6">
-            <span className="pulse-dot inline-block h-1.5 w-1.5 rounded-full bg-[var(--color-primary)]" />
-            {t.hero_badge}
-          </Badge>
+          {liveLabel ? (
+            <Link href="/resources" className="mb-6 inline-block">
+              <Badge variant="outline" className="transition-colors hover:border-[var(--color-primary)]">
+                <span className="pulse-dot inline-block h-1.5 w-1.5 rounded-full bg-[var(--color-primary)]" />
+                {liveLabel}
+              </Badge>
+            </Link>
+          ) : (
+            <Badge variant="outline" className="mb-6">
+              <span className="pulse-dot inline-block h-1.5 w-1.5 rounded-full bg-[var(--color-primary)]" />
+              {t.hero_badge}
+            </Badge>
+          )}
 
           <h1 className="text-balance text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
             {t.hero_h1_line1}<br />

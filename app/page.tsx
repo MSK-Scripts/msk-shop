@@ -8,6 +8,7 @@ import { HowItWorks } from '@/components/home/HowItWorks'
 import { CustomPackages } from '@/components/home/CustomPackages'
 import { CTASection } from '@/components/home/CTASection'
 import { openGraphFor } from '@/lib/seo'
+import { loadHeadlineStat } from '@/lib/fivestats'
 
 export const metadata = {
   alternates: { canonical: '/' },
@@ -15,12 +16,22 @@ export const metadata = {
 }
 
 export default async function HomePage() {
-  const [cookieStore, headerStore] = await Promise.all([cookies(), headers()])
+  const [cookieStore, headerStore, headline] = await Promise.all([
+    cookies(),
+    headers(),
+    // Fail-soft: fivestats darf die Startseite nie kippen. Bei einem Fehler
+    // rendert der Hero seinen statischen Text. Der Aufruf ist ein einzelner,
+    // 5 Minuten gecachter Upstream-Request.
+    loadHeadlineStat().catch(err => {
+      console.warn('[home] fivestats headline stat nicht verfügbar:', err)
+      return null
+    }),
+  ])
   const lang = resolveLang(cookieStore.get(LANG_COOKIE_NAME)?.value, headerStore.get('accept-language'))
 
   return (
     <>
-      <Hero lang={lang} />
+      <Hero lang={lang} stat={headline} />
       <TrustBar lang={lang} />
       <FeaturedPackages lang={lang} />
       <WhyMSK lang={lang} />

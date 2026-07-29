@@ -4,6 +4,7 @@
 import {
   RESOURCE_STATS,
   RESOURCE_STATS_GAME,
+  RESOURCE_STATS_HEADLINE,
   RESOURCE_STATS_PERIOD_HOURS,
   type ResourceStatEntry,
 } from '@/content/resource-stats'
@@ -161,6 +162,41 @@ async function loadOne(entry: ResourceStatEntry, game: string, hours: number): P
     updatedAt: current?.updated_at ?? null,
     history,
   }
+}
+
+export interface HeadlineStat {
+  /** Human-readable name, e.g. "MSK Core". */
+  displayName: string
+  serverCount: number
+}
+
+/**
+ * Live server count of a single resource, for the homepage hero badge.
+ *
+ * Deliberately **one** upstream call (current value only, no history), unlike
+ * `loadResourceStats()` which does two per resource. Firing 22 requests to
+ * render one badge would be out of proportion for the most-visited page.
+ *
+ * Returns `null` on any problem (no API key, upstream down, resource not
+ * indexed, count of 0). The caller then falls back to static copy, so the hero
+ * never shows a broken or zeroed number.
+ */
+export async function loadHeadlineStat(): Promise<HeadlineStat | null> {
+  const entry = RESOURCE_STATS.find(r => r.resourceName === RESOURCE_STATS_HEADLINE)
+  if (!entry) {
+    console.error(`[fivestats] RESOURCE_STATS_HEADLINE "${RESOURCE_STATS_HEADLINE}" not found in RESOURCE_STATS`)
+    return null
+  }
+
+  const current = await fivestatsFetch<FivestatsCurrent>(
+    `/resources/${encodeURIComponent(entry.resourceName)}?game=${RESOURCE_STATS_GAME}`,
+  )
+  if (!current) return null
+
+  const serverCount = num(current.server_count)
+  if (serverCount <= 0) return null
+
+  return { displayName: entry.displayName, serverCount }
 }
 
 export async function loadResourceStats(): Promise<ResourceStatsResult> {
