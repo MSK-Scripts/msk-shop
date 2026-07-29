@@ -24,27 +24,70 @@ export function openGraphFor(overrides: OpenGraph & { images?: OpenGraph['images
 }
 
 /**
+ * Die HTML-Entities, die in Tebex-Beschreibungen vorkommen.
+ *
+ * Wird für einen **einmaligen** Ersetzungsdurchlauf genutzt (siehe
+ * `decodeEntities`). Nacheinander ausgeführte `.replace()`-Aufrufe wären hier
+ * falsch: `&amp;` zuerst aufzulösen macht aus `&amp;lt;` erst `&lt;` und im
+ * nächsten Schritt ein echtes `<` (Double-Unescaping, CodeQL js/double-escaping).
+ */
+const HTML_ENTITIES: Record<string, string> = {
+  '&nbsp;':  ' ',
+  '&amp;':   '&',
+  '&lt;':    '<',
+  '&gt;':    '>',
+  '&quot;':  '"',
+  '&apos;':  "'",
+  '&#39;':   "'",
+  '&#039;':  "'",
+}
+
+const ENTITY_RE = /&(?:nbsp|amp|lt|gt|quot|apos|#0?39);/g
+
+/** Löst jede Entity genau einmal auf, ohne das Ergebnis erneut zu scannen. */
+function decodeEntities(input: string): string {
+  return input.replace(ENTITY_RE, m => HTML_ENTITIES[m] ?? m)
+}
+
+/**
+ * Entfernt Tags, bis sich nichts mehr ändert.
+ *
+ * Ein einzelner Durchlauf reicht nicht: `<scr<b>ipt>` würde nach dem Entfernen
+ * von `<b>` als `<script>` zurückbleiben (CodeQL
+ * js/incomplete-multi-character-sanitization). `[^<>]*` statt `[^>]+`, damit
+ * eine verschachtelte Klammer den Match begrenzt statt ihn zu verschlucken.
+ */
+function stripTags(input: string): string {
+  let out = input
+  let previous: string
+  do {
+    previous = out
+    out = out.replace(/<[^<>]*>/g, '')
+  } while (out !== previous)
+  return out
+}
+
+/**
  * Macht aus Tebex-Beschreibungs-HTML einen einzeiligen Klartext-Auszug für
  * `<meta name="description">` und `og:description`.
  *
- * Bewusst simpel gehalten: Tags raus, die paar HTML-Entities die Tebex nutzt
- * auflösen, Whitespace kollabieren, an einer Wortgrenze kürzen. Das Ergebnis
- * landet nie im DOM (Next.js escaped Metadata-Werte), es geht hier also rein um
- * Lesbarkeit, nicht um Sanitizing.
+ * Reihenfolge ist bewusst Entities zuerst, dann Tags: Sonst könnte ein
+ * `&lt;script&gt;` das Tag-Strippen passieren und erst danach zu echtem Markup
+ * werden. Das Ergebnis landet zwar nur in Metadata-Werten, die Next.js selbst
+ * escaped, aber die Funktion soll für sich genommen korrekt sein.
+ *
+ * Für gerendertes HTML ist weiterhin `sanitizeTebexHtml` aus `lib/sanitize.ts`
+ * zuständig, nicht diese Funktion.
  */
 export function plainExcerpt(html: string | undefined | null, maxLength = 160): string {
   if (!html) return ''
 
-  const text = html
+  // Block-Enden zu Leerzeichen, sonst kleben Sätze über Tag-Grenzen zusammen.
+  const spaced = html
     .replace(/<br\s*\/?>/gi, ' ')
     .replace(/<\/(p|div|li|h[1-6]|tr)>/gi, ' ')
-    .replace(/<[^>]+>/g, '')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#0?39;|&apos;/g, "'")
+
+  const text = stripTags(decodeEntities(spaced))
     .replace(/\s+/g, ' ')
     .trim()
 
