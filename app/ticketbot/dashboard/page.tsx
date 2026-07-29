@@ -9,7 +9,8 @@ import type { Tier }             from '@/lib/tiers';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: 'Dashboard – MSK Scripts',
+  title: 'Dashboard',
+  robots: { index: false, follow: false },
 }
 
 export interface DashboardGuild {

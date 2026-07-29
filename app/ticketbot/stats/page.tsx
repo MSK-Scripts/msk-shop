@@ -6,7 +6,8 @@ import type { Stats }         from './StatsClient'
 export const dynamic = 'force-dynamic'
 
 export const metadata = {
-  title:       'Bot Statistics – MSK Scripts',
+  title:       'Bot Statistics',
+  alternates:  { canonical: '/ticketbot/stats' },
   description: 'Anonymous live statistics of the MSK Ticket Bot across all servers.',
 }
 

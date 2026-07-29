@@ -6,7 +6,8 @@ import DashboardClient                       from './DashboardClient';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: 'Giveaway Dashboard – MSK Scripts',
+  title: 'Giveaway Dashboard',
+  robots: { index: false, follow: false },
 };
 
 export default async function GiveawayDashboardPage() {

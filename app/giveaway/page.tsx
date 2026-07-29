@@ -28,14 +28,14 @@ export const metadata: Metadata = {
     title:       'Discord Giveaway Bot – Restart-Safe & Multilingual',
     description:
       'Free Discord giveaway bot: button entry, restart-safe scheduling, weighted bonus entries, eligibility rules, templates, reroll and pause/resume.',
-    // images: [{ url: '/msk_multibot_banner.png', alt: 'MSK Discord Giveaway Bot' }],
+    images: [{ url: '/msk-giveaway-bot-banner.webp', alt: 'MSK Discord Giveaway Bot' }],
   },
   twitter: {
     card:        'summary_large_image',
     title:       'Discord Giveaway Bot – Restart-Safe & Multilingual',
     description:
       'Free Discord giveaway bot built on Discord.js v14: button entry, weighted entries, eligibility rules, templates and reroll.',
-    // images: ['/msk_multibot_banner.png'],
+    images: ['/msk-giveaway-bot-banner.webp'],
   },
 }
 

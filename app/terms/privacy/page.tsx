@@ -1,7 +1,7 @@
 import { getLegalContent, renderMarkdown } from '@/lib/markdown'
 import { LegalContent } from '@/components/legal/LegalContent'
 
-export const metadata = { title: 'Privacy Policy | MSK Scripts' }
+export const metadata = { title: 'Privacy Policy', alternates: { canonical: '/terms/privacy' } }
 
 export default function PrivacyPage() {
   return (

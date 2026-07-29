@@ -9,7 +9,7 @@ import AdminClient                              from './AdminClient';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: 'Admin – MSK Scripts',
+  title: 'Admin',
   robots: { index: false, follow: false },
 };
 

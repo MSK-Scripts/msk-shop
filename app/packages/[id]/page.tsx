@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronRight, ArrowLeft } from 'lucide-react'
@@ -8,8 +9,9 @@ import { PackagePrice } from '@/components/packages/PackagePrice'
 import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
-import { PACKAGE_BADGES, PACKAGE_TAGS, PACKAGE_DESCRIPTIONS } from '@/lib/config'
+import { PACKAGE_BADGES, PACKAGE_TAGS, PACKAGE_DESCRIPTIONS, SITE_CONFIG } from '@/lib/config'
 import { sanitizeTebexHtml } from '@/lib/sanitize'
+import { openGraphFor, packageImage, plainExcerpt } from '@/lib/seo'
 import type { BadgeVariant } from '@/components/ui/Badge'
 
 export const revalidate = 60
@@ -27,13 +29,39 @@ export async function generateStaticParams() {
   }
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params
+
   try {
-    const { id } = await params
     const pkg = await getPackage(id)
-    return { title: `${pkg.name} | MSK Scripts Shop` }
+    const canonical = `/packages/${pkg.id}`
+    const image = packageImage(pkg)
+    // Die kuratierte Kurzbeschreibung aus lib/config schlägt den Tebex-Text,
+    // weil sie schon auf einen Satz getrimmt ist.
+    const description =
+      PACKAGE_DESCRIPTIONS[pkg.id] ??
+      plainExcerpt(pkg.description) ??
+      SITE_CONFIG.tagline
+
+    return {
+      title:       pkg.name,
+      description,
+      alternates:  { canonical },
+      openGraph: openGraphFor({
+        url:   canonical,
+        title: pkg.name,
+        description,
+        images: [{ url: image, alt: pkg.name }],
+      }),
+      twitter: {
+        card:  'summary_large_image',
+        title: pkg.name,
+        description,
+        images: [image],
+      },
+    }
   } catch {
-    return { title: 'Package | MSK Scripts Shop' }
+    return { title: 'Package', alternates: { canonical: `/packages/${id}` } }
   }
 }
 

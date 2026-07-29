@@ -1,12 +1,27 @@
 import { getPackages } from '@/lib/tebex'
 import { PackageCard } from '@/components/packages/PackageCard'
 import { PACKAGE_BADGES, PACKAGE_TAGS, PACKAGE_DESCRIPTIONS } from '@/lib/config'
+import { DEFAULT_OG_IMAGE, openGraphFor } from '@/lib/seo'
 
 export const revalidate = 60
 
 export const metadata = {
   title:       'All Packages',
   description: 'Browse all FiveM resources, tools and Discord bots from MSK Scripts.',
+  alternates:  { canonical: '/packages' },
+  openGraph: openGraphFor({
+    url:         '/packages',
+    title:       'All Packages',
+    description: 'Browse all FiveM resources, tools and Discord bots from MSK Scripts.',
+  }),
+  // `twitter` wird genauso flach ersetzt wie `openGraph` und muss darum
+  // explizit mitgesetzt werden, sonst bleiben die Root-Layout-Texte stehen.
+  twitter: {
+    card:        'summary_large_image' as const,
+    title:       'All Packages',
+    description: 'Browse all FiveM resources, tools and Discord bots from MSK Scripts.',
+    images:      [DEFAULT_OG_IMAGE],
+  },
 }
 
 export default async function PackagesPage() {

@@ -6,6 +6,12 @@ import { FeaturedPackages } from '@/components/home/FeaturedPackages'
 import { WhyMSK } from '@/components/home/WhyMSK'
 import { CustomPackages } from '@/components/home/CustomPackages'
 import { CTASection } from '@/components/home/CTASection'
+import { openGraphFor } from '@/lib/seo'
+
+export const metadata = {
+  alternates: { canonical: '/' },
+  openGraph:  openGraphFor({ url: '/' }),
+}
 
 export default async function HomePage() {
   const [cookieStore, headerStore] = await Promise.all([cookies(), headers()])

@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronRight, ArrowLeft } from 'lucide-react'
@@ -6,6 +7,7 @@ import { PackageCard } from '@/components/packages/PackageCard'
 import { Button } from '@/components/ui/Button'
 import { PACKAGE_BADGES, PACKAGE_TAGS, PACKAGE_DESCRIPTIONS } from '@/lib/config'
 import { sanitizeTebexHtml } from '@/lib/sanitize'
+import { DEFAULT_OG_IMAGE, openGraphFor, plainExcerpt } from '@/lib/seo'
 
 export const revalidate = 60
 
@@ -23,13 +25,35 @@ export async function generateStaticParams() {
   }
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params
+
   try {
-    const { id } = await params
     const cat = await getCategory(id)
-    return { title: `${cat.name} | MSK Scripts Shop` }
+    const canonical = `/categories/${cat.id}`
+    const count = cat.packages?.length ?? 0
+    const description =
+      plainExcerpt(cat.description) ||
+      `Browse ${count} ${count === 1 ? 'package' : 'packages'} in ${cat.name} from MSK Scripts.`
+
+    return {
+      title:      cat.name,
+      description,
+      alternates: { canonical },
+      openGraph: openGraphFor({
+        url:   canonical,
+        title: cat.name,
+        description,
+      }),
+      twitter: {
+        card:  'summary_large_image',
+        title: cat.name,
+        description,
+        images: [DEFAULT_OG_IMAGE],
+      },
+    }
   } catch {
-    return { title: 'Category | MSK Scripts Shop' }
+    return { title: 'Category', alternates: { canonical: `/categories/${id}` } }
   }
 }
 

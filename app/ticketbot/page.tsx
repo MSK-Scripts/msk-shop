@@ -30,14 +30,14 @@ export const metadata: Metadata = {
     title:       'Discord Ticket Bot – Self-Hosted Support Tickets',
     description:
       'Free, self-hosted Discord ticket bot: custom ticket types, claim system, HTML transcripts, ratings, auto-close and a hosted management dashboard.',
-    images: [{ url: '/discord_ticketbot_banner.png', alt: 'MSK Discord Ticket Bot' }],
+    images: [{ url: '/discord_ticketbot_banner.webp', alt: 'MSK Discord Ticket Bot' }],
   },
   twitter: {
     card:        'summary_large_image',
     title:       'Discord Ticket Bot – Self-Hosted Support Tickets',
     description:
       'Free, self-hosted Discord ticket bot built on Discord.js v14: SQLite, MySQL or PostgreSQL, tickets, transcripts, ratings and a hosted dashboard.',
-    images: ['/discord_ticketbot_banner.png'],
+    images: ['/discord_ticketbot_banner.webp'],
   },
 }
 

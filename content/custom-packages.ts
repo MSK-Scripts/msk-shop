@@ -65,7 +65,7 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
       "Self-hosted, built on Discord.js v14. It runs on SQLite out of the box or your own MySQL, MariaDB or PostgreSQL. No telemetry, full feature set out of the box.",
     price: "Free",
     isFree: true,
-    image: "msk-ticket-bot-banner.png",
+    image: "msk-ticket-bot-banner.webp",
     link: "https://github.com/MSK-Scripts/discord_ticketbot",
     linkLabel: "View on GitHub",
     badges: [
@@ -81,7 +81,7 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
       "A multilingual, per-guild configurable giveaway bot built on Discord.js v14. Restart-safe scheduling, weighted bonus entries, eligibility rules, templates and pause/resume functionality.",
     price: "Free",
     isFree: true,
-    image: "msk-giveaway-bot-banner.png",
+    image: "msk-giveaway-bot-banner.webp",
     link: "https://github.com/MSK-Scripts/discord_giveawaybot",
     linkLabel: "View on GitHub",
     badges: [
@@ -97,7 +97,7 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
       "Our core library for our resources, providing common utilities, and more.",
     price: "Free",
     isFree: true,
-    image: "msk_core-banner.png",
+    image: "msk_core-banner.webp",
     link: "https://github.com/MSK-Scripts/msk_core",
     linkLabel: "View on GitHub",
     badges: [
@@ -113,7 +113,7 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
     description: "A simple resource for toggling the FiveM engine on and off.",
     price: "Free",
     isFree: true,
-    image: "msk_enginetoggle-banner.png",
+    image: "msk_enginetoggle-banner.webp",
     link: "https://github.com/MSK-Scripts/msk_enginetoggle",
     linkLabel: "View on GitHub",
     badges: [
@@ -131,7 +131,7 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
       "Give, spawn, delete & manage vehicles through an in-game admin dashboard",
     price: "Free",
     isFree: true,
-    image: "msk_givevehicle-banner.png",
+    image: "msk_givevehicle-banner.webp",
     link: "https://github.com/MSK-Scripts/msk_givevehicle",
     linkLabel: "View on GitHub",
     badges: [
@@ -166,7 +166,7 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
       "The complete fuel state (level, max volume, fuel type) is stored on StateBags and is therefore fully network-synchronized between all players.",
     price: "Free",
     isFree: true,
-    image: "msk_fuel-banner.png",
+    image: "msk_fuel-banner.webp",
     link: "https://github.com/MSK-Scripts/msk_fuel",
     linkLabel: "View on GitHub",
     badges: [
@@ -182,7 +182,7 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
     name: "MSK Forms",
     description:
       "A modern form & application platform with status feedback and native Discord integration.",
-    image: "msk_forms.png",
+    image: "msk_forms.webp",
     link: "https://forms.msk-scripts.de/",
     linkLabel: "View LIVE",
     secondaryLink: "https://github.com/MSK-Scripts/msk-forms",
@@ -195,7 +195,7 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
     name: "MSK Paste",
     description:
       "A simple paste tool for sharing code snippets with your team.",
-    image: "msk_paste.png",
+    image: "msk_paste.webp",
     link: "https://paste.msk-scripts.de/",
     linkLabel: "View LIVE",
     secondaryLink: "https://github.com/MSK-Scripts/msk-paste",
@@ -208,7 +208,7 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
     name: "MSK Shortener",
     description:
       "Fast, privacy-friendly URL shortener. No cookies, no trackers, no signup.",
-    image: "msk_shortener.png",
+    image: "msk_shortener.webp",
     link: "https://s.msk-scripts.de/",
     linkLabel: "View LIVE",
     secondaryLink: "https://github.com/MSK-Scripts/msk-shortener",

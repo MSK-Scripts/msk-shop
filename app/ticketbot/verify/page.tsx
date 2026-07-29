@@ -6,7 +6,8 @@ import VerifyClient         from './VerifyClient';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: 'Verify Server – MSK Scripts',
+  title: 'Verify Server',
+  robots: { index: false, follow: false },
   description: 'Link your Discord server to receive your MSK Ticket Bot API key.',
 }
 

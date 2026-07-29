@@ -9,7 +9,7 @@ import { homeTranslations, type Lang } from '@/lib/i18n'
 /**
  * Normalisiert Bildpfade aus custom-packages.ts. next/image akzeptiert nur
  * `/path`- oder `http(s)://`-URLs — die Content-Datei nutzt aber teilweise
- * reine Dateinamen (z. B. `msk_paste.png`). Hier defensiv mit `/` voranstellen,
+ * reine Dateinamen (z. B. `msk_paste.webp`). Hier defensiv mit `/` voranstellen,
  * damit Bestandsdaten ohne Migration weiter funktionieren.
  */
 function resolveImageSrc(src: string): string {

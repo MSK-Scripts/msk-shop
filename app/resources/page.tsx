@@ -4,7 +4,8 @@ import ResourcesClient       from './ResourcesClient'
 export const dynamic = 'force-dynamic'
 
 export const metadata = {
-  title:       'Resource Statistics – MSK Scripts',
+  title:       'Resource Statistics',
+  alternates:  { canonical: '/resources' },
   description: 'Live adoption statistics of MSK Scripts FiveM resources across all servers, powered by fivestats.io.',
 }
 

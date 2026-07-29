@@ -16,6 +16,7 @@ import { NewsPopup } from '@/components/ui/NewsPopup'
 import { ThemeProvider } from '@/components/theme/ThemeProvider'
 import { LangProvider } from '@/components/i18n/LangProvider'
 import { LANG_COOKIE_NAME, resolveLang } from '@/lib/lang'
+import { siteUrl } from '@/lib/siteUrl'
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -28,12 +29,13 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_BASE_URL ?? "https://www.msk-scripts.de",
-  ),
+  metadataBase: new URL(siteUrl()),
   title: {
     default: "MSK Scripts – Website & Shop",
-    template: "%s",
+    // Unterseiten setzen nur ihren eigenen Namen und bekommen das Suffix von
+    // hier. Wer bewusst einen komplett eigenen Titel will (Landingpages),
+    // nutzt `title: { absolute: '…' }`.
+    template: "%s | MSK Scripts",
   },
   description:
     "High quality FiveM resources, Tools & Discord bots for your server",
@@ -75,13 +77,32 @@ export const metadata: Metadata = {
     apple: "/logo.png",
   },
   robots: { index: true, follow: true },
+  // Bewusst KEIN `alternates.canonical` und kein `openGraph.url` hier: Beides
+  // würde an jede Unterseite vererbt, die nichts eigenes setzt, und dort auf
+  // die Startseite zeigen. Canonicals werden pro Seite gesetzt.
   openGraph: {
     type: "website",
     siteName: "MSK Scripts",
+    locale: "en_US",
+    alternateLocale: ["de_DE"],
     title: "MSK Scripts – Website & Shop",
     description:
       "High quality FiveM resources, Tools & Discord bots for your server",
-    images: ["/msk-scripts-server-banner.png"],
+    images: [
+      {
+        url: "/msk-scripts-server-banner.webp",
+        width: 1920,
+        height: 1080,
+        alt: "MSK Scripts",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "MSK Scripts – Website & Shop",
+    description:
+      "High quality FiveM resources, Tools & Discord bots for your server",
+    images: ["/msk-scripts-server-banner.webp"],
   },
 };
 

@@ -6,7 +6,8 @@ import VerifyClient          from './VerifyClient';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: 'Giveaway Dashboard – Login – MSK Scripts',
+  title: 'Giveaway Dashboard Login',
+  robots: { index: false, follow: false },
 };
 
 interface BotGuild { id: string; name: string; icon: string | null }
