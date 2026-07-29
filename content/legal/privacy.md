@@ -1,5 +1,7 @@
 # Privacy Policy
 
+*Last updated: July 2026*
+
 ## Privacy at a Glance
 
 ### General Information
@@ -171,7 +173,7 @@ When a giveaway ends, the **usernames of the winners** are resolved once and pub
 
 ### Session Cookies (Ticket Bot Transcript Service)
 
-During the verification process at **www.msk-scripts.de/verify**, **httpOnly session cookies** are used to maintain the multi-step OAuth flow:
+During the verification process at **www.msk-scripts.de/ticketbot/verify**, **httpOnly session cookies** are used to maintain the multi-step OAuth flow:
 
 | Cookie name | Purpose | Duration |
 |---|---|---|
@@ -238,7 +240,7 @@ This website uses **no** tracking cookies, analytics tools (e.g. Google Analytic
 
 ### Verification and Account Creation
 
-When registering at **www.msk-scripts.de/verify**, the following data processing takes place:
+When registering at **www.msk-scripts.de/ticketbot/verify**, the following data processing takes place:
 
 **Discord OAuth:** You are redirected to Discord. After authorisation, Discord transmits your Discord user ID and a list of servers on which you have administrator rights (server names, IDs, and icons). Server icons and the list of non-selected servers are used exclusively for displaying the selection and are **not stored**. Your Discord user ID, the selected server's ID **and its name** are stored in our database. The name is shown in your dashboard so you can tell your servers apart.
 
@@ -272,6 +274,14 @@ For Premium and Premium+ users, file attachments from tickets (images, PDFs, etc
 
 Basic users do not have access to attachment storage; no file attachments are stored on our servers for this tier.
 
+### Custom Domain (Premium and Premium+)
+
+If a custom domain is configured, the domain name is stored in our database. Upon activation:
+- An **Apache2 VirtualHost configuration** is created on our server
+- A **free SSL certificate** (Let's Encrypt) is set up via Certbot; in this process, our admin email (`info@msk-scripts.de`) is registered with Let's Encrypt for certificate notifications
+
+Your domain name may appear in public **Certificate Transparency logs** as a result of the SSL certificate issuance. This is a standard feature of the public Web PKI infrastructure.
+
 ### Stripe Subscription Webhook
 
 We operate a webhook endpoint that receives events from **Stripe** when your subscription is created, renewed, changed, or cancelled. We process these events to automatically activate, upgrade, or downgrade your subscription tier and to record the trial status. We receive no card or payment data through this webhook.
@@ -293,9 +303,11 @@ For Premium and Premium+ customers who use the Hosted Bot Management service, th
 
 **Sensitive credentials:** The `.env` file may contain your Discord bot token and other API keys. This file is stored on our server and is required to operate the bot. MSK Scripts personnel may access this file for maintenance and support purposes. You are responsible for ensuring that the credentials stored therein are not compromised.
 
+Upon termination of the hosting arrangement, all files in your bot directory (including the `.env` file) are deleted from our servers within **14 days**.
+
 **Legal basis:** Art. 6(1)(b) GDPR, processing is necessary for the performance of the hosting contract.
 
-**Access control:** The configuration files can only be accessed by the service operator (MSK Scripts) and by you via the authenticated dashboard at **www.msk-scripts.de/dashboard**.
+**Access control:** The configuration files can only be accessed by the service operator (MSK Scripts) and by you via the authenticated dashboard at **www.msk-scripts.de/ticketbot/dashboard**.
 
 ---
 
@@ -328,16 +340,6 @@ Server administrators may manage their giveaways at **www.msk-scripts.de/giveawa
 ### Responsibility of Server Administrators
 
 If you invite the bot to a server you manage, you are responsible for the giveaways you run on it, including their legality (prizes, eligibility, applicable promotion or sweepstakes law) and for informing your members that a third-party service (MSK Scripts) operates the bot.
-
-Upon termination of the hosting arrangement, all files in your bot directory (including the `.env` file) are deleted from our servers within **14 days**.
-
-### Custom Domain (Premium and Premium+)
-
-If a custom domain is configured, the domain name is stored in our database. Upon activation:
-- An **Apache2 VirtualHost configuration** is created on our server
-- A **free SSL certificate** (Let's Encrypt) is set up via Certbot; in this process, our admin email (`info@msk-scripts.de`) is registered with Let's Encrypt for certificate notifications
-
-Your domain name may appear in public **Certificate Transparency logs** as a result of the SSL certificate issuance. This is a standard feature of the public Web PKI infrastructure.
 
 ---
 

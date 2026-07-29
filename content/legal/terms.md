@@ -1,6 +1,6 @@
 # Terms & Conditions
 
-*Last updated: June 2026*
+*Last updated: July 2026*
 
 ## 1. Scope
 
@@ -89,7 +89,7 @@ You may cancel your subscription at any time via the **"Manage subscription"** b
 
 ### 7.4 API Key
 
-Upon successful registration via **www.msk-scripts.de/verify**, you receive a personal API key.
+Upon successful registration via **www.msk-scripts.de/ticketbot/verify**, you receive a personal API key.
 
 - The API key is **linked to one Discord server** and must be kept confidential
 - **Do not share your API key** with anyone: it grants the ability to upload transcripts on behalf of your server
@@ -113,7 +113,7 @@ Transcripts are accessible via a URL containing a randomly generated UUID (e.g. 
 
 We do not guarantee permanent availability of transcripts beyond the stated retention period for your tier.
 
-### 7.7 Custom Domain (Premium)
+### 7.7 Custom Domain (Premium and Premium+)
 
 Premium and Premium+ users may configure a custom domain for transcript delivery.
 
@@ -139,7 +139,7 @@ The Hosted Bot Management Service allows Premium and Premium+ customers to have 
 
 The service includes:
 - Hosting of the bot process on MSK Scripts' servers (managed via PM2)
-- Access to a web-based management panel at **www.msk-scripts.de/dashboard** for editing configuration files (`config.jsonc`, `snippets.jsonc`, `.env`, and the active language file `locales/<lang>.json`), controlling the bot (start / stop / restart / update), and viewing live log output
+- Access to a web-based management panel at **www.msk-scripts.de/ticketbot/dashboard** for editing configuration files (`config.jsonc`, `snippets.jsonc`, `.env`, and the active language file `locales/<lang>.json`), controlling the bot (start / stop / restart / update), and viewing live log output
 
 ### 8.2 Access to Configuration Data and Credentials
 

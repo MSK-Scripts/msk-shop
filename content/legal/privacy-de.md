@@ -1,5 +1,7 @@
 # Datenschutzerklärung
 
+*Stand: Juli 2026*
+
 ## Datenschutz auf einen Blick
 
 ### Allgemeine Hinweise
@@ -171,7 +173,7 @@ Nach Ende eines Giveaways werden die **Nutzernamen der Gewinner** einmalig aufge
 
 ### Session-Cookies (Ticket Bot Transcript Service)
 
-Während des Verifizierungsprozesses unter **www.msk-scripts.de/verify** werden **httpOnly Session-Cookies** verwendet, um den mehrstufigen OAuth-Ablauf aufrechtzuerhalten:
+Während des Verifizierungsprozesses unter **www.msk-scripts.de/ticketbot/verify** werden **httpOnly Session-Cookies** verwendet, um den mehrstufigen OAuth-Ablauf aufrechtzuerhalten:
 
 | Cookie-Name | Zweck | Dauer |
 |---|---|---|
@@ -238,7 +240,7 @@ Diese Website verwendet **keine** Tracking-Cookies, Analysewerkzeuge (z.B. Googl
 
 ### Verifizierung und Kontoerstellung
 
-Bei der Registrierung unter **www.msk-scripts.de/verify** finden folgende Datenverarbeitungen statt:
+Bei der Registrierung unter **www.msk-scripts.de/ticketbot/verify** finden folgende Datenverarbeitungen statt:
 
 **Discord OAuth:** Sie werden zu Discord weitergeleitet. Nach der Autorisierung übermittelt Discord Ihre Discord-Nutzer-ID sowie eine Liste der Server, auf denen Sie Administrator-Rechte haben (Server-Namen, -IDs und -Icons). Server-Icons und die nicht ausgewählten Server dienen ausschließlich der Anzeige der Auswahl und werden **nicht gespeichert**. Ihre Discord-Nutzer-ID, die ID des ausgewählten Servers **und dessen Name** werden in unserer Datenbank gespeichert. Der Name wird in Ihrem Dashboard angezeigt, damit Sie Ihre Server unterscheiden können.
 
@@ -272,6 +274,14 @@ Für Premium- und Premium+-Nutzer werden Dateianhänge aus Tickets (Bilder, PDFs
 
 Basic-Nutzer haben keinen Zugriff auf die Anhangsspeicherung; bei diesem Tier werden keine Dateianhänge auf unseren Servern gespeichert.
 
+### Eigene Domain (Premium und Premium+)
+
+Bei Konfiguration einer eigenen Domain wird der Domain-Name in unserer Datenbank gespeichert. Bei der Aktivierung:
+- Wird eine **Apache2 VirtualHost-Konfiguration** auf unserem Server erstellt
+- Wird über Certbot ein **kostenloses SSL-Zertifikat** (Let's Encrypt) eingerichtet; dabei wird unsere Admin-E-Mail (`info@msk-scripts.de`) bei Let's Encrypt für Zertifikatsbenachrichtigungen hinterlegt
+
+Ihr Domain-Name kann aufgrund der SSL-Zertifikatsausstellung in öffentlichen **Certificate Transparency Logs** erscheinen. Dies ist ein Standardmerkmal der öffentlichen Web-PKI-Infrastruktur.
+
 ### Stripe Abo-Webhook
 
 Wir betreiben einen Webhook-Endpunkt, der Ereignisse von **Stripe** empfängt, wenn Ihr Abo erstellt, verlängert, geändert oder gekündigt wird. Wir verarbeiten diese Ereignisse, um Ihr Abo-Tier automatisch zu aktivieren, upzugraden oder downzugraden und den Testphasen-Status zu erfassen. Über diesen Webhook erhalten wir keine Karten- oder Zahlungsdaten.
@@ -293,9 +303,11 @@ Für Premium- und Premium+-Kunden, die den Hosted Bot Management Service nutzen,
 
 **Sensible Zugangsdaten:** Die `.env`-Datei kann Ihren Discord-Bot-Token und weitere API-Keys enthalten. Diese Datei wird auf unserem Server gespeichert und ist zum Betrieb des Bots erforderlich. Mitarbeiter von MSK Scripts können diese Datei für Wartungs- und Supportzwecke einsehen. Sie sind dafür verantwortlich, dass die darin gespeicherten Zugangsdaten nicht kompromittiert sind.
 
+Bei Beendigung des Hosting-Arrangements werden alle Dateien in Ihrem Bot-Verzeichnis (einschließlich der `.env`-Datei) innerhalb von **14 Tagen** von unseren Servern gelöscht.
+
 **Rechtsgrundlage:** Art. 6 Abs. 1 lit. b DSGVO, die Verarbeitung ist zur Erfüllung des Hosting-Vertrags erforderlich.
 
-**Zugriffskontrolle:** Auf die Konfigurationsdateien können ausschließlich der Dienstbetreiber (MSK Scripts) und Sie über das authentifizierte Dashboard unter **www.msk-scripts.de/dashboard** zugreifen.
+**Zugriffskontrolle:** Auf die Konfigurationsdateien können ausschließlich der Dienstbetreiber (MSK Scripts) und Sie über das authentifizierte Dashboard unter **www.msk-scripts.de/ticketbot/dashboard** zugreifen.
 
 ---
 
@@ -328,16 +340,6 @@ Server-Administratoren können ihre Giveaways unter **www.msk-scripts.de/giveawa
 ### Verantwortung der Server-Administratoren
 
 Wenn Sie den Bot auf einen von Ihnen verwalteten Server einladen, sind Sie für die dort durchgeführten Giveaways verantwortlich, einschließlich ihrer Rechtmäßigkeit (Preise, Teilnahmeberechtigung, anwendbares Gewinnspielrecht) und dafür, Ihre Mitglieder darüber zu informieren, dass ein Drittanbieter (MSK Scripts) den Bot betreibt.
-
-Bei Beendigung des Hosting-Arrangements werden alle Dateien in Ihrem Bot-Verzeichnis (einschließlich der `.env`-Datei) innerhalb von **14 Tagen** von unseren Servern gelöscht.
-
-### Eigene Domain (Premium und Premium+)
-
-Bei Konfiguration einer eigenen Domain wird der Domain-Name in unserer Datenbank gespeichert. Bei der Aktivierung:
-- Wird eine **Apache2 VirtualHost-Konfiguration** auf unserem Server erstellt
-- Wird über Certbot ein **kostenloses SSL-Zertifikat** (Let's Encrypt) eingerichtet; dabei wird unsere Admin-E-Mail (`info@msk-scripts.de`) bei Let's Encrypt für Zertifikatsbenachrichtigungen hinterlegt
-
-Ihr Domain-Name kann aufgrund der SSL-Zertifikatsausstellung in öffentlichen **Certificate Transparency Logs** erscheinen. Dies ist ein Standardmerkmal der öffentlichen Web-PKI-Infrastruktur.
 
 ---
 
@@ -407,7 +409,7 @@ Der Abruf erfolgt ausschließlich **server-seitig**. Unser Server fragt bei five
 | Verify-Session-Cookie | 1 Stunde |
 | Dashboard-Session-Cookie | 30 Tage |
 | Sprachpräferenz-Cookie (`msk_lang`) | 1 Jahr (oder bis zur Löschung durch den Nutzer) |
-| Ticket Bot Kontodaten (guild_id, api_key, github_username, discord_user_id, tier) | Bis zur Löschanfrage |
+| Ticket Bot Kontodaten (guild_id, api_key, discord_user_id, tier, Stripe-IDs) | Bis zur Löschanfrage |
 | Rate-Limiting-Daten | 1 Stunde (gleitendes Fenster) |
 | Transkript-HTML-Dateien | 30 Tage (Basic) / 180 Tage (Premium) / 365 Tage (Premium+) |
 | Anhangsdateien | Wie Transkript |

@@ -1,6 +1,6 @@
 # Nutzungsbedingungen
 
-*Stand: Juni 2026*
+*Stand: Juli 2026*
 
 ## 1. Geltungsbereich
 
@@ -89,7 +89,7 @@ Sie können Ihr Abonnement jederzeit über die Schaltfläche **„Abo verwalten"
 
 ### 7.4 API Key
 
-Nach erfolgreicher Registrierung über **www.msk-scripts.de/verify** erhalten Sie einen persönlichen API Key.
+Nach erfolgreicher Registrierung über **www.msk-scripts.de/ticketbot/verify** erhalten Sie einen persönlichen API Key.
 
 - Der API Key ist **mit einem Discord-Server verknüpft** und muss vertraulich behandelt werden
 - **Teilen Sie Ihren API Key nicht** mit anderen Personen: er ermöglicht das Hochladen von Transkripten im Namen Ihres Servers
@@ -113,7 +113,7 @@ Transkripte sind über eine URL mit zufällig generierter UUID abrufbar (z.B. `h
 
 Wir garantieren keine dauerhafte Verfügbarkeit von Transkripten über die für Ihr Tier angegebene Speicherdauer hinaus.
 
-### 7.7 Eigene Domain (nur Premium)
+### 7.7 Eigene Domain (Premium und Premium+)
 
 Premium- und Premium+-Nutzer können eine eigene Domain für die Transkript-Auslieferung konfigurieren.
 
@@ -139,7 +139,7 @@ Der Hosted Bot Management Service ermöglicht Premium- und Premium+-Kunden, ihre
 
 Der Dienst umfasst:
 - Hosting des Bot-Prozesses auf MSK Scripts-Servern (verwaltet über PM2)
-- Zugang zu einem webbasierten Management-Panel unter **www.msk-scripts.de/dashboard** zum Bearbeiten von Konfigurationsdateien (`config.jsonc`, `snippets.jsonc`, `.env` sowie der aktiven Sprachdatei `locales/<lang>.json`), zur Bot-Steuerung (Starten / Stoppen / Neustart / Update) sowie zur Anzeige der Live-Log-Ausgabe
+- Zugang zu einem webbasierten Management-Panel unter **www.msk-scripts.de/ticketbot/dashboard** zum Bearbeiten von Konfigurationsdateien (`config.jsonc`, `snippets.jsonc`, `.env` sowie der aktiven Sprachdatei `locales/<lang>.json`), zur Bot-Steuerung (Starten / Stoppen / Neustart / Update) sowie zur Anzeige der Live-Log-Ausgabe
 
 ### 8.2 Zugang zu Konfigurationsdaten und Zugangsdaten
 
