@@ -58,7 +58,7 @@ const NAV_ITEMS_SECONDARY: NavItem[] = [
       // nicht prefetchen (sonst stale Redirect aus dem Router-Cache).
       { label: 'Verify',    href: '/ticketbot/verify',    prefetch: false },
       { label: 'Dashboard', href: '/ticketbot/dashboard', prefetch: false },
-      { label: 'Statistics',     href: '/ticketbot/stats' },
+      { label: 'Statistics', href: '/ticketbot/stats' },
     ],
   },
   {
