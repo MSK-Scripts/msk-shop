@@ -18,7 +18,7 @@ import { LangProvider } from '@/components/i18n/LangProvider'
 import { LANG_COOKIE_NAME, resolveLang } from '@/lib/lang'
 
 export const viewport: Viewport = {
-  width:        'device-width',
+  width: 'device-width',
   initialScale: 1,
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#ffffff' },
@@ -28,35 +28,62 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL ?? 'https://www.msk-scripts.de'),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_BASE_URL ?? "https://www.msk-scripts.de",
+  ),
   title: {
-    default:  'MSK Scripts – Website & Shop',
-    template: '%s',
+    default: "MSK Scripts – Website & Shop",
+    template: "%s",
   },
-  description: 'High quality FiveM resources, Tools & Discord bots for your server',
-  applicationName: 'MSK Scripts',
+  description:
+    "High quality FiveM resources, Tools & Discord bots for your server",
+  applicationName: "MSK Scripts",
   authors: [
-    { name: 'Musiker15',   url: 'https://www.musiker15.de' },
-    { name: 'MSK Scripts', url: 'https://www.msk-scripts.de' },
+    { name: "Musiker15", url: "https://www.musiker15.de" },
+    { name: "MSK Scripts", url: "https://www.msk-scripts.de" },
   ],
-  keywords: ['FiveM Resources', 'Discord Bots', 'Tools', 'MSK', 'MSK Scripts', 'msk-scripts.de'],
+  keywords: [
+    "FiveM",
+    "fivem",
+    "FiveM Resources",
+    "FiveM Scripts",
+    "FiveM Mods",
+    "FiveM Vehicles",
+    "FiveM Scripts Shop",
+    "FiveM Resources Shop",
+
+    "Discord Bots",
+    "Discord Ticket Bot",
+    "Ticket Bot",
+    "Ticketbot",
+    "Discord Ticket Bot",
+    "Discord Giveaway Bot",
+    "Giveawaybot",
+
+    "Tools",
+    
+    "MSK",
+    "MSK Scripts",
+    "msk-scripts.de",
+  ],
   icons: {
     icon: [
-      { url: '/favicon.ico', sizes: 'any' },
-      { url: '/logo.png',    type: 'image/png' },
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/logo.png", type: "image/png" },
     ],
-    shortcut: '/favicon.ico',
-    apple:    '/logo.png',
+    shortcut: "/favicon.ico",
+    apple: "/logo.png",
   },
   robots: { index: true, follow: true },
   openGraph: {
-    type:        'website',
-    siteName:    'MSK Scripts',
-    title:       'MSK Scripts – Website & Shop',
-    description: 'High quality FiveM resources, Tools & Discord bots for your server',
-    images:      ['/msk_scripts_fivem_more_banner.png'],
+    type: "website",
+    siteName: "MSK Scripts",
+    title: "MSK Scripts – Website & Shop",
+    description:
+      "High quality FiveM resources, Tools & Discord bots for your server",
+    images: ["/msk-scripts-server-banner.png"],
   },
-}
+};
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   // headers() opt-in zu Dynamic Rendering — Voraussetzung dafür, dass Next.js
