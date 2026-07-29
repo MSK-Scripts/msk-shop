@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/Button'
 import { PACKAGE_BADGES, PACKAGE_TAGS, PACKAGE_DESCRIPTIONS } from '@/lib/config'
 import { sanitizeTebexHtml } from '@/lib/sanitize'
 import { DEFAULT_OG_IMAGE, openGraphFor, plainExcerpt } from '@/lib/seo'
+import { JsonLd } from '@/components/JsonLd'
+import { breadcrumbJsonLd } from '@/lib/jsonLd'
 
 export const revalidate = 60
 
@@ -75,6 +77,15 @@ export default async function CategoryPage({
 
   return (
     <div className="container-page py-10 md:py-14">
+      {/* Muss mit der sichtbaren Breadcrumb darunter übereinstimmen. */}
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: 'Home',     path: '/' },
+          { name: 'Packages', path: '/packages' },
+          { name: category.name },
+        ])}
+      />
+
       {/* Breadcrumb */}
       <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-1.5 text-xs text-[var(--color-muted-foreground)]">
         <Link href="/" className="transition-colors hover:text-[var(--color-foreground)]">Home</Link>

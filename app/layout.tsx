@@ -17,6 +17,8 @@ import { ThemeProvider } from '@/components/theme/ThemeProvider'
 import { LangProvider } from '@/components/i18n/LangProvider'
 import { LANG_COOKIE_NAME, resolveLang } from '@/lib/lang'
 import { siteUrl } from '@/lib/siteUrl'
+import { JsonLd } from '@/components/JsonLd'
+import { organizationJsonLd } from '@/lib/jsonLd'
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -126,6 +128,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           nonce={nonce}
         >
           <LangProvider initial={lang}>
+            <JsonLd data={organizationJsonLd()} />
             <Header />
             <CartDrawer />
             <SalePriceFetcher />

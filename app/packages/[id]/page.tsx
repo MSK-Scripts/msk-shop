@@ -12,6 +12,8 @@ import { Button } from '@/components/ui/Button'
 import { PACKAGE_BADGES, PACKAGE_TAGS, PACKAGE_DESCRIPTIONS, SITE_CONFIG } from '@/lib/config'
 import { sanitizeTebexHtml } from '@/lib/sanitize'
 import { openGraphFor, packageImage, plainExcerpt } from '@/lib/seo'
+import { JsonLd } from '@/components/JsonLd'
+import { breadcrumbJsonLd, productJsonLd } from '@/lib/jsonLd'
 import type { BadgeVariant } from '@/components/ui/Badge'
 
 export const revalidate = 60
@@ -87,6 +89,19 @@ export default async function PackageDetailPage({
 
   return (
     <div className="container-page py-10 md:py-14">
+      {/* Strukturierte Daten. Die Breadcrumb-Werte müssen mit der sichtbaren
+          Navigation direkt darunter übereinstimmen. */}
+      <JsonLd
+        data={[
+          productJsonLd(pkg, configDescription),
+          breadcrumbJsonLd([
+            { name: 'Home',     path: '/' },
+            { name: 'Packages', path: '/packages' },
+            { name: pkg.name },
+          ]),
+        ]}
+      />
+
       {/* Breadcrumb */}
       <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-1.5 text-xs text-[var(--color-muted-foreground)]">
         <Link href="/" className="transition-colors hover:text-[var(--color-foreground)]">Home</Link>
