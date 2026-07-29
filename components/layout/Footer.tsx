@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { Github } from 'lucide-react'
+import { Github, Receipt, ShieldCheck, Undo2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useLang } from '@/components/i18n/LangProvider'
 import { layoutTranslations } from '@/lib/i18n'
@@ -15,6 +15,8 @@ const ECOSYSTEM_LINKS = [
 
 const DISCORD_URL = 'https://discord.gg/5hHSBRHvJE'
 const GITHUB_URL = 'https://github.com/MSK-Scripts'
+// Dieselbe Adresse, die § 4 der AGB als Kontakt für Rückerstattungen nennt.
+const SUPPORT_EMAIL = 'info@msk-scripts.de'
 
 function FooterLink({ href, external, children }: { href: string; external?: boolean; children: React.ReactNode }) {
   const cls = 'block py-1 text-sm text-[var(--color-muted-foreground)] transition-colors hover:text-[var(--color-foreground)]'
@@ -42,8 +44,15 @@ export function Footer() {
   const shopLinks = [
     { label: t.footer_all_packages, href: '/packages' },
     { label: t.footer_resource_stats, href: '/resources' },
-    { label: 'Github', href: GITHUB_URL, external: true },
+  ]
+  // Support-Spalte: die Kanäle, über die Kunden vor und nach dem Kauf Hilfe
+  // bekommen. Die E-Mail ist dieselbe, die § 4 der AGB für Rückerstattungen
+  // nennt. Bewusst KEIN „Status"-Link, es gibt keine Statusseite.
+  const supportLinks = [
+    { label: t.footer_discord,       href: DISCORD_URL,                  external: true },
     { label: t.footer_documentation, href: 'https://docu.msk-scripts.de/', external: true },
+    { label: 'GitHub',               href: GITHUB_URL,                   external: true },
+    { label: t.footer_email,         href: `mailto:${SUPPORT_EMAIL}`,    external: true },
   ]
   // Legal-Labels sind sprachabhängig (z. B. Imprint ⇄ Impressum).
   const legalLinks = [
@@ -88,8 +97,9 @@ export function Footer() {
           {/* Shop */}
           <div>
             <ColumnTitle>{t.footer_col_shop}</ColumnTitle>
+            {/* Nur noch interne Seiten, die externen Links sind in Support bzw. Ecosystem. */}
             {shopLinks.map(l => (
-              <FooterLink key={l.href} href={l.href} external={l.external}>{l.label}</FooterLink>
+              <FooterLink key={l.href} href={l.href}>{l.label}</FooterLink>
             ))}
           </div>
 
@@ -98,6 +108,14 @@ export function Footer() {
             <ColumnTitle>{t.footer_col_eco}</ColumnTitle>
             {ECOSYSTEM_LINKS.map(l => (
               <FooterLink key={l.href} href={l.href} external>{l.label}</FooterLink>
+            ))}
+          </div>
+
+          {/* Support */}
+          <div>
+            <ColumnTitle>{t.footer_col_support}</ColumnTitle>
+            {supportLinks.map(l => (
+              <FooterLink key={l.href} href={l.href} external={l.external}>{l.label}</FooterLink>
             ))}
           </div>
 
@@ -112,7 +130,34 @@ export function Footer() {
           </div>{/* /Link-Spalten */}
         </div>
 
-        <div className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--color-border)] pt-6">
+        {/* Vertrauenszeile. Jede Aussage ist in den AGB gedeckt und verlinkt
+            dorthin: § 2 Tebex als Merchant of Record, § 3 Single-Server-Lizenz,
+            § 4 Rückerstattung im Einzelfall. */}
+        <div className="mt-10 border-t border-[var(--color-border)] pt-6">
+          <p className="text-xs text-[var(--color-muted-foreground)]">
+            {t.footer_trust_checkout}
+          </p>
+          <ul className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2">
+            {[
+              { icon: ShieldCheck, label: t.footer_trust_license, href: '/terms' },
+              { icon: Undo2,       label: t.footer_trust_refund,  href: '/terms' },
+              { icon: Receipt,     label: t.footer_trust_vat },
+            ].map(item => (
+              <li key={item.label} className="flex items-center gap-1.5 text-xs text-[var(--color-muted-foreground)]">
+                <item.icon className="h-3.5 w-3.5 text-[var(--color-primary)]" aria-hidden="true" />
+                {item.href ? (
+                  <Link href={item.href} className="transition-colors hover:text-[var(--color-foreground)]">
+                    {item.label}
+                  </Link>
+                ) : (
+                  <span>{item.label}</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--color-border)] pt-6">
           <p className="text-xs text-[var(--color-muted-foreground)]">
             © {new Date().getFullYear()} MSK Scripts. {t.footer_rights}
           </p>
