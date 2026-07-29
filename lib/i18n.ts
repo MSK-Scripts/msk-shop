@@ -846,6 +846,18 @@ export const homeTranslations = {
     featured_heading_all:      'All Packages',
     featured_all_link:         'All packages',
 
+    how_eyebrow:  'How it works',
+    how_heading:  'From package to running server',
+    how_subtitle: 'Four steps, and you are done. No waiting for a key and no manual unlocking.',
+    how_steps: [
+      { title: 'Pick your version',   text: 'Most resources come as an Encrypted and a Source version. Encrypted is plug and play, Source gives you the full code.' },
+      { title: 'Sign in with CFX.re', text: 'Your CFX.re account is what the resource gets tied to, so it shows up on the right server.' },
+      { title: 'Pay through Tebex',   text: 'Checkout is handled by Tebex. Your payment details never touch this site.' },
+      { title: 'Start building',      text: 'The resource is available right after payment. Questions go to Discord, answered by the developer.' },
+    ],
+    how_note:     'Escrow resources need an active CFX.re account and an online server.',
+    how_btn_docs: 'Read the docs',
+
     custom_eyebrow:    'GitHub & More',
     custom_title:      'Tools, Bots & More',
     custom_subtitle:   'Free tools, Discord bots, and open-source libraries from the MSK ecosystem.',
@@ -882,6 +894,18 @@ export const homeTranslations = {
     featured_heading_featured: 'Empfohlene Pakete',
     featured_heading_all:      'Alle Pakete',
     featured_all_link:         'Alle Pakete',
+
+    how_eyebrow:  'So läuft es ab',
+    how_heading:  'Vom Paket zum laufenden Server',
+    how_subtitle: 'Vier Schritte, dann läuft es. Kein Warten auf einen Key, kein manuelles Freischalten.',
+    how_steps: [
+      { title: 'Version wählen',      text: 'Die meisten Ressourcen gibt es als Encrypted- und als Source-Version. Encrypted läuft sofort, Source gibt dir den kompletten Code.' },
+      { title: 'Mit CFX.re anmelden', text: 'An deinen CFX.re-Account wird die Ressource gebunden, damit sie auf dem richtigen Server auftaucht.' },
+      { title: 'Über Tebex zahlen',   text: 'Der Checkout läuft bei Tebex. Deine Zahlungsdaten berühren diese Seite nie.' },
+      { title: 'Loslegen',            text: 'Die Ressource ist direkt nach der Zahlung verfügbar. Fragen gehen an Discord, beantwortet vom Entwickler.' },
+    ],
+    how_note:     'Escrow-Ressourcen brauchen einen aktiven CFX.re-Account und einen Server, der online ist.',
+    how_btn_docs: 'Zur Dokumentation',
 
     custom_eyebrow:    'GitHub & mehr',
     custom_title:      'Tools, Bots & mehr',

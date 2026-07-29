@@ -4,6 +4,7 @@ import { Hero } from '@/components/home/Hero'
 import { TrustBar } from '@/components/home/TrustBar'
 import { FeaturedPackages } from '@/components/home/FeaturedPackages'
 import { WhyMSK } from '@/components/home/WhyMSK'
+import { HowItWorks } from '@/components/home/HowItWorks'
 import { CustomPackages } from '@/components/home/CustomPackages'
 import { CTASection } from '@/components/home/CTASection'
 import { openGraphFor } from '@/lib/seo'
@@ -23,6 +24,7 @@ export default async function HomePage() {
       <TrustBar lang={lang} />
       <FeaturedPackages lang={lang} />
       <WhyMSK lang={lang} />
+      <HowItWorks lang={lang} />
       <CustomPackages lang={lang} />
       <CTASection lang={lang} />
     </>
