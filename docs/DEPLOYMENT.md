@@ -140,3 +140,28 @@ nach `main` pushen. CI läuft → bei Grün triggert der Deploy automatisch.
 - **DB:** msk-shop nutzt rohes `database/schema.sql` (kein Prisma) — `deploy.sh` führt
   **keine** Migrationen aus. Schema-Änderungen manuell einspielen.
 - **Audit-Log** des Deploys: `/var/log/msk-shop-deploy.log`.
+
+## npm audit: warum der Deploy `--no-audit` benutzt
+
+`deploy.sh` installiert mit `npm ci --no-audit`, und die CI prüft stattdessen gezielt
+`npm audit --omit=dev --audit-level=high`. Der Grund ist kein Wegschauen, sondern
+Trennschärfe:
+
+- Der **Produktionsbaum ist sauber** (`npm audit --omit=dev` = 0). Genau das gatet die CI,
+  und ein neuer Fund dort lässt den Job rot werden.
+- Die verbleibenden Meldungen des vollen `npm audit` sind **dev-only** und stammen alle aus
+  derselben Advisory: `brace-expansion` (GHSA-mh99-v99m-4gvg, DoS durch unbegrenzte
+  Expansion) unterhalb von `minimatch@3`, das `eslint-plugin-import`, `eslint-plugin-react`
+  und `eslint-plugin-jsx-a11y` mitbringen. Erreichbar ist der Code ausschließlich, wenn wir
+  selbst ESLint mit einem bösartig konstruierten Glob aufrufen.
+- **Es gibt dafür aktuell keinen Fix.** Alle drei Plugins sind auf dem neuesten Stand und
+  deklarieren weiterhin `minimatch@^3.1.2`; die Advisory gilt für alles `<= 5.0.7`, einen
+  1.x-Backport gibt es nicht. `minimatch` auf 9/10 zu heben scheitert daran, dass deren
+  CJS-Export ein Objekt ist, die Plugins es aber als Funktion aufrufen.
+- **Nicht per Override "lösen".** Ein globaler `brace-expansion`-Override auf 5.x macht die
+  Meldung still, bricht aber `minimatch@3` bei jedem Glob mit geschweiften Klammern
+  (`TypeError: expand is not a function`). Genau das ist am 2026-07-31 zurückgebaut worden.
+
+**Wiedervorlage:** Sobald eines der drei Plugins auf `minimatch@^9` oder neuer geht,
+`npm audit` erneut prüfen. Dann sollte der volle Report wieder auf 0 stehen und dieser
+Abschnitt kann weg.

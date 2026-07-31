@@ -54,6 +54,23 @@ jobs:
       - run: npm ci
       - run: npm test
 
+  audit:
+    name: Audit (production tree)
+    runs-on: ubuntu-latest
+    # Gates the tree that actually ships. The full `npm audit` currently reports
+    # dev-only findings from brace-expansion under minimatch@3, which the ESLint
+    # plugins still pin and for which no upstream fix exists — see
+    # docs/DEPLOYMENT.md. Those must not mask a real production advisory, so this
+    # job checks the production tree only and fails on high/critical there.
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --no-audit
+      - run: npm audit --omit=dev --audit-level=high
+
   build:
     name: Build
     runs-on: ubuntu-latest

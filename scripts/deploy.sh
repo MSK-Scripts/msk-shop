@@ -83,7 +83,12 @@ else
 fi
 
 # 3. Dependencies (inkl. devDependencies — der Next-Build braucht sie).
-run_as_app_user 'npm ci'
+#    --no-audit: Der Audit-Report am Ende von `npm ci` betrifft ausschliesslich
+#    devDependencies (siehe unten), waere im Deploy-Log aber nicht davon zu
+#    unterscheiden und wuerde jeden Deploy nach einem echten Problem aussehen
+#    lassen. Der Audit gehoert in die CI und auf die Werkbank, nicht ins
+#    Deploy-Log. Produktionsstand pruefen mit `npm audit --omit=dev` (0).
+run_as_app_user 'npm ci --no-audit'
 
 # 4. Production-Build. `next build` lädt .env.local automatisch (NEXT_PUBLIC_*,
 #    TEBEX_PRIVATE_KEY müssen dort stehen).
