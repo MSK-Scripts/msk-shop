@@ -1,10 +1,11 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Loader2, AlertCircle, Plus, Ban } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { useAdminResource } from '@/lib/useAdminResource'
 
 interface GiftCard {
   id:      number
@@ -14,24 +15,14 @@ interface GiftCard {
 }
 
 export default function GiftCardsTab() {
-  const [cards, setCards]     = useState<GiftCard[] | null>(null)
-  const [error, setError]     = useState<string | null>(null)
+  const { data: cards, error, reload } = useAdminResource<GiftCard[]>(
+    '/api/admin/giftcards', 'giftCards', 'Failed to load gift cards.',
+  )
   const [amount, setAmount]   = useState('')
   const [note, setNote]       = useState('')
   const [expiresAt, setExpiresAt] = useState('')
   const [busy, setBusy]       = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
-
-  const load = useCallback(async () => {
-    setError(null)
-    try {
-      const r = await fetch('/api/admin/giftcards')
-      const d = await r.json()
-      if (!r.ok) throw new Error(d.error ?? 'Failed to load gift cards.')
-      setCards(d.giftCards as GiftCard[])
-    } catch (e) { setError(e instanceof Error ? e.message : 'Failed to load gift cards.') }
-  }, [])
-  useEffect(() => { load() }, [load])
 
   const create = async () => {
     if (busy) return
@@ -45,7 +36,7 @@ export default function GiftCardsTab() {
       const d = await r.json()
       if (!r.ok) throw new Error(d.error ?? 'Failed to create gift card.')
       setAmount(''); setNote(''); setExpiresAt('')
-      await load()
+      await reload()
     } catch (e) { setFormError(e instanceof Error ? e.message : 'Failed to create gift card.') }
     finally { setBusy(false) }
   }
@@ -63,7 +54,7 @@ export default function GiftCardsTab() {
       })
       const d = await r.json()
       if (!r.ok) throw new Error(d.error ?? 'Top-up failed.')
-      await load()
+      await reload()
     } catch (e) { window.alert(e instanceof Error ? e.message : 'Top-up failed.') }
   }
 
@@ -73,7 +64,7 @@ export default function GiftCardsTab() {
       const r = await fetch(`/api/admin/giftcards/${id}`, { method: 'DELETE' })
       const d = await r.json()
       if (!r.ok) throw new Error(d.error ?? 'Void failed.')
-      await load()
+      await reload()
     } catch (e) { window.alert(e instanceof Error ? e.message : 'Void failed.') }
   }
 

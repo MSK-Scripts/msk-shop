@@ -1,14 +1,23 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { X, Copy, Check } from 'lucide-react'
 import { NEWS_POPUP } from '@/lib/config'
 import { Button } from '@/components/ui/Button'
+import { useHydrated } from '@/lib/useHydrated'
 import { cn } from '@/lib/utils'
 
+const STORAGE_KEY = 'news-popup-closed'
+
 export function NewsPopup() {
-  const [visible, setVisible] = useState(false)
+  // Server-side there is no sessionStorage, so treat the popup as closed. The
+  // `hydrated` guard keeps the first client render identical to the server
+  // markup; the popup only appears on the render after hydration.
+  const hydrated = useHydrated()
+  const [closed, setClosed] = useState(
+    () => typeof window === 'undefined' || !!sessionStorage.getItem(STORAGE_KEY),
+  )
   const [copied, setCopied] = useState(false)
   const [hovered, setHovered] = useState(false)
 
@@ -19,19 +28,12 @@ export function NewsPopup() {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  useEffect(() => {
-    if (!NEWS_POPUP.enabled) return
-    const key = 'news-popup-closed'
-    const closed = sessionStorage.getItem(key)
-    if (!closed) setVisible(true)
-  }, [])
-
   function close() {
-    setVisible(false)
-    sessionStorage.setItem('news-popup-closed', '1')
+    setClosed(true)
+    sessionStorage.setItem(STORAGE_KEY, '1')
   }
 
-  if (!visible || !NEWS_POPUP.enabled) return null
+  if (!NEWS_POPUP.enabled || !hydrated || closed) return null
 
   return (
     <div className="fixed bottom-5 right-5 z-50 w-80 overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] shadow-2xl">

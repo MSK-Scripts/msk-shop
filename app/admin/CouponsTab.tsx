@@ -1,11 +1,12 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Loader2, AlertCircle, Trash2 } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { selectClass } from './styles'
+import { useAdminResource } from '@/lib/useAdminResource'
 
 interface Coupon {
   id:        number
@@ -18,8 +19,9 @@ interface Coupon {
 interface CatalogItem { id: number; name: string }
 
 export default function CouponsTab() {
-  const [coupons, setCoupons]         = useState<Coupon[] | null>(null)
-  const [error, setError]             = useState<string | null>(null)
+  const { data: coupons, error, reload } = useAdminResource<Coupon[]>(
+    '/api/admin/coupons', 'coupons', 'Failed to load coupons.',
+  )
   const [packages, setPackages]       = useState<CatalogItem[]>([])
   const [categories, setCategories]   = useState<CatalogItem[]>([])
 
@@ -30,17 +32,6 @@ export default function CouponsTab() {
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [busy, setBusy]               = useState(false)
   const [formError, setFormError]     = useState<string | null>(null)
-
-  const load = useCallback(async () => {
-    setError(null)
-    try {
-      const r = await fetch('/api/admin/coupons')
-      const d = await r.json()
-      if (!r.ok) throw new Error(d.error ?? 'Failed to load coupons.')
-      setCoupons(d.coupons as Coupon[])
-    } catch (e) { setError(e instanceof Error ? e.message : 'Failed to load coupons.') }
-  }, [])
-  useEffect(() => { load() }, [load])
 
   // Catalog for the package/category picker.
   useEffect(() => {
@@ -64,7 +55,7 @@ export default function CouponsTab() {
       const d = await r.json()
       if (!r.ok) throw new Error(d.error ?? 'Failed to create coupon.')
       setCode(''); setAmount(''); setSelectedIds([]); setEffectiveOn('cart')
-      await load()
+      await reload()
     } catch (e) { setFormError(e instanceof Error ? e.message : 'Failed to create coupon.') }
     finally { setBusy(false) }
   }
@@ -75,7 +66,7 @@ export default function CouponsTab() {
       const r = await fetch(`/api/admin/coupons/${id}`, { method: 'DELETE' })
       const d = await r.json()
       if (!r.ok) throw new Error(d.error ?? 'Delete failed.')
-      await load()
+      await reload()
     } catch (e) { window.alert(e instanceof Error ? e.message : 'Delete failed.') }
   }
 

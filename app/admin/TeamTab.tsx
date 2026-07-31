@@ -1,11 +1,12 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Loader2, AlertCircle, UserPlus, Trash2 } from 'lucide-react'
 import { ADMIN_PERMISSIONS, PERMISSION_LABELS, type AdminPermission } from '@/lib/adminPerms'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { useAdminResource } from '@/lib/useAdminResource'
 
 interface Member {
   discordUserId: string
@@ -109,25 +110,15 @@ function MemberRow({ m, selfId, onChanged }: { m: Member; selfId: string; onChan
 }
 
 export default function TeamTab({ selfId }: { selfId: string }) {
-  const [members, setMembers] = useState<Member[] | null>(null)
-  const [error, setError]     = useState<string | null>(null)
+  const { data: members, error, reload } = useAdminResource<Member[]>(
+    '/api/admin/team', 'members', 'Failed to load team.',
+  )
 
   const [newId, setNewId]     = useState('')
   const [newName, setNewName] = useState('')
   const [newPerms, setNewPerms] = useState<Set<AdminPermission>>(new Set())
   const [busy, setBusy]       = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
-
-  const load = useCallback(async () => {
-    setError(null)
-    try {
-      const r = await fetch('/api/admin/team')
-      const d = await r.json()
-      if (!r.ok) throw new Error(d.error ?? 'Failed to load team.')
-      setMembers(d.members as Member[])
-    } catch (e) { setError(e instanceof Error ? e.message : 'Failed to load team.') }
-  }, [])
-  useEffect(() => { load() }, [load])
 
   const add = async () => {
     if (busy) return
@@ -141,7 +132,7 @@ export default function TeamTab({ selfId }: { selfId: string }) {
       const d = await r.json()
       if (!r.ok) throw new Error(d.error ?? 'Failed to add member.')
       setNewId(''); setNewName(''); setNewPerms(new Set())
-      await load()
+      await reload()
     } catch (e) { setFormError(e instanceof Error ? e.message : 'Failed to add member.') }
     finally { setBusy(false) }
   }
@@ -188,7 +179,7 @@ export default function TeamTab({ selfId }: { selfId: string }) {
       )}
 
       {!error && members && members.map(m => (
-        <MemberRow key={m.discordUserId} m={m} selfId={selfId} onChanged={load} />
+        <MemberRow key={m.discordUserId} m={m} selfId={selfId} onChanged={reload} />
       ))}
     </div>
   )

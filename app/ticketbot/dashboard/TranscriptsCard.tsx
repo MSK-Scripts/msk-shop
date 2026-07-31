@@ -22,6 +22,12 @@ interface TranscriptItem {
 
 const PAGE_SIZE = 20
 
+interface Query {
+  ticketId: string; from: string; to: string; attachmentsOnly: boolean; page: number
+}
+
+const EMPTY_QUERY: Query = { ticketId: '', from: '', to: '', attachmentsOnly: false, page: 1 }
+
 function formatBytes(bytes: number): string {
   if (!bytes) return '0 KB'
   const kb = bytes / 1024
@@ -58,11 +64,10 @@ export default function TranscriptsCard({ lang, guildId }: { lang: Lang; guildId
   const fmtDate = (iso: string) =>
     new Date(iso).toLocaleDateString(locale, { year: 'numeric', month: 'short', day: '2-digit' })
 
-  const load = useCallback(async (opts: {
-    ticketId: string; from: string; to: string; attachmentsOnly: boolean; page: number
-  }) => {
-    setLoading(true)
-    setError(false)
+  // Fetch and apply a result set. Every state update happens after the await,
+  // so the initial effect below causes no extra render pass. Flipping `loading`
+  // back on is the caller's job — `loading` already starts out true.
+  const runQuery = useCallback(async (opts: Query) => {
     const qs = new URLSearchParams()
     qs.set('guildId', guildId)
     qs.set('page', String(opts.page))
@@ -75,6 +80,7 @@ export default function TranscriptsCard({ lang, guildId }: { lang: Lang; guildId
       const res = await fetch(`/api/transcripts?${qs.toString()}`, { cache: 'no-store' })
       if (!res.ok) { setError(true); setItems([]); setTotal(0); return }
       const data = await res.json()
+      setError(false)
       setItems(data.items ?? [])
       setTotal(data.total ?? 0)
     } catch {
@@ -84,10 +90,18 @@ export default function TranscriptsCard({ lang, guildId }: { lang: Lang; guildId
     }
   }, [guildId])
 
+  /** Re-query from a user action — shows the spinner right away. */
+  const load = useCallback((opts: Query) => {
+    setLoading(true)
+    setError(false)
+    return runQuery(opts)
+  }, [runQuery])
+
   // Initial load.
   useEffect(() => {
-    load({ ticketId: '', from: '', to: '', attachmentsOnly: false, page: 1 })
-  }, [load])
+    async function run() { await runQuery(EMPTY_QUERY) }
+    run()
+  }, [runQuery])
 
   const applyFilters = () => {
     setPage(1)
@@ -96,7 +110,7 @@ export default function TranscriptsCard({ lang, guildId }: { lang: Lang; guildId
 
   const resetFilters = () => {
     setTicketId(''); setFrom(''); setTo(''); setAttachmentsOnly(false); setPage(1)
-    load({ ticketId: '', from: '', to: '', attachmentsOnly: false, page: 1 })
+    load(EMPTY_QUERY)
   }
 
   const goToPage = (p: number) => {

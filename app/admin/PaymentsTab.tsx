@@ -1,12 +1,13 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Loader2, AlertCircle, Gift, Undo2, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { StatusBadge } from './StatusBadge'
 import { selectClass } from './styles'
+import { useAdminResource } from '@/lib/useAdminResource'
 
 interface Payment {
   id:       string
@@ -24,8 +25,9 @@ interface CatalogPackage { id: number; name: string }
 const PAGE_SIZES = [10, 25, 50, 100]
 
 export default function PaymentsTab({ canCreate, canRefund }: { canCreate: boolean; canRefund: boolean }) {
-  const [payments, setPayments] = useState<Payment[] | null>(null)
-  const [error, setError]       = useState<string | null>(null)
+  const { data: payments, error, reload } = useAdminResource<Payment[]>(
+    '/api/admin/payments', 'payments', 'Failed to load payments.',
+  )
 
   const [catalog, setCatalog]   = useState<CatalogPackage[]>([])
 
@@ -48,20 +50,6 @@ export default function PaymentsTab({ canCreate, canRefund }: { canCreate: boole
     setShowGive(false)
     setIgn(''); setPackageId(''); setPrice('0'); setNote(''); setFormError(null)
   }
-
-  const load = useCallback(async () => {
-    setError(null)
-    try {
-      const r = await fetch('/api/admin/payments')
-      const d = await r.json()
-      if (!r.ok) throw new Error(d.error ?? 'Failed to load payments.')
-      setPayments(d.payments as Payment[])
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to load payments.')
-    }
-  }, [])
-
-  useEffect(() => { load() }, [load])
 
   // Load the package list for the picker (only if the user can give packages).
   useEffect(() => {
@@ -92,7 +80,7 @@ export default function PaymentsTab({ canCreate, canRefund }: { canCreate: boole
       if (!r.ok) throw new Error(d.error ?? 'Failed to create payment.')
       setShowGive(false)
       setIgn(''); setPackageId(''); setPrice('0'); setNote('')
-      await load()
+      await reload()
     } catch (e) {
       setFormError(e instanceof Error ? e.message : 'Failed to create payment.')
     } finally {
@@ -112,7 +100,7 @@ export default function PaymentsTab({ canCreate, canRefund }: { canCreate: boole
       })
       const d = await r.json()
       if (!r.ok) throw new Error(d.error ?? 'Refund failed.')
-      await load()
+      await reload()
     } catch (e) {
       window.alert(e instanceof Error ? e.message : 'Refund failed.')
     } finally {

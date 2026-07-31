@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useEffect, useState } from 'react'
+import { Suspense, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
@@ -10,26 +10,23 @@ import { Card } from '@/components/ui/Card'
 function DiscordCallback() {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const [message, setMessage] = useState('Processing Discord authentication...')
+  const discordId = searchParams.get('discord_id') || searchParams.get('discordId') || searchParams.get('id') || ''
+  const discordTag = searchParams.get('discord_tag') || ''
+
+  // Purely derived from the URL — no state, so nothing has to be set from an effect.
+  const message = discordId
+    ? `Discord connected as ${discordTag || discordId}! Returning to shop...`
+    : 'Could not get Discord ID. Returning...'
 
   useEffect(() => {
-    const discordId = searchParams.get('discord_id') || searchParams.get('discordId') || searchParams.get('id') || ''
-    const discordTag = searchParams.get('discord_tag') || ''
-
     const returnPath = sessionStorage.getItem('discordReturnPath') || '/'
+    const target = discordId
+      ? `${returnPath}?discordLinked=true&discord_id=${encodeURIComponent(discordId)}`
+      : `${returnPath}?discordLinked=error`
 
-    if (discordId) {
-      setMessage(`Discord connected as ${discordTag || discordId}! Returning to shop...`)
-      setTimeout(() => {
-        router.push(`${returnPath}?discordLinked=true&discord_id=${encodeURIComponent(discordId)}`)
-      }, 600)
-    } else {
-      setMessage('Could not get Discord ID. Returning...')
-      setTimeout(() => {
-        router.push(`${returnPath}?discordLinked=error`)
-      }, 1000)
-    }
-  }, [searchParams, router])
+    const timer = setTimeout(() => router.push(target), discordId ? 600 : 1000)
+    return () => clearTimeout(timer)
+  }, [discordId, router])
 
   return (
     <div className="container-page flex min-h-[calc(100vh-4rem-12rem)] items-center justify-center py-12">

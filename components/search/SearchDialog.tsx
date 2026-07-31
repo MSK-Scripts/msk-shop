@@ -20,24 +20,33 @@ interface Props {
  */
 export function SearchDialog({ open, onClose }: Props) {
   const [query, setQuery] = useState('')
-  const [packages, setPackages] = useState<TebexPackage[]>([])
-  const [loading, setLoading] = useState(false)
+  const [packages, setPackages] = useState<TebexPackage[] | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const requested = useRef(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  // Packages beim ersten Öffnen laden
+  // Packages beim ersten Öffnen laden. Der Fetch läuft komplett im Effect und
+  // schreibt State nur nach dem await — kein zusätzlicher Render-Durchlauf.
   useEffect(() => {
-    if (!open || packages.length > 0 || loading) return
-    setLoading(true)
-    setError(null)
-    getPackages()
-      .then(setPackages)
-      .catch(err => {
+    if (!open || requested.current) return
+    requested.current = true
+    let alive = true
+    async function run() {
+      try {
+        const list = await getPackages()
+        if (alive) setPackages(list)
+      } catch (err) {
         console.error('[SearchDialog]', err)
-        setError('Could not load packages.')
-      })
-      .finally(() => setLoading(false))
-  }, [open, packages.length, loading])
+        if (alive) setError('Could not load packages.')
+      }
+    }
+    run()
+    return () => { alive = false }
+  }, [open])
+
+  // Abgeleitet statt eigener State: solange offen, nichts geladen und kein
+  // Fehler, läuft der Request noch.
+  const loading = open && packages === null && error === null
 
   // Focus + ESC + Body-Scroll-Lock
   useEffect(() => {
@@ -55,17 +64,21 @@ export function SearchDialog({ open, onClose }: Props) {
     }
   }, [open, onClose])
 
-  // Query bei Close resetten
-  useEffect(() => {
+  // Query bei Close resetten — während des Renders statt im Effect, damit der
+  // Dialog beim nächsten Öffnen nie kurz die alte Eingabe zeigt.
+  const [wasOpen, setWasOpen] = useState(open)
+  if (wasOpen !== open) {
+    setWasOpen(open)
     if (!open) setQuery('')
-  }, [open])
+  }
 
   if (!open) return null
 
+  const list = packages ?? []
   const q = query.trim().toLowerCase()
   const results = q
-    ? packages.filter(p => p.name.toLowerCase().includes(q)).slice(0, 8)
-    : packages.slice(0, 8)
+    ? list.filter(p => p.name.toLowerCase().includes(q)).slice(0, 8)
+    : list.slice(0, 8)
 
   return (
     <div className="fixed inset-0 z-[100] flex items-start justify-center p-4 pt-16 sm:pt-24">
@@ -113,7 +126,7 @@ export function SearchDialog({ open, onClose }: Props) {
               <Loader2 className="h-4 w-4 animate-spin" />
               Loading packages…
             </div>
-          ) : packages.length === 0 ? (
+          ) : list.length === 0 ? (
             <div className="py-8 text-center text-sm text-[var(--color-muted-foreground)]">
               No packages available.
             </div>

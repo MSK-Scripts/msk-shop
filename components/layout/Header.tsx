@@ -16,6 +16,7 @@ import { useLang } from '@/components/i18n/LangProvider'
 import { layoutTranslations } from '@/lib/i18n'
 import { SearchDialog } from '@/components/search/SearchDialog'
 import { getCategories } from '@/lib/tebex'
+import { useHydrated } from '@/lib/useHydrated'
 import type { TebexCategory } from '@/types/tebex'
 import { cn } from '@/lib/utils'
 
@@ -81,8 +82,6 @@ function HeaderInner() {
   const [catOpen, setCatOpen] = useState(false)
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
   const [searchOpen, setSearchOpen] = useState(false)
-  const [hydrated, setHydrated] = useState(false)
-  const [isMac, setIsMac] = useState(false)
 
   const { lang } = useLang()
   const t = layoutTranslations[lang]
@@ -110,11 +109,12 @@ function HeaderInner() {
   // identisch bleiben (sonst → Hydration-Mismatch → React hängt keine
   // Event-Listener mehr an die Subtree → tote Buttons), zeigen wir
   // persistierte Werte erst nach dem Mount.
-  useEffect(() => {
-    setHydrated(true)
-    // Shortcut-Hinweis im Such-Feld: ⌘K auf dem Mac, sonst Ctrl+K.
-    setIsMac(/mac/i.test(navigator.platform))
-  }, [])
+  const hydrated = useHydrated()
+
+  // Shortcut-Hinweis im Such-Feld: ⌘K auf dem Mac, sonst Ctrl+K. Der
+  // `hydrated`-Guard kommt zuerst, damit `navigator` server-seitig nie
+  // ausgewertet wird.
+  const isMac = hydrated && /mac/i.test(navigator.platform)
 
   // Effective-Werte: identisch zwischen SSR + Client-First-Render
   const effectiveItemCount = hydrated ? itemCount : 0
@@ -187,12 +187,17 @@ function HeaderInner() {
     return () => document.removeEventListener('keydown', handleKey)
   }, [])
 
-  // Menüs bei Route-Change schließen
-  useEffect(() => {
+  // Menüs bei Route-Change schließen. Während des Renders angepasst statt im
+  // Effect: React verwirft den Render dann direkt und committet nur den
+  // geschlossenen Zustand, statt das offene Menü kurz auf der neuen Seite zu
+  // zeigen.
+  const [lastPathname, setLastPathname] = useState(pathname)
+  if (lastPathname !== pathname) {
+    setLastPathname(pathname)
     setMobileOpen(false)
     setCatOpen(false)
     setOpenDropdown(null)
-  }, [pathname])
+  }
 
   async function handleLogin() {
     setLoginLoading(true)

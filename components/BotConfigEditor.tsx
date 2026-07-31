@@ -99,7 +99,8 @@ export default function BotConfigEditor({ lang, guildId }: { lang: Lang; nonce?:
 
   // Bot control
   const [botStatus, setBotStatus]           = useState<BotStatus | null>(null)
-  const [statusLoading, setStatusLoading]   = useState(false)
+  // A status fetch is already in flight from mount, so this starts out true.
+  const [statusLoading, setStatusLoading]   = useState(true)
   const [actionLoading, setActionLoading]   = useState<'start' | 'stop' | 'restart' | null>(null)
   const [controlMsg, setControlMsg]         = useState<Msg | null>(null)
 
@@ -132,8 +133,9 @@ export default function BotConfigEditor({ lang, guildId }: { lang: Lang; nonce?:
     } finally { setLogsLoading(false) }
   }, [guildId])
 
-  const fetchStatus = useCallback(async (): Promise<BotStatus | null> => {
-    setStatusLoading(true)
+  // Only touches state after the await, so the mount effect below stays free of
+  // the extra render pass react-hooks/set-state-in-effect warns about.
+  const runStatus = useCallback(async (): Promise<BotStatus | null> => {
     try {
       const res  = await fetch(`/api/bot-control?guildId=${guildId}`)
       const data = await res.json() as { status?: string; error?: string }
@@ -145,7 +147,16 @@ export default function BotConfigEditor({ lang, guildId }: { lang: Lang; nonce?:
     } finally { setStatusLoading(false) }
   }, [guildId])
 
-  useEffect(() => { fetchStatus() }, [fetchStatus])
+  /** Refresh from a user action — shows the spinner right away. */
+  const fetchStatus = useCallback((): Promise<BotStatus | null> => {
+    setStatusLoading(true)
+    return runStatus()
+  }, [runStatus])
+
+  useEffect(() => {
+    async function run() { await runStatus() }
+    run()
+  }, [runStatus])
 
   // ── Live logs ──────────────────────────────────────────────────────────────
 

@@ -1,11 +1,12 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Loader2, AlertCircle, Pencil, Eye, EyeOff, Copy, Check, Globe, X } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { cn } from '@/lib/utils'
+import { useAdminResource } from '@/lib/useAdminResource'
 
 type Tier = 'basic' | 'premium' | 'premium_plus'
 
@@ -43,8 +44,9 @@ function maskKey(key: string): string {
 }
 
 export default function ApiKeysTab({ canChange }: { canChange: boolean }) {
-  const [keys, setKeys]   = useState<ApiKey[] | null>(null)
-  const [error, setError] = useState<string | null>(null)
+  const { data: keys, error, reload } = useAdminResource<ApiKey[]>(
+    '/api/admin/api-keys', 'keys', 'Failed to load API keys.',
+  )
   const [search, setSearch] = useState('')
   const [revealed, setRevealed] = useState<Set<string>>(new Set())
   const [copied, setCopied] = useState<string | null>(null)
@@ -54,17 +56,6 @@ export default function ApiKeysTab({ canChange }: { canChange: boolean }) {
   const [busy, setBusy]         = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
   const [notice, setNotice]     = useState<string | null>(null)
-
-  const load = useCallback(async () => {
-    setError(null)
-    try {
-      const r = await fetch('/api/admin/api-keys')
-      const d = await r.json()
-      if (!r.ok) throw new Error(d.error ?? 'Failed to load API keys.')
-      setKeys(d.keys as ApiKey[])
-    } catch (e) { setError(e instanceof Error ? e.message : 'Failed to load API keys.') }
-  }, [])
-  useEffect(() => { load() }, [load])
 
   const filtered = useMemo(() => {
     if (!keys) return null
@@ -111,7 +102,7 @@ export default function ApiKeysTab({ canChange }: { canChange: boolean }) {
       if (!r.ok) throw new Error(d.error ?? 'Update failed.')
       setEditing(null)
       setNotice(typeof d.warning === 'string' ? d.warning : null)
-      await load()
+      await reload()
     } catch (e) { setFormError(e instanceof Error ? e.message : 'Update failed.') }
     finally { setBusy(false) }
   }

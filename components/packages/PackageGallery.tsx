@@ -42,17 +42,19 @@ const FRAME = 'relative h-64 overflow-hidden bg-gradient-to-br from-[color-mix(i
 export function PackageGallery({ media, image, alt, overlay, className }: PackageGalleryProps) {
   const images = resolveImages(media, image)
   const count = images.length
-  const [index, setIndex] = useState(0)
+  const [rawIndex, setIndex] = useState(0)
   const [zoomed, setZoomed] = useState(false)
   const touchStartX = useRef<number | null>(null)
 
-  // Keep the index valid if the image set ever changes.
-  useEffect(() => {
-    if (index > count - 1) setIndex(0)
-  }, [count, index])
+  // Keep the index valid if the image set ever changes. Derived rather than
+  // corrected in an effect, so a shrinking gallery never renders a missing
+  // slide first.
+  const index = rawIndex < count ? rawIndex : 0
 
+  // Clamp the previous value the same way `index` does — it can still be out of
+  // range when the image set just shrank.
   const go = useCallback(
-    (dir: number) => setIndex(i => (i + dir + count) % count),
+    (dir: number) => setIndex(i => ((i < count ? i : 0) + dir + count) % count),
     [count],
   )
 

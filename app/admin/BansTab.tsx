@@ -1,10 +1,11 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Loader2, AlertCircle, Ban } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { useAdminResource } from '@/lib/useAdminResource'
 
 interface BanEntry {
   id:     number
@@ -14,24 +15,14 @@ interface BanEntry {
 }
 
 export default function BansTab() {
-  const [bans, setBans]     = useState<BanEntry[] | null>(null)
-  const [error, setError]   = useState<string | null>(null)
+  const { data: bans, error, reload } = useAdminResource<BanEntry[]>(
+    '/api/admin/bans', 'bans', 'Failed to load bans.',
+  )
   const [user, setUser]     = useState('')
   const [reason, setReason] = useState('')
   const [ip, setIp]         = useState('')
   const [busy, setBusy]     = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
-
-  const load = useCallback(async () => {
-    setError(null)
-    try {
-      const r = await fetch('/api/admin/bans')
-      const d = await r.json()
-      if (!r.ok) throw new Error(d.error ?? 'Failed to load bans.')
-      setBans(d.bans as BanEntry[])
-    } catch (e) { setError(e instanceof Error ? e.message : 'Failed to load bans.') }
-  }, [])
-  useEffect(() => { load() }, [load])
 
   const create = async () => {
     if (busy) return
@@ -45,7 +36,7 @@ export default function BansTab() {
       const d = await r.json()
       if (!r.ok) throw new Error(d.error ?? 'Failed to create ban.')
       setUser(''); setReason(''); setIp('')
-      await load()
+      await reload()
     } catch (e) { setFormError(e instanceof Error ? e.message : 'Failed to create ban.') }
     finally { setBusy(false) }
   }

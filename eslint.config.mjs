@@ -33,10 +33,11 @@ const eslintConfig = [
         caughtErrorsIgnorePattern: '^_',
       }],
       // New in eslint-plugin-react-hooks 7 (pulled in by eslint-config-next 16).
-      // It flags the mounted-flag and load-on-mount patterns this codebase uses in
-      // 20 places. Kept as a warning instead of an error: cleaning those up is a
-      // separate refactor, not part of the ESLint 10 upgrade.
-      'react-hooks/set-state-in-effect': 'warn',
+      // The 20 mounted-flag and load-on-mount hits it originally found are gone:
+      // hydration guards run through `useHydrated()`, derived state is computed
+      // during render, and every fetch-on-mount writes state only after its
+      // await. Kept at 'error' so the pattern does not come back.
+      'react-hooks/set-state-in-effect': 'error',
     },
   },
 ]

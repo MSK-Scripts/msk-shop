@@ -72,9 +72,9 @@ export default function DashboardClient({ guildId }: { guildId: string }) {
     if (d?.giveaways) setGiveaways(d.giveaways);
   }, [get]);
 
-  const loadAll = useCallback(async () => {
-    setLoading(true);
-    setError(null);
+  // Only touches state after the await, so the mount effect below causes no
+  // extra render pass (`loading` and `error` already start out correct).
+  const runLoadAll = useCallback(async () => {
     try {
       const [gw, st, rl, ch] = await Promise.all([get('giveaways'), get('settings'), get('roles'), get('channels')]);
       if (gw?.giveaways) setGiveaways(gw.giveaways);
@@ -88,7 +88,17 @@ export default function DashboardClient({ guildId }: { guildId: string }) {
     }
   }, [get, t]);
 
-  useEffect(() => { loadAll(); }, [loadAll]);
+  /** Refresh from a user action — shows the spinner right away. */
+  const loadAll = useCallback(() => {
+    setLoading(true);
+    setError(null);
+    return runLoadAll();
+  }, [runLoadAll]);
+
+  useEffect(() => {
+    async function run() { await runLoadAll(); }
+    run();
+  }, [runLoadAll]);
 
   async function logout() {
     await fetch('/api/giveaway/logout', { method: 'POST' });
@@ -342,7 +352,15 @@ function SettingsTab({ settings, roles, channels, onSaved, setError }: {
   const [form, setForm] = useState<Settings | null>(settings);
   const [busy, setBusy] = useState(false);
   const [saved, setSaved] = useState(false);
-  useEffect(() => { setForm(settings); }, [settings]);
+
+  // Discard local edits whenever a fresh settings object arrives from the
+  // server. Adjusting during render instead of in an effect means React redoes
+  // this render before committing, rather than painting the stale form first.
+  const [lastSettings, setLastSettings] = useState(settings);
+  if (lastSettings !== settings) {
+    setLastSettings(settings);
+    setForm(settings);
+  }
 
   const upd = (patch: Partial<Settings>) => setForm((f) => (f ? { ...f, ...patch } : f));
 

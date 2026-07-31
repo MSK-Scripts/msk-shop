@@ -1,10 +1,11 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Loader2, AlertCircle, Pencil, EyeOff } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { useAdminResource } from '@/lib/useAdminResource'
 
 interface Package {
   id:       number
@@ -14,8 +15,9 @@ interface Package {
 }
 
 export default function PackagesTab() {
-  const [packages, setPackages] = useState<Package[] | null>(null)
-  const [error, setError]       = useState<string | null>(null)
+  const { data: packages, error, reload } = useAdminResource<Package[]>(
+    '/api/admin/packages', 'packages', 'Failed to load packages.',
+  )
 
   const [editing, setEditing]   = useState<Package | null>(null)
   const [name, setName]         = useState('')
@@ -23,17 +25,6 @@ export default function PackagesTab() {
   const [busy, setBusy]         = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
   const [disablingId, setDisablingId] = useState<number | null>(null)
-
-  const load = useCallback(async () => {
-    setError(null)
-    try {
-      const r = await fetch('/api/admin/packages')
-      const d = await r.json()
-      if (!r.ok) throw new Error(d.error ?? 'Failed to load packages.')
-      setPackages(d.packages as Package[])
-    } catch (e) { setError(e instanceof Error ? e.message : 'Failed to load packages.') }
-  }, [])
-  useEffect(() => { load() }, [load])
 
   const openEdit = (p: Package) => {
     setEditing(p); setName(p.name); setPrice(String(p.price)); setFormError(null)
@@ -62,7 +53,7 @@ export default function PackagesTab() {
       const d = await r.json()
       if (!r.ok) throw new Error(d.error ?? 'Update failed.')
       setEditing(null)
-      await load()
+      await reload()
     } catch (e) { setFormError(e instanceof Error ? e.message : 'Update failed.') }
     finally { setBusy(false) }
   }
@@ -79,7 +70,7 @@ export default function PackagesTab() {
       })
       const d = await r.json()
       if (!r.ok) throw new Error(d.error ?? 'Disable failed.')
-      await load()
+      await reload()
     } catch (e) { window.alert(e instanceof Error ? e.message : 'Disable failed.') }
     finally { setDisablingId(null) }
   }

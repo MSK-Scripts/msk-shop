@@ -6,6 +6,7 @@ import { useTheme } from 'next-themes'
 import { useLang } from '@/components/i18n/LangProvider'
 import { Button } from '@/components/ui/Button'
 import { layoutTranslations } from '@/lib/i18n'
+import { useHydrated } from '@/lib/useHydrated'
 import { cn } from '@/lib/utils'
 
 /**
@@ -14,7 +15,8 @@ import { cn } from '@/lib/utils'
  * Das Icon zeigt `resolvedTheme` (nie `'system'`/`undefined`), der Haken im
  * Menü hängt an `theme` — damit bleibt „Systemeinstellung“ als Auswahl sichtbar.
  * Vor der Hydration rendert ein Platzhalter gleicher Größe ohne Icon, sonst
- * gäbe es einen Hydration-Mismatch.
+ * gäbe es einen Hydration-Mismatch. Der Guard kommt aus `useHydrated()`
+ * (useSyncExternalStore) statt aus einem setState im Effect.
  *
  * Bewusst ein eigenes useState-Dropdown statt Radix: die strikte Nonce-CSP
  * blockt zur Laufzeit injizierte <style>-Tags (Radix' Scroll-Lock).
@@ -23,11 +25,9 @@ export function ThemeToggle() {
   const { lang } = useLang()
   const t = layoutTranslations[lang]
   const { theme, resolvedTheme, setTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
+  const mounted = useHydrated()
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
-
-  useEffect(() => { setMounted(true) }, [])
 
   useEffect(() => {
     if (!open) return

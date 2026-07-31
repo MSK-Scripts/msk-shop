@@ -1,15 +1,19 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { ShoppingCart, Loader2, Download, Gift, X, LogIn } from 'lucide-react'
 import { useCart } from '@/lib/useCart'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import type { TebexPackage } from '@/types/tebex'
 
+/** `useCart` stores the Discord ID in sessionStorage during the OAuth round-trip. */
+const readStoredDiscordId = () =>
+  typeof window !== 'undefined' && !!sessionStorage.getItem('discordId')
+
 export function AddToCartButton({ pkg }: { pkg: TebexPackage }) {
   const { addPackage, giftPackage, isLoading, username } = useCart()
-  const [hasDiscordId, setHasDiscordId] = useState(false)
+  const [hasDiscordId, setHasDiscordId] = useState(readStoredDiscordId)
   const [showDiscordModal, setShowDiscordModal] = useState(false)
   const [discordId, setDiscordId] = useState('')
   const [discordError, setDiscordError] = useState('')
@@ -24,10 +28,14 @@ export function AddToCartButton({ pkg }: { pkg: TebexPackage }) {
   const canGift = !pkg.disable_gifting && !isFree
   const needsLogin = !username
 
-  useEffect(() => {
-    const stored = typeof window !== 'undefined' ? sessionStorage.getItem('discordId') : null
-    setHasDiscordId(!!stored)
-  }, [username])
+  // A login (or logout) can bring a different stored Discord ID with it, so
+  // re-read it whenever the user changes. Adjusting during render instead of in
+  // an effect avoids a second render pass on every mount.
+  const [lastUsername, setLastUsername] = useState(username)
+  if (lastUsername !== username) {
+    setLastUsername(username)
+    setHasDiscordId(readStoredDiscordId())
+  }
 
   function handleAddToCart() {
     if (needsLogin) {
