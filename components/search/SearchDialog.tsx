@@ -27,6 +27,9 @@ export function SearchDialog({ open, onClose }: Props) {
 
   // Packages beim ersten Öffnen laden. Der Fetch läuft komplett im Effect und
   // schreibt State nur nach dem await — kein zusätzlicher Render-Durchlauf.
+  // Nach einem Fehlschlag wird die Sperre wieder gelöst, damit das nächste
+  // Öffnen es erneut versucht, statt die alte Fehlermeldung bis zum Reload
+  // stehen zu lassen.
   useEffect(() => {
     if (!open || requested.current) return
     requested.current = true
@@ -34,9 +37,10 @@ export function SearchDialog({ open, onClose }: Props) {
     async function run() {
       try {
         const list = await getPackages()
-        if (alive) setPackages(list)
+        if (alive) { setPackages(list); setError(null) }
       } catch (err) {
         console.error('[SearchDialog]', err)
+        requested.current = false
         if (alive) setError('Could not load packages.')
       }
     }
@@ -65,11 +69,14 @@ export function SearchDialog({ open, onClose }: Props) {
   }, [open, onClose])
 
   // Query bei Close resetten — während des Renders statt im Effect, damit der
-  // Dialog beim nächsten Öffnen nie kurz die alte Eingabe zeigt.
+  // Dialog beim nächsten Öffnen nie kurz die alte Eingabe zeigt. Beim Öffnen
+  // fällt eine alte Fehlermeldung weg, sonst zeigt der Dialog sie weiter,
+  // während der Effect darunter längst neu lädt.
   const [wasOpen, setWasOpen] = useState(open)
   if (wasOpen !== open) {
     setWasOpen(open)
-    if (!open) setQuery('')
+    if (open) setError(null)
+    else setQuery('')
   }
 
   if (!open) return null
