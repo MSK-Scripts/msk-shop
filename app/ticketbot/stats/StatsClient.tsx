@@ -151,8 +151,8 @@ export default function StatsClient({ stats }: { stats: Stats }) {
   ]
 
   return (
-    <div className="container-page py-10 md:py-14">
-      <div className="mx-auto max-w-5xl">
+    <div className="container-wide py-10 md:py-14">
+      <div>
 
         {/* Header */}
         <div className="mb-10 flex items-start justify-between">
@@ -186,7 +186,7 @@ export default function StatsClient({ stats }: { stats: Stats }) {
         </div>
 
         {/* Stat Cards */}
-        <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mb-4 grid grid-cols-[repeat(auto-fill,minmax(min(100%,260px),1fr))] gap-4">
           {cards.map(c => <StatCard key={c.label} {...c} />)}
         </div>
 

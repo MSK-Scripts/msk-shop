@@ -154,8 +154,8 @@ export default function StatsClient({
   const statusTotal = statusItems.reduce((s, i) => s + (stats.status[i.key] ?? 0), 0)
 
   return (
-    <div className="container-page py-10 md:py-14">
-      <div className="mx-auto max-w-5xl">
+    <div className="container-wide py-10 md:py-14">
+      <div>
 
         {/* Header */}
         <div className="mb-10 flex items-start justify-between">
@@ -189,7 +189,7 @@ export default function StatsClient({
         </div>
 
         {/* Stat Cards */}
-        <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mb-4 grid grid-cols-[repeat(auto-fill,minmax(min(100%,260px),1fr))] gap-4">
           {cards.map(c => <StatCard key={c.label} {...c} />)}
         </div>
 

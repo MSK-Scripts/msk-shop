@@ -59,38 +59,6 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
 
   // Add your custom packages here ↓
   {
-    id: "discord_ticketbot",
-    name: "Discord Ticketbot",
-    description:
-      "Self-hosted, built on Discord.js v14. It runs on SQLite out of the box or your own MySQL, MariaDB or PostgreSQL. No telemetry, full feature set out of the box.",
-    price: "Free",
-    isFree: true,
-    image: "msk-ticket-bot-banner.webp",
-    link: "https://github.com/MSK-Scripts/discord_ticketbot",
-    linkLabel: "View on GitHub",
-    badges: [
-      { label: "Discord", variant: "discord" },
-      { label: "JavaScript", variant: "js" },
-    ],
-    tags: ["Installation", "Configuration", "Ticket System"],
-  },
-  {
-    id: "discord_giveawaybot",
-    name: "Discord Giveawaybot",
-    description:
-      "A multilingual, per-guild configurable giveaway bot built on Discord.js v14. Restart-safe scheduling, weighted bonus entries, eligibility rules, templates and pause/resume functionality.",
-    price: "Free",
-    isFree: true,
-    image: "msk-giveaway-bot-banner.webp",
-    link: "https://github.com/MSK-Scripts/discord_giveawaybot",
-    linkLabel: "View on GitHub",
-    badges: [
-      { label: "Discord", variant: "discord" },
-      { label: "JavaScript", variant: "js" },
-    ],
-    tags: ["Installation", "Configuration"],
-  },
-  {
     id: "msk_core",
     name: "MSK Core",
     description:
@@ -178,7 +146,7 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
     tags: ["Fuel Consumption", "Realistic Fuel System", "Vehicle Management"],
   },
   {
-    id: "forms",
+    id: "msk-forms",
     name: "MSK Forms",
     description:
       "A modern form & application platform with status feedback and native Discord integration.",
@@ -222,4 +190,4 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
 //  SECTION TITLE
 //  Change the title of the custom packages section
 // ═══════════════════════════════════════════════════════════════
-export const CUSTOM_PACKAGES_TITLE = 'Tools, Bots & More'
+export const CUSTOM_PACKAGES_TITLE = 'FREE FiveM Scripts'

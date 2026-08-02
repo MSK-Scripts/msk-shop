@@ -38,6 +38,15 @@ export interface ResourceStatEntry {
   /** Human-readable name shown on the card. */
   displayName: string
   tier: 'free' | 'paid'
+  /**
+   * File name inside the public `MSK-Scripts/VERSIONS` repository.
+   *
+   * This is the same file the resource's own version checker polls at runtime
+   * (`server/versionchecker.lua`), so it is authoritative rather than a second
+   * list that could drift. Used by `lib/releases.ts` for the homepage release
+   * log. Omit for resources that should not appear there.
+   */
+  versionsFile?: string
   /** Free resources: GitHub repository URL. */
   github?: string
   /** Paid resources: Tebex package IDs for both variants. */
@@ -57,6 +66,7 @@ export const RESOURCE_STATS: ResourceStatEntry[] = [
   // alphabetically.
   {
     resourceName: 'msk_core',
+    versionsFile: 'Lib.json',
     displayName: 'MSK Core',
     tier: 'free',
     github: `${GITHUB_ORG}/msk_core`,
@@ -75,18 +85,21 @@ export const RESOURCE_STATS: ResourceStatEntry[] = [
   },
   {
     resourceName: 'msk_enginetoggle',
+    versionsFile: 'EngineToggle.json',
     displayName: 'MSK EngineToggle',
     tier: 'free',
     github: `${GITHUB_ORG}/msk_enginetoggle`,
   },
   {
     resourceName: 'msk_fuel',
+    versionsFile: 'Fuel.json',
     displayName: 'MSK Fuel',
     tier: 'free',
     github: `${GITHUB_ORG}/msk_fuel`,
   },
   {
     resourceName: 'msk_givevehicle',
+    versionsFile: 'GiveVehicle.json',
     displayName: 'MSK GiveVehicle',
     tier: 'free',
     github: `${GITHUB_ORG}/msk_givevehicle`,
@@ -101,24 +114,28 @@ export const RESOURCE_STATS: ResourceStatEntry[] = [
   // ─── Paid ────────────────────────────────────────────────────
   {
     resourceName: 'msk_garage',
+    versionsFile: 'Garage.json',
     displayName: 'MSK Garage',
     tier: 'paid',
     packages: { encrypted: 5732587, source: 5732588 },
   },
   {
     resourceName: 'msk_handcuffs',
+    versionsFile: 'Handcuffs.json',
     displayName: 'MSK Handcuffs',
     tier: 'paid',
     packages: { encrypted: 5159927, source: 5301828 },
   },
   {
     resourceName: 'msk_vehiclekeys',
+    versionsFile: 'VehicleKeys.json',
     displayName: 'MSK VehicleKeys',
     tier: 'paid',
     packages: { encrypted: 6446936, source: 6446947 },
   },
   {
     resourceName: 'msk_storage',
+    versionsFile: 'Storage.json',
     displayName: 'MSK Storage',
     tier: 'paid',
     packages: { encrypted: 6372773, source: 6372865 },

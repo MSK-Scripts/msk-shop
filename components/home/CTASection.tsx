@@ -1,6 +1,7 @@
-import { Sparkles, Github } from 'lucide-react'
+import { Github } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { homeTranslations, type Lang } from '@/lib/i18n'
+import type { ShopStats } from '@/lib/shopStats'
 
 const DISCORD_URL = 'https://discord.gg/5hHSBRHvJE'
 const GITHUB_URL = 'https://github.com/MSK-Scripts'
@@ -13,35 +14,45 @@ function DiscordLogo() {
   )
 }
 
-export function CTASection({ lang }: { lang: Lang }) {
+/**
+ * Closing section.
+ *
+ * The heading used to read "Join 500+ server owners already running MSK" —
+ * a number that was both unverifiable and, as it turned out, roughly three
+ * times too low, and one that called customers "servers". It now states the
+ * measured buyer count next to the claim it is supposed to support, and falls
+ * back to a sentence with no number at all when the snapshot is unavailable.
+ */
+export function CTASection({ lang, stats }: { lang: Lang; stats: ShopStats | null }) {
   const t = homeTranslations[lang]
+  const locale = lang === 'de' ? 'de-DE' : 'en-US'
+
+  const heading = stats
+    ? t.cta_heading_measured.replace('{count}', stats.uniqueBuyers.toLocaleString(locale))
+    : t.cta_heading
+
   return (
     <section className="border-t border-[var(--color-border)] bg-[color-mix(in_oklab,var(--color-muted)_60%,var(--color-background))]">
-      <div className="container-page py-16 md:py-24">
-        <div className="mx-auto max-w-2xl text-center">
-          <div className="mx-auto mb-5 inline-flex h-14 w-14 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--color-primary)_15%,transparent)]">
-            <Sparkles className="h-7 w-7 text-[var(--color-primary)]" aria-hidden="true" />
-          </div>
-          <h2 className="text-balance text-3xl font-bold tracking-tight md:text-4xl">
-            {t.cta_heading}
-          </h2>
-          <p className="mt-4 text-base text-[var(--color-muted-foreground)] md:text-lg">
-            {t.cta_subtitle}
-          </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <Button asChild size="lg" variant="discord">
-              <a href={DISCORD_URL} target="_blank" rel="noopener noreferrer">
-                <DiscordLogo />
-                {t.cta_btn_discord}
-              </a>
-            </Button>
-            <Button asChild size="lg" variant="outline">
-              <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">
-                <Github className="h-4 w-4" />
-                {t.cta_btn_github}
-              </a>
-            </Button>
-          </div>
+      <div className="container-page py-16 md:py-20 text-center">
+        <h2 className="mx-auto max-w-[26ch] text-balance text-3xl font-bold tracking-tight md:text-4xl">
+          {heading}
+        </h2>
+        <p className="mx-auto mt-4 max-w-[60ch] text-base text-[var(--color-muted-foreground)]">
+          {t.cta_subtitle}
+        </p>
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <Button asChild size="lg" variant="discord">
+            <a href={DISCORD_URL} target="_blank" rel="noopener noreferrer">
+              <DiscordLogo />
+              {t.cta_btn_discord}
+            </a>
+          </Button>
+          <Button asChild size="lg" variant="outline">
+            <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">
+              <Github className="h-4 w-4" />
+              {t.cta_btn_github}
+            </a>
+          </Button>
         </div>
       </div>
     </section>

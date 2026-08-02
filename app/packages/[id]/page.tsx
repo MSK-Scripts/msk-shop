@@ -111,10 +111,10 @@ export default async function PackageDetailPage({
         <span className="text-[var(--color-foreground)]">{pkg.name}</span>
       </nav>
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
 
         {/* Left: Hero-Image + Description */}
-        <div className="lg:col-span-2">
+        <div className="min-w-0">
           <Card className="overflow-hidden">
             <PackageGallery
               media={pkg.media}
@@ -170,7 +170,7 @@ export default async function PackageDetailPage({
         </div>
 
         {/* Right: Purchase sidebar */}
-        <div className="lg:col-span-1">
+        <div>
           <Card className="sticky top-20 p-6">
             <h2 className="mb-4 border-b border-[var(--color-border)] pb-3 font-mono text-[0.6875rem] font-bold uppercase tracking-widest text-[var(--color-muted-foreground)]">
               Purchase

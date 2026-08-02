@@ -12,7 +12,7 @@ export default function CategoryLoading() {
         <div className="h-8 w-48 bg-surface2 rounded" />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(min(100%,300px),1fr))]">
         {Array.from({ length: 6 }).map((_, i) => (
           <div key={i} className="bg-surface border border-borderlt rounded-xl overflow-hidden">
             <div className="h-40 bg-surface2" />

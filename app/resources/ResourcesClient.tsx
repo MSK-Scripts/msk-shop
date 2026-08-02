@@ -174,7 +174,7 @@ function Section({ title, resources, t, lang }: {
       <h2 className="mb-5 font-mono text-xs font-bold uppercase tracking-widest text-[var(--color-muted-foreground)]">
         {title}
       </h2>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,340px),1fr))] gap-4">
         {resources.map(res => <ResourceCard key={res.resourceName} res={res} t={t} lang={lang} />)}
       </div>
     </section>
@@ -209,8 +209,8 @@ export default function ResourcesClient({ stats: initialStats }: { stats: Resour
   const paid = stats.resources.filter(r => r.tier === 'paid').sort(byPopularity)
 
   return (
-    <div className="container-page py-10 md:py-14">
-      <div className="mx-auto max-w-6xl">
+    <div className="container-wide py-10 md:py-14">
+      <div>
 
         {/* Header */}
         <div className="mb-10">

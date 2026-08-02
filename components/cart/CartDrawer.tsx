@@ -124,7 +124,7 @@ export function CartDrawer() {
                         const dId = gift?.discordId
                         return (
                           <div className="mt-0.5">
-                            <p className="text-[0.625rem] font-medium text-[var(--color-discord)]">
+                            <p className="text-[0.625rem] font-medium text-[var(--color-discord-text)]">
                               🎁 Gift for {name}
                             </p>
                             {dId && (

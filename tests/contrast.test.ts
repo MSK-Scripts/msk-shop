@@ -1,0 +1,105 @@
+import { describe, it, expect } from 'vitest'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
+
+/**
+ * Kontrast der Design-Tokens gegen WCAG AA.
+ *
+ * Liest die Werte direkt aus `app/globals.css`, damit der Test die echten
+ * Tokens prüft und nicht eine Kopie, die still auseinanderläuft. Vorher lagen
+ * neun Paare unter AA, am schwersten der Primärbutton (3,15:1 hell, 2,69:1
+ * dunkel) und gedämpfter Text auf getönter Fläche (4,40:1).
+ *
+ * Bewusst nicht im Browser gemessen: `color-mix()` kommt dort als
+ * `color(srgb …)` zurück und CSS-Übergänge frieren in headless laufenden
+ * Renderern auf ihrem Startwert ein. Beides erzeugt Falschbefunde.
+ */
+
+const CSS = readFileSync(join(process.cwd(), 'app', 'globals.css'), 'utf8')
+
+function readTokens(scope: 'light' | 'dark'): Record<string, string> {
+  const start = scope === 'light' ? CSS.indexOf('@theme {') : CSS.indexOf('.dark {')
+  expect(start, `Token-Block für ${scope} nicht gefunden`).toBeGreaterThan(-1)
+  const end = CSS.indexOf('}', CSS.indexOf('--shadow-card-hover', start))
+  const block = CSS.slice(start, end === -1 ? undefined : end)
+  const out: Record<string, string> = {}
+  for (const m of block.matchAll(/--color-([a-z-]+):\s*(#[0-9a-fA-F]{6})/g)) {
+    out[m[1]] = m[2].toLowerCase()
+  }
+  return out
+}
+
+const channels = (hex: string) => (hex.replace('#', '').match(/../g) ?? []).map(x => parseInt(x, 16))
+const linear = (v: number) => { const c = v / 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4 }
+
+function luminance(hex: string): number {
+  const [r, g, b] = channels(hex)
+  return 0.2126 * linear(r) + 0.7152 * linear(g) + 0.0722 * linear(b)
+}
+
+export function contrast(a: string, b: string): number {
+  const [x, y] = [luminance(a), luminance(b)]
+  return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05)
+}
+
+/** srgb-Mischung, entspricht `color-mix(in srgb, a p%, b)`. */
+function mix(a: string, b: string, p: number): string {
+  const A = channels(a), B = channels(b)
+  return '#' + A.map((v, i) => Math.round(v * p + B[i] * (1 - p)).toString(16).padStart(2, '0')).join('')
+}
+
+const light = readTokens('light')
+// Dark überschreibt nur einen Teil der Tokens, der Rest wird geerbt.
+const dark = { ...light, ...readTokens('dark') }
+
+describe.each([
+  ['Light-Mode', light],
+  ['Dark-Mode', dark],
+])('%s: Textkontrast erreicht WCAG AA', (_name, t) => {
+  // Footer und einige Sektionen liegen auf einer gemischten Fläche.
+  const gemischt = mix(t.muted, t.background, 0.4)
+
+  const paare: Array<[string, string, string, number]> = [
+    ['Fließtext auf der Seite',        t.foreground,             t.background, 4.5],
+    ['Gedämpfter Text auf der Seite',  t['muted-foreground'],    t.background, 4.5],
+    ['Gedämpfter Text auf Fläche',     t['muted-foreground'],    t.muted,      4.5],
+    ['Gedämpfter Text auf Karte',      t['muted-foreground'],    t.card,       4.5],
+    ['Gedämpfter Text auf Mischfläche', t['muted-foreground'],   gemischt,     4.5],
+    ['Label auf Primärfüllung',        t['primary-foreground'],  t.primary,    4.5],
+    ['Primärgrün als Text',            t.primary,                t.background, 4.5],
+    ['Primärgrün als Text auf Fläche', t.primary,                t.muted,      4.5],
+    ['Label auf Erfolgsfüllung',       t['success-foreground'],  t.success,    4.5],
+    ['Label auf Warnfüllung',          t['warning-foreground'],  t.warning,    4.5],
+    ['Label auf Gefahrfüllung',        t['danger-foreground'],   t.danger,     4.5],
+    ['Label auf Infofüllung',          t['info-foreground'],     t.info,       4.5],
+    ['Weiß auf Discord-Füllung',       '#ffffff',                t.discord,    4.5],
+    ['Discord als Textfarbe',          t['discord-text'],        t.background, 4.5],
+    ['Text auf Karte',                 t['card-foreground'],     t.card,       4.5],
+    ['Text auf Sekundärfüllung',       t['secondary-foreground'], t.secondary, 4.5],
+    ['Text auf Akzentfüllung',         t['accent-foreground'],   t.accent,     4.5],
+  ]
+
+  it.each(paare)('%s', (_label, fg, bg, need) => {
+    expect(fg, 'Token fehlt').toBeTruthy()
+    expect(bg, 'Token fehlt').toBeTruthy()
+    expect(contrast(fg, bg)).toBeGreaterThanOrEqual(need)
+  })
+})
+
+describe('Nicht-Text-Kontrast', () => {
+  it('Fokusring hebt sich in beiden Themes vom Grund ab (3:1)', () => {
+    expect(contrast(light.ring, light.background)).toBeGreaterThanOrEqual(3)
+    expect(contrast(dark.ring, dark.background)).toBeGreaterThanOrEqual(3)
+  })
+})
+
+describe('Rechnung selbst', () => {
+  it('kennt die bekannten Extremwerte', () => {
+    expect(contrast('#000000', '#ffffff')).toBeCloseTo(21, 5)
+    expect(contrast('#ffffff', '#ffffff')).toBeCloseTo(1, 5)
+  })
+
+  it('ist symmetrisch', () => {
+    expect(contrast('#3a7d1c', '#ffffff')).toBeCloseTo(contrast('#ffffff', '#3a7d1c'), 10)
+  })
+})

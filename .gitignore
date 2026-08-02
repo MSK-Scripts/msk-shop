@@ -41,9 +41,18 @@ desktop.ini
 *.swo
 *~
 .claude/
+.impeccable/
 CLAUDE.md
+PRODUCT.md
 Stripe_Umstruktuierung.md
 Customer-Create-Bot.md
+
+# Lokale Entwicklungs-Datenbank (Docker). Bleibt lokal: die Compose-Datei liest
+# Zugangsdaten aus .env.local, und der Seed enthält erfundene Guilds und
+# Transkripte, die auf keinem Server etwas zu suchen haben.
+# Aufsetzen ist in docs/DEPLOYMENT.md beschrieben.
+docker-compose.dev.yml
+database/seed.dev.sql
 
 # TypeScript
 *.tsbuildinfo

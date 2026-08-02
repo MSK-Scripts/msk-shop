@@ -64,10 +64,10 @@ export default function CartPage() {
           </Button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
 
           {/* Items */}
-          <div className="flex flex-col gap-3 lg:col-span-2">
+          <div className="flex min-w-0 flex-col gap-3">
             {packages.map(item => {
               const itemPrice = item.paid_price ?? item.in_basket?.price ?? 0
               const basePrice = item.base_price ?? 0
@@ -90,7 +90,7 @@ export default function CartPage() {
                       const dId = gift?.discordId
                       return (
                         <div className="mt-0.5">
-                          <p className="text-[0.625rem] font-medium text-[var(--color-discord)]">
+                          <p className="text-[0.625rem] font-medium text-[var(--color-discord-text)]">
                             🎁 Gift for {name}
                           </p>
                           {dId && (
@@ -162,7 +162,7 @@ export default function CartPage() {
           </div>
 
           {/* Summary */}
-          <div className="lg:col-span-1">
+          <div>
             <Card className="sticky top-20 p-6">
               <h2 className="mb-4 border-b border-[var(--color-border)] pb-3 font-mono text-[0.6875rem] font-bold uppercase tracking-widest text-[var(--color-muted-foreground)]">
                 Order Summary

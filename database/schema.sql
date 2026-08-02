@@ -173,3 +173,29 @@ CREATE INDEX IF NOT EXISTS idx_admin_audit_user    ON msk_admin_audit(discord_us
 --   INSERT INTO msk_admin_team (discord_user_id, display_name, is_owner, permissions, active)
 --   VALUES ('<OWNER_DISCORD_ID>', 'Owner', 1, JSON_ARRAY(), 1)
 --   ON DUPLICATE KEY UPDATE is_owner = 1, active = 1;
+
+-- ---------------------------------------------------------------------------
+-- Shop-Kennzahlen (eine Zeile, id = 1)
+--
+-- Gefüllt vom nächtlichen Cron scripts/tebex-stats.js, das die paginierte
+-- Tebex-Plugin-API einmal komplett durchläuft. Die Startseite liest hier eine
+-- Zeile, statt pro Besucher rund 93 Upstream-Requests auszulösen.
+--
+-- Ist die Tabelle leer oder der Wert veraltet, blendet die Seite die Zahlen aus
+-- (lib/shopStats.ts) statt eine Null zu behaupten.
+--
+-- Migration auf einer bestehenden DB: dieses CREATE TABLE genügt, danach den
+-- Cron einmal von Hand laufen lassen.
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS msk_shop_stats (
+    id                  TINYINT      NOT NULL PRIMARY KEY,  -- immer 1
+    unique_buyers       INT          NOT NULL,
+    total_payments      INT          NOT NULL,
+    completed_payments  INT          NOT NULL,
+    refunds             INT          NOT NULL,
+    chargebacks         INT          NOT NULL,
+    -- Anteil rückabgewickelter an allen zustande gekommenen Zahlungen.
+    reversal_rate       DECIMAL(6,5) NOT NULL,
+    first_payment_at    DATETIME     NULL,
+    updated_at          TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

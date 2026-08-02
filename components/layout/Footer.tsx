@@ -53,7 +53,6 @@ export function Footer() {
     { label: t.footer_discord,       href: DISCORD_URL,                  external: true },
     { label: t.footer_documentation, href: 'https://docu.msk-scripts.de/', external: true },
     { label: 'GitHub',               href: GITHUB_URL,                   external: true },
-    { label: t.footer_email,         href: `mailto:${SUPPORT_EMAIL}`,    external: true },
   ]
   // Legal-Labels sind sprachabhängig (z. B. Imprint ⇄ Impressum).
   const legalLinks = [
@@ -134,11 +133,11 @@ export function Footer() {
         {/* Vertrauenszeile. Jede Aussage ist in den AGB gedeckt und verlinkt
             dorthin: § 2 Tebex als Merchant of Record, § 3 Single-Server-Lizenz,
             § 4 Rückerstattung im Einzelfall. */}
-        <div className="mt-10 border-t border-[var(--color-border)] pt-6">
+        <div className="mt-10 border-t border-[var(--color-border)] pt-6 text-center">
           <p className="text-xs text-[var(--color-muted-foreground)]">
             {t.footer_trust_checkout}
           </p>
-          <ul className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2">
+          <ul className="mt-3 flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
             {[
               { icon: ShieldCheck, label: t.footer_trust_license, href: '/terms' },
               { icon: Undo2,       label: t.footer_trust_refund,  href: '/terms' },

@@ -14,35 +14,45 @@
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: "JetBrains Mono Variable", ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
 
-  /* Farben — Light-Mode (Default) */
+  /* Farben — Light-Mode (Default)
+     Die Werte hier sind auf WCAG AA gerechnet, nicht nach Augenmaß gewählt.
+     `tests/contrast.test.ts` liest sie aus dieser Datei und rechnet jedes Paar
+     nach, eine Änderung ohne Gegenrechnung fällt dort auf. */
   --color-background:         #ffffff;
   --color-foreground:         #0a0a0a;
   --color-muted:              #f4f4f5;
-  --color-muted-foreground:   #71717a;
+  /* 4,80:1 auf --color-muted. Der Vorgänger #71717a lag dort bei 4,40:1. */
+  --color-muted-foreground:   #6b6b74;
   --color-border:             #e4e4e7;
   --color-input:              #e4e4e7;
-  --color-ring:               #4ea426;
+  --color-ring:               #3a7d1c;
   --color-card:               #ffffff;
   --color-card-foreground:    #0a0a0a;
 
-  /* Brand: MSK-Grün */
-  --color-primary:            #4ea426;   /* etwas tiefer für Light-Mode */
+  /* Brand: MSK-Grün
+     Trägt beides: Füllung mit weißem Label und grüne Textfarbe. Beide Rollen
+     brauchen 4,5:1, deshalb 5,15:1 statt der 3,15:1 des Vorgängers #4ea426. */
+  --color-primary:            #3a7d1c;
   --color-primary-foreground: #ffffff;
-  --color-accent:             #5eb131;   /* klassisches MSK-Grün als Highlight */
+  --color-accent:             #5eb131;   /* klassisches MSK-Grün, nur als Fläche */
   --color-accent-foreground:  #0a0a0a;
   --color-secondary:          #f4f4f5;
   --color-secondary-foreground: #18181b;
 
-  /* Funktional */
-  --color-success:            #16a34a;
+  /* Funktional — jeweils so tief, dass weißer Text auf der Füllung AA erreicht */
+  --color-success:            #157f3b;   /* vorher #16a34a, 3,30:1 */
   --color-success-foreground: #ffffff;
-  --color-warning:            #f59e0b;
+  --color-warning:            #a45709;   /* vorher #f59e0b, 2,15:1 */
   --color-warning-foreground: #ffffff;
   --color-danger:             #dc2626;
   --color-danger-foreground:  #ffffff;
-  --color-info:               #0284c7;
+  --color-info:               #0369a1;   /* vorher #0284c7, 4,10:1 */
   --color-info-foreground:    #ffffff;
-  --color-discord:            #5865F2;
+  /* Zwei Tokens, weil die Marke zwei Rollen trägt: als Fläche muss sie dunkel
+     genug für weiße Beschriftung sein, als Textfarbe hell genug für den dunklen
+     Grund. Ein einziger Wert kann beides nicht erfüllen. */
+  --color-discord:            #5865F2;   /* Fläche, Weiß darauf 4,61:1 */
+  --color-discord-text:       #5865F2;   /* Text, im Dark-Mode überschrieben */
 
   /* Radien */
   --radius-sm: 0.25rem;
@@ -77,15 +87,29 @@
     --color-card-foreground:    #e6edf3;
 
     --color-primary:            #5eb131;
-    --color-primary-foreground: #ffffff;
+    /* Dunkler Text auf hellem Grün: 6,79:1. Weiß darauf wären 2,69:1 gewesen,
+       das MSK-Grün ist im Dark-Mode zu hell, um Weiß zu tragen. */
+    --color-primary-foreground: #0d1117;
     --color-accent:             #79e84a;
     --color-accent-foreground:  #0d1117;
     --color-secondary:          #21262d;
     --color-secondary-foreground: #e6edf3;
 
+    /* Im Dark-Mode sind die Funktionsfarben hell. Ihre Beschriftung muss
+       deshalb dunkel sein, sonst erben sie das weiße Label aus dem Light-Block
+       und landen bei 2,1 bis 2,8:1. */
     --color-danger:             #f87171;
+    --color-danger-foreground:  #0d1117;
     --color-success:            #4ade80;
+    --color-success-foreground: #0d1117;
     --color-info:               #38bdf8;
+    --color-info-foreground:    #0d1117;
+    /* Muss hier stehen, sonst erbt Dark das für Weiß abgedunkelte Light-Orange
+       und wird auf dem dunklen Grund unlesbar. */
+    --color-warning:            #f59e0b;
+    --color-warning-foreground: #0d1117;
+    /* 5,68:1 auf dem dunklen Grund. Die Flächenfarbe bleibt unverändert. */
+    --color-discord-text:       #7d86f5;
 
     --shadow-card:       0 1px 2px 0 rgb(0 0 0 / 0.4);
     --shadow-card-hover: 0 12px 32px -8px rgb(0 0 0 / 0.6);
@@ -150,13 +174,45 @@
 /* ============================================================================
    Utilities — Container, Eyebrow, Hero-Decor
    ============================================================================ */
+/* Standard-Shell. Der Deckel lag bis 02.08.2026 bei 80rem (1280 px), womit
+   selbst ein 4K-Monitor zwei Drittel schwarzen Rand zeigte. Jetzt 120rem
+   (1920 px).
+
+   Warum das gefahrlos ist: Seiten mit schmalem Inhalt (Login, Konto, Checkout,
+   404, Rechtstexte) setzen ihren eigenen Deckel per `mx-auto max-w-*` **innen**
+   und ändern sich dadurch überhaupt nicht. Breiter wird nur, was vorher schon
+   die volle Containerbreite gefüllt hat: Raster, Tabellen, Dashboards.
+
+   Für Katalog- und Listenseiten gibt es zusätzlich `container-wide`. */
 @utility container-page {
-  max-width: 80rem;
+  max-width: 120rem;
   margin-inline: auto;
   padding-inline: 1rem;
 }
 @media (min-width: 768px) {
   .container-page { padding-inline: 2rem; }
+}
+@media (min-width: 1536px) {
+  .container-page { padding-inline: 3rem; }
+}
+
+/* Breiter Container für Listenansichten (aktuell `/packages`).
+   `container-page` deckelt bei 80rem, weil dort Fließtext steht und lange
+   Zeilen schlecht lesbar sind. Eine gefilterte Kartenliste hat dieses Problem
+   nicht, sie gewinnt mit jeder zusätzlichen Spalte. Der Deckel liegt bei
+   160rem (2560 px), greift also erst jenseits eines üblichen 4K-Monitors und
+   sorgt dort nur dafür, dass Überschrift und Fließtext nicht über die halbe
+   Wand laufen. Für mehr Breite genügt es, diese eine Zahl zu erhöhen. */
+@utility container-wide {
+  max-width: 160rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+@media (min-width: 768px) {
+  .container-wide { padding-inline: 2rem; }
+}
+@media (min-width: 1536px) {
+  .container-wide { padding-inline: 3rem; }
 }
 
 @utility container-prose {
@@ -250,6 +306,17 @@
     font-size: 0.875rem;
     color: var(--color-muted-foreground);
     line-height: 1.7;
+  }
+  /* Zeilenlänge deckeln, seit der Seitencontainer bis 1920 px breit werden
+     kann. Bewusst nur die Text-Kinder: Tabellen und Bilder dürfen die volle
+     Spaltenbreite nutzen, Fließtext bei 170 Zeichen pro Zeile nicht. */
+  .tebex-description > p,
+  .tebex-description > ul,
+  .tebex-description > ol,
+  .tebex-description > h1,
+  .tebex-description > h2,
+  .tebex-description > h3 {
+    max-width: 80ch;
   }
   .tebex-description p { margin-top: 0.75rem; margin-bottom: 0.75rem; }
   .tebex-description ul { list-style: disc; padding-left: 1.25rem; margin-top: 0.75rem; margin-bottom: 0.75rem; }

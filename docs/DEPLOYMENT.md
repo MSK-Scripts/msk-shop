@@ -137,6 +137,15 @@ nach `main` pushen. CI läuft → bei Grün triggert der Deploy automatisch.
     Danach `sudo visudo -c`. Das alte `/opt/msk-scripts/` kann anschließend entfernt werden.
 - **`cleanup.js`-Cron** auf `/opt/msk-shop/scripts/cleanup.js` zeigen lassen (wird mit jedem
   Deploy aktualisiert) — Env-Load + `NODE_PATH` weiterhin nötig (siehe Datei-Header).
+- **`tebex-stats.js`-Cron** (neu): füllt `msk_shop_stats` mit den gemessenen Verkaufszahlen,
+  die die Startseite anzeigt. Läuft einmal nächtlich, braucht zusätzlich
+  `TEBEX_PLUGIN_SECRET`. Ein Lauf dauert derzeit rund 25 Sekunden (93 paginierte
+  Seiten). Ohne diesen Cron blendet die Startseite die Zahlen einfach aus.
+  ```
+  30 4 * * * set -a; . /opt/msk-shop/.env.local; set +a; NODE_PATH=/opt/msk-shop/node_modules /usr/bin/node /opt/msk-shop/scripts/tebex-stats.js >> /var/log/msk-tebex-stats.log 2>&1
+  ```
+  Vor dem ersten Lauf `msk_shop_stats` anlegen (steht in `database/schema.sql`), danach
+  einmal von Hand starten. `--dry-run` rechnet, ohne zu schreiben.
 - **DB:** msk-shop nutzt rohes `database/schema.sql` (kein Prisma) — `deploy.sh` führt
   **keine** Migrationen aus. Schema-Änderungen manuell einspielen.
 - **Audit-Log** des Deploys: `/var/log/msk-shop-deploy.log`.
@@ -165,3 +174,34 @@ Trennschärfe:
 **Wiedervorlage:** Sobald eines der drei Plugins auf `minimatch@^9` oder neuer geht,
 `npm audit` erneut prüfen. Dann sollte der volle Report wieder auf 0 stehen und dieser
 Abschnitt kann weg.
+
+## Lokale Entwicklungs-Datenbank (Docker)
+
+Ohne MariaDB fallen alle DB-gestützten Ansichten in ihren Fail-soft-Pfad: die
+Belegzahlen auf der Startseite verschwinden, Dashboards und Statistiken bleiben
+leer. Zum Prüfen gibt es deshalb einen Container.
+
+```
+docker compose -f docker-compose.dev.yml --env-file .env.local up -d
+```
+
+Er nimmt Host, Port, Benutzer, Passwort und Datenbanknamen aus `.env.local`,
+läuft also ohne weitere Konfiguration gegen dieselben Werte wie die Anwendung.
+Die Daten liegen im Volume `msk-shop_msk-shop-db` und überleben ein `down`.
+
+Einmalig danach:
+
+```
+set -a; . ./.env.local; set +a
+docker exec -i msk-shop-mariadb mariadb -u root -p"$DB_PASSWORD" "$DB_NAME" < database/schema.sql
+docker exec -i msk-shop-mariadb mariadb -u root -p"$DB_PASSWORD" "$DB_NAME" < database/seed.dev.sql
+node scripts/tebex-stats.js
+```
+
+`seed.dev.sql` enthält **erfundene** Guilds, Transkripte und Ergebnisseiten,
+damit die Ansichten etwas zu zeigen haben. `msk_shop_stats` wird davon bewusst
+nicht berührt — die Zahl kommt aus dem echten Cron, damit die Startseite lokal
+dieselben Werte zeigt wie später live.
+
+Auf dem Server läuft MariaDB nativ, nicht in Docker. Die Compose-Datei ist reine
+Entwicklungsinfrastruktur.

@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useEffect, useRef, useState } from 'react'
+import { Fragment, Suspense, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useSearchParams, usePathname } from 'next/navigation'
@@ -44,34 +44,57 @@ interface NavItem {
    * bleibt klickbar. Auf Mobile werden die Unterpunkte eingerückt gelistet.
    */
   children?: NavItem[]
+  /**
+   * Zwischenüberschrift **vor** diesem Unterpunkt. Damit trägt ein Dropdown
+   * mehrere Produkte, ohne dass jedes einen eigenen Platz in der Leiste
+   * braucht — das „Bots"-Menü führt so beide Bots samt Unterseiten.
+   */
+  section?: string
+  /**
+   * Hängt die live aus Tebex geladenen Kategorien in dieses Dropdown ein.
+   */
+  withCategories?: boolean
 }
 
-const NAV_ITEMS_PRIMARY: NavItem[] = [
-  { label: 'Home', href: '/' },
-]
-
-const NAV_ITEMS_SECONDARY: NavItem[] = [
+/**
+ * Vier Einträge, bewusst wenige.
+ *
+ * Vorher standen hier sieben Punkte (Home, Kategorien, Ticket Bot, Giveaway Bot,
+ * Resource Stats, Dokumentation) nebeneinander. Der Header brauchte damit auf
+ * Deutsch bis zu 1333 px Inhaltsbreite, schaltete die Desktop-Leiste aber schon
+ * bei `md` (768 px) ein — die Seite scrollte deshalb zwischen 768 und rund
+ * 1345 px seitlich, also auf 1024er-, 1280er- und 1366er-Laptops. Weniger
+ * Einträge plus der höhere Umbruchpunkt weiter unten beheben das.
+ *
+ * „Home" entfällt, das Logo führt bereits dorthin.
+ */
+const NAV_ITEMS: NavItem[] = [
+  { label: 'Packages', href: '/packages', withCategories: true },
   {
-    label: 'Ticket Bot',
+    label: 'Bots',
     href: '/ticketbot',
     children: [
       // verify/dashboard sind session-abhängig + können redirect() liefern →
       // nicht prefetchen (sonst stale Redirect aus dem Router-Cache).
-      { label: 'Verify',    href: '/ticketbot/verify',    prefetch: false },
-      { label: 'Dashboard', href: '/ticketbot/dashboard', prefetch: false },
+      { label: 'Overview',   href: '/ticketbot',           section: 'Ticket Bot' },
+      { label: 'Verify',     href: '/ticketbot/verify',    prefetch: false },
+      { label: 'Dashboard',  href: '/ticketbot/dashboard', prefetch: false },
       { label: 'Statistics', href: '/ticketbot/stats' },
-    ],
-  },
-  {
-    label: 'Giveaway Bot',
-    href: '/giveaway',
-    children: [
-      { label: 'Dashboard', href: '/giveaway/dashboard', prefetch: false },
+      { label: 'Overview',   href: '/giveaway',            section: 'Giveaway Bot' },
+      { label: 'Dashboard',  href: '/giveaway/dashboard',  prefetch: false },
       { label: 'Statistics', href: '/giveaway/stats' },
     ],
   },
-  { label: 'Resource Stats', href: '/resources' },
-  { label: 'Documentation', href: 'https://docu.msk-scripts.de' },
+  {
+    label: 'Resources',
+    href: '/resources',
+    children: [
+      { label: 'Documentation',  href: 'https://docu.msk-scripts.de' },
+      { label: 'Resource Stats', href: '/resources' },
+      { label: 'GitHub',         href: 'https://github.com/MSK-Scripts' },
+    ],
+  },
+  { label: 'Support', href: 'https://discord.gg/5hHSBRHvJE' },
 ]
 
 function HeaderInner() {
@@ -79,7 +102,6 @@ function HeaderInner() {
   const [loginLoading, setLoginLoading] = useState(false)
   const [categories, setCategories] = useState<TebexCategory[]>([])
   const [categoriesLoaded, setCategoriesLoaded] = useState(false)
-  const [catOpen, setCatOpen] = useState(false)
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
   const [searchOpen, setSearchOpen] = useState(false)
 
@@ -89,7 +111,13 @@ function HeaderInner() {
   // Dashboard) bleiben bewusst unverändert (kein Mapping-Eintrag → Fallback).
   const navLabel = (label: string): string => ({
     'Home':           t.nav_home,
+    'Packages':       t.nav_packages,
+    'Bots':           t.nav_bots,
+    'Resources':      t.nav_resource_group,
+    'Support':        t.nav_support,
+    'Overview':       t.nav_overview,
     'Verify':         t.nav_verify,
+    'Dashboard':      t.nav_dashboard,
     'Statistics':     t.nav_statistics,
     'Resource Stats': t.nav_resources,
     'Documentation':  t.nav_documentation,
@@ -100,7 +128,6 @@ function HeaderInner() {
   const { itemCount, loginAndAdd, refreshBasket, processPendingPackage } = useCart()
   const { openCart, username, clearBasket } = useCartStore()
 
-  const catRef = useRef<HTMLDivElement>(null)
   const userMenuRef = useRef<HTMLDivElement>(null)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
 
@@ -159,9 +186,6 @@ function HeaderInner() {
   // Click-outside: Categories-Dropdown + User-Menu
   useEffect(() => {
     function handleClick(e: MouseEvent) {
-      if (catRef.current && !catRef.current.contains(e.target as Node)) {
-        setCatOpen(false)
-      }
       if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
         setUserMenuOpen(false)
       }
@@ -174,7 +198,6 @@ function HeaderInner() {
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
       if (e.key === 'Escape') {
-        setCatOpen(false)
         setUserMenuOpen(false)
       }
       // ⌘K / Ctrl+K öffnet Search
@@ -195,7 +218,6 @@ function HeaderInner() {
   if (lastPathname !== pathname) {
     setLastPathname(pathname)
     setMobileOpen(false)
-    setCatOpen(false)
     setOpenDropdown(null)
   }
 
@@ -208,7 +230,6 @@ function HeaderInner() {
   const isActive = (href: string) =>
     href === '/' ? pathname === '/' : pathname.startsWith(href)
 
-  const categoriesActive = pathname.startsWith('/categories')
   const hasCategories = categories.length > 0
 
   const navLinkClasses = (active: boolean) => cn(
@@ -253,9 +274,85 @@ function HeaderInner() {
   // Navigation noch fokussierte Link das Menü offen. Der Haupt-Link bleibt
   // klickbar; das `pt-2` überbrückt die Lücke zum Panel (liegt im Wrapper, daher
   // kein vorzeitiges mouseLeave).
+  // Ein Unterpunkt im Dropdown. Externe Ziele (Doku, GitHub) laufen als <a> mit
+  // target="_blank", interne über next/link.
+  const renderDropdownChild = (child: NavItem, onNavigate?: () => void) => {
+    const external = isNavItemExternal(child)
+    const classes = cn(
+      'flex items-center gap-2.5 rounded-md px-3 py-2 text-sm outline-none transition-colors',
+      !external && isActive(child.href)
+        ? 'bg-[var(--color-muted)] text-[var(--color-foreground)]'
+        : 'text-[var(--color-muted-foreground)] hover:bg-[var(--color-muted)] hover:text-[var(--color-foreground)]',
+    )
+    const inner = (
+      <>
+        <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-primary)]" />
+        {navLabel(child.label)}
+        {external && <ExternalLink className="ml-auto h-3 w-3 opacity-70" aria-hidden />}
+      </>
+    )
+    return external ? (
+      <a
+        key={child.href}
+        href={child.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        role="menuitem"
+        onClick={onNavigate}
+        className={classes}
+      >
+        {inner}
+      </a>
+    ) : (
+      <Link
+        key={child.href}
+        href={child.href}
+        prefetch={child.prefetch ?? true}
+        role="menuitem"
+        onClick={onNavigate}
+        className={classes}
+      >
+        {inner}
+      </Link>
+    )
+  }
+
+  // Zwischenüberschrift im Dropdown, z. B. „Ticket Bot" über dessen Unterseiten.
+  const sectionHeading = (label: string) => (
+    <div
+      key={`section-${label}`}
+      className="px-3 pb-1 pt-2 font-mono text-[0.625rem] font-bold uppercase tracking-widest text-[var(--color-muted-foreground)]"
+    >
+      {label}
+    </div>
+  )
+
+  // Die live geladenen Tebex-Kategorien, eingehängt ins „Pakete"-Dropdown.
+  const renderCategoryEntries = (onNavigate?: () => void) => {
+    if (!categoriesLoaded) {
+      return (
+        <div className="flex items-center gap-2 px-3 py-2 text-xs text-[var(--color-muted-foreground)]">
+          <Loader2 className="h-3 w-3 animate-spin" />
+          {t.nav_loading}
+        </div>
+      )
+    }
+    if (!hasCategories) return null
+    return (
+      <>
+        {sectionHeading(t.nav_categories)}
+        {categories.map(cat =>
+          renderDropdownChild({ label: cat.name, href: `/categories/${cat.id}` }, onNavigate),
+        )}
+      </>
+    )
+  }
+
   const renderDesktopNavItem = (item: NavItem) => {
-    if (!item.children?.length) return renderNavItem(item)
-    const active = isActive(item.href) || item.children.some(c => isActive(c.href))
+    const hasPanel = Boolean(item.children?.length || item.withCategories)
+    if (!hasPanel) return renderNavItem(item)
+    const children = item.children ?? []
+    const active = isActive(item.href) || children.some(c => isActive(c.href))
     const open = openDropdown === item.href
     return (
       <div
@@ -290,25 +387,29 @@ function HeaderInner() {
             open ? 'visible opacity-100' : 'invisible opacity-0',
           )}
         >
-          <div className="min-w-[200px] overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] p-1.5 shadow-xl">
-            {item.children.map(child => (
-              <Link
-                key={child.href}
-                href={child.href}
-                prefetch={child.prefetch ?? true}
-                role="menuitem"
-                onClick={() => setOpenDropdown(null)}
-                className={cn(
-                  'flex items-center gap-2.5 rounded-md px-3 py-2 text-sm outline-none transition-colors',
-                  isActive(child.href)
-                    ? 'bg-[var(--color-muted)] text-[var(--color-foreground)]'
-                    : 'text-[var(--color-muted-foreground)] hover:bg-[var(--color-muted)] hover:text-[var(--color-foreground)]',
-                )}
-              >
-                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-primary)]" />
-                {navLabel(child.label)}
-              </Link>
+          <div className="min-w-[228px] overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] p-1.5 shadow-xl">
+            {children.map(child => (
+              <Fragment key={child.href}>
+                {child.section && sectionHeading(child.section)}
+                {renderDropdownChild(child, () => setOpenDropdown(null))}
+              </Fragment>
             ))}
+            {item.withCategories && (
+              <>
+                {renderCategoryEntries(() => setOpenDropdown(null))}
+                <div className="my-1 h-px bg-[var(--color-border)]" />
+                <Link
+                  href="/packages"
+                  prefetch
+                  role="menuitem"
+                  onClick={() => setOpenDropdown(null)}
+                  className="flex items-center justify-between rounded-md px-3 py-2 text-sm font-medium text-[var(--color-primary)] outline-none transition-colors hover:bg-[var(--color-muted)]"
+                >
+                  <span>{hasCategories ? t.nav_all_packages : t.nav_browse_all}</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -317,27 +418,19 @@ function HeaderInner() {
 
   // Mobile: kein Hover — Haupt-Link plus eingerückte Unterpunkte.
   const renderMobileNavItem = (item: NavItem) => {
-    if (!item.children?.length) return renderNavItem(item)
+    const hasPanel = Boolean(item.children?.length || item.withCategories)
+    if (!hasPanel) return renderNavItem(item)
     return (
       <div key={item.href}>
         {renderNavItem(item)}
         <div className="ml-3 mt-1 flex flex-col gap-0.5 border-l border-[var(--color-border)] pl-2">
-          {item.children.map(child => (
-            <Link
-              key={child.href}
-              href={child.href}
-              prefetch={child.prefetch ?? true}
-              className={cn(
-                'flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors',
-                isActive(child.href)
-                  ? 'bg-[var(--color-muted)] text-[var(--color-foreground)]'
-                  : 'text-[var(--color-muted-foreground)] hover:bg-[var(--color-muted)] hover:text-[var(--color-foreground)]',
-              )}
-            >
-              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-primary)]" />
-              {child.label}
-            </Link>
+          {(item.children ?? []).map(child => (
+            <Fragment key={child.href}>
+              {child.section && sectionHeading(child.section)}
+              {renderDropdownChild(child, () => setMobileOpen(false))}
+            </Fragment>
           ))}
+          {item.withCategories && renderCategoryEntries(() => setMobileOpen(false))}
         </div>
       </div>
     )
@@ -365,89 +458,13 @@ function HeaderInner() {
             <span className="hidden text-base sm:inline">MSK Scripts</span>
           </Link>
 
-          {/* Desktop-Nav */}
-          <nav className="ml-4 hidden flex-1 items-center gap-1 md:flex" aria-label="Primary">
-            {NAV_ITEMS_PRIMARY.map(renderDesktopNavItem)}
-
-            {/* Categories-Dropdown — manuelles useState-Dropdown */}
-            <div className="relative" ref={catRef}>
-              <button
-                type="button"
-                onClick={() => setCatOpen(v => !v)}
-                className={cn(
-                  'inline-flex items-center gap-1',
-                  navLinkClasses(categoriesActive || catOpen),
-                )}
-                aria-haspopup="menu"
-                aria-expanded={catOpen}
-              >
-                {t.nav_categories}
-                <ChevronDown
-                  className={cn(
-                    'h-3.5 w-3.5 transition-transform duration-150',
-                    catOpen && 'rotate-180',
-                  )}
-                />
-              </button>
-
-              {catOpen && (
-                <div
-                  role="menu"
-                  className="absolute left-0 top-full z-[60] mt-2 min-w-[240px] overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] p-1.5 shadow-xl"
-                >
-                  {!categoriesLoaded ? (
-                    <div className="flex items-center gap-2 px-3 py-2 text-xs text-[var(--color-muted-foreground)]">
-                      <Loader2 className="h-3 w-3 animate-spin" />
-                      {t.nav_loading}
-                    </div>
-                  ) : hasCategories ? (
-                    <>
-                      {categories.map(cat => (
-                        <Link
-                          key={cat.id}
-                          href={`/categories/${cat.id}`}
-                          prefetch={true}
-                          role="menuitem"
-                          className="flex items-center gap-2.5 rounded-md px-3 py-2 text-sm text-[var(--color-muted-foreground)] outline-none transition-colors hover:bg-[var(--color-muted)] hover:text-[var(--color-foreground)]"
-                        >
-                          <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-primary)]" />
-                          {cat.name}
-                        </Link>
-                      ))}
-                      <div className="my-1 h-px bg-[var(--color-border)]" />
-                      <Link
-                        href="/packages"
-                        prefetch={true}
-                        role="menuitem"
-                        className="flex items-center justify-between rounded-md px-3 py-2 text-sm font-medium text-[var(--color-primary)] outline-none transition-colors hover:bg-[var(--color-muted)]"
-                      >
-                        <span>{t.nav_all_packages}</span>
-                        <ArrowRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </>
-                  ) : (
-                    <>
-                      <div className="px-3 py-2 text-xs text-[var(--color-muted-foreground)]">
-                        {t.nav_no_categories}
-                      </div>
-                      <Link
-                        href="/packages"
-                        prefetch={true}
-                        role="menuitem"
-                        className="flex items-center justify-between rounded-md px-3 py-2 text-sm font-medium text-[var(--color-primary)] outline-none transition-colors hover:bg-[var(--color-muted)]"
-                      >
-                        <span>{t.nav_browse_all}</span>
-                        <ArrowRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {NAV_ITEMS_SECONDARY.map(renderDesktopNavItem)}
+          {/* Desktop-Nav — erst ab xl (1280 px). Darunter übernimmt das
+              Burger-Menü. Der frühere Umbruch bei md (768 px) war die Ursache
+              des seitlichen Overflows, siehe Kommentar an NAV_ITEMS. */}
+          <nav className="ml-4 hidden flex-1 items-center gap-1 xl:flex" aria-label="Primary">
+            {NAV_ITEMS.map(renderDesktopNavItem)}
           </nav>
-          <div className="flex-1 md:hidden" />
+          <div className="flex-1 xl:hidden" />
 
           {/* Actions */}
           <div className="flex items-center gap-1.5">
@@ -546,7 +563,7 @@ function HeaderInner() {
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden"
+              className="xl:hidden"
               onClick={() => setMobileOpen(v => !v)}
               aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={mobileOpen}
@@ -558,32 +575,11 @@ function HeaderInner() {
 
         {/* Mobile-Menu */}
         {mobileOpen && (
-          <div className="border-t border-[var(--color-border)] bg-[var(--color-background)] md:hidden">
+          <div className="max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-[var(--color-border)] bg-[var(--color-background)] xl:hidden">
             <nav className="flex flex-col gap-1 px-4 py-3" aria-label="Mobile">
-              {NAV_ITEMS_PRIMARY.map(renderMobileNavItem)}
-
-              {hasCategories && (
-                <div className="mt-2">
-                  <div className="px-3 py-1.5 font-mono text-[0.625rem] font-bold uppercase tracking-widest text-[var(--color-muted-foreground)]">
-                    {t.nav_categories}
-                  </div>
-                  {categories.map(cat => (
-                    <Link
-                      key={cat.id}
-                      href={`/categories/${cat.id}`}
-                      prefetch={true}
-                      className="flex items-center gap-2.5 rounded-md px-3 py-2 text-sm text-[var(--color-muted-foreground)] transition-colors hover:bg-[var(--color-muted)] hover:text-[var(--color-foreground)]"
-                    >
-                      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-primary)]" />
-                      {cat.name}
-                    </Link>
-                  ))}
-                </div>
-              )}
+              {NAV_ITEMS.map(renderMobileNavItem)}
 
               <div className="mt-2 h-px bg-[var(--color-border)]" />
-
-              {NAV_ITEMS_SECONDARY.map(renderMobileNavItem)}
 
               <button
                 onClick={() => { setSearchOpen(true); setMobileOpen(false) }}

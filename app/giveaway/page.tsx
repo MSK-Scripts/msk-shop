@@ -223,7 +223,7 @@ export default function GiveawayBotPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-5 grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))]">
             {FEATURES.map(f => (
               <div
                 key={f.title}

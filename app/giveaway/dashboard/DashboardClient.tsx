@@ -115,7 +115,11 @@ export default function DashboardClient({ guildId }: { guildId: string }) {
 
   return (
     <Ctx.Provider value={{ t, lang }}>
-      <main className="mx-auto w-full max-w-4xl px-4 py-10">
+      {/* Bewusst weiterhin gedeckelt: der Inhalt ist eine Einstellungs-
+          maske plus Giveaway-Liste. Ein 1920 px breites Formularfeld ist
+          nicht benutzbarer als ein 1000 px breites, nur schwerer zu lesen.
+          Der Deckel ist gegenüber max-w-4xl aber deutlich angehoben. */}
+      <main className="mx-auto w-full max-w-6xl px-4 py-10 md:px-6">
         <div className="mb-6 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--color-primary)]/15 text-[var(--color-primary)]">

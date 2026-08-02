@@ -86,8 +86,8 @@ export default function DashboardClient({ guilds, serverIp }: Props) {
   }
 
   return (
-    <div className="container-page py-10 md:py-14">
-      <div className="mx-auto max-w-5xl">
+    <div className="container-wide py-10 md:py-14">
+      <div>
 
         {/* Header */}
         <div className="mb-8">

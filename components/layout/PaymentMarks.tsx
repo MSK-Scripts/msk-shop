@@ -74,7 +74,8 @@ function PayPal() {
 
 export function PaymentMarks({ label }: { label: string }) {
   return (
-    <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2">
+    // `justify-center`, weil die Vertrauenszeile im Footer zentriert steht.
+    <div className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
       <span className="text-xs text-[var(--color-muted-foreground)]">{label}</span>
       <div className="flex items-center gap-2">
         <PayPal />

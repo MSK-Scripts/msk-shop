@@ -275,7 +275,7 @@ export default function TicketBotPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-5 grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))]">
             {FEATURES.map(f => (
               <div
                 key={f.title}
@@ -303,7 +303,7 @@ export default function TicketBotPage() {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-5 grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))]">
           {VERIFY_STEPS.map(step => (
             <div key={step.n} className="relative rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
               <span className="absolute right-4 top-4 font-mono text-3xl font-bold leading-none text-[var(--color-border)]">

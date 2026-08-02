@@ -9,6 +9,16 @@ export const FEATURED_PACKAGE_IDS: number[] = [
   5732588,
 ]
 
+// ── Subscription packages ─────────────────────────────────────
+// The two all-access subscriptions from the Tebex "Subscriptions" category.
+// They existed for a while without ever appearing on the homepage, which meant
+// the cheapest way into the catalogue was also the least visible one.
+// Set to null to hide the subscription strip.
+export const SUBSCRIPTION_PACKAGE_IDS: { encrypted: number; source: number } | null = {
+  encrypted: 7569109,
+  source:    7569121,
+}
+
 // ── Package Badges ────────────────────────────────────────────
 // Add one or more badges to packages by their Tebex package ID.
 // badge.label = Text shown on the badge (e.g. "ESX", "QBCore", "Standalone")

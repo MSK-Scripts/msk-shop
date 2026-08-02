@@ -820,105 +820,320 @@ export const giveawayResultTranslations = {
 export const homeTranslations = {
   en: {
     // Fallback, wenn fivestats keine Zahl liefert (kein Key, API down).
-    hero_badge:        'Live · Trusted by 500+ Servers',
+    hero_badge: "Live · Trusted by 500+ Servers",
     // Live-Variante. {resource} und {count} werden in Hero.tsx ersetzt.
-    hero_badge_live:   'Live · {resource} runs on {count} servers',
-    hero_h1_line1:     'Premium FiveM',
-    hero_h1_line2:     'Scripts.',
-    hero_h1_accent:    'Built by a player.',
-    hero_subtitle:     'Clean code, regular updates and real support, from the developer who writes every line himself.',
-    hero_btn_browse:   'Browse Packages',
-    hero_btn_github:   'View on GitHub',
+    hero_badge_live: "Live · {resource} runs on {count} servers",
+    hero_h1_line1: "Premium FiveM",
+    hero_h1_line2: "Scripts.",
+    hero_h1_accent: "Built by a player.",
+    hero_subtitle:
+      "Clean code, regular updates and real support, from the developer who writes every line himself.",
+    hero_btn_browse: "Browse packages",
+    hero_btn_github: "View on GitHub",
 
-    trust_customers:   'Customers',
-    trust_resources:   'Resources',
-    trust_support:     'Discord Support',
-    trust_frameworks:  'Frameworks',
+    trust_customers: "Customers",
+    trust_resources: "Resources",
+    trust_support: "Discord Support",
+    trust_frameworks: "Frameworks",
 
-    why_eyebrow:       'Benefits',
-    why_heading:       'Why MSK Scripts?',
-    why_subtitle:      'No template farms and no corporate roadmap, just well-built FiveM scripts you can rely on.',
+    why_eyebrow: "Benefits",
+    why_heading: "Why MSK Scripts?",
+    why_subtitle:
+      "No template farms and no corporate roadmap, just well-built FiveM scripts you can rely on.",
     why_features: [
-      { title: 'Quality over Quantity', description: 'Every script is personally coded, tested and maintained. No template farms.' },
-      { title: 'Regular Updates',       description: 'New features and bugfixes ship as they’re ready, not on a corporate roadmap.' },
-      { title: 'Real Support',          description: 'Discord support from the person who actually wrote the code.' },
-      { title: 'Open Documentation',    description: 'Full guides, examples and exports, so you never have to guess how something works.' },
+      {
+        title: "Quality over Quantity",
+        description:
+          "Every script is personally coded, tested and maintained. No template farms.",
+      },
+      {
+        title: "Regular Updates",
+        description:
+          "New features and bugfixes ship as they’re ready, not on a corporate roadmap.",
+      },
+      {
+        title: "Real Support",
+        description:
+          "Discord support from the person who actually wrote the code.",
+      },
+      {
+        title: "Open Documentation",
+        description:
+          "Full guides, examples and exports, so you never have to guess how something works.",
+      },
     ],
 
-    featured_heading_featured: 'Featured Packages',
-    featured_heading_all:      'All Packages',
-    featured_all_link:         'All packages',
+    featured_heading_featured: "Featured Packages",
+    featured_heading_all: "All Packages",
+    featured_all_link: "All packages",
 
-    how_eyebrow:  'How it works',
-    how_heading:  'From package to running server',
-    how_subtitle: 'Four steps, and you are done. No waiting for a key and no manual unlocking.',
+    how_eyebrow: "How it works",
+    how_heading: "From package to running server",
+    how_subtitle:
+      "Four steps, and you are done. No waiting for a key and no manual unlocking.",
     how_steps: [
-      { title: 'Pick your version',   text: 'Most resources come as an Encrypted and a Source version. Both run on Asset Escrow, but Source leaves most of the code readable and only keeps the core functions encrypted.' },
-      { title: 'Sign in with CFX.re', text: 'Your CFX.re account is what the resource gets tied to, so it lands in the right Keymaster.' },
-      { title: 'Pay through Tebex',   text: 'Checkout is handled by Tebex. Your payment details never touch this site.' },
-      { title: 'Start building',      text: 'Right after payment the resource shows up under Granted Assets in your CFX.re Keymaster. Questions go to Discord, answered by the developer.' },
+      {
+        title: "Pick your version",
+        text: "Most resources come as an Encrypted and a Source version. Both run on Asset Escrow, but Source leaves most of the code readable and only keeps the core functions encrypted.",
+      },
+      {
+        title: "Sign in with CFX.re",
+        text: "Your CFX.re account is what the resource gets tied to, so it lands in the right Keymaster.",
+      },
+      {
+        title: "Pay through Tebex",
+        text: "Checkout is handled by Tebex. Your payment details never touch this site.",
+      },
+      {
+        title: "Start building",
+        text: "Right after payment the resource shows up under Granted Assets in your CFX.re Keymaster. Questions go to Discord, answered by the developer.",
+      },
     ],
-    how_note:     'Both versions use the FiveM Asset Escrow system, so they need an active CFX.re account and a server that is online.',
-    how_btn_docs: 'Read the docs',
+    how_note:
+      "Both versions use the FiveM Asset Escrow system, so they need an active CFX.re account and a server that is online.",
+    how_btn_docs: "Read the docs",
 
-    custom_eyebrow:    'GitHub & More',
-    custom_title:      'Tools, Bots & More',
-    custom_subtitle:   'Free tools, Discord bots, and open-source libraries from the MSK ecosystem.',
+    // Kostenlose FiveM-Scripts. Die Einträge selbst stehen in
+    // content/custom-packages.ts, hier nur der Rahmen der Sektion.
+    free_scripts_heading: "Free FiveM Scripts",
+    free_scripts_subtitle:
+      "Open source on GitHub, free to use on your server. msk_core is the shared library the paid resources build on.",
+    free_scripts_stats: "Live server counts",
 
-    cta_heading:       'Join 500+ server owners already running MSK.',
-    cta_subtitle:      'Discord support, sneak peeks and announcements, straight from the developer.',
-    cta_btn_discord:   'Join Discord',
-    cta_btn_github:    'Browse GitHub',
+    custom_eyebrow: "GitHub & More",
+    custom_title: "Free tools",
+    custom_subtitle:
+      "Free tools, Discord bots, and open-source libraries from the MSK ecosystem.",
+
+    cta_heading: "Support comes from the person who wrote the code.",
+    // {count} wird durch die gemessene Käuferzahl ersetzt (lib/shopStats.ts).
+    cta_heading_measured:
+      "{count} buyers since 2022",
+    cta_subtitle:
+      "Discord has help before and after buying, sneak peeks and announcements, straight from the developer.",
+    cta_btn_discord: "Join Discord",
+    cta_btn_github: "Browse GitHub",
+
+    // Release-Protokoll. Quelle ist MSK-Scripts/VERSIONS, siehe lib/releases.ts.
+    release_title: "Release log",
+    release_count: "last {n}",
+    release_docs: "Full changelogs in the documentation",
+    // Die Zusammenfassungen stammen aus den Changelogs und existieren nur auf
+    // Englisch. Sie bleiben deshalb in beiden Sprachen im Original.
+
+    // Belegzeile. Jede Zahl ist gemessen, siehe PRODUCT.md → Evidence on Hand.
+    proof_buyers: "buyers",
+    proof_servers: "servers running msk_core",
+    proof_reversal: "refunded or charged back",
+    proof_docs: "documentation pages",
+
+    catalog_heading: "The complete catalogue",
+    catalog_subtitle:
+      "Every resource comes as Encrypted or Source. Both run on Asset Escrow.",
+    catalog_all: "View all packages",
+    variant_encrypted: "Encrypted",
+    variant_source: "Source",
+    sub_heading: "Or take everything as a subscription",
+    sub_subtitle: "Access to every resource, cancel monthly.",
+    sub_per_month: "/ month",
+    sub_cta: "View",
+
+    bots_heading: "Discord bots",
+    bots_subtitle:
+      "Two bots of our own, usable independently of the shop. The giveaway bot is free, the ticket bot has a free tier.",
+    bot_ticket_desc:
+      "Ticket system with hosted transcripts, a custom domain and a dashboard for managing the bot.",
+    bot_giveaway_desc:
+      "Giveaways with entry requirements, templates and public result pages, so the draw stays verifiable.",
+    bot_overview: "Overview",
+    bot_verify: "Verify",
+    bot_dashboard: "Dashboard",
+    bot_stats: "Statistics",
+
+    tools_subtitle:
+      "Side projects from the same shop. Open source, no signup, no trackers.",
+    tools_all: "Everything on GitHub",
   },
   de: {
-    hero_badge:        'Live · Über 500 Server vertrauen darauf',
-    hero_badge_live:   'Live · {resource} läuft auf {count} Servern',
-    hero_h1_line1:     'Premium FiveM',
-    hero_h1_line2:     'Scripts.',
-    hero_h1_accent:    'Von einem Spieler entwickelt.',
-    hero_subtitle:     'Sauberer Code, regelmäßige Updates und echter Support, vom Entwickler, der jede Zeile selbst schreibt.',
-    hero_btn_browse:   'Pakete ansehen',
-    hero_btn_github:   'Auf GitHub ansehen',
+    hero_badge: "Live · Über 500 Server vertrauen darauf",
+    hero_badge_live: "Live · {resource} läuft auf {count} Servern",
+    hero_h1_line1: "Premium FiveM",
+    hero_h1_line2: "Scripts.",
+    hero_h1_accent: "Von einem Spieler entwickelt.",
+    hero_subtitle:
+      "Sauberer Code, regelmäßige Updates und echter Support, vom Entwickler, der jede Zeile selbst schreibt.",
+    hero_btn_browse: "Pakete ansehen",
+    hero_btn_github: "Auf GitHub ansehen",
 
-    trust_customers:   'Kunden',
-    trust_resources:   'Ressourcen',
-    trust_support:     'Discord-Support',
-    trust_frameworks:  'Frameworks',
+    trust_customers: "Kunden",
+    trust_resources: "Ressourcen",
+    trust_support: "Discord-Support",
+    trust_frameworks: "Frameworks",
 
-    why_eyebrow:       'Vorteile',
-    why_heading:       'Warum MSK Scripts?',
-    why_subtitle:      'Keine Template-Farmen und keine Konzern-Roadmap, sondern sorgfältig gebaute FiveM-Scripts, auf die du dich verlassen kannst.',
+    why_eyebrow: "Vorteile",
+    why_heading: "Warum MSK Scripts?",
+    why_subtitle:
+      "Keine Template-Farmen und keine Konzern-Roadmap, sondern sorgfältig gebaute FiveM-Scripts, auf die du dich verlassen kannst.",
     why_features: [
-      { title: 'Qualität statt Quantität', description: 'Jedes Script wird persönlich programmiert, getestet und gepflegt. Keine Template-Farmen.' },
-      { title: 'Regelmäßige Updates',      description: 'Neue Features und Bugfixes kommen, sobald sie fertig sind, nicht nach Konzern-Roadmap.' },
-      { title: 'Echter Support',           description: 'Discord-Support von der Person, die den Code tatsächlich geschrieben hat.' },
-      { title: 'Offene Dokumentation',     description: 'Vollständige Anleitungen, Beispiele und Exports, damit du nicht rätseln musst, wie etwas funktioniert.' },
+      {
+        title: "Qualität statt Quantität",
+        description:
+          "Jedes Script wird persönlich programmiert, getestet und gepflegt. Keine Template-Farmen.",
+      },
+      {
+        title: "Regelmäßige Updates",
+        description:
+          "Neue Features und Bugfixes kommen, sobald sie fertig sind, nicht nach Konzern-Roadmap.",
+      },
+      {
+        title: "Echter Support",
+        description:
+          "Discord-Support von der Person, die den Code tatsächlich geschrieben hat.",
+      },
+      {
+        title: "Offene Dokumentation",
+        description:
+          "Vollständige Anleitungen, Beispiele und Exports, damit du nicht rätseln musst, wie etwas funktioniert.",
+      },
     ],
 
-    featured_heading_featured: 'Empfohlene Pakete',
-    featured_heading_all:      'Alle Pakete',
-    featured_all_link:         'Alle Pakete',
+    featured_heading_featured: "Empfohlene Pakete",
+    featured_heading_all: "Alle Pakete",
+    featured_all_link: "Alle Pakete",
 
-    how_eyebrow:  'So läuft es ab',
-    how_heading:  'Vom Paket zum laufenden Server',
-    how_subtitle: 'Vier Schritte, dann läuft es. Kein Warten auf einen Key, kein manuelles Freischalten.',
+    how_eyebrow: "So läuft es ab",
+    how_heading: "Vom Paket zum laufenden Server",
+    how_subtitle:
+      "Vier Schritte, dann läuft es. Kein Warten auf einen Key, kein manuelles Freischalten.",
     how_steps: [
-      { title: 'Version wählen',      text: 'Die meisten Ressourcen gibt es als Encrypted- und als Source-Version. Beide laufen über Asset Escrow, bei Source bleibt aber der größte Teil des Codes lesbar, verschlüsselt sind nur die Kernfunktionen.' },
-      { title: 'Mit CFX.re anmelden', text: 'An deinen CFX.re-Account wird die Ressource gebunden, damit sie im richtigen Keymaster landet.' },
-      { title: 'Über Tebex zahlen',   text: 'Der Checkout läuft bei Tebex. Deine Zahlungsdaten berühren diese Seite nie.' },
-      { title: 'Loslegen',            text: 'Direkt nach der Zahlung taucht die Ressource unter Granted Assets in deinem CFX.re-Keymaster auf. Fragen gehen an Discord, beantwortet vom Entwickler.' },
+      {
+        title: "Version wählen",
+        text: "Die meisten Ressourcen gibt es als Encrypted- und als Source-Version. Beide laufen über Asset Escrow, bei Source bleibt aber der größte Teil des Codes lesbar, verschlüsselt sind nur die Kernfunktionen.",
+      },
+      {
+        title: "Mit CFX.re anmelden",
+        text: "An deinen CFX.re-Account wird die Ressource gebunden, damit sie im richtigen Keymaster landet.",
+      },
+      {
+        title: "Über Tebex zahlen",
+        text: "Der Checkout läuft bei Tebex. Deine Zahlungsdaten berühren diese Seite nie.",
+      },
+      {
+        title: "Loslegen",
+        text: "Direkt nach der Zahlung taucht die Ressource unter Granted Assets in deinem CFX.re-Keymaster auf. Fragen gehen an Discord, beantwortet vom Entwickler.",
+      },
     ],
-    how_note:     'Beide Versionen nutzen das FiveM Asset Escrow System, brauchen also einen aktiven CFX.re-Account und einen Server, der online ist.',
-    how_btn_docs: 'Zur Dokumentation',
+    how_note:
+      "Beide Versionen nutzen das FiveM Asset Escrow System, brauchen also einen aktiven CFX.re-Account und einen Server, der online ist.",
+    how_btn_docs: "Zur Dokumentation",
 
-    custom_eyebrow:    'GitHub & mehr',
-    custom_title:      'Tools, Bots & mehr',
-    custom_subtitle:   'Kostenlose Tools, Discord-Bots und Open-Source-Bibliotheken aus dem MSK-Ökosystem.',
+    // Kostenlose FiveM-Scripts. Die Einträge selbst stehen in
+    // content/custom-packages.ts, hier nur der Rahmen der Sektion.
+    free_scripts_heading: "Kostenlose FiveM Scripts",
+    free_scripts_subtitle:
+      "Open Source auf GitHub, frei nutzbar auf deinem Server. msk_core ist die Bibliothek, auf der die bezahlten Resourcen aufbauen.",
+    free_scripts_stats: "Live-Serverzahlen",
 
-    cta_heading:       'Schließe dich 500+ Server-Besitzern an, die bereits MSK nutzen.',
-    cta_subtitle:      'Discord-Support, Vorab-Einblicke und Ankündigungen, direkt vom Entwickler.',
-    cta_btn_discord:   'Discord beitreten',
-    cta_btn_github:    'GitHub ansehen',
+    custom_eyebrow: "GitHub & mehr",
+    custom_title: "Kostenlose Tools",
+    custom_subtitle:
+      "Kostenlose Tools, Discord-Bots und Open-Source-Bibliotheken aus dem MSK-Ökosystem.",
+
+    cta_heading:
+      "Der Support kommt von der Person, die den Code geschrieben hat.",
+    // {count} wird durch die gemessene Käuferzahl ersetzt (lib/shopStats.ts).
+    cta_heading_measured:
+      "{count} Käufer seit 2022",
+    cta_subtitle:
+      "Im Discord gibt es Hilfe vor und nach dem Kauf, Vorab-Einblicke und Ankündigungen, direkt vom Entwickler.",
+    cta_btn_discord: "Discord beitreten",
+    cta_btn_github: "GitHub ansehen",
+
+    // Release-Protokoll. Quelle ist MSK-Scripts/VERSIONS, siehe lib/releases.ts.
+    release_title: "Release-Protokoll",
+    release_count: "letzte {n}",
+    release_docs: "Vollständige Changelogs in der Dokumentation",
+    // Die Zusammenfassungen stammen aus den Changelogs und existieren nur auf
+    // Englisch. Sie bleiben deshalb in beiden Sprachen im Original.
+
+    // Belegzeile. Jede Zahl ist gemessen, siehe PRODUCT.md → Evidence on Hand.
+    proof_buyers: "Käufer",
+    proof_servers: "Server auf msk_core",
+    proof_reversal: "erstattet oder zurückgebucht",
+    proof_docs: "Doku-Seiten",
+
+    catalog_heading: "Der komplette Katalog",
+    catalog_subtitle:
+      "Jede Ressource gibt es als Encrypted oder Source. Beide laufen über Asset Escrow.",
+    catalog_all: "Alle Pakete ansehen",
+    variant_encrypted: "Encrypted",
+    variant_source: "Source",
+    sub_heading: "Oder alles im Abo",
+    sub_subtitle: "Zugriff auf sämtliche Ressourcen, monatlich kündbar.",
+    sub_per_month: "/ Monat",
+    sub_cta: "Ansehen",
+
+    bots_heading: "Discord Bots",
+    bots_subtitle:
+      "Zwei eigene Bots, unabhängig vom Shop nutzbar. Der Giveaway Bot ist kostenlos, der Ticket Bot hat eine kostenlose Stufe.",
+    bot_ticket_desc:
+      "Ticketsystem mit gehosteten Transkripten, eigener Domain und einem Dashboard zur Bot-Verwaltung.",
+    bot_giveaway_desc:
+      "Verlosungen mit Teilnahmebedingungen, Vorlagen und öffentlichen Ergebnisseiten, damit die Ziehung nachvollziehbar bleibt.",
+    bot_overview: "Übersicht",
+    bot_verify: "Verifizieren",
+    bot_dashboard: "Dashboard",
+    bot_stats: "Statistiken",
+
+    tools_subtitle:
+      "Nebenprojekte aus demselben Haus. Offener Quellcode, keine Anmeldung, keine Tracker.",
+    tools_all: "Alles auf GitHub",
+  },
+} as const;
+
+// ── Paketübersicht (/packages) ───────────────────────────────────────────────
+// Die Facetten stammen ausschließlich aus vorhandenen Daten: die Variante aus
+// der Tebex-Kategorie, die Kompatibilität aus PACKAGE_TAGS in lib/config.ts.
+// Eine Framework-Facette gibt es bewusst nicht — dafür existieren keine
+// strukturierten Angaben, und geraten wäre schlimmer als weggelassen.
+export const packagesTranslations = {
+  en: {
+    heading:        'All packages',
+    subtitle:       'All prices include VAT.',
+    count_one:      '{n} package',
+    count_many:     '{n} packages',
+    filters:        'Filters',
+    facet_variant:  'Variant',
+    facet_compat:   'Works with',
+    facet_price:    'Price',
+    reset:          'Reset',
+    filtered_label: 'Filtered:',
+    showing:        '{shown} of {total}',
+    empty_title:    'Nothing matches these filters',
+    empty_body:     'Try removing one of them.',
+    escrow_note:    'Everything runs on Asset Escrow and the CFX.re Keymaster.',
+    escrow_link:    'How buying works',
+    none_title:     'No packages yet',
+    none_body:      'Check back soon.',
+  },
+  de: {
+    heading:        'Alle Pakete',
+    subtitle:       'Alle Preise inkl. MwSt.',
+    count_one:      '{n} Paket',
+    count_many:     '{n} Pakete',
+    filters:        'Filter',
+    facet_variant:  'Variante',
+    facet_compat:   'Funktioniert mit',
+    facet_price:    'Preis',
+    reset:          'Zurücksetzen',
+    filtered_label: 'Gefiltert:',
+    showing:        '{shown} von {total}',
+    empty_title:    'Dazu passt nichts',
+    empty_body:     'Nimm einen der Filter wieder raus.',
+    escrow_note:    'Alles läuft über Asset Escrow und den CFX.re-Keymaster.',
+    escrow_link:    'Wie der Kauf abläuft',
+    none_title:     'Noch keine Pakete',
+    none_body:      'Schau später nochmal vorbei.',
   },
 } as const;
 
@@ -928,6 +1143,11 @@ export const homeTranslations = {
 export const layoutTranslations = {
   en: {
     nav_home:          'Home',
+    nav_packages:      'Packages',
+    nav_resource_group: 'Resources',
+    nav_bots:          'Bots',
+    nav_support:       'Support',
+    nav_overview:      'Overview',
     nav_verify:        'Verify',
     nav_dashboard:     'Dashboard',
     nav_statistics:    'Statistics',
@@ -976,6 +1196,11 @@ export const layoutTranslations = {
   },
   de: {
     nav_home:          'Start',
+    nav_packages:      'Pakete',
+    nav_resource_group: 'Ressourcen',
+    nav_bots:          'Bots',
+    nav_support:       'Support',
+    nav_overview:      'Übersicht',
     nav_verify:        'Verifizieren',
     nav_dashboard:     'Dashboard',
     nav_statistics:    'Statistiken',

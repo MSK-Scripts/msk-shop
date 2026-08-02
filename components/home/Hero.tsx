@@ -2,15 +2,40 @@ import Link from 'next/link'
 import { ArrowRight, Github } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
+import { ReleaseFeed } from '@/components/home/ReleaseFeed'
+import { SITE_CONFIG } from '@/lib/config'
 import { homeTranslations, type Lang } from '@/lib/i18n'
 import type { HeadlineStat } from '@/lib/fivestats'
+import type { ReleaseEntry } from '@/lib/releases'
 
-export function Hero({ lang, stat }: { lang: Lang; stat?: HeadlineStat | null }) {
+/**
+ * Der Hero füllt bewusst den sichtbaren Bereich.
+ *
+ * `min-h` statt `h`: bei einem niedrigen oder stark gezoomten Fenster wächst
+ * die Sektion über die Bildschirmhöhe hinaus und scrollt, statt den Inhalt zu
+ * stauchen oder abzuschneiden. `100svh` statt `100vh`, weil auf dem Telefon
+ * sonst die einfahrende Browserleiste mitgerechnet wird und der Hero beim
+ * Scrollen springt. Die 4rem sind die Höhe des stickenden Headers
+ * (`h-16` in components/layout/Header.tsx), damit hier genau der Rest steht.
+ *
+ * `children` ist der Platz für die Belegzeile: sie gehört optisch in den Hero,
+ * bleibt aber eine eigene Komponente, weil sie eigene Datenquellen hat.
+ */
+export function Hero({
+  lang, stat, releases, children,
+}: {
+  lang: Lang
+  stat?: HeadlineStat | null
+  releases: ReleaseEntry[]
+  children?: React.ReactNode
+}) {
   const t = homeTranslations[lang]
 
   // Mit Live-Daten die echte Zahl zeigen und aufs /resources-Dashboard
   // verlinken, damit sie nachprüfbar ist. Ohne Daten (kein API-Key, fivestats
-  // nicht erreichbar) bleibt der statische Text stehen.
+  // nicht erreichbar) verschwindet die Zahl — der frühere Fallback behauptete
+  // an dieser Stelle „über 500 Server" und ersetzte damit einen geprüften Wert
+  // durch einen schlechteren.
   const liveLabel = stat
     ? t.hero_badge_live
         .replace('{resource}', stat.displayName)
@@ -18,95 +43,60 @@ export function Hero({ lang, stat }: { lang: Lang; stat?: HeadlineStat | null })
     : null
 
   return (
-    <section className="relative overflow-hidden border-b border-[var(--color-border)]">
+    <section className="relative flex min-h-[calc(100svh-4rem)] flex-col overflow-hidden">
       <div aria-hidden className="hero-decor-gradient pointer-events-none absolute inset-0" />
 
-      <div className="container-page relative grid items-center gap-12 py-16 md:py-20 lg:grid-cols-[1.15fr_1fr] lg:py-24">
+      {/* `flex-1` nimmt die Resthöhe, `items-center` zentriert beide Spalten
+          darin vertikal. Auf einem hohen Fenster steht der Inhalt damit in der
+          Mitte, auf einem flachen füllt er die Fläche ohne Sprung. */}
+      <div className="container-page relative flex flex-1 items-center py-10 lg:py-14">
+        <div className="grid w-full items-center gap-10 lg:grid-cols-[1.06fr_0.94fr] lg:gap-12">
 
-        {/* Text-Spalte */}
-        <div>
-          {liveLabel ? (
-            <Link href="/resources" className="mb-6 inline-block">
-              <Badge variant="outline" className="transition-colors hover:border-[var(--color-primary)]">
-                <span className="pulse-dot inline-block h-1.5 w-1.5 rounded-full bg-[var(--color-primary)]" />
-                {liveLabel}
-              </Badge>
-            </Link>
-          ) : (
-            <Badge variant="outline" className="mb-6">
-              <span className="pulse-dot inline-block h-1.5 w-1.5 rounded-full bg-[var(--color-primary)]" />
-              {t.hero_badge}
-            </Badge>
-          )}
-
-          <h1 className="text-balance text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
-            {t.hero_h1_line1}<br />
-            {t.hero_h1_line2}<br />
-            <span className="text-[var(--color-primary)]">{t.hero_h1_accent}</span>
-          </h1>
-
-          <p className="mt-6 max-w-xl text-pretty text-lg text-[var(--color-muted-foreground)] md:text-xl">
-            {t.hero_subtitle}
-          </p>
-
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Button asChild size="lg">
-              <Link href="/packages">
-                {t.hero_btn_browse}
-                <ArrowRight className="h-4 w-4" />
+          {/* Text-Spalte */}
+          <div>
+            {liveLabel && (
+              <Link href="/resources" className="mb-6 inline-block">
+                <Badge variant="outline" className="transition-colors hover:border-[var(--color-primary)]">
+                  <span className="pulse-dot inline-block h-1.5 w-1.5 rounded-full bg-[var(--color-primary)]" />
+                  {liveLabel}
+                </Badge>
               </Link>
-            </Button>
-            <Button asChild size="lg" variant="outline">
-              <a href="https://github.com/MSK-Scripts" target="_blank" rel="noopener noreferrer">
-                <Github className="h-4 w-4" />
-                {t.hero_btn_github}
-              </a>
-            </Button>
-          </div>
-        </div>
+            )}
 
-        {/* Terminal-Mockup */}
-        <div className="relative">
-          <div className="overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] shadow-2xl">
-            {/* Terminal-Header */}
-            <div className="flex items-center gap-2 border-b border-[var(--color-border)] bg-[color-mix(in_oklab,var(--color-muted)_50%,var(--color-background))] px-4 py-2.5">
-              <span className="h-3 w-3 rounded-full bg-red-500/85" />
-              <span className="h-3 w-3 rounded-full bg-yellow-500/85" />
-              <span className="h-3 w-3 rounded-full bg-green-500/85" />
-              <span className="ml-2 font-mono text-xs text-[var(--color-muted-foreground)]">
-                musiker15@fivem-server: ~
-              </span>
+            <h1 className="text-balance text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
+              {t.hero_h1_line1}<br />
+              {t.hero_h1_line2}<br />
+              <span className="text-[var(--color-primary)]">{t.hero_h1_accent}</span>
+            </h1>
+
+            <p className="mt-6 max-w-[42ch] text-pretty text-lg text-[var(--color-muted-foreground)] md:text-xl">
+              {t.hero_subtitle}
+            </p>
+
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Button asChild size="lg">
+                <Link href="/packages">
+                  {t.hero_btn_browse}
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="outline">
+                <a href={SITE_CONFIG.github} target="_blank" rel="noopener noreferrer">
+                  <Github className="h-4 w-4" />
+                  {t.hero_btn_github}
+                </a>
+              </Button>
             </div>
-
-            {/* Terminal-Body */}
-            <pre className="overflow-x-auto p-5 font-mono text-[0.8125rem] leading-7">
-              <code>
-                <span className="text-[var(--color-muted-foreground)]"># Load MSK Core</span>{'\n'}
-                <span>ensure msk_core</span>{'\n\n'}
-                <span className="font-semibold text-[var(--color-info)]">[INFO]</span>{' '}
-                <span>msk_core </span>
-                <span className="text-amber-500">v3.0.0</span>
-                <span> ready</span>{'\n'}
-                <span className="font-semibold text-[var(--color-info)]">[INFO]</span>{' '}
-                <span>ESX bridge connected</span>{'\n'}
-                <span className="font-semibold text-[var(--color-info)]">[INFO]</span>{' '}
-                <span>msk_handcuffs loaded </span>
-                <span className="text-[var(--color-success)]">✓</span>{'\n'}
-                <span className="font-semibold text-[var(--color-info)]">[INFO]</span>{' '}
-                <span>msk_garage loaded </span>
-                <span className="text-[var(--color-success)]">✓</span>{'\n'}
-                <span className="font-semibold text-[var(--color-info)]">[INFO]</span>{' '}
-                <span>msk_vehiclekeys loaded </span>
-                <span className="text-[var(--color-success)]">✓</span>{'\n\n'}
-                <span className="text-[var(--color-muted-foreground)]">{'> 12 vehicles indexed in 42 ms'}</span>{'\n'}
-                <span className="text-[var(--color-muted-foreground)]">{'> NUI rendered'}</span>{'\n\n'}
-                <span className="font-semibold text-[var(--color-primary)]">$</span>{' '}
-                <span className="opacity-80">Server ready.</span>
-              </code>
-            </pre>
           </div>
+
+          {/* Release-Protokoll statt des früheren Terminal-Mockups. Das enthielt
+              einen erfundenen Benchmark („12 vehicles indexed in 42 ms"). */}
+          <ReleaseFeed lang={lang} releases={releases} />
         </div>
       </div>
+
+      {/* Belegzeile, am unteren Rand des sichtbaren Bereichs. */}
+      {children}
     </section>
   )
 }

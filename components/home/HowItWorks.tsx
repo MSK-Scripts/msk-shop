@@ -16,10 +16,9 @@ export function HowItWorks({ lang }: { lang: Lang }) {
   const t = homeTranslations[lang]
 
   return (
-    <section className="border-b border-[var(--color-border)]">
+    <section id="ablauf" className="scroll-mt-20 border-t border-[var(--color-border)]">
       <div className="container-page py-16 md:py-20">
         <div className="mx-auto mb-12 max-w-2xl text-center">
-          <span className="eyebrow mx-auto inline-flex">{t.how_eyebrow}</span>
           <h2 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">
             {t.how_heading}
           </h2>
