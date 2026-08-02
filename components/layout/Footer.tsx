@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { Github, Receipt, ShieldCheck, Undo2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useLang } from '@/components/i18n/LangProvider'
+import { PaymentMarks } from '@/components/layout/PaymentMarks'
 import { layoutTranslations } from '@/lib/i18n'
 
 const ECOSYSTEM_LINKS = [
@@ -155,6 +156,7 @@ export function Footer() {
               </li>
             ))}
           </ul>
+          <PaymentMarks label={t.footer_payment_label} />
         </div>
 
         <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--color-border)] pt-6">

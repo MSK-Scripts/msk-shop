@@ -44,7 +44,7 @@ export interface ResourceStatEntry {
   packages?: {
     /** Encrypted (escrow) variant — Tebex package ID. */
     encrypted: number
-    /** Source (unencrypted) variant — Tebex package ID. */
+    /** Source variant (escrowed too, only the core functions stay encrypted) — Tebex package ID. */
     source: number
   }
 }
