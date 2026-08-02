@@ -396,28 +396,6 @@
 }
 
 /* ============================================================================
-   CodeMirror Editor — MSK theme overrides (Dashboard Bot-Config-Editor)
-   ============================================================================ */
-.cm-editor {
-  background-color: var(--color-card) !important;
-}
-.cm-editor.cm-focused {
-  outline: none !important;
-}
-.cm-editor .cm-scroller {
-  font-family: var(--font-mono);
-}
-.cm-scroller::-webkit-scrollbar       { width: 6px; height: 6px; }
-.cm-scroller::-webkit-scrollbar-track { background: var(--color-card); }
-.cm-scroller::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: 3px;
-}
-.cm-scroller::-webkit-scrollbar-thumb:hover {
-  background: var(--color-primary);
-}
-
-/* ============================================================================
    Legacy msk-* Utility-Klassen — Rückwärtskompatibilität
    ----------------------------------------------------------------------------
    Werden in nicht-migrierten Komponenten noch verwendet (Cart-Drawer,

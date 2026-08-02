@@ -82,9 +82,7 @@ function Banner({ msg, onClose }: { msg: Msg; onClose?: () => void }) {
 
 // ── Main Component ─────────────────────────────────────────────────────────────
 
-// `nonce` is still accepted for call-site compatibility but is no longer used
-// (it was only needed by the removed CodeMirror config editor).
-export default function BotConfigEditor({ lang, guildId }: { lang: Lang; nonce?: string; guildId: string }) {
+export default function BotConfigEditor({ lang, guildId }: { lang: Lang; guildId: string }) {
   const t = dashboardTranslations[lang]
 
   const STATUS_LABEL: Record<BotStatus, string> = {

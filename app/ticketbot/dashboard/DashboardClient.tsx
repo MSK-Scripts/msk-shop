@@ -47,7 +47,6 @@ interface Guild {
 interface Props {
   guilds:   Guild[]
   serverIp: string
-  nonce?:   string
 }
 
 type T = typeof dashboardTranslations['en'] | typeof dashboardTranslations['de']
@@ -72,7 +71,7 @@ const TIER_COLORS: Record<Tier, string> = {
   premium_plus: 'text-[#9d65fe] bg-[#9d65fe]/10 border-[#9d65fe]/30',
 }
 
-export default function DashboardClient({ guilds, serverIp, nonce }: Props) {
+export default function DashboardClient({ guilds, serverIp }: Props) {
   const { lang } = useLang()
   const t = dashboardTranslations[lang]
 
@@ -125,7 +124,6 @@ export default function DashboardClient({ guilds, serverIp, nonce }: Props) {
             key={selected.guild_id}
             guild={selected}
             serverIp={serverIp}
-            nonce={nonce}
             lang={lang}
             t={t}
             onLogout={handleLogout}
@@ -141,11 +139,10 @@ export default function DashboardClient({ guilds, serverIp, nonce }: Props) {
 type TabKey = 'domain' | 'transcripts' | 'hosting'
 
 function GuildPanel({
-  guild, serverIp, nonce, lang, t, onLogout,
+  guild, serverIp, lang, t, onLogout,
 }: {
   guild:    Guild
   serverIp: string
-  nonce?:   string
   lang:     'en' | 'de'
   t:        T
   onLogout: () => void
@@ -535,7 +532,7 @@ function GuildPanel({
       {tab === 'hosting' && !!guild.is_hosted && (
         <>
           {guild.bot_port != null && <BotDashboardLauncher guildId={guildId} t={t} />}
-          <BotConfigEditor lang={lang} nonce={nonce} guildId={guildId} />
+          <BotConfigEditor lang={lang} guildId={guildId} />
         </>
       )}
     </>

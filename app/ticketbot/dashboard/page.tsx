@@ -1,4 +1,4 @@
-import { cookies, headers }      from 'next/headers';
+import { cookies }               from 'next/headers';
 import { redirect }              from 'next/navigation';
 import { parseDashboardSession } from '@/lib/dashboardSession';
 import { query }                 from '@/lib/db';
@@ -48,16 +48,10 @@ export default async function DashboardPage() {
 
   const serverIp = process.env.SERVER_PUBLIC_IP ?? '';
 
-  // CSP nonce (set per request in middleware.ts) — passed down so the CodeMirror
-  // editor can nonce its runtime-injected <style> elements; otherwise the strict
-  // `style-src 'self' 'nonce-…'` blocks them and the editor renders blank.
-  const nonce = (await headers()).get('x-nonce') ?? undefined;
-
   return (
     <DashboardClient
       guilds={guilds}
       serverIp={serverIp}
-      nonce={nonce}
     />
   );
 }
