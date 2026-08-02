@@ -7,6 +7,7 @@ import {
 } from '@/lib/stripe';
 import { archiveHostedBot } from '@/lib/hostedBot';
 import { teardownCustomDomain } from '@/lib/customDomain';
+import { trustedGuildId }       from '@/lib/guildScope';
 import { TIER_CONFIG, type Tier } from '@/lib/tiers';
 
 // ── Stripe Webhook ───────────────────────────────────────────────────────────
@@ -121,8 +122,12 @@ async function downgradeGuild(guildId: string): Promise<void> {
   // Reclaim premium-only resources: stop the hosted bot and tear down the custom
   // domain vhost/cert (custom_domain is kept but demoted to pending_dns so a later
   // re-subscribe restores it). Both are best-effort and never throw.
-  await archiveHostedBot(guildId);
-  await teardownCustomDomain(guildId);
+  // Die Id stammt aus `metadata.guild_id` eines Events, dessen Signatur gegen
+  // STRIPE_WEBHOOK_SECRET geprueft wurde. Es gibt hier keine Nutzersession,
+  // also wird die Herkunft explizit benannt statt stillschweigend angenommen.
+  const scoped = trustedGuildId(guildId, 'stripe-webhook');
+  await archiveHostedBot(scoped);
+  await teardownCustomDomain(scoped);
 }
 
 export async function POST(req: Request): Promise<NextResponse> {

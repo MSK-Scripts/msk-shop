@@ -3,6 +3,7 @@ import { exec }          from 'child_process';
 import { join, resolve } from 'path';
 import { promisify }     from 'util';
 import { query, queryOne } from '@/lib/db';
+import type { ScopedGuildId } from '@/lib/guildScope';
 
 const execAsync   = promisify(exec);
 const GUILD_ID_RE = /^\d{17,20}$/;
@@ -18,7 +19,7 @@ interface HostedRow { is_hosted: number }
  * base path isn't configured. Filesystem/PM2 errors are logged, never thrown —
  * the DB flag is still cleared so the dashboard reflects reality.
  */
-export async function archiveHostedBot(guildId: string): Promise<void> {
+export async function archiveHostedBot(guildId: ScopedGuildId): Promise<void> {
   if (!GUILD_ID_RE.test(guildId)) return;
 
   const guild = await queryOne<HostedRow>(

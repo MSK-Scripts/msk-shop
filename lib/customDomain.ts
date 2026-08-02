@@ -1,6 +1,7 @@
 import { execFile }   from 'child_process';
 import { promisify }  from 'util';
 import { query, queryOne } from '@/lib/db';
+import type { ScopedGuildId } from '@/lib/guildScope';
 
 const execFileAsync = promisify(execFile);
 
@@ -18,8 +19,12 @@ const execFileAsync = promisify(execFile);
  *   custom domain again on its own.
  *
  * Safe to call for any guild id — no-ops when the guild has no domain configured.
+ *
+ * Verlangt einen `ScopedGuildId`: die Funktion reisst einer fremden Guild die
+ * Domain weg, wenn man ihr die falsche Id gibt. Woher die Id kommt, muss der
+ * Aufrufer belegen — siehe lib/guildScope.ts.
  */
-export async function teardownCustomDomain(guildId: string): Promise<void> {
+export async function teardownCustomDomain(guildId: ScopedGuildId): Promise<void> {
   const row = await queryOne<{ custom_domain: string | null; domain_status: string }>(
     'SELECT custom_domain, domain_status FROM ticketbot_guilds WHERE guild_id = ?',
     [guildId],
