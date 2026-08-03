@@ -827,7 +827,7 @@ export const homeTranslations = {
     hero_h1_line2: "Scripts.",
     hero_h1_accent: "Built by a player.",
     hero_subtitle:
-      "Clean code, regular updates and real support, from the developer who writes every line himself.",
+      "High quality FiveM resources, Tools & Discord bots for your community. All our products are developed in-house and come with dedicated support.",
     hero_btn_browse: "Browse packages",
     hero_btn_github: "View on GitHub",
 
@@ -907,8 +907,7 @@ export const homeTranslations = {
 
     cta_heading: "Support comes from the person who wrote the code.",
     // {count} wird durch die gemessene Käuferzahl ersetzt (lib/shopStats.ts).
-    cta_heading_measured:
-      "{count} buyers since 2022",
+    cta_heading_measured: "{count} buyers since 2022",
     cta_subtitle:
       "Discord has help before and after buying, sneak peeks and announcements, straight from the developer.",
     cta_btn_discord: "Join Discord",
@@ -961,7 +960,7 @@ export const homeTranslations = {
     hero_h1_line2: "Scripts.",
     hero_h1_accent: "Von einem Spieler entwickelt.",
     hero_subtitle:
-      "Sauberer Code, regelmäßige Updates und echter Support, vom Entwickler, der jede Zeile selbst schreibt.",
+      "Hochwertige FiveM-Ressourcen, Tools und Discord-Bots für deine Community. Alle unsere Produkte werden intern entwickelt und werden durch einen engagierten Support begleitet.",
     hero_btn_browse: "Pakete ansehen",
     hero_btn_github: "Auf GitHub ansehen",
 
@@ -1042,8 +1041,7 @@ export const homeTranslations = {
     cta_heading:
       "Der Support kommt von der Person, die den Code geschrieben hat.",
     // {count} wird durch die gemessene Käuferzahl ersetzt (lib/shopStats.ts).
-    cta_heading_measured:
-      "{count} Käufer seit 2022",
+    cta_heading_measured: "{count} Käufer seit 2022",
     cta_subtitle:
       "Im Discord gibt es Hilfe vor und nach dem Kauf, Vorab-Einblicke und Ankündigungen, direkt vom Entwickler.",
     cta_btn_discord: "Discord beitreten",
