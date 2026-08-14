@@ -50,6 +50,18 @@ function parse<T>(scope: string, token: string | undefined): T | null {
 // ── Finale Dashboard-Session ──────────────────────────────────────────────────
 export interface GiveawaySession {
   guildId: string;
+  /**
+   * Discord-ID des eingeloggten Users. Wird an den Bot durchgereicht, damit der
+   * für die Tebex-Routen selbst gegen `guild.ownerId` prüfen kann. Fehlt bei
+   * Sessions, die vor dieser Erweiterung ausgestellt wurden.
+   */
+  userId?: string;
+  /**
+   * Ob der User Besitzer dieser Guild ist. Steuert NUR die Anzeige — die
+   * Berechtigung entscheidet der Bot, und zwar gegen Discord statt gegen dieses
+   * Feld. Ein manipuliertes Flag brächte hier also nichts.
+   */
+  owner?: boolean;
 }
 
 // Final dashboard session lives 30 days; the intermediate post-OAuth token is
@@ -67,9 +79,12 @@ export function parseGiveawaySession(token: string | undefined): GiveawaySession
 }
 
 // ── Kurzlebige Zwischen-Session (nach OAuth, vor Guild-Auswahl) ───────────────
+/** Guild aus der OAuth-Liste, um das Besitzer-Flag ergänzt. */
+export type GiveawayGuild = DiscordGuild & { owner?: boolean };
+
 export interface GiveawayVerifyData {
   discordUserId: string;
-  guilds: DiscordGuild[];
+  guilds: GiveawayGuild[];
 }
 
 export function signGiveawayVerify(data: GiveawayVerifyData): string {

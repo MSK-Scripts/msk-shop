@@ -20,7 +20,8 @@ export async function POST(req: Request) {
   }
 
   // User muss Admin dieser Guild sein (aus seiner OAuth-Guild-Liste).
-  if (!/^\d{17,20}$/.test(guildId) || !session.guilds.some((g) => g.id === guildId)) {
+  const guild = session.guilds.find((g) => g.id === guildId);
+  if (!/^\d{17,20}$/.test(guildId) || !guild) {
     return NextResponse.json({ error: 'Invalid or unauthorized guild.' }, { status: 403 });
   }
 
@@ -33,7 +34,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'The giveaway bot is not in this server yet.' }, { status: 404 });
   }
 
-  const token = signGiveawaySession({ guildId });
+  const token = signGiveawaySession({
+    guildId,
+    userId: session.discordUserId,
+    owner:  Boolean(guild.owner),
+  });
   const res = NextResponse.json({ success: true });
   res.cookies.delete('msk_gw_verify');
   res.cookies.set(GIVEAWAY_SESSION_COOKIE, token, {

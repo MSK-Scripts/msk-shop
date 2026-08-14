@@ -1,7 +1,7 @@
 import { NextResponse }            from 'next/server';
 import { cookies }                 from 'next/headers';
 import { signGiveawayVerify }      from '@/lib/giveawaySession';
-import type { DiscordGuild }       from '@/lib/session';
+import type { GiveawayGuild }      from '@/lib/giveawaySession';
 
 // Discord-Permission-Bit für ADMINISTRATOR.
 const ADMINISTRATOR = BigInt(0x8);
@@ -76,10 +76,12 @@ export async function GET(req: Request) {
     return NextResponse.redirect(`${baseUrl}/giveaway/verify?error=discord_guilds_failed`);
   }
 
-  // Nur Guilds, in denen der User Admin/Owner ist.
-  const adminGuilds: DiscordGuild[] = rawGuilds
+  // Nur Guilds, in denen der User Admin/Owner ist. Das Besitzer-Flag wird
+  // mitgeführt, weil der Tebex-Bereich im Dashboard nur für Besitzer sichtbar
+  // ist — die eigentliche Prüfung macht der Bot gegen guild.ownerId.
+  const adminGuilds: GiveawayGuild[] = rawGuilds
     .filter((g) => isAdmin(g.permissions, g.owner))
-    .map((g) => ({ id: g.id, name: g.name, icon: g.icon }));
+    .map((g) => ({ id: g.id, name: g.name, icon: g.icon, owner: Boolean(g.owner) }));
 
   // Kurzlebige Zwischen-Session (nur Guild-Auswahl), eigener Cookie-Name + Scope.
   const sessionToken = signGiveawayVerify({ discordUserId, guilds: adminGuilds });

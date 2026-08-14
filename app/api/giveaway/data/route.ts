@@ -5,7 +5,16 @@ import { controlGet }                        from '@/lib/giveawayControl';
 import { query }                             from '@/lib/db';
 
 // Lese-Proxy zum Bot-Steuer-Endpunkt. guildId kommt IMMER aus der Session.
-const ALLOWED = new Set(['giveaways', 'giveaway', 'settings', 'roles', 'channels']);
+const ALLOWED = new Set(['giveaways', 'giveaway', 'settings', 'roles', 'channels', 'tebex', 'tebexPackages']);
+
+// Diese Abfragen prüft der Bot gegen guild.ownerId, dafür braucht er die
+// Discord-ID des Users. Sie kommt aus der signierten Session, nie aus der Query.
+const OWNER_KINDS = new Set(['tebex', 'tebexPackages']);
+const KIND_PATH: Record<string, string> = {
+  giveaways:     '/giveaways',
+  tebex:         '/tebex',
+  tebexPackages: '/tebex/packages',
+};
 
 interface GwListItem { id: string; [k: string]: unknown }
 
@@ -29,7 +38,16 @@ export async function GET(req: Request) {
     if (id) search.id = id;
   }
 
-  const path = kind === 'giveaways' ? '/giveaways' : `/${kind}`;
+  if (OWNER_KINDS.has(kind)) {
+    if (!session.userId) {
+      // Session aus der Zeit vor dem Besitzer-Flag: neu anmelden, statt den
+      // Bot mit einer leeren userId zu behelligen.
+      return NextResponse.json({ error: 'reauth_required' }, { status: 401 });
+    }
+    search.userId = session.userId;
+  }
+
+  const path = KIND_PATH[kind] ?? `/${kind}`;
   const { status, data } = await controlGet(session.guildId, path, search);
 
   // Liste mit dem Link zur öffentlichen Ergebnis-Seite anreichern (Token liegt

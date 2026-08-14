@@ -15,7 +15,15 @@ const ACTION_PATH: Record<string, string> = {
   resume:   '/giveaway/resume',
   reroll:   '/giveaway/reroll',
   settings: '/settings',
+  // Tebex-Store der Guild. Der Bot lässt diese Pfade nur für den Guild-Besitzer
+  // zu und prüft das selbst gegen guild.ownerId.
+  tebexSecret: '/tebex/secret',
+  tebexReveal: '/tebex/reveal',
+  tebexClear:  '/tebex/clear',
+  tebexStore:  '/tebex/store',
 };
+
+const OWNER_ACTIONS = new Set(['tebexSecret', 'tebexReveal', 'tebexClear', 'tebexStore']);
 
 export async function POST(req: Request) {
   const cookieStore = await cookies();
@@ -37,9 +45,18 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'invalid_action' }, { status: 400 });
   }
 
-  // action selbst und ein evtl. mitgesendetes guildId entfernen.
-  const { action: _a, guildId: _g, ...payload } = body;
-  void _a; void _g;
+  // action, guildId und userId aus dem Client-Body entfernen. Alle drei setzt
+  // ausschließlich der Server aus der signierten Session — sonst könnte sich
+  // jemand mit einer fremden userId als Guild-Besitzer ausgeben.
+  const { action: _a, guildId: _g, userId: _u, ...payload } = body;
+  void _a; void _g; void _u;
+
+  if (OWNER_ACTIONS.has(action)) {
+    if (!session.userId) {
+      return NextResponse.json({ error: 'reauth_required' }, { status: 401 });
+    }
+    payload.userId = session.userId;
+  }
 
   const { status, data } = await controlPost(session.guildId, path, payload);
   return NextResponse.json(data ?? {}, { status });

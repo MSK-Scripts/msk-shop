@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import {
   Gift, Plus, Pause, Play, Square, Ban, Dice5, Pencil, Clock,
   LogOut, RefreshCw, Settings as SettingsIcon, Loader2, ExternalLink,
+  Store, Ticket, Eye, EyeOff, Trash2, ShieldCheck,
 } from 'lucide-react';
 import { giveawayDashboardTranslations, type Lang } from '@/lib/i18n';
 import { useLang } from '@/components/i18n/LangProvider';
@@ -24,6 +25,12 @@ interface Giveaway {
   winnersCount: number; status: 'ACTIVE' | 'PAUSED' | 'ENDED' | 'CANCELLED';
   endAt: string | null; createdAt: string | null; endedAt: string | null;
   entryCount: number; winnerIds?: string[]; resultUrl?: string;
+  couponPercent: number | null; couponPackages: number[]; couponValidDays: number | null;
+}
+interface TebexPackage { id: number; name: string; price: number }
+interface TebexStatus {
+  configured: boolean; hint: string | null; setAt: string | null;
+  publicToken: string | null; storeUrl: string | null; encryptionReady: boolean;
 }
 interface Settings {
   lang: string; embedColor: string; buttonEmoji: string; buttonStyle: string;
@@ -49,15 +56,17 @@ function StatusBadge({ status }: { status: Giveaway['status'] }) {
   );
 }
 
-export default function DashboardClient({ guildId }: { guildId: string }) {
+export default function DashboardClient({ guildId, owner }: { guildId: string; owner: boolean }) {
   const router = useRouter();
   const { lang } = useLang();
   const t = giveawayDashboardTranslations[lang];
-  const [tab, setTab] = useState<'giveaways' | 'settings'>('giveaways');
+  const [tab, setTab] = useState<'giveaways' | 'settings' | 'store'>('giveaways');
   const [giveaways, setGiveaways] = useState<Giveaway[]>([]);
   const [settings, setSettings] = useState<Settings | null>(null);
   const [roles, setRoles] = useState<Role[]>([]);
   const [channels, setChannels] = useState<Channel[]>([]);
+  const [tebex, setTebex] = useState<TebexStatus | null>(null);
+  const [packages, setPackages] = useState<TebexPackage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -76,17 +85,30 @@ export default function DashboardClient({ guildId }: { guildId: string }) {
   // extra render pass (`loading` and `error` already start out correct).
   const runLoadAll = useCallback(async () => {
     try {
-      const [gw, st, rl, ch] = await Promise.all([get('giveaways'), get('settings'), get('roles'), get('channels')]);
+      // Der Tebex-Status wird nur für Besitzer geladen — für alle anderen
+      // antwortet der Bot ohnehin mit 403.
+      const [gw, st, rl, ch, tx] = await Promise.all([
+        get('giveaways'), get('settings'), get('roles'), get('channels'),
+        owner ? get('tebex') : Promise.resolve(null),
+      ]);
       if (gw?.giveaways) setGiveaways(gw.giveaways);
       if (st?.settings) setSettings(st.settings);
       if (rl?.roles) setRoles(rl.roles);
       if (ch?.channels) setChannels(ch.channels);
+      if (tx?.tebex) {
+        setTebex(tx.tebex);
+        // Die Paketliste hängt am öffentlichen Token, nicht am Secret.
+        if (tx.tebex.publicToken) {
+          const pk = await get('tebexPackages');
+          if (pk?.packages) setPackages(pk.packages);
+        }
+      }
     } catch {
       setError(t.err_load);
     } finally {
       setLoading(false);
     }
-  }, [get, t]);
+  }, [get, t, owner]);
 
   /** Refresh from a user action — shows the spinner right away. */
   const loadAll = useCallback(() => {
@@ -141,7 +163,12 @@ export default function DashboardClient({ guildId }: { guildId: string }) {
         )}
 
         <div className="mb-6 flex gap-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)] p-1 text-sm font-semibold">
-          {([['giveaways', t.tab_giveaways], ['settings', t.tab_settings]] as const).map(([key, label]) => (
+          {([
+            ['giveaways', t.tab_giveaways],
+            ['settings', t.tab_settings],
+            // Der Store-Reiter existiert nur für den Server-Besitzer.
+            ...(owner ? [['store', t.tab_store] as const] : []),
+          ] as const).map(([key, label]) => (
             <button
               key={key}
               onClick={() => setTab(key)}
@@ -150,14 +177,23 @@ export default function DashboardClient({ guildId }: { guildId: string }) {
                 tab === key ? 'bg-[var(--color-primary)] text-[var(--color-primary-foreground)]' : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]',
               )}
             >
-              {key === 'giveaways' ? <Gift className="h-4 w-4" /> : <SettingsIcon className="h-4 w-4" />} {label}
+              {key === 'giveaways' ? <Gift className="h-4 w-4" /> : key === 'store' ? <Store className="h-4 w-4" /> : <SettingsIcon className="h-4 w-4" />} {label}
             </button>
           ))}
         </div>
 
-        {tab === 'giveaways'
-          ? <GiveawaysTab giveaways={giveaways} channels={channels} reload={reloadGiveaways} setError={setError} />
-          : <SettingsTab settings={settings} roles={roles} channels={channels} onSaved={(s) => setSettings(s)} setError={setError} />}
+        {tab === 'giveaways' && (
+          <GiveawaysTab
+            giveaways={giveaways} channels={channels} reload={reloadGiveaways} setError={setError}
+            packages={packages} couponReady={Boolean(tebex?.configured)} ownerHint={owner}
+          />
+        )}
+        {tab === 'settings' && (
+          <SettingsTab settings={settings} roles={roles} channels={channels} onSaved={(s) => setSettings(s)} setError={setError} />
+        )}
+        {tab === 'store' && owner && (
+          <StoreTab tebex={tebex} packages={packages} onChanged={(s) => setTebex(s)} setError={setError} />
+        )}
       </main>
     </Ctx.Provider>
   );
@@ -165,8 +201,9 @@ export default function DashboardClient({ guildId }: { guildId: string }) {
 
 // ── Giveaways-Tab ─────────────────────────────────────────────────────────────
 
-function GiveawaysTab({ giveaways, channels, reload, setError }: {
+function GiveawaysTab({ giveaways, channels, reload, setError, packages, couponReady, ownerHint }: {
   giveaways: Giveaway[]; channels: Channel[]; reload: () => Promise<void>; setError: (e: string | null) => void;
+  packages: TebexPackage[]; couponReady: boolean; ownerHint: boolean;
 }) {
   const { t, lang } = useCtx();
   const [busy, setBusy] = useState<string | null>(null);
@@ -198,7 +235,11 @@ function GiveawaysTab({ giveaways, channels, reload, setError }: {
       </div>
 
       {showCreate && (
-        <CreateForm channels={channels} busy={busy === 'create'} onCreate={async (p) => { await action({ action: 'create', ...p }, 'create'); setShowCreate(false); }} />
+        <CreateForm
+          channels={channels} busy={busy === 'create'} packages={packages}
+          couponReady={couponReady} ownerHint={ownerHint}
+          onCreate={async (p) => { await action({ action: 'create', ...p }, 'create'); setShowCreate(false); }}
+        />
       )}
 
       {giveaways.length === 0 ? (
@@ -213,6 +254,13 @@ function GiveawaysTab({ giveaways, channels, reload, setError }: {
                   <span className="font-mono text-xs text-[var(--color-muted-foreground)]">{g.id}</span>
                 </div>
                 <h3 className="mt-1 truncate font-semibold">{g.title}</h3>
+                {g.couponPercent != null && (
+                  <span className="mt-1 inline-flex items-center gap-1 rounded bg-[var(--color-primary)]/10 px-1.5 py-0.5 font-mono text-[0.625rem] text-[var(--color-primary)]">
+                    <Ticket className="h-3 w-3" />
+                    {g.couponPercent}% {t.c_off}
+                    {g.couponValidDays ? ` · ${g.couponValidDays}d` : ` · ${t.c_never}`}
+                  </span>
+                )}
                 <p className="text-xs text-[var(--color-muted-foreground)]">
                   {(g.status === 'ENDED' ? (g.winnerIds?.length ?? 0) : g.winnersCount)} {t.winners_unit} · {g.entryCount} {t.entries_unit}
                   {g.endAt && (g.status === 'ACTIVE' || g.status === 'PAUSED') ? ` · ${t.ends} ${new Date(g.endAt).toLocaleString(lang === 'de' ? 'de-DE' : 'en-US')}` : ''}
@@ -246,7 +294,11 @@ function GiveawaysTab({ giveaways, channels, reload, setError }: {
                 </Button>
               )}
               {(g.status === 'ACTIVE' || g.status === 'PAUSED') && (
-                <EditButton giveaway={g} onSave={(p) => action({ action: 'edit', id: g.id, ...p }, `${g.id}:edit`)} disabled={busy?.startsWith(g.id)} />
+                <EditButton
+                  giveaway={g} packages={packages} couponReady={couponReady} ownerHint={ownerHint}
+                  onSave={(p) => action({ action: 'edit', id: g.id, ...p }, `${g.id}:edit`)}
+                  disabled={busy?.startsWith(g.id)}
+                />
               )}
             </div>
 
@@ -260,7 +312,83 @@ function GiveawaysTab({ giveaways, channels, reload, setError }: {
   );
 }
 
-function CreateForm({ channels, busy, onCreate }: { channels: Channel[]; busy: boolean; onCreate: (p: Record<string, unknown>) => void }) {
+/**
+ * Coupon-Konfiguration eines Giveaways. Leeres Prozentfeld = kein Coupon.
+ * Die Paketauswahl gibt es nur, wenn ein öffentlicher Token hinterlegt ist,
+ * sonst wäre die Liste leer und der Rabatt gilt für den ganzen Warenkorb.
+ */
+function CouponFields({ percent, setPercent, validDays, setValidDays, selected, setSelected, packages, couponReady, ownerHint }: {
+  percent: string; setPercent: (v: string) => void;
+  validDays: string; setValidDays: (v: string) => void;
+  selected: number[]; setSelected: (v: number[]) => void;
+  packages: TebexPackage[]; couponReady: boolean; ownerHint: boolean;
+}) {
+  const { t } = useCtx();
+
+  if (!couponReady) {
+    // Ohne hinterlegten Store hat das Feld keine Wirkung — der Hinweis ist nur
+    // für Besitzer nützlich, alle anderen können daran nichts ändern.
+    return ownerHint
+      ? <p className="text-xs text-[var(--color-muted-foreground)]">{t.c_needs_store}</p>
+      : null;
+  }
+
+  const toggle = (id: number) => {
+    setSelected(selected.includes(id) ? selected.filter((p) => p !== id) : [...selected, id]);
+  };
+
+  return (
+    <div className="flex flex-col gap-3 rounded-lg border border-[var(--color-border)] p-3">
+      <div className="flex items-center gap-2">
+        <Ticket className="h-4 w-4 text-[var(--color-primary)]" />
+        <span className="font-mono text-[0.625rem] font-bold uppercase tracking-widest text-[var(--color-muted-foreground)]">{t.c_section}</span>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <Field label={t.c_percent}>
+          <Input type="number" min={1} max={100} value={percent} placeholder="—"
+            onChange={(e) => setPercent(e.target.value)} />
+        </Field>
+        <Field label={t.c_valid_days}>
+          <Input type="number" min={1} max={3650} value={validDays} placeholder={t.c_never}
+            onChange={(e) => setValidDays(e.target.value)} />
+        </Field>
+      </div>
+      {packages.length > 0 && (
+        <Field label={t.c_packages}>
+          <div className="flex max-h-32 flex-wrap gap-1.5 overflow-y-auto rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] p-2">
+            {selected.length === 0 && (
+              <span className="text-xs text-[var(--color-muted-foreground)]">{t.c_all_packages}</span>
+            )}
+            {packages.map((p) => (
+              <button key={p.id} type="button" onClick={() => toggle(p.id)}
+                className={cn('rounded px-2 py-0.5 text-xs transition-colors',
+                  selected.includes(p.id)
+                    ? 'bg-[var(--color-primary)] text-[var(--color-primary-foreground)]'
+                    : 'bg-[var(--color-muted)] text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]')}>
+                {p.name}
+              </button>
+            ))}
+          </div>
+        </Field>
+      )}
+      <p className="text-xs text-[var(--color-muted-foreground)]">{t.c_hint}</p>
+    </div>
+  );
+}
+
+/** Coupon-Eingaben in das Format des Steuer-Endpunkts bringen. */
+function couponPayload(percent: string, validDays: string, selected: number[]) {
+  return {
+    couponPercent:   percent.trim() === '' ? null : Number(percent),
+    couponValidDays: validDays.trim() === '' ? null : Number(validDays),
+    couponPackages:  selected,
+  };
+}
+
+function CreateForm({ channels, busy, onCreate, packages, couponReady, ownerHint }: {
+  channels: Channel[]; busy: boolean; onCreate: (p: Record<string, unknown>) => void;
+  packages: TebexPackage[]; couponReady: boolean; ownerHint: boolean;
+}) {
   const { t } = useCtx();
   const [channelId, setChannelId] = useState(channels[0]?.id ?? '');
   const [title, setTitle] = useState('');
@@ -268,6 +396,9 @@ function CreateForm({ channels, busy, onCreate }: { channels: Channel[]; busy: b
   const [prize, setPrize] = useState('');
   const [winnersCount, setWinnersCount] = useState(1);
   const [duration, setDuration] = useState('1d');
+  const [percent, setPercent] = useState('');
+  const [validDays, setValidDays] = useState('');
+  const [selected, setSelected] = useState<number[]>([]);
 
   return (
     <Card className="flex flex-col gap-3 p-4">
@@ -286,9 +417,21 @@ function CreateForm({ channels, busy, onCreate }: { channels: Channel[]; busy: b
         <Field label={t.f_winners}><Input type="number" min={1} max={100} value={winnersCount} onChange={(e) => setWinnersCount(Number(e.target.value))} /></Field>
         <Field label={t.f_duration}><Input value={duration} onChange={(e) => setDuration(e.target.value)} placeholder="1d2h30m" /></Field>
       </div>
+
+      <CouponFields
+        percent={percent} setPercent={setPercent}
+        validDays={validDays} setValidDays={setValidDays}
+        selected={selected} setSelected={setSelected}
+        packages={packages} couponReady={couponReady} ownerHint={ownerHint}
+      />
+
       <div className="flex justify-end">
         <Button size="sm" disabled={busy || !channelId || !title.trim() || !description.trim()}
-          onClick={() => onCreate({ channelId, title: title.trim(), description: description.trim(), prize: prize.trim() || null, winnersCount, duration })}>
+          onClick={() => onCreate({
+            channelId, title: title.trim(), description: description.trim(),
+            prize: prize.trim() || null, winnersCount, duration,
+            ...couponPayload(percent, validDays, selected),
+          })}>
           {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-2 h-4 w-4" />} {t.btn_create}
         </Button>
       </div>
@@ -322,13 +465,19 @@ function RerollSingle({ onReroll, disabled }: { onReroll: (wid: string) => void;
   );
 }
 
-function EditButton({ giveaway, onSave, disabled }: { giveaway: Giveaway; onSave: (p: Record<string, unknown>) => void; disabled?: boolean }) {
+function EditButton({ giveaway, onSave, disabled, packages, couponReady, ownerHint }: {
+  giveaway: Giveaway; onSave: (p: Record<string, unknown>) => void; disabled?: boolean;
+  packages: TebexPackage[]; couponReady: boolean; ownerHint: boolean;
+}) {
   const { t } = useCtx();
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState(giveaway.title);
   const [description, setDescription] = useState(giveaway.description);
   const [prize, setPrize] = useState(giveaway.prize ?? '');
   const [winnersCount, setWinnersCount] = useState(giveaway.winnersCount);
+  const [percent, setPercent] = useState(giveaway.couponPercent == null ? '' : String(giveaway.couponPercent));
+  const [validDays, setValidDays] = useState(giveaway.couponValidDays == null ? '' : String(giveaway.couponValidDays));
+  const [selected, setSelected] = useState<number[]>(giveaway.couponPackages ?? []);
   if (!open) return <Button variant="ghost" size="sm" disabled={disabled} onClick={() => setOpen(true)}><Pencil className="mr-1.5 h-3.5 w-3.5" /> {t.btn_edit}</Button>;
   return (
     <Card className="mt-2 flex w-full flex-col gap-3 p-3">
@@ -338,9 +487,18 @@ function EditButton({ giveaway, onSave, disabled }: { giveaway: Giveaway; onSave
         <Field label={t.f_prize}><Input value={prize} onChange={(e) => setPrize(e.target.value)} /></Field>
         <Field label={t.f_winners}><Input type="number" min={1} max={100} value={winnersCount} onChange={(e) => setWinnersCount(Number(e.target.value))} /></Field>
       </div>
+      <CouponFields
+        percent={percent} setPercent={setPercent}
+        validDays={validDays} setValidDays={setValidDays}
+        selected={selected} setSelected={setSelected}
+        packages={packages} couponReady={couponReady} ownerHint={ownerHint}
+      />
       <div className="flex justify-end gap-2">
         <Button variant="ghost" size="sm" onClick={() => setOpen(false)}>{t.btn_cancel}</Button>
-        <Button size="sm" disabled={disabled} onClick={() => { onSave({ title, description, prize: prize || null, winnersCount }); setOpen(false); }}>{t.btn_save}</Button>
+        <Button size="sm" disabled={disabled} onClick={() => {
+          onSave({ title, description, prize: prize || null, winnersCount, ...couponPayload(percent, validDays, selected) });
+          setOpen(false);
+        }}>{t.btn_save}</Button>
       </div>
     </Card>
   );
@@ -446,6 +604,171 @@ function SettingsTab({ settings, roles, channels, onSaved, setError }: {
         </Button>
       </div>
     </Card>
+  );
+}
+
+// ── Tebex-Store-Tab (nur Server-Besitzer) ─────────────────────────────────────
+
+/**
+ * Verwaltung des Tebex-Stores dieser Guild.
+ *
+ * Der Plugin-Schlüssel ist Vollzugriff auf den Shop des Besitzers. Er wird
+ * verschlüsselt beim Bot gespeichert, kommt hier nur maskiert an (letzte vier
+ * Zeichen) und wird im Klartext ausschließlich auf ausdrücklichen Klick
+ * nachgeladen. Die eigentliche Berechtigungsprüfung macht der Bot gegen
+ * guild.ownerId — dieses Formular ist nur die Oberfläche dazu.
+ */
+function StoreTab({ tebex, packages, onChanged, setError }: {
+  tebex: TebexStatus | null; packages: TebexPackage[];
+  onChanged: (s: TebexStatus) => void; setError: (e: string | null) => void;
+}) {
+  const { t, lang } = useCtx();
+  const [secret, setSecret] = useState('');
+  const [revealed, setRevealed] = useState<string | null>(null);
+  const [publicToken, setPublicToken] = useState(tebex?.publicToken ?? '');
+  const [storeUrl, setStoreUrl] = useState(tebex?.storeUrl ?? '');
+  const [busy, setBusy] = useState<string | null>(null);
+  const [store, setStore] = useState<string | null>(null);
+
+  async function act(action: string, payload: Record<string, unknown>, key: string) {
+    setBusy(key); setError(null);
+    try {
+      const res = await fetch('/api/giveaway/action', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, ...payload }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        const code = data?.error;
+        setError(
+          code === 'invalid_secret' ? t.store_err_invalid
+            : code === 'owner_only' ? t.store_err_owner
+            : code === 'reauth_required' ? t.store_reauth
+            : code === 'encryption_unavailable' ? t.store_no_key
+            : `${t.err_prefix}: ${code ?? res.status}`,
+        );
+        return null;
+      }
+      return data;
+    } catch {
+      setError(t.err_network);
+      return null;
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function saveSecret() {
+    const data = await act('tebexSecret', { secret: secret.trim() }, 'secret');
+    if (!data) return;
+    setSecret('');
+    setRevealed(null);
+    setStore(data.store ?? null);
+    onChanged({ ...(tebex as TebexStatus), configured: true, hint: data.hint ?? null, setAt: new Date().toISOString() });
+  }
+
+  async function reveal() {
+    if (revealed) { setRevealed(null); return; }
+    const data = await act('tebexReveal', {}, 'reveal');
+    if (data?.secret) setRevealed(data.secret);
+  }
+
+  async function clear() {
+    const data = await act('tebexClear', {}, 'clear');
+    if (!data) return;
+    setRevealed(null);
+    setStore(null);
+    onChanged({ ...(tebex as TebexStatus), configured: false, hint: null, setAt: null });
+  }
+
+  async function saveStore() {
+    const data = await act('tebexStore', { publicToken: publicToken.trim(), storeUrl: storeUrl.trim() }, 'store');
+    if (!data) return;
+    onChanged({ ...(tebex as TebexStatus), publicToken: publicToken.trim() || null, storeUrl: storeUrl.trim() || null });
+  }
+
+  if (!tebex) return <Card className="p-8 text-center text-sm text-[var(--color-muted-foreground)]">{t.s_unavailable}</Card>;
+
+  return (
+    <div className="flex flex-col gap-4">
+      <Card className="flex flex-col gap-4 p-5">
+        <div>
+          <h3 className="font-semibold">{t.store_title}</h3>
+          <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">{t.store_intro}</p>
+        </div>
+
+        {!tebex.encryptionReady && (
+          <div className="rounded-lg border border-[var(--color-danger)]/40 bg-[var(--color-danger)]/10 px-3 py-2 text-sm text-[var(--color-danger)]">
+            {t.store_no_key}
+          </div>
+        )}
+
+        <div className="flex flex-wrap items-center gap-2 text-sm">
+          {tebex.configured ? (
+            <>
+              <span className="inline-flex items-center gap-1.5 rounded bg-[var(--color-primary)]/15 px-2 py-0.5 font-mono text-xs text-[var(--color-primary)]">
+                <ShieldCheck className="h-3.5 w-3.5" /> {t.store_set} · ••••{tebex.hint}
+              </span>
+              {tebex.setAt && (
+                <span className="text-xs text-[var(--color-muted-foreground)]">
+                  {t.store_since} {new Date(tebex.setAt).toLocaleDateString(lang === 'de' ? 'de-DE' : 'en-US')}
+                </span>
+              )}
+              {store && <span className="text-xs text-[var(--color-muted-foreground)]">· {t.store_verified} {store}</span>}
+            </>
+          ) : (
+            <span className="rounded bg-[var(--color-muted)] px-2 py-0.5 font-mono text-xs text-[var(--color-muted-foreground)]">{t.store_not_set}</span>
+          )}
+        </div>
+
+        {revealed && (
+          <code className="select-all break-all rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-mono text-xs">
+            {revealed}
+          </code>
+        )}
+
+        <Field label={t.store_secret}>
+          <Input type="password" value={secret} placeholder={t.store_secret_ph} autoComplete="off"
+            onChange={(e) => setSecret(e.target.value)} />
+        </Field>
+
+        <div className="flex flex-wrap justify-end gap-2">
+          {tebex.configured && (
+            <>
+              <Button variant="ghost" size="sm" disabled={busy === 'reveal'} onClick={reveal}>
+                {revealed ? <EyeOff className="mr-1.5 h-3.5 w-3.5" /> : <Eye className="mr-1.5 h-3.5 w-3.5" />}
+                {revealed ? t.store_hide : t.store_reveal}
+              </Button>
+              <Button variant="danger" size="sm" disabled={busy === 'clear'} onClick={clear}>
+                <Trash2 className="mr-1.5 h-3.5 w-3.5" /> {t.store_clear}
+              </Button>
+            </>
+          )}
+          <Button size="sm" disabled={busy === 'secret' || !secret.trim() || !tebex.encryptionReady} onClick={saveSecret}>
+            {busy === 'secret' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} {t.store_save}
+          </Button>
+        </div>
+
+        <p className="text-xs text-[var(--color-muted-foreground)]">{t.store_note}</p>
+      </Card>
+
+      <Card className="flex flex-col gap-4 p-5">
+        <Field label={t.store_public}>
+          <Input value={publicToken} onChange={(e) => setPublicToken(e.target.value)} autoComplete="off" />
+        </Field>
+        <Field label={t.store_url}>
+          <Input value={storeUrl} onChange={(e) => setStoreUrl(e.target.value)} placeholder="https://" />
+        </Field>
+        {packages.length > 0 && (
+          <p className="text-xs text-[var(--color-muted-foreground)]">{packages.length} × {t.c_packages}</p>
+        )}
+        <div className="flex justify-end">
+          <Button size="sm" disabled={busy === 'store'} onClick={saveStore}>
+            {busy === 'store' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} {t.store_save_store}
+          </Button>
+        </div>
+      </Card>
+    </div>
   );
 }
 

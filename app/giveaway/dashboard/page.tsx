@@ -18,5 +18,8 @@ export default async function GiveawayDashboardPage() {
     redirect('/giveaway/verify');
   }
 
-  return <DashboardClient guildId={session.guildId} />;
+  // `owner` steuert nur, ob der Tebex-Bereich überhaupt angezeigt wird. Die
+  // Berechtigung prüft der Bot selbst gegen guild.ownerId, ein manipuliertes
+  // Cookie brächte hier also nichts.
+  return <DashboardClient guildId={session.guildId} owner={Boolean(session.owner)} />;
 }
