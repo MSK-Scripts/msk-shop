@@ -4,7 +4,7 @@ import {
   Shield, Users, PauseCircle, ScrollText, ClipboardList, Star,
   Check, MessageSquare, FileText, Github, Terminal, UserCheck,
   CalendarClock, ListChecks, Mail, Bell, Pencil,
-  LayoutDashboard, Trophy,
+  LayoutDashboard, Trophy, Ticket,
 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
@@ -60,6 +60,7 @@ const FEATURES = [
   { icon: Pencil,       title: 'Edit & Extend',       text: 'Adjust a running giveaway or extend its end time on the fly, no need to recreate it.' },
   { icon: LayoutDashboard, title: 'Web Dashboard',    text: 'Create and fully manage your giveaways and settings from the browser. Log in with Discord, no commands required.' },
   { icon: Trophy,       title: 'Public Results Pages', text: 'Every finished giveaway gets a public results page showing the winners and the participant count.' },
+  { icon: Ticket,       title: 'Tebex Winner Coupons', text: 'Connect your own Tebex store and every winner automatically receives their own single-use discount code by DM, optionally limited to selected packages.' },
   { icon: Globe,        title: 'Multilingual',        text: 'English, German, French and Spanish built in. Pick the language per server.' },
   { icon: Palette,      title: 'Per-Guild Branding',  text: 'Custom embed colour, button emoji and style so every giveaway matches your community.' },
   { icon: ScrollText,   title: 'Audit Logging',       text: 'Optional log channel records every giveaway event: created, ended, rerolled and more.' },
