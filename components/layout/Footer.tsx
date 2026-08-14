@@ -16,8 +16,6 @@ const ECOSYSTEM_LINKS = [
 
 const DISCORD_URL = 'https://discord.gg/5hHSBRHvJE'
 const GITHUB_URL = 'https://github.com/MSK-Scripts'
-// Dieselbe Adresse, die § 4 der AGB als Kontakt für Rückerstattungen nennt.
-const SUPPORT_EMAIL = 'info@msk-scripts.de'
 
 function FooterLink({ href, external, children }: { href: string; external?: boolean; children: React.ReactNode }) {
   const cls = 'block py-1 text-sm text-[var(--color-muted-foreground)] transition-colors hover:text-[var(--color-foreground)]'
