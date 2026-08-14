@@ -14,11 +14,11 @@ import { SITE_CONFIG } from '@/lib/config'
 export const metadata: Metadata = {
   title: { absolute: 'Discord Giveaway Bot – Restart-Safe & Multilingual | MSK Scripts' },
   description:
-    'Free Discord giveaway bot built on Discord.js v14. Button entry, restart-safe scheduling, weighted bonus entries, eligibility rules, templates, reroll and pause/resume. Invite the official instance in one click.',
+    'Free Discord giveaway bot built on Discord.js v14. Button entry, restart-safe scheduling, weighted bonus entries, eligibility rules, templates, reroll and automatic Tebex coupons for winners. Invite the official instance in one click.',
   keywords: [
     'Discord giveaway bot', 'Discord giveaway', 'giveaway bot', 'button entry giveaway',
     'Discord.js giveaway', 'multilingual giveaway bot', 'free giveaway bot',
-    'weighted giveaway entries', 'MSK Scripts',
+    'weighted giveaway entries', 'Tebex giveaway coupon', 'MSK Scripts',
   ],
   alternates: { canonical: '/giveaway' },
   openGraph: {
@@ -109,6 +109,7 @@ const SETTINGS = [
   { icon: Globe,         title: 'Language',    text: 'Switch the bot UI between English, German, French and Spanish.' },
   { icon: ListChecks,    title: 'Eligibility', text: 'Whitelist & blacklist roles (server-wide or per giveaway), bonus entries, minimum account and membership age.' },
   { icon: CalendarClock, title: 'Roles & Logs', text: 'Manager role, notify role to ping on creation and an optional audit log channel.' },
+  { icon: Ticket,        title: 'Tebex Store',  text: 'Connect your own shop so winners get a discount code. Set up by the server owner, stored encrypted.' },
 ]
 
 export default function GiveawayBotPage() {
@@ -326,6 +327,55 @@ export default function GiveawayBotPage() {
             </div>
           </div>
         </div>
+      </section>
+
+      {/* ── Tebex winner coupons ──────────────────────────────────────────── */}
+      <section className="container-page py-14 md:py-20">
+        <div className="mb-10 text-center">
+          <span className="eyebrow">Tebex coupons</span>
+          <h2 className="mt-3 text-2xl font-bold tracking-tight md:text-3xl">
+            Turn a win into a purchase
+          </h2>
+          <p className="mx-auto mt-3 max-w-2xl text-sm text-[var(--color-muted-foreground)] md:text-base">
+            Run a Tebex shop? Connect <strong>your own store</strong> and every winner
+            automatically receives a personal discount code by DM. Not our shop, yours.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
+          {[
+            {
+              icon: Ticket,
+              title: 'One code per winner',
+              text: 'Every winner gets their own single-use code. Pick the percentage, restrict it to selected packages and give it an expiry, or let it run forever.',
+            },
+            {
+              icon: RefreshCw,
+              title: 'Rerolls stay clean',
+              text: 'Replace a winner and their code is revoked in your store before the new one is issued. The other winners keep theirs.',
+            },
+            {
+              icon: Shield,
+              title: 'Owner-only, encrypted',
+              text: 'Your Tebex key is stored encrypted and only the server owner can add, view or remove it. Administrators cannot.',
+            },
+          ].map(item => (
+            <div key={item.title} className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
+              <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--color-primary)]/15 text-[var(--color-primary)]">
+                <item.icon className="h-4 w-4" />
+              </div>
+              <h3 className="mb-1.5 text-sm font-bold tracking-tight">{item.title}</h3>
+              <p className="text-xs leading-relaxed text-[var(--color-muted-foreground)]">
+                {item.text}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        <p className="mt-6 text-center text-xs text-[var(--color-muted-foreground)]">
+          The code is only ever sent in the winner&apos;s DM, never in the public
+          results message or on the results page.
+        </p>
       </section>
 
       {/* ── Tech / trust strip ────────────────────────────────────────────── */}
