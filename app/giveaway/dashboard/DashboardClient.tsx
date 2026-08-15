@@ -20,12 +20,21 @@ const useCtx = () => useContext(Ctx);
 
 interface Role { id: string; name: string; color: string }
 interface Channel { id: string; name: string }
+type PrizeMode = 'ALL' | 'INDIVIDUAL';
+interface GiveawayWinner { userId: string; prizeIndex: number | null }
 interface Giveaway {
-  id: string; channelId: string; title: string; description: string; prize: string | null;
+  id: string; channelId: string; title: string; description: string;
+  prizes: string[]; prizeMode: PrizeMode;
   winnersCount: number; status: 'ACTIVE' | 'PAUSED' | 'ENDED' | 'CANCELLED';
   endAt: string | null; createdAt: string | null; endedAt: string | null;
-  entryCount: number; winnerIds?: string[]; resultUrl?: string;
+  entryCount: number; winnerIds?: string[]; winners?: GiveawayWinner[]; resultUrl?: string;
   couponPercent: number | null; couponPackages: number[]; couponValidDays: number | null;
+}
+
+/** Ein Preis pro Zeile, gleiche Regel wie im Bot (src/utils/prizes.js). */
+const MAX_PRIZES = 20;
+function splitPrizes(text: string): string[] {
+  return text.split(/\r?\n|\|/).map((p) => p.trim()).filter(Boolean).slice(0, MAX_PRIZES);
 }
 interface TebexPackage { id: number; name: string; price: number }
 interface TebexStatus {
@@ -302,8 +311,24 @@ function GiveawaysTab({ giveaways, channels, reload, setError, packages, couponR
               )}
             </div>
 
+            {g.prizes?.length > 0 && (
+              <p className="text-xs text-[var(--color-muted-foreground)]">
+                {t.prizes_label}{' '}
+                {g.prizeMode === 'INDIVIDUAL'
+                  ? g.prizes.map((p, i) => `${i + 1}. ${p}`).join(' · ')
+                  : g.prizes.join(', ')}
+              </p>
+            )}
+
             {g.status === 'ENDED' && g.winnerIds && g.winnerIds.length > 0 && (
-              <p className="text-xs text-[var(--color-muted-foreground)]">{t.winners_label} {g.winnerIds.map((w) => `@${w}`).join(', ')}</p>
+              <p className="text-xs text-[var(--color-muted-foreground)]">
+                {t.winners_label}{' '}
+                {/* Bei einem Preis pro Gewinner steht der Preis direkt dahinter,
+                    sonst wäre die Zuordnung im Dashboard nicht ablesbar. */}
+                {g.prizeMode === 'INDIVIDUAL' && g.winners?.length
+                  ? g.winners.map((w) => `@${w.userId}${w.prizeIndex != null && g.prizes[w.prizeIndex] ? ` (${g.prizes[w.prizeIndex]})` : ''}`).join(', ')
+                  : g.winnerIds.map((w) => `@${w}`).join(', ')}
+              </p>
             )}
           </Card>
         ))
@@ -376,6 +401,66 @@ function CouponFields({ percent, setPercent, validDays, setValidDays, selected, 
   );
 }
 
+/**
+ * Preisliste, Verteilmodus und Gewinnerzahl.
+ *
+ * Bei "ein Preis pro Gewinner" ist die Gewinnerzahl keine eigene Angabe mehr,
+ * sondern die Länge der Liste. Das Feld wird deshalb gesperrt und mitgeführt,
+ * statt den Nutzer erst absenden und dann eine Fehlermeldung lesen zu lassen.
+ */
+function PrizeFields({ prizes, setPrizes, mode, setMode, winnersCount, setWinnersCount }: {
+  prizes: string; setPrizes: (v: string) => void;
+  mode: PrizeMode; setMode: (v: PrizeMode) => void;
+  winnersCount: number; setWinnersCount: (v: number) => void;
+}) {
+  const { t } = useCtx();
+  const individual = mode === 'INDIVIDUAL';
+  const count = splitPrizes(prizes).length;
+  const effectiveWinners = individual ? Math.max(count, 1) : winnersCount;
+
+  return (
+    <>
+      <Field label={t.f_prizes}>
+        <textarea
+          value={prizes}
+          rows={3}
+          maxLength={2000}
+          placeholder={t.f_prizes_ph}
+          onChange={(e) => setPrizes(e.target.value)}
+          className={selectCls}
+        />
+      </Field>
+      <div className="grid grid-cols-2 gap-3">
+        <Field label={t.f_prize_mode}>
+          <select value={mode} onChange={(e) => setMode(e.target.value as PrizeMode)} className={selectCls}>
+            <option value="ALL">{t.mode_all}</option>
+            <option value="INDIVIDUAL">{t.mode_individual}</option>
+          </select>
+        </Field>
+        <Field label={t.f_winners}>
+          <Input
+            type="number" min={1} max={100}
+            value={effectiveWinners}
+            disabled={individual}
+            onChange={(e) => setWinnersCount(Number(e.target.value))}
+          />
+        </Field>
+      </div>
+      {individual && <p className="text-xs text-[var(--color-muted-foreground)]">{t.prize_mode_hint}</p>}
+    </>
+  );
+}
+
+/** Preis-Eingaben in das Format des Steuer-Endpunkts bringen. */
+function prizePayload(prizes: string, mode: PrizeMode, winnersCount: number) {
+  const list = splitPrizes(prizes);
+  return {
+    prizes: list,
+    prizeMode: list.length ? mode : 'ALL', // ohne Preise ist der Modus bedeutungslos
+    winnersCount: mode === 'INDIVIDUAL' && list.length ? list.length : winnersCount,
+  };
+}
+
 /** Coupon-Eingaben in das Format des Steuer-Endpunkts bringen. */
 function couponPayload(percent: string, validDays: string, selected: number[]) {
   return {
@@ -393,7 +478,8 @@ function CreateForm({ channels, busy, onCreate, packages, couponReady, ownerHint
   const [channelId, setChannelId] = useState(channels[0]?.id ?? '');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [prize, setPrize] = useState('');
+  const [prizes, setPrizes] = useState('');
+  const [prizeMode, setPrizeMode] = useState<PrizeMode>('ALL');
   const [winnersCount, setWinnersCount] = useState(1);
   const [duration, setDuration] = useState('1d');
   const [percent, setPercent] = useState('');
@@ -412,11 +498,12 @@ function CreateForm({ channels, busy, onCreate, packages, couponReady, ownerHint
       <Field label={t.f_description}>
         <textarea value={description} maxLength={2000} onChange={(e) => setDescription(e.target.value)} rows={3} className={selectCls} />
       </Field>
-      <div className="grid grid-cols-3 gap-3">
-        <Field label={t.f_prize_opt}><Input value={prize} maxLength={256} onChange={(e) => setPrize(e.target.value)} /></Field>
-        <Field label={t.f_winners}><Input type="number" min={1} max={100} value={winnersCount} onChange={(e) => setWinnersCount(Number(e.target.value))} /></Field>
-        <Field label={t.f_duration}><Input value={duration} onChange={(e) => setDuration(e.target.value)} placeholder="1d2h30m" /></Field>
-      </div>
+      <PrizeFields
+        prizes={prizes} setPrizes={setPrizes}
+        mode={prizeMode} setMode={setPrizeMode}
+        winnersCount={winnersCount} setWinnersCount={setWinnersCount}
+      />
+      <Field label={t.f_duration}><Input value={duration} onChange={(e) => setDuration(e.target.value)} placeholder="1d2h30m" /></Field>
 
       <CouponFields
         percent={percent} setPercent={setPercent}
@@ -428,8 +515,8 @@ function CreateForm({ channels, busy, onCreate, packages, couponReady, ownerHint
       <div className="flex justify-end">
         <Button size="sm" disabled={busy || !channelId || !title.trim() || !description.trim()}
           onClick={() => onCreate({
-            channelId, title: title.trim(), description: description.trim(),
-            prize: prize.trim() || null, winnersCount, duration,
+            channelId, title: title.trim(), description: description.trim(), duration,
+            ...prizePayload(prizes, prizeMode, winnersCount),
             ...couponPayload(percent, validDays, selected),
           })}>
           {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-2 h-4 w-4" />} {t.btn_create}
@@ -473,7 +560,8 @@ function EditButton({ giveaway, onSave, disabled, packages, couponReady, ownerHi
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState(giveaway.title);
   const [description, setDescription] = useState(giveaway.description);
-  const [prize, setPrize] = useState(giveaway.prize ?? '');
+  const [prizes, setPrizes] = useState((giveaway.prizes ?? []).join('\n'));
+  const [prizeMode, setPrizeMode] = useState<PrizeMode>(giveaway.prizeMode ?? 'ALL');
   const [winnersCount, setWinnersCount] = useState(giveaway.winnersCount);
   const [percent, setPercent] = useState(giveaway.couponPercent == null ? '' : String(giveaway.couponPercent));
   const [validDays, setValidDays] = useState(giveaway.couponValidDays == null ? '' : String(giveaway.couponValidDays));
@@ -483,10 +571,11 @@ function EditButton({ giveaway, onSave, disabled, packages, couponReady, ownerHi
     <Card className="mt-2 flex w-full flex-col gap-3 p-3">
       <Field label={t.f_title}><Input value={title} onChange={(e) => setTitle(e.target.value)} /></Field>
       <Field label={t.f_description}><textarea value={description} rows={2} onChange={(e) => setDescription(e.target.value)} className={selectCls} /></Field>
-      <div className="grid grid-cols-2 gap-3">
-        <Field label={t.f_prize}><Input value={prize} onChange={(e) => setPrize(e.target.value)} /></Field>
-        <Field label={t.f_winners}><Input type="number" min={1} max={100} value={winnersCount} onChange={(e) => setWinnersCount(Number(e.target.value))} /></Field>
-      </div>
+      <PrizeFields
+        prizes={prizes} setPrizes={setPrizes}
+        mode={prizeMode} setMode={setPrizeMode}
+        winnersCount={winnersCount} setWinnersCount={setWinnersCount}
+      />
       <CouponFields
         percent={percent} setPercent={setPercent}
         validDays={validDays} setValidDays={setValidDays}
@@ -496,7 +585,11 @@ function EditButton({ giveaway, onSave, disabled, packages, couponReady, ownerHi
       <div className="flex justify-end gap-2">
         <Button variant="ghost" size="sm" onClick={() => setOpen(false)}>{t.btn_cancel}</Button>
         <Button size="sm" disabled={disabled} onClick={() => {
-          onSave({ title, description, prize: prize || null, winnersCount, ...couponPayload(percent, validDays, selected) });
+          onSave({
+            title, description,
+            ...prizePayload(prizes, prizeMode, winnersCount),
+            ...couponPayload(percent, validDays, selected),
+          });
           setOpen(false);
         }}>{t.btn_save}</Button>
       </div>

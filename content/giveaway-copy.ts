@@ -97,7 +97,7 @@ const en: GiveawayCopy = {
   stepsSub:     'No server, no database and no config files. Just invite the bot and go.',
   steps: [
     { title: 'Invite the bot', text: 'One click adds the official instance. No hosting, no setup.' },
-    { title: 'Run /gcreate',   text: 'Fill in title, prize, duration and number of winners in a modal.' },
+    { title: 'Run /gcreate',   text: 'Fill in title, prizes, duration and number of winners in a modal.' },
     { title: 'Members join',   text: 'They click the button; winners are drawn automatically when the timer ends.' },
   ],
   stepsCta: 'Invite the bot',
@@ -108,6 +108,7 @@ const en: GiveawayCopy = {
   features: [
     { title: 'Button Entry',            text: 'Members join with a single click. No reactions, no spam. Customisable emoji, label and button style.' },
     { title: 'Restart-Safe',            text: 'A poll-based scheduler means no giveaway is ever lost or orphaned, even after a full server reboot.' },
+    { title: 'Multiple Prizes',         text: 'List several prizes per giveaway. Either every winner gets all of them, or winner 1 gets prize 1, winner 2 gets prize 2, and so on.' },
     { title: 'Weighted Bonus Entries',  text: 'Grant specific roles extra entries (up to 100) for a fairer or reward-driven draw.' },
     { title: 'Eligibility Rules',       text: 'Whitelist and blacklist roles, server-wide or scoped to a single giveaway, plus minimum account age and server membership.' },
     { title: 'Pause & Resume',          text: 'Freeze the timer mid-giveaway if something goes wrong, then resume it where you left off.' },
@@ -134,8 +135,8 @@ const en: GiveawayCopy = {
     'Manager', 'Manage Server', 'Everyone', 'Everyone', 'Everyone', 'Everyone', 'Everyone',
   ],
   commandText: [
-    'Open a modal and create a giveaway in the current channel.',
-    'Edit a running giveaway (title, description, winners, prize).',
+    'Open a modal and create a giveaway in the current channel. The mode option switches to one prize per winner.',
+    'Edit a running giveaway (title, description, winners, prizes).',
     'Extend a running giveaway’s end time.',
     'End a giveaway immediately and draw the winners.',
     'Redraw all winners, or replace a single winner with the optional user option.',
@@ -213,7 +214,7 @@ const de: GiveawayCopy = {
   stepsSub:     'Kein Server, keine Datenbank, keine Konfigurationsdateien. Bot einladen und los.',
   steps: [
     { title: 'Bot einladen',      text: 'Ein Klick fügt die offizielle Instanz hinzu. Kein Hosting, keine Einrichtung.' },
-    { title: '/gcreate ausführen', text: 'Titel, Gewinn, Laufzeit und Anzahl der Gewinner in einem Modal eintragen.' },
+    { title: '/gcreate ausführen', text: 'Titel, Preise, Laufzeit und Anzahl der Gewinner in einem Modal eintragen.' },
     { title: 'Mitglieder machen mit', text: 'Sie klicken auf den Knopf, die Gewinner werden beim Ablauf automatisch gezogen.' },
   ],
   stepsCta: 'Bot einladen',
@@ -224,6 +225,7 @@ const de: GiveawayCopy = {
   features: [
     { title: 'Teilnahme per Knopf',     text: 'Mitglieder machen mit einem Klick mit. Keine Reaktionen, kein Spam. Emoji, Beschriftung und Knopfstil sind frei wählbar.' },
     { title: 'Neustartsicher',          text: 'Ein abfragebasierter Scheduler sorgt dafür, dass kein Gewinnspiel verloren geht, auch nicht nach einem kompletten Serverneustart.' },
+    { title: 'Mehrere Preise',          text: 'Mehrere Preise pro Gewinnspiel. Entweder bekommt jeder Gewinner alle, oder Gewinner 1 bekommt Preis 1, Gewinner 2 bekommt Preis 2, und so weiter.' },
     { title: 'Gewichtete Bonuslose',    text: 'Bestimmten Rollen zusätzliche Lose geben (bis zu 100), für eine fairere oder belohnende Ziehung.' },
     { title: 'Teilnahmeregeln',         text: 'Rollen auf die Whitelist oder Blacklist setzen, serverweit oder nur für ein Gewinnspiel, dazu Mindestalter des Accounts und der Servermitgliedschaft.' },
     { title: 'Pause & Fortsetzen',      text: 'Den Timer mitten im Gewinnspiel einfrieren, wenn etwas schiefgeht, und danach dort weitermachen, wo du aufgehört hast.' },
@@ -250,8 +252,8 @@ const de: GiveawayCopy = {
     'Manager', 'Server verwalten', 'Alle', 'Alle', 'Alle', 'Alle', 'Alle',
   ],
   commandText: [
-    'Öffnet ein Modal und erstellt ein Gewinnspiel im aktuellen Kanal.',
-    'Bearbeitet ein laufendes Gewinnspiel (Titel, Beschreibung, Gewinner, Preis).',
+    'Öffnet ein Modal und erstellt ein Gewinnspiel im aktuellen Kanal. Die Option mode stellt auf einen Preis pro Gewinner um.',
+    'Bearbeitet ein laufendes Gewinnspiel (Titel, Beschreibung, Gewinner, Preise).',
     'Verlängert die Endzeit eines laufenden Gewinnspiels.',
     'Beendet ein Gewinnspiel sofort und zieht die Gewinner.',
     'Lost alle Gewinner neu aus, oder ersetzt über die optionale Nutzerangabe einen einzelnen.',

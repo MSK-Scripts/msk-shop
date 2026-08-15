@@ -12,15 +12,20 @@ interface ResultRow {
   token: string; giveaway_id: string; title: string; prize: string | null;
   winners_count: number; entry_count: number; winners: unknown; ended_at: string | Date;
 }
-interface Winner { username: string }
+// `prize` ist nur gesetzt, wenn jeder Gewinner seinen eigenen Preis bekommt.
+// Sonst gilt die gemeinsame Liste in `row.prize`.
+interface Winner { username: string; prize: string | null }
 
 function parseWinners(raw: unknown): Winner[] {
   let arr: unknown = raw;
   if (typeof raw === 'string') { try { arr = JSON.parse(raw); } catch { arr = []; } }
   if (!Array.isArray(arr)) return [];
   return arr
-    .filter((w): w is { username: unknown } => !!w && typeof (w as Winner).username === 'string')
-    .map((w) => ({ username: String(w.username) }));
+    .filter((w): w is { username: unknown; prize?: unknown } => !!w && typeof (w as Winner).username === 'string')
+    .map((w) => ({
+      username: String(w.username),
+      prize: typeof w.prize === 'string' && w.prize ? w.prize : null,
+    }));
 }
 
 // Bewusst KEINE SEO/OpenGraph für die Ergebnis-Seiten: nicht indexieren und
@@ -46,6 +51,9 @@ export default async function GiveawayResultPage({ params }: { params: Promise<{
   const t = giveawayResultTranslations[lang];
   const winners = parseWinners(row.winners);
   const endedAt = new Date(row.ended_at);
+  // Trägt jeder Gewinner seinen eigenen Preis, steht die gemeinsame Zeile oben
+  // nur doppelt da.
+  const perWinnerPrizes = winners.some((w) => w.prize);
 
   return (
     <main className="mx-auto w-full max-w-xl px-4 py-16">
@@ -55,7 +63,7 @@ export default async function GiveawayResultPage({ params }: { params: Promise<{
         </div>
         <p className="font-mono text-[0.625rem] font-bold uppercase tracking-widest text-[var(--color-muted-foreground)]">{t.results}</p>
         <h1 className="mt-1 text-2xl font-bold tracking-tight">{row.title}</h1>
-        {row.prize && (
+        {row.prize && !perWinnerPrizes && (
           <p className="mt-2 inline-flex items-center gap-1.5 text-sm text-[var(--color-muted-foreground)]">
             <Gift className="h-4 w-4" /> {t.prize}: <span className="font-medium text-[var(--color-foreground)]">{row.prize}</span>
           </p>
@@ -77,6 +85,11 @@ export default async function GiveawayResultPage({ params }: { params: Promise<{
               <li key={i} className="flex items-center gap-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)] px-3 py-2">
                 <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--color-primary)]/15 text-xs font-bold text-[var(--color-primary)]">★</span>
                 <span className="text-sm font-medium">{w.username}</span>
+                {w.prize && (
+                  <span className="ml-auto inline-flex items-center gap-1.5 text-xs text-[var(--color-muted-foreground)]">
+                    <Gift className="h-3.5 w-3.5" /> {w.prize}
+                  </span>
+                )}
               </li>
             ))}
           </ul>

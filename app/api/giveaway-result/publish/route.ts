@@ -18,7 +18,7 @@ function authorized(req: Request): boolean {
   return a.length === b.length && timingSafeEqual(a, b);
 }
 
-interface WinnerIn { userId?: unknown; username?: unknown }
+interface WinnerIn { userId?: unknown; username?: unknown; prize?: unknown }
 interface ResultRow { token: string }
 
 export async function POST(req: Request) {
@@ -49,11 +49,17 @@ export async function POST(req: Request) {
 
   // Datenminimierung: nur den Anzeigenamen speichern, KEINE Discord-User-IDs.
   // (userId wird nur zur Eingangsvalidierung der Gewinner genutzt.)
+  //
+  // `prize` schickt der Bot nur mit, wenn jeder Gewinner einen eigenen Preis
+  // bekommt. Es steht im winners-JSON und braucht deshalb keine neue Spalte.
   const winners = Array.isArray(body.winners)
     ? (body.winners as WinnerIn[])
         .filter((w) => /^\d{17,20}$/.test(String(w.userId ?? '')))
         .slice(0, 100)
-        .map((w) => ({ username: String(w.username ?? '').slice(0, 64) || 'Unknown' }))
+        .map((w) => ({
+          username: String(w.username ?? '').slice(0, 64) || 'Unknown',
+          prize: w.prize == null ? null : String(w.prize).slice(0, 256),
+        }))
     : [];
 
   // Idempotent: existiert schon eine Seite für dieses Giveaway, denselben Token behalten.
