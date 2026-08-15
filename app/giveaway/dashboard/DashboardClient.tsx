@@ -29,6 +29,12 @@ interface Giveaway {
   endAt: string | null; createdAt: string | null; endedAt: string | null;
   entryCount: number; winnerIds?: string[]; winners?: GiveawayWinner[]; resultUrl?: string;
   couponPercent: number | null; couponPackages: number[]; couponValidDays: number | null;
+  /** Paketauswahl je Preis-Slot, gleich indiziert wie `prizes`. */
+  couponPackagesPerPrize?: number[][];
+  /** Fest eingetragene Codes aus einem fremden Shop. */
+  couponManualCode?: string | null;
+  couponManualCodesPerPrize?: string[];
+  couponManualNote?: string | null;
 }
 
 /** Ein Preis pro Zeile, gleiche Regel wie im Bot (src/utils/prizes.js). */
@@ -342,17 +348,98 @@ function GiveawaysTab({ giveaways, channels, reload, setError, packages, couponR
  * Die Paketauswahl gibt es nur, wenn ein öffentlicher Token hinterlegt ist,
  * sonst wäre die Liste leer und der Rabatt gilt für den ganzen Warenkorb.
  */
-function CouponFields({ percent, setPercent, validDays, setValidDays, selected, setSelected, packages, couponReady, ownerHint }: {
+function PackagePicker({ packages, selected, onToggle }: {
+  packages: TebexPackage[]; selected: number[]; onToggle: (id: number) => void;
+}) {
+  const { t } = useCtx();
+  return (
+    <div className="flex max-h-32 flex-wrap gap-1.5 overflow-y-auto rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] p-2">
+      {selected.length === 0 && (
+        <span className="text-xs text-[var(--color-muted-foreground)]">{t.c_all_packages}</span>
+      )}
+      {packages.map((p) => (
+        <button key={p.id} type="button" onClick={() => onToggle(p.id)}
+          className={cn('rounded px-2 py-0.5 text-xs transition-colors',
+            selected.includes(p.id)
+              ? 'bg-[var(--color-primary)] text-[var(--color-primary-foreground)]'
+              : 'bg-[var(--color-muted)] text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]')}>
+          {p.name}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * Fest eingetragene Codes aus einem FREMDEN Shop.
+ *
+ * Steht bewusst außerhalb der Store-Prüfung: der Sinn ist ja gerade das
+ * gemeinsame Giveaway mit einem anderen Entwickler, bei dem der Bot keinen
+ * Zugriff auf dessen Shop hat und deshalb auch keinen eigenen Store braucht.
+ */
+function ManualCodeFields({ code, setCode, perPrize, setPerPrize, note, setNote, prizes, mode }: {
+  code: string; setCode: (v: string) => void;
+  perPrize: string[]; setPerPrize: (v: string[]) => void;
+  note: string; setNote: (v: string) => void;
+  prizes: string[]; mode: PrizeMode;
+}) {
+  const { t } = useCtx();
+  const perWinner = mode === 'INDIVIDUAL' && prizes.length > 0;
+  const slotOf = (i: number) => perPrize[i] ?? '';
+  const setSlot = (i: number, value: string) => {
+    const next = Array.from({ length: prizes.length }, (_, k) => slotOf(k));
+    next[i] = value;
+    setPerPrize(next);
+  };
+
+  return (
+    <div className="flex flex-col gap-3 rounded-lg border border-[var(--color-border)] p-3">
+      <div className="flex items-center gap-2">
+        <Ticket className="h-4 w-4 text-[var(--color-muted-foreground)]" />
+        <span className="font-mono text-[0.625rem] font-bold uppercase tracking-widest text-[var(--color-muted-foreground)]">{t.c_manual_section}</span>
+      </div>
+
+      <Field label={t.c_manual_code}>
+        <Input value={code} maxLength={128} placeholder="—" onChange={(e) => setCode(e.target.value)} />
+      </Field>
+
+      {perWinner && (
+        <div className="flex flex-col gap-2">
+          <span className="font-mono text-[0.625rem] font-bold uppercase tracking-widest text-[var(--color-muted-foreground)]">
+            {t.c_manual_per}
+          </span>
+          {prizes.map((prize, i) => (
+            <Field key={i} label={`${i + 1}. ${prize}`}>
+              <Input value={slotOf(i)} maxLength={128} placeholder="—" onChange={(e) => setSlot(i, e.target.value)} />
+            </Field>
+          ))}
+        </div>
+      )}
+
+      <Field label={t.c_manual_note}>
+        <Input value={note} maxLength={500} placeholder="—" onChange={(e) => setNote(e.target.value)} />
+      </Field>
+
+      <p className="text-xs text-[var(--color-muted-foreground)]">{t.c_manual_hint}</p>
+    </div>
+  );
+}
+
+function CouponFields({ percent, setPercent, validDays, setValidDays, selected, setSelected, perPrize, setPerPrize, prizes, mode, packages, couponReady, ownerHint }: {
   percent: string; setPercent: (v: string) => void;
   validDays: string; setValidDays: (v: string) => void;
   selected: number[]; setSelected: (v: number[]) => void;
+  perPrize: number[][]; setPerPrize: (v: number[][]) => void;
+  prizes: string[]; mode: PrizeMode;
   packages: TebexPackage[]; couponReady: boolean; ownerHint: boolean;
 }) {
   const { t } = useCtx();
 
   if (!couponReady) {
-    // Ohne hinterlegten Store hat das Feld keine Wirkung — der Hinweis ist nur
-    // für Besitzer nützlich, alle anderen können daran nichts ändern.
+    // Ohne hinterlegten Store kann der Bot keine eigenen Coupons erzeugen — der
+    // Hinweis darauf ist nur für Besitzer nützlich, alle anderen können daran
+    // nichts ändern. Die festen Codes eines fremden Shops hängen davon nicht ab
+    // und stehen deshalb im Aufrufer, nicht hier.
     return ownerHint
       ? <p className="text-xs text-[var(--color-muted-foreground)]">{t.c_needs_store}</p>
       : null;
@@ -360,6 +447,17 @@ function CouponFields({ percent, setPercent, validDays, setValidDays, selected, 
 
   const toggle = (id: number) => {
     setSelected(selected.includes(id) ? selected.filter((p) => p !== id) : [...selected, id]);
+  };
+
+  // Eine Auswahl je Gewinner gibt es nur mit Preis-Slots: ohne sie ist die
+  // Ziehungsreihenfolge willkürlich, ein "Gewinner 2" existiert also nicht.
+  const perWinner = mode === 'INDIVIDUAL' && prizes.length > 0;
+  const slotOf = (i: number) => perPrize[i] ?? [];
+  const toggleSlot = (i: number, id: number) => {
+    const current = slotOf(i);
+    const next = Array.from({ length: prizes.length }, (_, k) => slotOf(k));
+    next[i] = current.includes(id) ? current.filter((p) => p !== id) : [...current, id];
+    setPerPrize(next);
   };
 
   return (
@@ -379,23 +477,25 @@ function CouponFields({ percent, setPercent, validDays, setValidDays, selected, 
         </Field>
       </div>
       {packages.length > 0 && (
-        <Field label={t.c_packages}>
-          <div className="flex max-h-32 flex-wrap gap-1.5 overflow-y-auto rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] p-2">
-            {selected.length === 0 && (
-              <span className="text-xs text-[var(--color-muted-foreground)]">{t.c_all_packages}</span>
-            )}
-            {packages.map((p) => (
-              <button key={p.id} type="button" onClick={() => toggle(p.id)}
-                className={cn('rounded px-2 py-0.5 text-xs transition-colors',
-                  selected.includes(p.id)
-                    ? 'bg-[var(--color-primary)] text-[var(--color-primary-foreground)]'
-                    : 'bg-[var(--color-muted)] text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]')}>
-                {p.name}
-              </button>
-            ))}
-          </div>
+        <Field label={perWinner ? t.c_packages_all : t.c_packages}>
+          <PackagePicker packages={packages} selected={selected} onToggle={toggle} />
         </Field>
       )}
+
+      {packages.length > 0 && perWinner && (
+        <div className="flex flex-col gap-2">
+          <span className="font-mono text-[0.625rem] font-bold uppercase tracking-widest text-[var(--color-muted-foreground)]">
+            {t.c_per_prize}
+          </span>
+          {prizes.map((prize, i) => (
+            <Field key={i} label={`${i + 1}. ${prize}`}>
+              <PackagePicker packages={packages} selected={slotOf(i)} onToggle={(id) => toggleSlot(i, id)} />
+            </Field>
+          ))}
+          <p className="text-xs text-[var(--color-muted-foreground)]">{t.c_per_prize_hint}</p>
+        </div>
+      )}
+
       <p className="text-xs text-[var(--color-muted-foreground)]">{t.c_hint}</p>
     </div>
   );
@@ -461,12 +561,25 @@ function prizePayload(prizes: string, mode: PrizeMode, winnersCount: number) {
   };
 }
 
-/** Coupon-Eingaben in das Format des Steuer-Endpunkts bringen. */
-function couponPayload(percent: string, validDays: string, selected: number[]) {
+/**
+ * Coupon-Eingaben in das Format des Steuer-Endpunkts bringen.
+ *
+ * Die Auswahl je Gewinner wird auf die Anzahl der Preise gekürzt: streicht
+ * jemand einen Preis, soll dessen Paketauswahl nicht als toter Eintrag
+ * weiterleben und beim nächsten Hinzufügen wieder auftauchen.
+ */
+function couponPayload(
+  percent: string, validDays: string, selected: number[], perPrize: number[][], prizeCount: number,
+  manual: { code: string; perPrize: string[]; note: string },
+) {
   return {
     couponPercent:   percent.trim() === '' ? null : Number(percent),
     couponValidDays: validDays.trim() === '' ? null : Number(validDays),
     couponPackages:  selected,
+    couponPackagesPerPrize: Array.from({ length: prizeCount }, (_, i) => perPrize[i] ?? []),
+    couponManualCode: manual.code.trim(),
+    couponManualCodesPerPrize: Array.from({ length: prizeCount }, (_, i) => (manual.perPrize[i] ?? '').trim()),
+    couponManualNote: manual.note.trim(),
   };
 }
 
@@ -485,6 +598,11 @@ function CreateForm({ channels, busy, onCreate, packages, couponReady, ownerHint
   const [percent, setPercent] = useState('');
   const [validDays, setValidDays] = useState('');
   const [selected, setSelected] = useState<number[]>([]);
+  const [perPrize, setPerPrize] = useState<number[][]>([]);
+  const [manualCode, setManualCode] = useState('');
+  const [manualPerPrize, setManualPerPrize] = useState<string[]>([]);
+  const [manualNote, setManualNote] = useState('');
+  const prizeList = splitPrizes(prizes);
 
   return (
     <Card className="flex flex-col gap-3 p-4">
@@ -509,7 +627,16 @@ function CreateForm({ channels, busy, onCreate, packages, couponReady, ownerHint
         percent={percent} setPercent={setPercent}
         validDays={validDays} setValidDays={setValidDays}
         selected={selected} setSelected={setSelected}
+        perPrize={perPrize} setPerPrize={setPerPrize}
+        prizes={prizeList} mode={prizeMode}
         packages={packages} couponReady={couponReady} ownerHint={ownerHint}
+      />
+
+      <ManualCodeFields
+        code={manualCode} setCode={setManualCode}
+        perPrize={manualPerPrize} setPerPrize={setManualPerPrize}
+        note={manualNote} setNote={setManualNote}
+        prizes={prizeList} mode={prizeMode}
       />
 
       <div className="flex justify-end">
@@ -517,7 +644,8 @@ function CreateForm({ channels, busy, onCreate, packages, couponReady, ownerHint
           onClick={() => onCreate({
             channelId, title: title.trim(), description: description.trim(), duration,
             ...prizePayload(prizes, prizeMode, winnersCount),
-            ...couponPayload(percent, validDays, selected),
+            ...couponPayload(percent, validDays, selected, perPrize, prizeList.length,
+              { code: manualCode, perPrize: manualPerPrize, note: manualNote }),
           })}>
           {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-2 h-4 w-4" />} {t.btn_create}
         </Button>
@@ -566,6 +694,11 @@ function EditButton({ giveaway, onSave, disabled, packages, couponReady, ownerHi
   const [percent, setPercent] = useState(giveaway.couponPercent == null ? '' : String(giveaway.couponPercent));
   const [validDays, setValidDays] = useState(giveaway.couponValidDays == null ? '' : String(giveaway.couponValidDays));
   const [selected, setSelected] = useState<number[]>(giveaway.couponPackages ?? []);
+  const [perPrize, setPerPrize] = useState<number[][]>(giveaway.couponPackagesPerPrize ?? []);
+  const [manualCode, setManualCode] = useState(giveaway.couponManualCode ?? '');
+  const [manualPerPrize, setManualPerPrize] = useState<string[]>(giveaway.couponManualCodesPerPrize ?? []);
+  const [manualNote, setManualNote] = useState(giveaway.couponManualNote ?? '');
+  const prizeList = splitPrizes(prizes);
   if (!open) return <Button variant="ghost" size="sm" disabled={disabled} onClick={() => setOpen(true)}><Pencil className="mr-1.5 h-3.5 w-3.5" /> {t.btn_edit}</Button>;
   return (
     <Card className="mt-2 flex w-full flex-col gap-3 p-3">
@@ -580,7 +713,16 @@ function EditButton({ giveaway, onSave, disabled, packages, couponReady, ownerHi
         percent={percent} setPercent={setPercent}
         validDays={validDays} setValidDays={setValidDays}
         selected={selected} setSelected={setSelected}
+        perPrize={perPrize} setPerPrize={setPerPrize}
+        prizes={prizeList} mode={prizeMode}
         packages={packages} couponReady={couponReady} ownerHint={ownerHint}
+      />
+
+      <ManualCodeFields
+        code={manualCode} setCode={setManualCode}
+        perPrize={manualPerPrize} setPerPrize={setManualPerPrize}
+        note={manualNote} setNote={setManualNote}
+        prizes={prizeList} mode={prizeMode}
       />
       <div className="flex justify-end gap-2">
         <Button variant="ghost" size="sm" onClick={() => setOpen(false)}>{t.btn_cancel}</Button>
@@ -588,7 +730,8 @@ function EditButton({ giveaway, onSave, disabled, packages, couponReady, ownerHi
           onSave({
             title, description,
             ...prizePayload(prizes, prizeMode, winnersCount),
-            ...couponPayload(percent, validDays, selected),
+            ...couponPayload(percent, validDays, selected, perPrize, prizeList.length,
+              { code: manualCode, perPrize: manualPerPrize, note: manualNote }),
           });
           setOpen(false);
         }}>{t.btn_save}</Button>
