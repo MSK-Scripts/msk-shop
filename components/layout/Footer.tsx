@@ -44,6 +44,15 @@ export function Footer() {
     { label: t.footer_all_packages, href: '/packages' },
     { label: t.footer_resource_stats, href: '/resources' },
   ]
+  // Eigene Spalte für die beiden Bot-Landingpages. Sie hingen vorher an genau
+  // einer internen Quelle, dem „Bots"-Menü im Header. Die Sprachfassung folgt
+  // dem msk_lang-Cookie, damit ein deutscher Besucher auf der deutschen URL
+  // landet und nicht erst umgeleitet werden muss.
+  const botPrefix = lang === 'de' ? '/de' : ''
+  const botLinks = [
+    { label: 'Discord Ticket Bot',   href: `${botPrefix}/ticketbot` },
+    { label: 'Discord Giveaway Bot', href: `${botPrefix}/giveaway` },
+  ]
   // Support-Spalte: die Kanäle, über die Kunden vor und nach dem Kauf Hilfe
   // bekommen. Die E-Mail ist dieselbe, die § 4 der AGB für Rückerstattungen
   // nennt. Bewusst KEIN „Status"-Link, es gibt keine Statusseite.
@@ -97,6 +106,14 @@ export function Footer() {
             <ColumnTitle>{t.footer_col_shop}</ColumnTitle>
             {/* Nur noch interne Seiten, die externen Links sind in Support bzw. Ecosystem. */}
             {shopLinks.map(l => (
+              <FooterLink key={l.href} href={l.href}>{l.label}</FooterLink>
+            ))}
+          </div>
+
+          {/* Discord Bots */}
+          <div>
+            <ColumnTitle>{t.footer_col_bots}</ColumnTitle>
+            {botLinks.map(l => (
               <FooterLink key={l.href} href={l.href}>{l.label}</FooterLink>
             ))}
           </div>

@@ -51,6 +51,69 @@ export function organizationJsonLd(): JsonLdObject {
   }
 }
 
+export interface SoftwareApplicationInput {
+  name:         string
+  /** Interner Pfad der Landingpage, z. B. `/ticketbot` oder `/de/giveaway`. */
+  path:         string
+  description:  string
+  /** Interner Pfad oder absolute URL des Vorschaubilds. */
+  image:        string
+  /** BCP-47-Tag der Seitensprache. */
+  inLanguage:   string
+  /** Wo der Quellcode liegt. Landet als zusätzliches `sameAs`. */
+  codeRepository?: string
+}
+
+/**
+ * Eine der beiden Discord-Bot-Landingpages als SoftwareApplication.
+ *
+ * `Product` wäre hier falsch: Die Bots sind keine Shop-Artikel, sondern
+ * Software, die man einlädt oder selbst hostet. Der Preis steht trotzdem als
+ * `Offer` mit `0` drin, weil „kostenlos" eine Aussage ist, die Google sonst
+ * raten müsste.
+ *
+ * **Kein `aggregateRating`.** Ohne Bewertungen zeigt Google für diesen Typ kein
+ * Sterne-Snippet, das Markup hilft aber trotzdem beim Zuordnen der Entität.
+ * Bewertungen zu erfinden wäre ein Richtlinienverstoß, und echte gibt es noch
+ * nicht (Punkt 8 der Website-Liste, zurückgestellt).
+ */
+export function softwareApplicationJsonLd(input: SoftwareApplicationInput): JsonLdObject {
+  const url = absoluteUrl(input.path)
+
+  const app: JsonLdObject = {
+    '@context':  SCHEMA,
+    '@type':     'SoftwareApplication',
+    name:        input.name,
+    url,
+    description: input.description,
+    image:       input.image.startsWith('http') ? input.image : absoluteUrl(input.image),
+    // Discord-Bots laufen nicht auf einem klassischen Betriebssystem. Beide
+    // Angaben beschreiben, was ein Nutzer tatsächlich braucht.
+    applicationCategory: 'CommunicationApplication',
+    operatingSystem:     'Discord, Node.js 18+',
+    inLanguage:          input.inLanguage,
+    isAccessibleForFree: true,
+    offers: {
+      '@type':       'Offer',
+      price:         '0',
+      priceCurrency: 'EUR',
+      availability:  `${SCHEMA}/InStock`,
+    },
+    author: {
+      '@type': 'Organization',
+      name:    'MSK Scripts',
+      url:     siteUrl(),
+    },
+  }
+
+  if (input.codeRepository) {
+    app.codeRepository = input.codeRepository
+    app.sameAs = [input.codeRepository]
+  }
+
+  return app
+}
+
 export interface Crumb {
   name: string
   /** Interner Pfad. Beim letzten Element weglassen, das ist die aktuelle Seite. */

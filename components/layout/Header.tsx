@@ -244,6 +244,15 @@ function HeaderInner() {
   const isNavItemExternal = (item: NavItem) =>
     item.external ?? /^https?:\/\//i.test(item.href)
 
+  // Die beiden Bot-Landingpages gibt es zweisprachig unter eigenen URLs
+  // (/ticketbot und /de/ticketbot). Auf Deutsch soll die Navigation auf die
+  // deutsche Fassung zeigen. Bewusst nur diese beiden exakten Pfade: die
+  // Unterseiten (verify, dashboard, stats) sind cookie-übersetzt und haben
+  // keine /de/-Variante.
+  const LOCALISED_PATHS = new Set(['/ticketbot', '/giveaway'])
+  const navHref = (href: string): string =>
+    lang === 'de' && LOCALISED_PATHS.has(href) ? `/de${href}` : href
+
   const renderNavItem = (item: NavItem) =>
     isNavItemExternal(item) ? (
       <a
@@ -259,9 +268,9 @@ function HeaderInner() {
     ) : (
       <Link
         key={item.href}
-        href={item.href}
+        href={navHref(item.href)}
         prefetch
-        className={navLinkClasses(isActive(item.href))}
+        className={navLinkClasses(isActive(navHref(item.href)))}
       >
         {navLabel(item.label)}
       </Link>
@@ -280,7 +289,7 @@ function HeaderInner() {
     const external = isNavItemExternal(child)
     const classes = cn(
       'flex items-center gap-2.5 rounded-md px-3 py-2 text-sm outline-none transition-colors',
-      !external && isActive(child.href)
+      !external && isActive(navHref(child.href))
         ? 'bg-[var(--color-muted)] text-[var(--color-foreground)]'
         : 'text-[var(--color-muted-foreground)] hover:bg-[var(--color-muted)] hover:text-[var(--color-foreground)]',
     )
@@ -306,7 +315,7 @@ function HeaderInner() {
     ) : (
       <Link
         key={child.href}
-        href={child.href}
+        href={navHref(child.href)}
         prefetch={child.prefetch ?? true}
         role="menuitem"
         onClick={onNavigate}

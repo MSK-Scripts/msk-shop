@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next'
 
+import { BOT_LANDING_PATHS } from '@/lib/botSeo'
 import { getCategories, getPackages } from '@/lib/tebex'
 import { absoluteUrl } from '@/lib/siteUrl'
 
@@ -14,14 +15,36 @@ const STATIC_ROUTES: Array<{ path: string; priority: number; changeFrequency: En
   { path: '/',                 priority: 1.0, changeFrequency: 'daily'   },
   { path: '/packages',         priority: 0.9, changeFrequency: 'daily'   },
   { path: '/resources',        priority: 0.7, changeFrequency: 'daily'   },
-  { path: '/ticketbot',        priority: 0.8, changeFrequency: 'weekly'  },
+  // /ticketbot und /giveaway kommen aus botLandingEntries(), weil sie
+  // zweisprachig sind und hreflang-Alternates brauchen.
   { path: '/ticketbot/stats',  priority: 0.5, changeFrequency: 'daily'   },
-  { path: '/giveaway',         priority: 0.8, changeFrequency: 'weekly'  },
   { path: '/giveaway/stats',   priority: 0.5, changeFrequency: 'daily'   },
   { path: '/terms',            priority: 0.3, changeFrequency: 'yearly'  },
   { path: '/terms/imprint',    priority: 0.3, changeFrequency: 'yearly'  },
   { path: '/terms/privacy',    priority: 0.3, changeFrequency: 'yearly'  },
 ]
+
+/**
+ * Die beiden Bot-Landingpages gibt es zweisprachig unter eigenen URLs. Jeder
+ * Eintrag nennt beide Fassungen über `alternates.languages`, damit die
+ * hreflang-Angaben aus den Metadaten in der Sitemap ihre Entsprechung haben.
+ */
+function botLandingEntries(lastModified: Date): MetadataRoute.Sitemap {
+  return Object.values(BOT_LANDING_PATHS).flatMap(paths =>
+    (['en', 'de'] as const).map(lang => ({
+      url: absoluteUrl(paths[lang]),
+      lastModified,
+      changeFrequency: 'weekly' as const,
+      priority:        0.8,
+      alternates: {
+        languages: {
+          en: absoluteUrl(paths.en),
+          de: absoluteUrl(paths.de),
+        },
+      },
+    })),
+  )
+}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const lastModified = new Date()
@@ -61,5 +84,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority:        0.6,
   }))
 
-  return [...staticEntries, ...packageEntries, ...categoryEntries]
+  return [...staticEntries, ...botLandingEntries(lastModified), ...packageEntries, ...categoryEntries]
 }

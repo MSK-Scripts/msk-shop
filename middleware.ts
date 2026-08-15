@@ -164,6 +164,10 @@ export function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers)
   requestHeaders.set('x-nonce', nonce)
   requestHeaders.set('Content-Security-Policy', csp)
+  // Server Components sehen den Pfad sonst nicht. Das Root-Layout braucht ihn,
+  // um auf den fest deutschen /de/-Routen `<html lang>` und die Chrome-Sprache
+  // an den Seiteninhalt anzugleichen, statt dem msk_lang-Cookie zu folgen.
+  requestHeaders.set('x-pathname', pathname)
 
   const response = NextResponse.next({
     request: { headers: requestHeaders },

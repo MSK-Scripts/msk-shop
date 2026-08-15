@@ -115,7 +115,16 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // Next.js-Scripts blockieren.
   const [hdrs, cookieStore] = await Promise.all([headers(), cookies()])
   const nonce = hdrs.get('x-nonce') ?? undefined
-  const lang = resolveLang(cookieStore.get(LANG_COOKIE_NAME)?.value, hdrs.get('accept-language'))
+
+  // Die /de/-Routen (die beiden Bot-Landingpages) sind sprachlich fest. Dort
+  // würde ein englisches Cookie sonst einen deutschen Seiteninhalt in einen
+  // englischen Header samt `<html lang="en">` setzen, und genau dieses Signal
+  // liest Google. Der Pfad kommt aus middleware.ts, Server Components haben
+  // ihn nicht von sich aus.
+  const pathname = hdrs.get('x-pathname') ?? ''
+  const lang = pathname.startsWith('/de/')
+    ? 'de'
+    : resolveLang(cookieStore.get(LANG_COOKIE_NAME)?.value, hdrs.get('accept-language'))
 
   return (
     <html lang={lang} suppressHydrationWarning>

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { breadcrumbJsonLd, organizationJsonLd, productJsonLd } from '@/lib/jsonLd'
+import { breadcrumbJsonLd, organizationJsonLd, productJsonLd, softwareApplicationJsonLd } from '@/lib/jsonLd'
 import type { TebexPackage } from '@/types/tebex'
 
 function makePackage(overrides: Partial<TebexPackage> = {}): TebexPackage {
@@ -108,5 +108,60 @@ describe('productJsonLd', () => {
     expect(serialized).not.toContain('<img')
     // Trotz Escaping muss der Wert unverfälscht zurückparsen.
     expect(JSON.parse(serialized).name).toBe('</script><img src=x onerror=alert(1)>')
+  })
+})
+
+describe('softwareApplicationJsonLd', () => {
+  const app = softwareApplicationJsonLd({
+    name:        'MSK Discord Ticket Bot',
+    path:        '/de/ticketbot',
+    description: 'Kostenloser Discord Ticket Bot zum Selbsthosten.',
+    image:       '/discord_ticketbot_banner.webp',
+    inLanguage:  'de-DE',
+  })
+
+  it('zeichnet die Landingpage als SoftwareApplication aus, nicht als Product', () => {
+    expect(app['@type']).toBe('SoftwareApplication')
+    expect(app.name).toBe('MSK Discord Ticket Bot')
+    expect(app.inLanguage).toBe('de-DE')
+  })
+
+  it('macht aus internen Pfaden absolute URLs', () => {
+    expect(String(app.url)).toMatch(/^https?:\/\/.+\/de\/ticketbot$/)
+    expect(String(app.image)).toMatch(/^https?:\/\/.+\/discord_ticketbot_banner\.webp$/)
+  })
+
+  it('lässt eine bereits absolute Bild-URL unangetastet', () => {
+    const withCdn = softwareApplicationJsonLd({
+      name: 'x', path: '/giveaway', description: 'x',
+      image: 'https://cdn.example/banner.png', inLanguage: 'en-US',
+    })
+    expect(withCdn.image).toBe('https://cdn.example/banner.png')
+  })
+
+  it('weist den Preis 0 aus, statt ihn Google raten zu lassen', () => {
+    const offers = app.offers as Record<string, unknown>
+    expect(offers.price).toBe('0')
+    expect(offers.priceCurrency).toBe('EUR')
+    expect(app.isAccessibleForFree).toBe(true)
+  })
+
+  // Ohne echte Bewertungen wäre aggregateRating erfunden. Das ist ein
+  // Richtlinienverstoß und fliegt sonst irgendwann als manuelle Maßnahme auf.
+  it('erfindet keine Bewertungen', () => {
+    expect(app.aggregateRating).toBeUndefined()
+    expect(app.review).toBeUndefined()
+  })
+
+  it('nimmt das Repository nur auf, wenn es eins gibt', () => {
+    expect(app.codeRepository).toBeUndefined()
+    expect(app.sameAs).toBeUndefined()
+
+    const oss = softwareApplicationJsonLd({
+      name: 'x', path: '/giveaway', description: 'x', image: '/x.webp',
+      inLanguage: 'en-US', codeRepository: 'https://github.com/MSK-Scripts/discord_giveawaybot',
+    })
+    expect(oss.codeRepository).toBe('https://github.com/MSK-Scripts/discord_giveawaybot')
+    expect(oss.sameAs).toEqual(['https://github.com/MSK-Scripts/discord_giveawaybot'])
   })
 })
