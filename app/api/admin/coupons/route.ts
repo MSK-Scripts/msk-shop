@@ -1,14 +1,38 @@
 import { NextResponse } from 'next/server';
 import { adminRoute }   from '@/lib/adminApi';
 import { writeAudit }   from '@/lib/adminAudit';
-import { tebexPlugin, unwrapList, type TebexCoupon } from '@/lib/tebexPlugin';
+import { tebexPlugin }  from '@/lib/tebexPlugin';
+import { couponState, countCouponStates, isTrue } from '@/lib/couponStatus';
 
 // Session-/cookie-dependent → never cache.
 export const dynamic = 'force-dynamic';
 
+/**
+ * Lists every coupon with its state attached, so the dashboard can show the
+ * usable ones by default and still reveal the history without a second round
+ * trip. Filtering server-side would mean re-reading all ~35 upstream pages
+ * every time someone flips the toggle.
+ *
+ * Trimmed to the fields the table renders: the raw payload is roughly three
+ * times the size and carries nothing else the UI uses.
+ */
 export const GET = adminRoute('coupons.manage', async () => {
-  const coupons = unwrapList<TebexCoupon>(await tebexPlugin.coupons.list());
-  return NextResponse.json({ coupons });
+  const { coupons: all, truncated } = await tebexPlugin.coupons.listAll();
+  const now = Date.now();
+
+  const coupons = all.map(c => ({
+    id:         c.id,
+    code:       c.code,
+    discount:   c.discount,
+    effective:  { type: c.effective?.type },
+    expiresAt:  isTrue(c.expire?.expire_never) ? null : (c.expire?.date ?? null),
+    redeemsLeft: isTrue(c.expire?.redeem_unlimited) ? null : Number(c.expire?.limit ?? 0),
+    username:   c.username || null,
+    note:       c.note || null,
+    state:      couponState(c, now),
+  }));
+
+  return NextResponse.json({ result: { coupons, counts: countCouponStates(all, now), truncated } });
 });
 
 // Create a simple coupon (cart-wide, or scoped to package/category ids).

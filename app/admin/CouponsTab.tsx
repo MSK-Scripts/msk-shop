@@ -1,27 +1,73 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Loader2, AlertCircle, Trash2 } from 'lucide-react'
+import { Loader2, AlertCircle, Trash2, Eye, EyeOff } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { selectClass } from './styles'
 import { useAdminResource } from '@/lib/useAdminResource'
 
+type CouponState = 'active' | 'scheduled' | 'expired' | 'used_up'
+
 interface Coupon {
-  id:        number
-  code:      string
-  discount:  { type: string; percentage: number; value: number }
-  effective: { type: string }
-  expire?:   { expire_never?: boolean; date?: string | null }
+  id:          number
+  code:        string
+  discount:    { type: string; percentage: number; value: number }
+  effective:   { type?: string }
+  /** null means the coupon never expires. */
+  expiresAt:   string | null
+  /** null means unlimited redemptions, otherwise the remaining count. */
+  redeemsLeft: number | null
+  username:    string | null
+  note:        string | null
+  state:       CouponState
+}
+
+interface CouponPayload {
+  coupons:   Coupon[]
+  counts:    Record<CouponState, number> & { total: number }
+  truncated: boolean
 }
 
 interface CatalogItem { id: number; name: string }
 
-export default function CouponsTab() {
-  const { data: coupons, error, reload } = useAdminResource<Coupon[]>(
-    '/api/admin/coupons', 'coupons', 'Failed to load coupons.',
+const STATE_LABEL: Record<CouponState, string> = {
+  active:    'Active',
+  scheduled: 'Not started',
+  expired:   'Expired',
+  used_up:   'Used up',
+}
+
+/** Own badge rather than StatusBadge, which encodes payment semantics. */
+function StateBadge({ state }: { state: CouponState }) {
+  const color = state === 'active'
+    ? 'border-[var(--color-primary)]/30 bg-[var(--color-primary)]/10 text-[var(--color-primary)]'
+    : 'border-[var(--color-border)] bg-[var(--color-muted)] text-[var(--color-muted-foreground)]'
+  return (
+    <span className={`inline-block rounded-full border px-2.5 py-0.5 text-xs font-semibold ${color}`}>
+      {STATE_LABEL[state]}
+    </span>
   )
+}
+
+function formatDate(iso: string | null): string {
+  if (!iso) return 'Never'
+  const d = new Date(iso)
+  return Number.isNaN(d.getTime()) ? iso : d.toISOString().slice(0, 10)
+}
+
+export default function CouponsTab() {
+  const { data: payload, error, reload } = useAdminResource<CouponPayload>(
+    '/api/admin/coupons', 'result', 'Failed to load coupons.',
+  )
+  // Tebex keeps every coupon ever issued (860 at last count, 4 of them live),
+  // so the inactive ones are hidden until asked for.
+  const [showInactive, setShowInactive] = useState(false)
+
+  const allCoupons = payload?.coupons
+  const counts     = payload?.counts
+  const coupons    = allCoupons?.filter(c => showInactive || c.state === 'active')
   const [packages, setPackages]       = useState<CatalogItem[]>([])
   const [categories, setCategories]   = useState<CatalogItem[]>([])
 
@@ -129,14 +175,39 @@ export default function CouponsTab() {
         </Card>
       )}
 
-      {!error && !coupons && (
+      {!error && !payload && (
         <Card className="flex items-center gap-2 p-6 text-sm text-[var(--color-muted-foreground)]">
           <Loader2 className="h-4 w-4 animate-spin" /> Loading coupons…
         </Card>
       )}
 
+      {!error && payload && counts && (
+        <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
+          <p className="text-[var(--color-muted-foreground)]">
+            {counts.active} active
+            {counts.total > counts.active && <> · {counts.expired} expired · {counts.used_up} used up</>}
+            {counts.scheduled > 0 && <> · {counts.scheduled} not started</>}
+          </p>
+          {counts.total > counts.active && (
+            <Button variant="outline" size="sm" onClick={() => setShowInactive(v => !v)}>
+              {showInactive ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+              {showInactive ? 'Show active only' : `Show all ${counts.total}`}
+            </Button>
+          )}
+        </div>
+      )}
+
+      {!error && payload?.truncated && (
+        <Card className="flex items-center gap-2 p-4 text-sm text-[var(--color-warning)]">
+          <AlertCircle className="h-4 w-4" />
+          The store has more coupons than this view reads. Older ones are not listed.
+        </Card>
+      )}
+
       {!error && coupons && coupons.length === 0 && (
-        <Card className="p-6 text-sm text-[var(--color-muted-foreground)]">No coupons yet.</Card>
+        <Card className="p-6 text-sm text-[var(--color-muted-foreground)]">
+          {showInactive ? 'No coupons yet.' : 'No active coupons.'}
+        </Card>
       )}
 
       {!error && coupons && coupons.length > 0 && (
@@ -149,6 +220,9 @@ export default function CouponsTab() {
                   <th className="px-4 py-3 font-medium">Discount</th>
                   <th className="px-4 py-3 font-medium">Applies to</th>
                   <th className="px-4 py-3 font-medium">Expires</th>
+                  <th className="px-4 py-3 font-medium">Redemptions left</th>
+                  {showInactive && <th className="px-4 py-3 font-medium">Status</th>}
+                  <th className="px-4 py-3 font-medium">Note</th>
                   <th className="px-4 py-3 font-medium" />
                 </tr>
               </thead>
@@ -161,8 +235,17 @@ export default function CouponsTab() {
                     </td>
                     <td className="px-4 py-3 capitalize">{c.effective?.type ?? '—'}</td>
                     <td className="whitespace-nowrap px-4 py-3 text-[var(--color-muted-foreground)]">
-                      {c.expire?.expire_never ? 'Never' : (c.expire?.date || '—')}
+                      {formatDate(c.expiresAt)}
                     </td>
+                    <td className="whitespace-nowrap px-4 py-3 text-[var(--color-muted-foreground)]">
+                      {c.redeemsLeft === null ? 'Unlimited' : c.redeemsLeft}
+                    </td>
+                    {showInactive && (
+                      <td className="whitespace-nowrap px-4 py-3">
+                        <StateBadge state={c.state} />
+                      </td>
+                    )}
+                    <td className="px-4 py-3 text-[var(--color-muted-foreground)]">{c.note || c.username || '—'}</td>
                     <td className="px-4 py-3 text-right">
                       <Button variant="outline" size="sm" onClick={() => remove(c.id)}>
                         <Trash2 className="h-3.5 w-3.5" /> Delete

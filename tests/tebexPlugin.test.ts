@@ -47,3 +47,63 @@ describe('tebexPlugin request/error handling', () => {
     await expect(tebexPlugin.bans.list()).rejects.toMatchObject({ status: 500, tebexMessage: 'Server Error' })
   })
 })
+
+describe('coupons.listAll', () => {
+  beforeAll(() => { process.env.TEBEX_PLUGIN_SECRET = 'secret' })
+  afterEach(() => { vi.unstubAllGlobals() })
+
+  /** Serves `lastPage` pages of one coupon each, named after their page. */
+  function stubPages(lastPage: number) {
+    const seen: number[] = []
+    const f = vi.fn().mockImplementation(async (url: string) => {
+      const page = Number(new URL(url).searchParams.get('page'))
+      seen.push(page)
+      return {
+        ok: true, status: 200,
+        text: async () => JSON.stringify({
+          pagination: { lastPage, currentPage: page },
+          data: [{ id: page, code: `C${page}` }],
+        }),
+      }
+    })
+    vi.stubGlobal('fetch', f)
+    return seen
+  }
+
+  it('reads every page, not just the first', async () => {
+    // The bug this guards: the store had 35 pages and the dashboard showed 1.
+    const seen = stubPages(35)
+    const { coupons, truncated } = await tebexPlugin.coupons.listAll()
+    expect(coupons).toHaveLength(35)
+    expect(truncated).toBe(false)
+    expect([...seen].sort((a, b) => a - b)).toEqual(Array.from({ length: 35 }, (_, i) => i + 1))
+  })
+
+  it('requests each page exactly once', async () => {
+    const seen = stubPages(20)
+    await tebexPlugin.coupons.listAll()
+    expect(new Set(seen).size).toBe(seen.length)
+  })
+
+  it('handles a single-page store without extra requests', async () => {
+    const seen = stubPages(1)
+    const { coupons } = await tebexPlugin.coupons.listAll()
+    expect(coupons).toHaveLength(1)
+    expect(seen).toEqual([1])
+  })
+
+  it('caps runaway page counts and reports the truncation', async () => {
+    const seen = stubPages(500)
+    const { coupons, truncated } = await tebexPlugin.coupons.listAll()
+    expect(truncated).toBe(true)
+    expect(coupons.length).toBeLessThanOrEqual(80)
+    expect(seen.length).toBeLessThanOrEqual(80)
+  })
+
+  it('survives a missing pagination block', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: true, status: 200, text: async () => JSON.stringify({ data: [{ id: 1 }] }),
+    }))
+    await expect(tebexPlugin.coupons.listAll()).resolves.toEqual({ coupons: [{ id: 1 }], truncated: false })
+  })
+})

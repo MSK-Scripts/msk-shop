@@ -10,7 +10,8 @@ import { selectClass } from './styles'
 import { useAdminResource } from '@/lib/useAdminResource'
 
 interface Payment {
-  id:       string
+  /** Tebex transaction id. Numeric on the wire, kept loose for safety. */
+  id:       number | string
   amount:   number
   date:     string
   currency: { symbol: string; iso_4217: string }
@@ -146,6 +147,7 @@ export default function PaymentsTab({ canCreate, canRefund }: { canCreate: boole
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-[var(--color-border)] text-left text-[var(--color-muted-foreground)]">
+                  <th className="px-4 py-3 font-medium">Transaction</th>
                   <th className="px-4 py-3 font-medium">Date</th>
                   <th className="px-4 py-3 font-medium">Player</th>
                   <th className="px-4 py-3 font-medium">Packages</th>
@@ -158,6 +160,7 @@ export default function PaymentsTab({ canCreate, canRefund }: { canCreate: boole
               <tbody>
                 {pageItems.map(p => (
                   <tr key={p.id} className="border-b border-[var(--color-border)] last:border-0">
+                    <td className="whitespace-nowrap px-4 py-3 font-mono text-xs">{p.id}</td>
                     <td className="whitespace-nowrap px-4 py-3">{p.date}</td>
                     <td className="px-4 py-3">{p.player?.name ?? '—'}</td>
                     <td className="px-4 py-3">{(p.packages ?? []).map(pkg => pkg.name).join(', ') || '—'}</td>
@@ -167,8 +170,8 @@ export default function PaymentsTab({ canCreate, canRefund }: { canCreate: boole
                     {canRefund && (
                       <td className="whitespace-nowrap px-4 py-3 text-right">
                         {String(p.status).toLowerCase() === 'complete' && (
-                          <Button variant="outline" size="sm" onClick={() => refund(p.id)} disabled={refundingId !== null}>
-                            {refundingId === p.id
+                          <Button variant="outline" size="sm" onClick={() => refund(String(p.id))} disabled={refundingId !== null}>
+                            {refundingId === String(p.id)
                               ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
                               : <Undo2 className="h-3.5 w-3.5" />} Refund
                           </Button>

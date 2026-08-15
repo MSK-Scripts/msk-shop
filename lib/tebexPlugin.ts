@@ -71,7 +71,8 @@ async function pluginFetch<T = unknown>(
 // ── Types (subset of documented fields) ──────────────────────────────────────
 
 export interface TebexPayment {
-  id:        string;
+  /** Tebex transaction id. Sent as a JSON number by the list endpoints. */
+  id:        number | string;
   amount:    number;
   date:      string;
   currency:  { iso_4217: string; symbol: string };
@@ -89,6 +90,19 @@ export interface TebexCoupon {
   code:     string;
   effective:{ type: string; packages: number[]; categories: number[] };
   discount: { type: string; percentage: number; value: number };
+  /**
+   * `expire_never` and `redeem_unlimited` arrive as the STRINGS "true"/"false",
+   * and `date` is 1970-01-01 whenever `expire_never` is set. `limit` is the
+   * REMAINING number of redemptions. See lib/couponStatus.ts.
+   */
+  expire?:      { redeem_unlimited?: boolean | string; expire_never?: boolean | string; limit?: number; date?: string | null };
+  start_date?:  string | null;
+  basket_type?: string;
+  user_limit?:  number;
+  minimum?:     number;
+  /** Set when the coupon is bound to one buyer (Tebex post-purchase codes). */
+  username?:    string;
+  note?:        string;
 }
 
 export interface TebexGiftCard {
@@ -118,6 +132,38 @@ export function unwrapList<T>(raw: unknown): T[] {
   return Array.isArray(data) ? (data as T[]) : [];
 }
 
+interface CouponPage {
+  pagination?: { totalResults?: number; currentPage?: number; lastPage?: number };
+  data?:       TebexCoupon[];
+}
+
+/** Hard stop so a runaway `lastPage` can never spend the 500 req / 5 min budget. */
+const COUPON_PAGE_CAP = 80;
+/** Pages fetched at once. Keeps ~35 pages at a few seconds without bursting. */
+const COUPON_PAGE_BATCH = 8;
+
+/**
+ * Reads every coupon page. Returns `truncated: true` if the store has more
+ * pages than the cap allows, so the caller can say so instead of quietly
+ * showing a partial list.
+ */
+async function fetchAllCoupons(): Promise<{ coupons: TebexCoupon[]; truncated: boolean }> {
+  const first = await pluginFetch<CouponPage>('/coupons?page=1');
+  const coupons = [...(first.data ?? [])];
+
+  const lastPage  = Math.max(1, Number(first.pagination?.lastPage ?? 1));
+  const wanted    = Math.min(lastPage, COUPON_PAGE_CAP);
+  const remaining = Array.from({ length: wanted - 1 }, (_, i) => i + 2);
+
+  for (let i = 0; i < remaining.length; i += COUPON_PAGE_BATCH) {
+    const batch = remaining.slice(i, i + COUPON_PAGE_BATCH);
+    const pages = await Promise.all(batch.map(page => pluginFetch<CouponPage>(`/coupons?page=${page}`)));
+    for (const page of pages) coupons.push(...(page.data ?? []));
+  }
+
+  return { coupons, truncated: lastPage > wanted };
+}
+
 // ── Public API surface ───────────────────────────────────────────────────────
 
 export const tebexPlugin = {
@@ -142,7 +188,13 @@ export const tebexPlugin = {
   },
 
   coupons: {
-    list:   () => pluginFetch('/coupons'),
+    list:   (page = 1) => pluginFetch<CouponPage>(`/coupons?page=${encodeURIComponent(page)}`),
+    /**
+     * Every coupon across every page. The endpoint pages at 25 and returns them
+     * in no usable order, so a live coupon can sit on any page — there is no
+     * shortcut that avoids reading all of them.
+     */
+    listAll: () => fetchAllCoupons(),
     get:    (id: number) => pluginFetch<TebexCoupon>(`/coupons/${encodeURIComponent(id)}`),
     create: (body: Record<string, unknown>) => pluginFetch<TebexCoupon>('/coupons', { method: 'POST', body }),
     remove: (id: number) => pluginFetch(`/coupons/${encodeURIComponent(id)}`, { method: 'DELETE' }),
