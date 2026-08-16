@@ -35,6 +35,11 @@ interface Giveaway {
   couponManualCode?: string | null;
   couponManualCodesPerPrize?: string[];
   couponManualNote?: string | null;
+  /** Bedingungen NUR für dieses Giveaway, zusätzlich zu den serverweiten. */
+  blacklistRoles?: string[];
+  whitelistRoles?: string[];
+  /** Rollen-ID zu zusätzlichen Losen. Wird mit den serverweiten addiert. */
+  bonusRoles?: Record<string, number>;
 }
 
 /**
@@ -62,6 +67,20 @@ interface Settings {
   minAccountDays: number; minMemberDays: number; reminderMinutes: number;
   managerRole: string | null; notifyRole: string | null; logChannel: string | null;
   claimMessage: string | null; blacklist: string[]; whitelist: string[];
+  /** Rollen-ID zu zusätzlichen Losen (gewichtete Ziehung), serverweit. */
+  bonusRoles: Record<string, number>;
+}
+
+/** Bonus-Lose je Rolle, wie der Bot sie annimmt (ganze Zahl von 1 bis 100). */
+const MIN_BONUS = 1;
+const MAX_BONUS = 100;
+function clampBonus(value: Record<string, number> | undefined): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const [id, raw] of Object.entries(value ?? {})) {
+    const n = Math.round(Number(raw));
+    if (Number.isFinite(n)) out[id] = Math.min(MAX_BONUS, Math.max(MIN_BONUS, n));
+  }
+  return out;
 }
 
 const STATUS_STYLE: Record<Giveaway['status'], string> = {
@@ -217,7 +236,7 @@ export default function DashboardClient({ guildId, owner }: { guildId: string; o
 
         {tab === 'giveaways' && (
           <GiveawaysTab
-            giveaways={giveaways} channels={channels} reload={reloadGiveaways} setError={setError}
+            giveaways={giveaways} channels={channels} roles={roles} reload={reloadGiveaways} setError={setError}
             packages={packages} couponReady={Boolean(tebex?.configured)} ownerHint={owner}
             templates={templates}
           />
@@ -238,8 +257,8 @@ export default function DashboardClient({ guildId, owner }: { guildId: string; o
 
 // ── Giveaways-Tab ─────────────────────────────────────────────────────────────
 
-function GiveawaysTab({ giveaways, channels, reload, setError, packages, couponReady, ownerHint, templates }: {
-  giveaways: Giveaway[]; channels: Channel[]; reload: () => Promise<void>; setError: (e: string | null) => void;
+function GiveawaysTab({ giveaways, channels, roles, reload, setError, packages, couponReady, ownerHint, templates }: {
+  giveaways: Giveaway[]; channels: Channel[]; roles: Role[]; reload: () => Promise<void>; setError: (e: string | null) => void;
   packages: TebexPackage[]; couponReady: boolean; ownerHint: boolean; templates: Template[];
 }) {
   const { t, lang } = useCtx();
@@ -273,7 +292,7 @@ function GiveawaysTab({ giveaways, channels, reload, setError, packages, couponR
 
       {showCreate && (
         <CreateForm
-          channels={channels} busy={busy === 'create'} packages={packages}
+          channels={channels} roles={roles} busy={busy === 'create'} packages={packages}
           couponReady={couponReady} ownerHint={ownerHint} templates={templates}
           onCreate={async (p) => { await action({ action: 'create', ...p }, 'create'); setShowCreate(false); }}
         />
@@ -332,7 +351,7 @@ function GiveawaysTab({ giveaways, channels, reload, setError, packages, couponR
               )}
               {(g.status === 'ACTIVE' || g.status === 'PAUSED') && (
                 <EditButton
-                  giveaway={g} packages={packages} couponReady={couponReady} ownerHint={ownerHint}
+                  giveaway={g} roles={roles} packages={packages} couponReady={couponReady} ownerHint={ownerHint}
                   onSave={(p) => action({ action: 'edit', id: g.id, ...p }, `${g.id}:edit`)}
                   disabled={busy?.startsWith(g.id)}
                 />
@@ -605,8 +624,8 @@ function couponPayload(
   };
 }
 
-function CreateForm({ channels, busy, onCreate, packages, couponReady, ownerHint, templates }: {
-  channels: Channel[]; busy: boolean; onCreate: (p: Record<string, unknown>) => void;
+function CreateForm({ channels, roles, busy, onCreate, packages, couponReady, ownerHint, templates }: {
+  channels: Channel[]; roles: Role[]; busy: boolean; onCreate: (p: Record<string, unknown>) => void;
   packages: TebexPackage[]; couponReady: boolean; ownerHint: boolean; templates: Template[];
 }) {
   const { t } = useCtx();
@@ -625,6 +644,9 @@ function CreateForm({ channels, busy, onCreate, packages, couponReady, ownerHint
   const [manualCode, setManualCode] = useState('');
   const [manualPerPrize, setManualPerPrize] = useState<string[]>([]);
   const [manualNote, setManualNote] = useState('');
+  const [blacklistRoles, setBlacklistRoles] = useState<string[]>([]);
+  const [whitelistRoles, setWhitelistRoles] = useState<string[]>([]);
+  const [bonusRoles, setBonusRoles] = useState<Record<string, number>>({});
   const prizeList = splitPrizes(prizes);
 
   /**
@@ -693,6 +715,13 @@ function CreateForm({ channels, busy, onCreate, packages, couponReady, ownerHint
         prizes={prizeList} mode={prizeMode}
       />
 
+      <EligibilityFields
+        roles={roles}
+        blacklist={blacklistRoles} setBlacklist={setBlacklistRoles}
+        whitelist={whitelistRoles} setWhitelist={setWhitelistRoles}
+        bonus={bonusRoles} setBonus={setBonusRoles}
+      />
+
       <div className="flex justify-end">
         <Button size="sm" disabled={busy || !channelId || !title.trim() || !description.trim()}
           onClick={() => onCreate({
@@ -700,6 +729,7 @@ function CreateForm({ channels, busy, onCreate, packages, couponReady, ownerHint
             ...prizePayload(prizes, prizeMode, winnersCount),
             ...couponPayload(percent, validDays, selected, perPrize, prizeList.length,
               { code: manualCode, perPrize: manualPerPrize, note: manualNote }),
+            ...eligibilityPayload(blacklistRoles, whitelistRoles, bonusRoles),
           })}>
           {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-2 h-4 w-4" />} {t.btn_create}
         </Button>
@@ -734,8 +764,8 @@ function RerollSingle({ onReroll, disabled }: { onReroll: (wid: string) => void;
   );
 }
 
-function EditButton({ giveaway, onSave, disabled, packages, couponReady, ownerHint }: {
-  giveaway: Giveaway; onSave: (p: Record<string, unknown>) => void; disabled?: boolean;
+function EditButton({ giveaway, roles, onSave, disabled, packages, couponReady, ownerHint }: {
+  giveaway: Giveaway; roles: Role[]; onSave: (p: Record<string, unknown>) => void; disabled?: boolean;
   packages: TebexPackage[]; couponReady: boolean; ownerHint: boolean;
 }) {
   const { t } = useCtx();
@@ -752,6 +782,9 @@ function EditButton({ giveaway, onSave, disabled, packages, couponReady, ownerHi
   const [manualCode, setManualCode] = useState(giveaway.couponManualCode ?? '');
   const [manualPerPrize, setManualPerPrize] = useState<string[]>(giveaway.couponManualCodesPerPrize ?? []);
   const [manualNote, setManualNote] = useState(giveaway.couponManualNote ?? '');
+  const [blacklistRoles, setBlacklistRoles] = useState<string[]>(giveaway.blacklistRoles ?? []);
+  const [whitelistRoles, setWhitelistRoles] = useState<string[]>(giveaway.whitelistRoles ?? []);
+  const [bonusRoles, setBonusRoles] = useState<Record<string, number>>(giveaway.bonusRoles ?? {});
   const prizeList = splitPrizes(prizes);
   if (!open) return <Button variant="ghost" size="sm" disabled={disabled} onClick={() => setOpen(true)}><Pencil className="mr-1.5 h-3.5 w-3.5" /> {t.btn_edit}</Button>;
   return (
@@ -778,6 +811,13 @@ function EditButton({ giveaway, onSave, disabled, packages, couponReady, ownerHi
         note={manualNote} setNote={setManualNote}
         prizes={prizeList} mode={prizeMode}
       />
+
+      <EligibilityFields
+        roles={roles}
+        blacklist={blacklistRoles} setBlacklist={setBlacklistRoles}
+        whitelist={whitelistRoles} setWhitelist={setWhitelistRoles}
+        bonus={bonusRoles} setBonus={setBonusRoles}
+      />
       <div className="flex justify-end gap-2">
         <Button variant="ghost" size="sm" onClick={() => setOpen(false)}>{t.btn_cancel}</Button>
         <Button size="sm" disabled={disabled} onClick={() => {
@@ -786,6 +826,7 @@ function EditButton({ giveaway, onSave, disabled, packages, couponReady, ownerHi
             ...prizePayload(prizes, prizeMode, winnersCount),
             ...couponPayload(percent, validDays, selected, perPrize, prizeList.length,
               { code: manualCode, perPrize: manualPerPrize, note: manualNote }),
+            ...eligibilityPayload(blacklistRoles, whitelistRoles, bonusRoles),
           });
           setOpen(false);
         }}>{t.btn_save}</Button>
@@ -1005,6 +1046,7 @@ function SettingsTab({ settings, roles, channels, onSaved, setError }: {
           reminderMinutes: Number(form.reminderMinutes) || 0,
           managerRole: form.managerRole || null, notifyRole: form.notifyRole || null, logChannel: form.logChannel || null,
           claimMessage: form.claimMessage || null, blacklist: form.blacklist, whitelist: form.whitelist,
+          bonusRoles: clampBonus(form.bonusRoles),
         }),
       });
       const data = await res.json().catch(() => null);
@@ -1057,6 +1099,10 @@ function SettingsTab({ settings, roles, channels, onSaved, setError }: {
       </Field>
       <Field label={t.s_whitelist}>
         <RoleMultiSelect roles={roles} value={form.whitelist} onChange={(v) => upd({ whitelist: v })} />
+      </Field>
+      <Field label={t.s_bonus}>
+        <BonusRoleEditor roles={roles} value={form.bonusRoles ?? {}} onChange={(v) => upd({ bonusRoles: v })} />
+        <span className="text-xs text-[var(--color-muted-foreground)]">{t.s_bonus_hint}</span>
       </Field>
 
       <Field label={t.s_claim}>
@@ -1236,6 +1282,102 @@ function StoreTab({ tebex, packages, onChanged, setError }: {
       </Card>
     </div>
   );
+}
+
+/**
+ * Bonus-Lose je Rolle.
+ *
+ * Anders als Blacklist und Whitelist ist das keine Mehrfachauswahl, sondern eine
+ * Zuordnung: jede Rolle trägt eine Anzahl. Deshalb eine Zeile pro Rolle statt
+ * einer Chip-Wolke, sonst wäre nirgends abzulesen, wie viele Lose dranhängen.
+ */
+function BonusRoleEditor({ roles, value, onChange }: {
+  roles: Role[]; value: Record<string, number>; onChange: (v: Record<string, number>) => void;
+}) {
+  const { t } = useCtx();
+  const current = value ?? {};
+  const entries = Object.entries(current);
+  const available = roles.filter((r) => !(r.id in current));
+
+  const set = (id: string, amount: number) => onChange({ ...current, [id]: amount });
+  const remove = (id: string) => {
+    const next = { ...current };
+    delete next[id];
+    onChange(next);
+  };
+
+  return (
+    <div className="flex flex-col gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] p-2">
+      {entries.length === 0 && <span className="text-xs text-[var(--color-muted-foreground)]">{t.s_bonus_none}</span>}
+      {entries.map(([id, amount]) => (
+        <div key={id} className="flex items-center gap-2">
+          <span className="min-w-0 flex-1 truncate text-xs">@ {roles.find((r) => r.id === id)?.name ?? id}</span>
+          <span className="font-mono text-xs text-[var(--color-muted-foreground)]">+</span>
+          <Input
+            type="number" min={MIN_BONUS} max={MAX_BONUS} value={amount} className="h-8 w-20"
+            onChange={(e) => set(id, Number(e.target.value))}
+          />
+          <button
+            type="button" aria-label={t.s_bonus_remove} onClick={() => remove(id)}
+            className="rounded p-1 text-[var(--color-muted-foreground)] transition-colors hover:text-[var(--color-danger)]"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      ))}
+      {available.length > 0 && (
+        // Der Wert bleibt leer: die Auswahl ist ein Knopf zum Hinzufügen, kein Zustand.
+        <select value="" className={selectCls} onChange={(e) => { if (e.target.value) set(e.target.value, MIN_BONUS); }}>
+          <option value="">{t.s_bonus_add}</option>
+          {available.map((r) => <option key={r.id} value={r.id}>@ {r.name}</option>)}
+        </select>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Bedingungen für ein einzelnes Giveaway.
+ *
+ * Sie ersetzen die serverweiten Einstellungen nicht, sie kommen dazu: Listen
+ * werden vereinigt, Bonus-Lose je Rolle addiert. Genau das sagt auch der Hinweis
+ * über den Feldern, sonst liest sich ein leeres Feld wie "keine Bedingungen".
+ */
+function EligibilityFields({ roles, blacklist, setBlacklist, whitelist, setWhitelist, bonus, setBonus }: {
+  roles: Role[];
+  blacklist: string[]; setBlacklist: (v: string[]) => void;
+  whitelist: string[]; setWhitelist: (v: string[]) => void;
+  bonus: Record<string, number>; setBonus: (v: Record<string, number>) => void;
+}) {
+  const { t } = useCtx();
+  return (
+    <div className="flex flex-col gap-3 rounded-lg border border-[var(--color-border)] p-3">
+      <div>
+        <h4 className="text-sm font-semibold">{t.elig_title}</h4>
+        <p className="text-xs text-[var(--color-muted-foreground)]">{t.elig_hint}</p>
+      </div>
+      <Field label={t.s_blacklist}>
+        <RoleMultiSelect roles={roles} value={blacklist} onChange={setBlacklist} />
+      </Field>
+      <Field label={t.s_whitelist}>
+        <RoleMultiSelect roles={roles} value={whitelist} onChange={setWhitelist} />
+      </Field>
+      <Field label={t.s_bonus}>
+        <BonusRoleEditor roles={roles} value={bonus} onChange={setBonus} />
+      </Field>
+    </div>
+  );
+}
+
+/** Bedingungs-Eingaben in das Format des Steuer-Endpunkts bringen. */
+function eligibilityPayload(blacklist: string[], whitelist: string[], bonus: Record<string, number>) {
+  return {
+    blacklistRoles: blacklist,
+    whitelistRoles: whitelist,
+    // Der Bot lehnt alles außerhalb von 1 bis 100 ab. Beim Tippen darf im Feld
+    // trotzdem kurz etwas anderes stehen, geklemmt wird deshalb erst hier.
+    bonusRoles: clampBonus(bonus),
+  };
 }
 
 function RoleSelect({ roles, value, onChange }: { roles: Role[]; value: string | null; onChange: (v: string | null) => void }) {
