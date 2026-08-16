@@ -155,9 +155,28 @@ cat > "$VHOST_FILE" << APACHE
         AllowOverride None
         Require all denied
 
-        # Only allow safe file types
-        <FilesMatch "\.(html|pdf|png|jpg|jpeg|gif|webp|mp4|mp3|zip|txt)$">
+        # The transcript page itself — the only file served as HTML. Matched by
+        # exact name, so an uploaded "x.html" could never be rendered even if the
+        # upload route's extension allow-list were ever widened by mistake.
+        <Files "transcript.html">
             Require all granted
+        </Files>
+
+        # Media the browser may render inline, served with its real Content-Type.
+        # Images must stay inline: the transcript references them via <img>.
+        <FilesMatch "\.(png|jpe?g|jfif|gif|webp|bmp|avif|tiff?|ico|heic|heif|pdf|mp4|webm|mov|mp3|wav|ogg|m4a|flac|opus)$">
+            Require all granted
+        </FilesMatch>
+
+        # Everything else: user-authored content (FiveM resources, configs,
+        # scripts, logs, archives). Downloadable, but never interpreted by the
+        # browser — a .lua whose first line is "<html>" must not become a rendered
+        # page on this origin. ForceType + Content-Disposition + nosniff together
+        # guarantee that, which is also why widening THIS list stays cheap.
+        <FilesMatch "\.(zip|rar|7z|tar|gz|tgz|bz2|xz|zst|txt|log|md|csv|conf|properties|patch|diff|lua|js|ts|css|json|xml|sql|cfg|ini|toml|ya?ml|meta|ymap|ytyp|ytd|yft|ydr|ydd|ybn|ycd|ynv|rpf|fxap|db|sqlite|mkv|avi|wmv|mpe?g|m4v|docx|xlsx|pptx|odt|ods)$">
+            Require all granted
+            ForceType application/octet-stream
+            Header always set Content-Disposition "attachment"
         </FilesMatch>
     </Directory>
 

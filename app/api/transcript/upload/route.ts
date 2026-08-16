@@ -120,7 +120,8 @@ async function reencodeImage(ext: string, raw: Buffer): Promise<Buffer> {
   switch (ext) {
     case 'png':  return img.png().toBuffer();
     case 'jpg':
-    case 'jpeg': return img.jpeg().toBuffer();
+    case 'jpeg':
+    case 'jfif': return img.jpeg().toBuffer();   // .jfif is a JPEG under another name
     case 'webp': return img.webp().toBuffer();
     case 'gif':  return img.gif().toBuffer();
     default:     return raw;
