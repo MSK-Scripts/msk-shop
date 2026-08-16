@@ -716,7 +716,7 @@ export const giveawayDashboardTranslations = {
     c_manual_code:    'Code for all winners',
     c_manual_per:     'Code per winner',
     c_manual_note:    'Note for the DM (e.g. where to redeem it)',
-    c_manual_hint:    'For a joint giveaway with another creator: enter a code from their shop. The bot only delivers it, so it cannot generate, check or revoke it — and it takes precedence over a code the bot would create.',
+    c_manual_hint:    'For a joint giveaway with another creator: enter a code from their shop. The bot only delivers it, so it cannot generate, check or revoke it. If you also set up a coupon above, the winner receives both codes.',
 
     // Tebex store (owner only)
     tab_store:        'Tebex store',
@@ -844,7 +844,7 @@ export const giveawayDashboardTranslations = {
     c_manual_code:    'Code für alle Gewinner',
     c_manual_per:     'Code je Gewinner',
     c_manual_note:    'Hinweis für die DM (z. B. wo einzulösen)',
-    c_manual_hint:    'Für ein gemeinsames Giveaway mit einem anderen Entwickler: trag hier einen Code aus dessen Shop ein. Der Bot stellt ihn nur zu, er kann ihn nicht erzeugen, prüfen oder widerrufen — und er hat Vorrang vor einem Code, den der Bot selbst anlegen würde.',
+    c_manual_hint:    'Für ein gemeinsames Giveaway mit einem anderen Entwickler: trag hier einen Code aus dessen Shop ein. Der Bot stellt ihn nur zu, er kann ihn nicht erzeugen, prüfen oder widerrufen. Ist oben zusätzlich ein Coupon eingestellt, bekommt der Gewinner beide Codes.',
     c_needs_store:    'Erst den Tebex-Store hinterlegen (Reiter Store, nur Server-Besitzer).',
 
     // Tebex-Store (nur Besitzer)
