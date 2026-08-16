@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { LogOut, Check, X } from 'lucide-react'
 import {
   ADMIN_PERMISSIONS,
@@ -46,12 +47,16 @@ export default function AdminClient({ member }: { member: AdminTeamMember }) {
     !t.perm || (Array.isArray(t.perm) ? t.perm : [t.perm]).some(p => memberHasPermission(member, p)),
   )
   const [active, setActive] = useState(tabs[0].id)
+  const router = useRouter()
 
   const handleLogout = async () => {
     try {
       await fetch('/api/admin/logout', { method: 'POST' })
     } catch { /* leave even on network error */ }
-    window.location.href = '/admin'
+    // refresh() nach push(): die Seite entscheidet server-seitig am Cookie,
+    // ob sie das Panel oder den Login zeigt, und das Cookie ist gerade weg.
+    router.push('/admin')
+    router.refresh()
   }
 
   return (

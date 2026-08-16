@@ -196,6 +196,9 @@ export default function VerifyClient({ session, step: _step, errorCode }: Props)
       // Hard-Navigation: das gerade gesetzte msk_dashboard_session-Cookie muss
       // server-seitig gelesen werden. router.push() würde ggf. einen im
       // Router-Cache liegenden (ausgeloggten) Redirect zurück auf /verify abspielen.
+      // Die Lint-Regel kennt diesen Fall nicht: sie sieht ein internes Ziel und
+      // schlägt router.push() vor, das hier nachweislich den Login zerlegt hat.
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
       window.location.href = '/ticketbot/dashboard'
     } catch { setCompleteError('Network error. Please try again.') }
     finally   { setDashboardLoading(false) }
@@ -209,6 +212,10 @@ export default function VerifyClient({ session, step: _step, errorCode }: Props)
       const data = await res.json()
       const indicator = data.indicator as typeof discordStatus
       if (indicator === 'none') {
+        // Route Handler, keine Seite: der Endpunkt antwortet mit einem Redirect
+        // zu Discord. Der Next-Router kann das nicht, er erwartet eine Route im
+        // App-Router. Die Regel prüft nur den führenden Slash.
+        // eslint-disable-next-line @next/next/no-location-assign-relative-destination
         window.location.href = '/api/auth/discord-verify'
         return
       }

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import {
   Globe, CheckCircle, AlertCircle, Clock, Trash2,
@@ -76,13 +77,17 @@ export default function DashboardClient({ guilds, serverIp }: Props) {
   const t = dashboardTranslations[lang]
 
   const [selectedId, setSelectedId] = useState(guilds[0]?.guild_id ?? '')
+  const router = useRouter()
   const selected = guilds.find(g => g.guild_id === selectedId) ?? guilds[0]
 
   const handleLogout = async () => {
     try {
       await fetch('/api/dashboard/logout', { method: 'POST' })
     } catch { /* leave even on network error */ }
-    window.location.href = '/ticketbot/verify'
+    // refresh() nach push(): /ticketbot/verify liest das Session-Cookie
+    // server-seitig, und das ist gerade gelöscht worden.
+    router.push('/ticketbot/verify')
+    router.refresh()
   }
 
   return (
