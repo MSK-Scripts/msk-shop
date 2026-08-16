@@ -15,6 +15,10 @@ const ACTION_PATH: Record<string, string> = {
   resume:   '/giveaway/resume',
   reroll:   '/giveaway/reroll',
   settings: '/settings',
+  // Giveaway-Vorlagen. Derselbe Service wie /gtemplate im Bot, deshalb prüft
+  // der Bot auch hier, was eine gültige Vorlage ist.
+  templateSave:   '/template/save',
+  templateDelete: '/template/delete',
   // Tebex-Store der Guild. Der Bot lässt diese Pfade nur für den Guild-Besitzer
   // zu und prüft das selbst gegen guild.ownerId.
   tebexSecret: '/tebex/secret',

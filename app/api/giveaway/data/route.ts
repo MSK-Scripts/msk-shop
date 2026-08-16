@@ -5,7 +5,7 @@ import { controlGet }                        from '@/lib/giveawayControl';
 import { query }                             from '@/lib/db';
 
 // Lese-Proxy zum Bot-Steuer-Endpunkt. guildId kommt IMMER aus der Session.
-const ALLOWED = new Set(['giveaways', 'giveaway', 'settings', 'roles', 'channels', 'tebex', 'tebexPackages']);
+const ALLOWED = new Set(['giveaways', 'giveaway', 'settings', 'roles', 'channels', 'templates', 'tebex', 'tebexPackages']);
 
 // Diese Abfragen prüft der Bot gegen guild.ownerId, dafür braucht er die
 // Discord-ID des Users. Sie kommt aus der signierten Session, nie aus der Query.

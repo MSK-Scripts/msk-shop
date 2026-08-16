@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import {
   Gift, Plus, Pause, Play, Square, Ban, Dice5, Pencil, Clock,
   LogOut, RefreshCw, Settings as SettingsIcon, Loader2, ExternalLink,
-  Store, Ticket, Eye, EyeOff, Trash2, ShieldCheck,
+  Store, Ticket, Eye, EyeOff, Trash2, ShieldCheck, LayoutTemplate, Save,
 } from 'lucide-react';
 import { giveawayDashboardTranslations, type Lang } from '@/lib/i18n';
 import { useLang } from '@/components/i18n/LangProvider';
@@ -35,6 +35,16 @@ interface Giveaway {
   couponManualCode?: string | null;
   couponManualCodesPerPrize?: string[];
   couponManualNote?: string | null;
+}
+
+/**
+ * Ein vorbereitetes Giveaway ohne Kanal und ohne Endzeitpunkt.
+ * Trägt seit Bot v1.7.0 auch die Preisliste — ohne sie könnte eine Vorlage
+ * nicht abbilden, was ein Giveaway seit v1.5.0 ausmacht.
+ */
+interface Template {
+  id: number; name: string; title: string; description: string;
+  duration: string; winnersCount: number; prizes: string[]; prizeMode: PrizeMode;
 }
 
 /** Ein Preis pro Zeile, gleiche Regel wie im Bot (src/utils/prizes.js). */
@@ -75,8 +85,9 @@ export default function DashboardClient({ guildId, owner }: { guildId: string; o
   const router = useRouter();
   const { lang } = useLang();
   const t = giveawayDashboardTranslations[lang];
-  const [tab, setTab] = useState<'giveaways' | 'settings' | 'store'>('giveaways');
+  const [tab, setTab] = useState<'giveaways' | 'templates' | 'settings' | 'store'>('giveaways');
   const [giveaways, setGiveaways] = useState<Giveaway[]>([]);
+  const [templates, setTemplates] = useState<Template[]>([]);
   const [settings, setSettings] = useState<Settings | null>(null);
   const [roles, setRoles] = useState<Role[]>([]);
   const [channels, setChannels] = useState<Channel[]>([]);
@@ -96,17 +107,23 @@ export default function DashboardClient({ guildId, owner }: { guildId: string; o
     if (d?.giveaways) setGiveaways(d.giveaways);
   }, [get]);
 
+  const reloadTemplates = useCallback(async () => {
+    const d = await get('templates');
+    if (d?.templates) setTemplates(d.templates);
+  }, [get]);
+
   // Only touches state after the await, so the mount effect below causes no
   // extra render pass (`loading` and `error` already start out correct).
   const runLoadAll = useCallback(async () => {
     try {
       // Der Tebex-Status wird nur für Besitzer geladen — für alle anderen
       // antwortet der Bot ohnehin mit 403.
-      const [gw, st, rl, ch, tx] = await Promise.all([
-        get('giveaways'), get('settings'), get('roles'), get('channels'),
+      const [gw, st, rl, ch, tp, tx] = await Promise.all([
+        get('giveaways'), get('settings'), get('roles'), get('channels'), get('templates'),
         owner ? get('tebex') : Promise.resolve(null),
       ]);
       if (gw?.giveaways) setGiveaways(gw.giveaways);
+      if (tp?.templates) setTemplates(tp.templates);
       if (st?.settings) setSettings(st.settings);
       if (rl?.roles) setRoles(rl.roles);
       if (ch?.channels) setChannels(ch.channels);
@@ -180,6 +197,7 @@ export default function DashboardClient({ guildId, owner }: { guildId: string; o
         <div className="mb-6 flex gap-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)] p-1 text-sm font-semibold">
           {([
             ['giveaways', t.tab_giveaways],
+            ['templates', t.tab_templates],
             ['settings', t.tab_settings],
             // Der Store-Reiter existiert nur für den Server-Besitzer.
             ...(owner ? [['store', t.tab_store] as const] : []),
@@ -192,7 +210,7 @@ export default function DashboardClient({ guildId, owner }: { guildId: string; o
                 tab === key ? 'bg-[var(--color-primary)] text-[var(--color-primary-foreground)]' : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]',
               )}
             >
-              {key === 'giveaways' ? <Gift className="h-4 w-4" /> : key === 'store' ? <Store className="h-4 w-4" /> : <SettingsIcon className="h-4 w-4" />} {label}
+              {key === 'giveaways' ? <Gift className="h-4 w-4" /> : key === 'templates' ? <LayoutTemplate className="h-4 w-4" /> : key === 'store' ? <Store className="h-4 w-4" /> : <SettingsIcon className="h-4 w-4" />} {label}
             </button>
           ))}
         </div>
@@ -201,7 +219,11 @@ export default function DashboardClient({ guildId, owner }: { guildId: string; o
           <GiveawaysTab
             giveaways={giveaways} channels={channels} reload={reloadGiveaways} setError={setError}
             packages={packages} couponReady={Boolean(tebex?.configured)} ownerHint={owner}
+            templates={templates}
           />
+        )}
+        {tab === 'templates' && (
+          <TemplatesTab templates={templates} reload={reloadTemplates} setError={setError} />
         )}
         {tab === 'settings' && (
           <SettingsTab settings={settings} roles={roles} channels={channels} onSaved={(s) => setSettings(s)} setError={setError} />
@@ -216,9 +238,9 @@ export default function DashboardClient({ guildId, owner }: { guildId: string; o
 
 // ── Giveaways-Tab ─────────────────────────────────────────────────────────────
 
-function GiveawaysTab({ giveaways, channels, reload, setError, packages, couponReady, ownerHint }: {
+function GiveawaysTab({ giveaways, channels, reload, setError, packages, couponReady, ownerHint, templates }: {
   giveaways: Giveaway[]; channels: Channel[]; reload: () => Promise<void>; setError: (e: string | null) => void;
-  packages: TebexPackage[]; couponReady: boolean; ownerHint: boolean;
+  packages: TebexPackage[]; couponReady: boolean; ownerHint: boolean; templates: Template[];
 }) {
   const { t, lang } = useCtx();
   const [busy, setBusy] = useState<string | null>(null);
@@ -252,7 +274,7 @@ function GiveawaysTab({ giveaways, channels, reload, setError, packages, couponR
       {showCreate && (
         <CreateForm
           channels={channels} busy={busy === 'create'} packages={packages}
-          couponReady={couponReady} ownerHint={ownerHint}
+          couponReady={couponReady} ownerHint={ownerHint} templates={templates}
           onCreate={async (p) => { await action({ action: 'create', ...p }, 'create'); setShowCreate(false); }}
         />
       )}
@@ -583,9 +605,9 @@ function couponPayload(
   };
 }
 
-function CreateForm({ channels, busy, onCreate, packages, couponReady, ownerHint }: {
+function CreateForm({ channels, busy, onCreate, packages, couponReady, ownerHint, templates }: {
   channels: Channel[]; busy: boolean; onCreate: (p: Record<string, unknown>) => void;
-  packages: TebexPackage[]; couponReady: boolean; ownerHint: boolean;
+  packages: TebexPackage[]; couponReady: boolean; ownerHint: boolean; templates: Template[];
 }) {
   const { t } = useCtx();
   const [channelId, setChannelId] = useState(channels[0]?.id ?? '');
@@ -595,6 +617,7 @@ function CreateForm({ channels, busy, onCreate, packages, couponReady, ownerHint
   const [prizeMode, setPrizeMode] = useState<PrizeMode>('ALL');
   const [winnersCount, setWinnersCount] = useState(1);
   const [duration, setDuration] = useState('1d');
+  const [fromTemplate, setFromTemplate] = useState('');
   const [percent, setPercent] = useState('');
   const [validDays, setValidDays] = useState('');
   const [selected, setSelected] = useState<number[]>([]);
@@ -604,9 +627,40 @@ function CreateForm({ channels, busy, onCreate, packages, couponReady, ownerHint
   const [manualNote, setManualNote] = useState('');
   const prizeList = splitPrizes(prizes);
 
+  /**
+   * Vorlage übernehmen: die Felder werden GEFÜLLT, nicht gesperrt.
+   *
+   * Eine Vorlage ist ein Startpunkt, kein Vertrag. Wer sie wählt und dann den
+   * Titel ändert, meint das auch so — und der Kanal steht ohnehin nie drin.
+   * Coupons bleiben unangetastet: die trägt eine Vorlage bewusst nicht, sie
+   * hängen an Paket-IDs eines konkreten Stores und wären schnell veraltet.
+   */
+  function applyTemplate(id: string) {
+    setFromTemplate(id);
+    const tpl = templates.find((x) => String(x.id) === id);
+    if (!tpl) return;
+    setTitle(tpl.title);
+    setDescription(tpl.description);
+    setPrizes(tpl.prizes.join('\n'));
+    setPrizeMode(tpl.prizeMode);
+    setWinnersCount(tpl.winnersCount);
+    setDuration(tpl.duration);
+  }
+
   return (
     <Card className="flex flex-col gap-3 p-4">
       <h3 className="font-semibold">{t.create_title}</h3>
+      {templates.length > 0 && (
+        <Field label={t.tpl_use}>
+          <select value={fromTemplate} onChange={(e) => applyTemplate(e.target.value)} className={selectCls}>
+            <option value="">{t.tpl_use_none}</option>
+            {templates.map((tpl) => (
+              <option key={tpl.id} value={tpl.id}>{tpl.name} · {tpl.title}</option>
+            ))}
+          </select>
+          {fromTemplate && <p className="mt-1 text-xs text-[var(--color-muted-foreground)]">{t.tpl_applied}</p>}
+        </Field>
+      )}
       <Field label={t.f_channel}>
         <select value={channelId} onChange={(e) => setChannelId(e.target.value)} className={selectCls}>
           {channels.map((c) => <option key={c.id} value={c.id}># {c.name}</option>)}
@@ -737,6 +791,182 @@ function EditButton({ giveaway, onSave, disabled, packages, couponReady, ownerHi
         }}>{t.btn_save}</Button>
       </div>
     </Card>
+  );
+}
+
+// ── Vorlagen-Tab ──────────────────────────────────────────────────────────────
+
+function TemplatesTab({ templates, reload, setError }: {
+  templates: Template[]; reload: () => Promise<void>; setError: (e: string | null) => void;
+}) {
+  const { t } = useCtx();
+  const [busy, setBusy] = useState<string | null>(null);
+  const [editing, setEditing] = useState<number | 'new' | null>(null);
+
+  /**
+   * Fehler des Bots in einen Satz übersetzen, den man lesen kann.
+   * Alles Unbekannte behält den Rohwert: eine erfundene Beschriftung wäre
+   * schlimmer als ein technischer Code, den man suchen kann.
+   */
+  function message(error: unknown): string {
+    const known: Record<string, string> = {
+      name_taken:      t.tpl_err_taken,
+      template_limit:  t.tpl_err_limit,
+      invalid_name:    t.tpl_err_name,
+      invalid_duration: t.tpl_err_duration,
+    };
+    const key = String(error ?? '');
+    return known[key] ?? `${t.err_prefix}: ${key || '?'}`;
+  }
+
+  async function act(action: string, payload: Record<string, unknown>, key: string) {
+    setBusy(key);
+    setError(null);
+    try {
+      const res = await fetch('/api/giveaway/action', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action, ...payload }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        setError(message(data?.error));
+        return false;
+      }
+      await reload();
+      return true;
+    } catch {
+      setError(t.err_network);
+      return false;
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      <Card className="p-4 text-sm text-[var(--color-muted-foreground)]">{t.tpl_hint}</Card>
+
+      <div className="flex justify-end">
+        <Button size="sm" onClick={() => setEditing(editing === 'new' ? null : 'new')}>
+          <Plus className="mr-2 h-4 w-4" /> {t.tpl_new}
+        </Button>
+      </div>
+
+      {editing === 'new' && (
+        <TemplateForm
+          busy={busy === 'new'}
+          onCancel={() => setEditing(null)}
+          onSave={async (p) => { if (await act('templateSave', p, 'new')) setEditing(null); }}
+        />
+      )}
+
+      {templates.length === 0 ? (
+        <Card className="p-8 text-center text-sm text-[var(--color-muted-foreground)]">{t.tpl_none}</Card>
+      ) : (
+        templates.map((tpl) => (
+          <Card key={tpl.id} className="flex flex-col gap-3 p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="rounded bg-[var(--color-muted)] px-2 py-0.5 font-mono text-[0.625rem] font-bold uppercase tracking-wider text-[var(--color-muted-foreground)]">
+                    {tpl.name}
+                  </span>
+                  <span className="font-mono text-xs text-[var(--color-muted-foreground)]">
+                    {tpl.duration} · {tpl.winnersCount} {t.tpl_winners}
+                  </span>
+                </div>
+                <p className="mt-1 truncate font-semibold">{tpl.title}</p>
+                {tpl.prizes.length > 0 && (
+                  <p className="mt-0.5 text-xs text-[var(--color-muted-foreground)]">
+                    {tpl.prizeMode === 'INDIVIDUAL'
+                      ? tpl.prizes.map((p, i) => `${i + 1}. ${p}`).join(' · ')
+                      : tpl.prizes.join(', ')}
+                  </p>
+                )}
+              </div>
+              <div className="flex shrink-0 gap-2">
+                <Button variant="outline" size="sm" onClick={() => setEditing(editing === tpl.id ? null : tpl.id)}>
+                  <Pencil className="mr-2 h-4 w-4" /> {t.tpl_edit}
+                </Button>
+                {/* Als einzige Aktion im Dashboard mit Rückfrage: ein Giveaway
+                    abzubrechen bleibt sichtbar und steht im Log, eine gelöschte
+                    Vorlage ist samt ihrem getippten Text weg. */}
+                <Button
+                  variant="danger" size="sm"
+                  disabled={busy === `del-${tpl.id}`}
+                  onClick={() => { if (confirm(t.tpl_delete_ask)) act('templateDelete', { id: tpl.id }, `del-${tpl.id}`); }}
+                >
+                  {busy === `del-${tpl.id}` ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />} {t.tpl_delete}
+                </Button>
+              </div>
+            </div>
+
+            {editing === tpl.id && (
+              <TemplateForm
+                template={tpl}
+                busy={busy === `edit-${tpl.id}`}
+                onCancel={() => setEditing(null)}
+                onSave={async (p) => { if (await act('templateSave', { id: tpl.id, ...p }, `edit-${tpl.id}`)) setEditing(null); }}
+              />
+            )}
+          </Card>
+        ))
+      )}
+    </div>
+  );
+}
+
+/**
+ * Formular zum Anlegen und Bearbeiten.
+ *
+ * Bewusst dieselben Preis-Felder wie beim Giveaway (`PrizeFields`): eine
+ * Vorlage, die Preise anders eingibt als das Giveaway, das aus ihr entsteht,
+ * wäre eine zweite Vorstellung davon, was ein Preis ist.
+ */
+function TemplateForm({ template, busy, onSave, onCancel }: {
+  template?: Template; busy: boolean;
+  onSave: (p: Record<string, unknown>) => void; onCancel: () => void;
+}) {
+  const { t } = useCtx();
+  const [name, setName] = useState(template?.name ?? '');
+  const [title, setTitle] = useState(template?.title ?? '');
+  const [description, setDescription] = useState(template?.description ?? '');
+  const [prizes, setPrizes] = useState((template?.prizes ?? []).join('\n'));
+  const [prizeMode, setPrizeMode] = useState<PrizeMode>(template?.prizeMode ?? 'ALL');
+  const [winnersCount, setWinnersCount] = useState(template?.winnersCount ?? 1);
+  const [duration, setDuration] = useState(template?.duration ?? '1d');
+
+  return (
+    <div className="flex flex-col gap-3 rounded-lg border border-[var(--color-border)] p-4">
+      <Field label={t.tpl_name}>
+        <Input value={name} maxLength={64} placeholder={t.tpl_name_ph} onChange={(e) => setName(e.target.value)} />
+      </Field>
+      <Field label={t.f_title}><Input value={title} maxLength={256} onChange={(e) => setTitle(e.target.value)} /></Field>
+      <Field label={t.f_description}>
+        <textarea value={description} maxLength={2000} rows={3} onChange={(e) => setDescription(e.target.value)} className={selectCls} />
+      </Field>
+      <PrizeFields
+        prizes={prizes} setPrizes={setPrizes}
+        mode={prizeMode} setMode={setPrizeMode}
+        winnersCount={winnersCount} setWinnersCount={setWinnersCount}
+      />
+      <Field label={t.f_duration}>
+        <Input value={duration} onChange={(e) => setDuration(e.target.value)} placeholder="1d2h30m" />
+      </Field>
+
+      <div className="flex justify-end gap-2">
+        <Button variant="outline" size="sm" onClick={onCancel}>{t.tpl_cancel}</Button>
+        <Button
+          size="sm"
+          disabled={busy || !name.trim() || !title.trim() || !description.trim() || !duration.trim()}
+          onClick={() => onSave({
+            name: name.trim(), title: title.trim(), description: description.trim(), duration: duration.trim(),
+            ...prizePayload(prizes, prizeMode, winnersCount),
+          })}
+        >
+          {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />} {t.tpl_save}
+        </Button>
+      </div>
+    </div>
   );
 }
 
