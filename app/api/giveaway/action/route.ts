@@ -19,6 +19,9 @@ const ACTION_PATH: Record<string, string> = {
   // der Bot auch hier, was eine gültige Vorlage ist.
   templateSave:   '/template/save',
   templateDelete: '/template/delete',
+  // Ein bestehendes Giveaway als Vorlage sichern. Der Bot baut die Vorlage aus
+  // dem Datensatz, hier gehen nur die Giveaway-ID und der Name hin.
+  templateFrom:   '/template/from',
   // Tebex-Store der Guild. Der Bot lässt diese Pfade nur für den Guild-Besitzer
   // zu und prüft das selbst gegen guild.ownerId.
   tebexSecret: '/tebex/secret',

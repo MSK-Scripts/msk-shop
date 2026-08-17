@@ -35,21 +35,28 @@ interface Giveaway {
   couponManualCode?: string | null;
   couponManualCodesPerPrize?: string[];
   couponManualNote?: string | null;
-  /** Bedingungen NUR für dieses Giveaway, zusätzlich zu den serverweiten. */
-  blacklistRoles?: string[];
-  whitelistRoles?: string[];
-  /** Rollen-ID zu zusätzlichen Losen. Wird mit den serverweiten addiert. */
-  bonusRoles?: Record<string, number>;
+  /**
+   * Bedingungen dieses Giveaways. Sie ERSETZEN die serverweiten, jedes Feld für
+   * sich. `null` heißt "nichts Eigenes", dann gilt die Server-Einstellung —
+   * eine leere Liste dagegen heißt "für dieses Giveaway gilt keine".
+   */
+  blacklistRoles?: string[] | null;
+  whitelistRoles?: string[] | null;
+  bonusRoles?: Record<string, number> | null;
 }
 
 /**
  * Ein vorbereitetes Giveaway ohne Kanal und ohne Endzeitpunkt.
- * Trägt seit Bot v1.7.0 auch die Preisliste — ohne sie könnte eine Vorlage
- * nicht abbilden, was ein Giveaway seit v1.5.0 ausmacht.
+ * Trägt seit Bot v1.7.0 die Preisliste und seit v1.9.0 die Bedingungen — ohne
+ * sie könnte eine Vorlage nicht abbilden, was ein Giveaway ausmacht.
  */
 interface Template {
   id: number; name: string; title: string; description: string;
   duration: string; winnersCount: number; prizes: string[]; prizeMode: PrizeMode;
+  /** null = die Vorlage sagt nichts dazu, das Giveaway erbt die Server-Einstellung. */
+  blacklistRoles?: string[] | null;
+  whitelistRoles?: string[] | null;
+  bonusRoles?: Record<string, number> | null;
 }
 
 /** Ein Preis pro Zeile, gleiche Regel wie im Bot (src/utils/prizes.js). */
@@ -238,11 +245,11 @@ export default function DashboardClient({ guildId, owner }: { guildId: string; o
           <GiveawaysTab
             giveaways={giveaways} channels={channels} roles={roles} reload={reloadGiveaways} setError={setError}
             packages={packages} couponReady={Boolean(tebex?.configured)} ownerHint={owner}
-            templates={templates}
+            templates={templates} settings={settings} reloadTemplates={reloadTemplates}
           />
         )}
         {tab === 'templates' && (
-          <TemplatesTab templates={templates} reload={reloadTemplates} setError={setError} />
+          <TemplatesTab templates={templates} roles={roles} settings={settings} reload={reloadTemplates} setError={setError} />
         )}
         {tab === 'settings' && (
           <SettingsTab settings={settings} roles={roles} channels={channels} onSaved={(s) => setSettings(s)} setError={setError} />
@@ -257,13 +264,17 @@ export default function DashboardClient({ guildId, owner }: { guildId: string; o
 
 // ── Giveaways-Tab ─────────────────────────────────────────────────────────────
 
-function GiveawaysTab({ giveaways, channels, roles, reload, setError, packages, couponReady, ownerHint, templates }: {
+function GiveawaysTab({ giveaways, channels, roles, reload, setError, packages, couponReady, ownerHint, templates, settings, reloadTemplates }: {
   giveaways: Giveaway[]; channels: Channel[]; roles: Role[]; reload: () => Promise<void>; setError: (e: string | null) => void;
   packages: TebexPackage[]; couponReady: boolean; ownerHint: boolean; templates: Template[];
+  settings: Settings | null; reloadTemplates: () => Promise<void>;
 }) {
   const { t, lang } = useCtx();
   const [busy, setBusy] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
+  // Welches Giveaway zuletzt als Vorlage gesichert wurde, nur für die Rückmeldung
+  // an der Karte. Der Vorlagen-Reiter zeigt das Ergebnis.
+  const [savedTemplate, setSavedTemplate] = useState<string | null>(null);
 
   async function action(payload: Record<string, unknown>, key: string) {
     setBusy(key);
@@ -282,6 +293,34 @@ function GiveawaysTab({ giveaways, channels, roles, reload, setError, packages, 
     }
   }
 
+  /**
+   * Ein Giveaway als Vorlage sichern.
+   *
+   * Eigene Funktion statt `action`: hier ist danach die Vorlagen-Liste veraltet,
+   * nicht die Giveaway-Liste. Der Bot baut die Vorlage aus dem Datensatz, von
+   * hier gehen nur ID und Name hin.
+   */
+  async function saveAsTemplate(g: Giveaway) {
+    const name = window.prompt(t.tpl_from_ask, g.title);
+    if (name === null) return;
+    setBusy(`${g.id}:tpl`);
+    setError(null);
+    try {
+      const res = await fetch('/api/giveaway/action', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'templateFrom', id: g.id, name: name.trim() || g.title }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) { setError(`${t.err_prefix}: ${data?.error ?? res.status}`); return; }
+      await reloadTemplates();
+      setSavedTemplate(g.id);
+    } catch {
+      setError(t.err_network);
+    } finally {
+      setBusy(null);
+    }
+  }
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex justify-end">
@@ -293,7 +332,7 @@ function GiveawaysTab({ giveaways, channels, roles, reload, setError, packages, 
       {showCreate && (
         <CreateForm
           channels={channels} roles={roles} busy={busy === 'create'} packages={packages}
-          couponReady={couponReady} ownerHint={ownerHint} templates={templates}
+          couponReady={couponReady} ownerHint={ownerHint} templates={templates} settings={settings}
           onCreate={async (p) => { await action({ action: 'create', ...p }, 'create'); setShowCreate(false); }}
         />
       )}
@@ -351,11 +390,16 @@ function GiveawaysTab({ giveaways, channels, roles, reload, setError, packages, 
               )}
               {(g.status === 'ACTIVE' || g.status === 'PAUSED') && (
                 <EditButton
-                  giveaway={g} roles={roles} packages={packages} couponReady={couponReady} ownerHint={ownerHint}
+                  giveaway={g} roles={roles} settings={settings} packages={packages} couponReady={couponReady} ownerHint={ownerHint}
                   onSave={(p) => action({ action: 'edit', id: g.id, ...p }, `${g.id}:edit`)}
                   disabled={busy?.startsWith(g.id)}
                 />
               )}
+              {/* Für jeden Status: auch ein laufendes Giveaway darf man sichern,
+                  wenn man es wiederholen will. */}
+              <Button variant="ghost" size="sm" disabled={busy?.startsWith(g.id)} onClick={() => saveAsTemplate(g)}>
+                <LayoutTemplate className="mr-1.5 h-3.5 w-3.5" /> {savedTemplate === g.id ? t.tpl_from_done : t.tpl_from}
+              </Button>
             </div>
 
             {g.prizes?.length > 0 && (
@@ -624,9 +668,10 @@ function couponPayload(
   };
 }
 
-function CreateForm({ channels, roles, busy, onCreate, packages, couponReady, ownerHint, templates }: {
+function CreateForm({ channels, roles, busy, onCreate, packages, couponReady, ownerHint, templates, settings }: {
   channels: Channel[]; roles: Role[]; busy: boolean; onCreate: (p: Record<string, unknown>) => void;
   packages: TebexPackage[]; couponReady: boolean; ownerHint: boolean; templates: Template[];
+  settings: Settings | null;
 }) {
   const { t } = useCtx();
   const [channelId, setChannelId] = useState(channels[0]?.id ?? '');
@@ -644,10 +689,20 @@ function CreateForm({ channels, roles, busy, onCreate, packages, couponReady, ow
   const [manualCode, setManualCode] = useState('');
   const [manualPerPrize, setManualPerPrize] = useState<string[]>([]);
   const [manualNote, setManualNote] = useState('');
-  const [blacklistRoles, setBlacklistRoles] = useState<string[]>([]);
-  const [whitelistRoles, setWhitelistRoles] = useState<string[]>([]);
-  const [bonusRoles, setBonusRoles] = useState<Record<string, number>>({});
+  // Die Bedingungen ersetzen die serverweiten, deshalb stehen sie hier von
+  // Anfang an drin: was im Formular steht, gilt danach für dieses Giveaway.
+  // Leer vorbelegt würde das Anlegen jede Server-Einstellung stillschweigend
+  // abschalten.
+  const [blacklistRoles, setBlacklistRoles] = useState<string[]>(settings?.blacklist ?? []);
+  const [whitelistRoles, setWhitelistRoles] = useState<string[]>(settings?.whitelist ?? []);
+  const [bonusRoles, setBonusRoles] = useState<Record<string, number>>(settings?.bonusRoles ?? {});
   const prizeList = splitPrizes(prizes);
+
+  function resetEligibility() {
+    setBlacklistRoles(settings?.blacklist ?? []);
+    setWhitelistRoles(settings?.whitelist ?? []);
+    setBonusRoles(settings?.bonusRoles ?? {});
+  }
 
   /**
    * Vorlage übernehmen: die Felder werden GEFÜLLT, nicht gesperrt.
@@ -656,6 +711,9 @@ function CreateForm({ channels, roles, busy, onCreate, packages, couponReady, ow
    * Titel ändert, meint das auch so — und der Kanal steht ohnehin nie drin.
    * Coupons bleiben unangetastet: die trägt eine Vorlage bewusst nicht, sie
    * hängen an Paket-IDs eines konkreten Stores und wären schnell veraltet.
+   *
+   * Bedingungen, zu denen die Vorlage nichts sagt (null), fallen zurück auf die
+   * Server-Einstellungen — dieselbe Vorbelegung wie ohne Vorlage.
    */
   function applyTemplate(id: string) {
     setFromTemplate(id);
@@ -667,6 +725,9 @@ function CreateForm({ channels, roles, busy, onCreate, packages, couponReady, ow
     setPrizeMode(tpl.prizeMode);
     setWinnersCount(tpl.winnersCount);
     setDuration(tpl.duration);
+    setBlacklistRoles(tpl.blacklistRoles ?? settings?.blacklist ?? []);
+    setWhitelistRoles(tpl.whitelistRoles ?? settings?.whitelist ?? []);
+    setBonusRoles(tpl.bonusRoles ?? settings?.bonusRoles ?? {});
   }
 
   return (
@@ -716,7 +777,7 @@ function CreateForm({ channels, roles, busy, onCreate, packages, couponReady, ow
       />
 
       <EligibilityFields
-        roles={roles}
+        roles={roles} onReset={resetEligibility}
         blacklist={blacklistRoles} setBlacklist={setBlacklistRoles}
         whitelist={whitelistRoles} setWhitelist={setWhitelistRoles}
         bonus={bonusRoles} setBonus={setBonusRoles}
@@ -764,8 +825,9 @@ function RerollSingle({ onReroll, disabled }: { onReroll: (wid: string) => void;
   );
 }
 
-function EditButton({ giveaway, roles, onSave, disabled, packages, couponReady, ownerHint }: {
-  giveaway: Giveaway; roles: Role[]; onSave: (p: Record<string, unknown>) => void; disabled?: boolean;
+function EditButton({ giveaway, roles, settings, onSave, disabled, packages, couponReady, ownerHint }: {
+  giveaway: Giveaway; roles: Role[]; settings: Settings | null;
+  onSave: (p: Record<string, unknown>) => void; disabled?: boolean;
   packages: TebexPackage[]; couponReady: boolean; ownerHint: boolean;
 }) {
   const { t } = useCtx();
@@ -782,10 +844,18 @@ function EditButton({ giveaway, roles, onSave, disabled, packages, couponReady, 
   const [manualCode, setManualCode] = useState(giveaway.couponManualCode ?? '');
   const [manualPerPrize, setManualPerPrize] = useState<string[]>(giveaway.couponManualCodesPerPrize ?? []);
   const [manualNote, setManualNote] = useState(giveaway.couponManualNote ?? '');
-  const [blacklistRoles, setBlacklistRoles] = useState<string[]>(giveaway.blacklistRoles ?? []);
-  const [whitelistRoles, setWhitelistRoles] = useState<string[]>(giveaway.whitelistRoles ?? []);
-  const [bonusRoles, setBonusRoles] = useState<Record<string, number>>(giveaway.bonusRoles ?? {});
+  // null heißt "das Giveaway erbt" — dann stehen hier die Server-Einstellungen,
+  // also das, was gerade tatsächlich gilt. Leer wäre schlicht falsch.
+  const [blacklistRoles, setBlacklistRoles] = useState<string[]>(giveaway.blacklistRoles ?? settings?.blacklist ?? []);
+  const [whitelistRoles, setWhitelistRoles] = useState<string[]>(giveaway.whitelistRoles ?? settings?.whitelist ?? []);
+  const [bonusRoles, setBonusRoles] = useState<Record<string, number>>(giveaway.bonusRoles ?? settings?.bonusRoles ?? {});
   const prizeList = splitPrizes(prizes);
+
+  function resetEligibility() {
+    setBlacklistRoles(settings?.blacklist ?? []);
+    setWhitelistRoles(settings?.whitelist ?? []);
+    setBonusRoles(settings?.bonusRoles ?? {});
+  }
   if (!open) return <Button variant="ghost" size="sm" disabled={disabled} onClick={() => setOpen(true)}><Pencil className="mr-1.5 h-3.5 w-3.5" /> {t.btn_edit}</Button>;
   return (
     <Card className="mt-2 flex w-full flex-col gap-3 p-3">
@@ -813,7 +883,7 @@ function EditButton({ giveaway, roles, onSave, disabled, packages, couponReady, 
       />
 
       <EligibilityFields
-        roles={roles}
+        roles={roles} onReset={resetEligibility}
         blacklist={blacklistRoles} setBlacklist={setBlacklistRoles}
         whitelist={whitelistRoles} setWhitelist={setWhitelistRoles}
         bonus={bonusRoles} setBonus={setBonusRoles}
@@ -837,8 +907,9 @@ function EditButton({ giveaway, roles, onSave, disabled, packages, couponReady, 
 
 // ── Vorlagen-Tab ──────────────────────────────────────────────────────────────
 
-function TemplatesTab({ templates, reload, setError }: {
-  templates: Template[]; reload: () => Promise<void>; setError: (e: string | null) => void;
+function TemplatesTab({ templates, roles, settings, reload, setError }: {
+  templates: Template[]; roles: Role[]; settings: Settings | null;
+  reload: () => Promise<void>; setError: (e: string | null) => void;
 }) {
   const { t } = useCtx();
   const [busy, setBusy] = useState<string | null>(null);
@@ -894,7 +965,7 @@ function TemplatesTab({ templates, reload, setError }: {
 
       {editing === 'new' && (
         <TemplateForm
-          busy={busy === 'new'}
+          busy={busy === 'new'} roles={roles} settings={settings}
           onCancel={() => setEditing(null)}
           onSave={async (p) => { if (await act('templateSave', p, 'new')) setEditing(null); }}
         />
@@ -923,6 +994,13 @@ function TemplatesTab({ templates, reload, setError }: {
                       : tpl.prizes.join(', ')}
                   </p>
                 )}
+                {/* Nur der Hinweis, dass die Vorlage eigene Bedingungen trägt.
+                    Welche das sind, steht im Formular. */}
+                {(tpl.blacklistRoles || tpl.whitelistRoles || tpl.bonusRoles) && (
+                  <span className="mt-1 inline-flex items-center gap-1 rounded bg-[var(--color-muted)] px-1.5 py-0.5 font-mono text-[0.625rem] text-[var(--color-muted-foreground)]">
+                    <ShieldCheck className="h-3 w-3" /> {t.tpl_conditions}
+                  </span>
+                )}
               </div>
               <div className="flex shrink-0 gap-2">
                 <Button variant="outline" size="sm" onClick={() => setEditing(editing === tpl.id ? null : tpl.id)}>
@@ -943,7 +1021,7 @@ function TemplatesTab({ templates, reload, setError }: {
 
             {editing === tpl.id && (
               <TemplateForm
-                template={tpl}
+                template={tpl} roles={roles} settings={settings}
                 busy={busy === `edit-${tpl.id}`}
                 onCancel={() => setEditing(null)}
                 onSave={async (p) => { if (await act('templateSave', { id: tpl.id, ...p }, `edit-${tpl.id}`)) setEditing(null); }}
@@ -963,8 +1041,8 @@ function TemplatesTab({ templates, reload, setError }: {
  * Vorlage, die Preise anders eingibt als das Giveaway, das aus ihr entsteht,
  * wäre eine zweite Vorstellung davon, was ein Preis ist.
  */
-function TemplateForm({ template, busy, onSave, onCancel }: {
-  template?: Template; busy: boolean;
+function TemplateForm({ template, roles, settings, busy, onSave, onCancel }: {
+  template?: Template; roles: Role[]; settings: Settings | null; busy: boolean;
   onSave: (p: Record<string, unknown>) => void; onCancel: () => void;
 }) {
   const { t } = useCtx();
@@ -975,6 +1053,21 @@ function TemplateForm({ template, busy, onSave, onCancel }: {
   const [prizeMode, setPrizeMode] = useState<PrizeMode>(template?.prizeMode ?? 'ALL');
   const [winnersCount, setWinnersCount] = useState(template?.winnersCount ?? 1);
   const [duration, setDuration] = useState(template?.duration ?? '1d');
+
+  /**
+   * Anders als beim Giveaway ist "erben" hier die Voreinstellung.
+   *
+   * Eine Vorlage lebt Monate. Die Server-Einstellungen hier einzufrieren würde
+   * heißen, dass jedes Giveaway aus ihr eine spätere Änderung daran nicht
+   * mitbekommt — genau der Grund, warum auch die Coupons nicht in eine Vorlage
+   * gehören. Wer eigene Bedingungen will, schaltet sie ein.
+   */
+  const [ownConditions, setOwnConditions] = useState(
+    Boolean(template?.blacklistRoles || template?.whitelistRoles || template?.bonusRoles),
+  );
+  const [blacklistRoles, setBlacklistRoles] = useState<string[]>(template?.blacklistRoles ?? settings?.blacklist ?? []);
+  const [whitelistRoles, setWhitelistRoles] = useState<string[]>(template?.whitelistRoles ?? settings?.whitelist ?? []);
+  const [bonusRoles, setBonusRoles] = useState<Record<string, number>>(template?.bonusRoles ?? settings?.bonusRoles ?? {});
 
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-[var(--color-border)] p-4">
@@ -994,6 +1087,22 @@ function TemplateForm({ template, busy, onSave, onCancel }: {
         <Input value={duration} onChange={(e) => setDuration(e.target.value)} placeholder="1d2h30m" />
       </Field>
 
+      <div className="flex flex-col gap-2 rounded-lg border border-[var(--color-border)] p-3">
+        <label className="flex items-center gap-2 text-sm font-semibold">
+          <input type="checkbox" checked={ownConditions} onChange={(e) => setOwnConditions(e.target.checked)} />
+          {t.tpl_own_conditions}
+        </label>
+        <p className="text-xs text-[var(--color-muted-foreground)]">{t.tpl_own_hint}</p>
+        {ownConditions && (
+          <EligibilityFields
+            roles={roles}
+            blacklist={blacklistRoles} setBlacklist={setBlacklistRoles}
+            whitelist={whitelistRoles} setWhitelist={setWhitelistRoles}
+            bonus={bonusRoles} setBonus={setBonusRoles}
+          />
+        )}
+      </div>
+
       <div className="flex justify-end gap-2">
         <Button variant="outline" size="sm" onClick={onCancel}>{t.tpl_cancel}</Button>
         <Button
@@ -1002,6 +1111,11 @@ function TemplateForm({ template, busy, onSave, onCancel }: {
           onClick={() => onSave({
             name: name.trim(), title: title.trim(), description: description.trim(), duration: duration.trim(),
             ...prizePayload(prizes, prizeMode, winnersCount),
+            // Ausgeschaltet heißt null, nicht leere Liste: leer wäre eine eigene
+            // Bedingung ("hier gilt keine"), null lässt die Server-Einstellung gelten.
+            ...(ownConditions
+              ? eligibilityPayload(blacklistRoles, whitelistRoles, bonusRoles)
+              : { blacklistRoles: null, whitelistRoles: null, bonusRoles: null }),
           })}
         >
           {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />} {t.tpl_save}
@@ -1339,22 +1453,30 @@ function BonusRoleEditor({ roles, value, onChange }: {
 /**
  * Bedingungen für ein einzelnes Giveaway.
  *
- * Sie ersetzen die serverweiten Einstellungen nicht, sie kommen dazu: Listen
- * werden vereinigt, Bonus-Lose je Rolle addiert. Genau das sagt auch der Hinweis
- * über den Feldern, sonst liest sich ein leeres Feld wie "keine Bedingungen".
+ * Sie ERSETZEN die serverweiten Einstellungen für dieses Giveaway, jedes Feld
+ * für sich. Deshalb sind die Felder mit genau diesen Einstellungen vorbelegt:
+ * so ändert nichts anzufassen auch nichts, und wer eine serverweite Rolle
+ * herausnimmt, hebt sie hier gezielt auf. Der Hinweis über den Feldern sagt
+ * dasselbe, sonst liest sich das Formular wie eine Ergänzung.
  */
-function EligibilityFields({ roles, blacklist, setBlacklist, whitelist, setWhitelist, bonus, setBonus }: {
+function EligibilityFields({ roles, blacklist, setBlacklist, whitelist, setWhitelist, bonus, setBonus, onReset }: {
   roles: Role[];
   blacklist: string[]; setBlacklist: (v: string[]) => void;
   whitelist: string[]; setWhitelist: (v: string[]) => void;
   bonus: Record<string, number>; setBonus: (v: Record<string, number>) => void;
+  onReset?: () => void;
 }) {
   const { t } = useCtx();
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-[var(--color-border)] p-3">
-      <div>
-        <h4 className="text-sm font-semibold">{t.elig_title}</h4>
-        <p className="text-xs text-[var(--color-muted-foreground)]">{t.elig_hint}</p>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h4 className="text-sm font-semibold">{t.elig_title}</h4>
+          <p className="text-xs text-[var(--color-muted-foreground)]">{t.elig_hint}</p>
+        </div>
+        {onReset && (
+          <Button variant="ghost" size="sm" className="shrink-0" onClick={onReset}>{t.elig_reset}</Button>
+        )}
       </div>
       <Field label={t.s_blacklist}>
         <RoleMultiSelect roles={roles} value={blacklist} onChange={setBlacklist} />
