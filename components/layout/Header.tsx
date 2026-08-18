@@ -171,7 +171,7 @@ function HeaderInner() {
         window.history.replaceState({}, '', url.toString())
         await processPendingPackage()
       } else if (discordLinked && discordId) {
-        sessionStorage.setItem('discordId', discordId)
+        localStorage.setItem('discordId', discordId)
         const url = new URL(window.location.href)
         url.searchParams.delete('discordLinked')
         url.searchParams.delete('discord_id')

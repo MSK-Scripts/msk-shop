@@ -17,7 +17,12 @@ export function useCart() {
 
   const ensureBasket = useCallback(async (): Promise<string> => {
     if (ident) {
-      try { const b = await getBasket(ident); setBasket(b); return ident } catch {}
+      // A completed basket can never take another package — fall through and
+      // create a fresh one instead of running every add into a Tebex 422.
+      try {
+        const b = await getBasket(ident)
+        if (!b.complete) { setBasket(b); return ident }
+      } catch {}
     }
     const b = await createBasket()
     setIdent(b.ident); setBasket(b); return b.ident
@@ -40,7 +45,7 @@ export function useCart() {
           sessionStorage.setItem('pendingPackageType', packageType ?? 'single')
         }
         sessionStorage.setItem('pendingBasketIdent', id)
-        sessionStorage.removeItem('discordId')
+        localStorage.removeItem('discordId')
         sessionStorage.setItem('wantDiscordAuth', '1')
       }
       const authUrls = await getAllAuthUrls(id, window.location.href)
@@ -54,7 +59,7 @@ export function useCart() {
     const pendingId = sessionStorage.getItem('pendingPackageId')
     const pendingType = sessionStorage.getItem('pendingPackageType') ?? 'single'
     const pendingIdent = sessionStorage.getItem('pendingBasketIdent')
-    const discordId = sessionStorage.getItem('discordId')
+    const discordId = localStorage.getItem('discordId')
     const wantDiscord = sessionStorage.getItem('wantDiscordAuth')
 
     // Every meaningful path below needs the basket ident; without it there is
@@ -87,8 +92,8 @@ export function useCart() {
       sessionStorage.removeItem('pendingPackageId')
       sessionStorage.removeItem('pendingPackageType')
       sessionStorage.removeItem('pendingBasketIdent')
-      sessionStorage.removeItem('discordId')
       sessionStorage.removeItem('discordReturnPath')
+      // discordId stays in localStorage so later adds don't re-ask for it
 
       const usernameId = authBasket.username_id ? String(authBasket.username_id) : null
       setLoading(true)
@@ -113,8 +118,14 @@ export function useCart() {
     try {
       const id = await ensureBasket()
       const currentBasket = await getBasket(id)
+      if (!currentBasket.username) {
+        // Stored login state is stale (expired/completed basket) — Tebex would
+        // reject the add with 422. Re-auth and resume instead of failing silently.
+        await loginAndAdd(packageId, packageType)
+        return
+      }
       const usernameId = currentBasket.username_id ? String(currentBasket.username_id) : null
-      const storedDiscordId = typeof window !== 'undefined' ? sessionStorage.getItem('discordId') : null
+      const storedDiscordId = typeof window !== 'undefined' ? localStorage.getItem('discordId') : null
       const mergedVarData = {
         ...(storedDiscordId ? { discord_id: storedDiscordId } : {}),
         ...(variableData ?? {}),
@@ -135,8 +146,12 @@ export function useCart() {
     try {
       const id = await ensureBasket()
       const currentBasket = await getBasket(id)
+      if (!currentBasket.username) {
+        await loginAndAdd(packageId, packageType)
+        return false
+      }
       const usernameId = currentBasket.username_id ? String(currentBasket.username_id) : null
-      const storedDiscordId = typeof window !== 'undefined' ? sessionStorage.getItem('discordId') : null
+      const storedDiscordId = typeof window !== 'undefined' ? localStorage.getItem('discordId') : null
       const b = await addGiftToBasket(id, packageId, packageType, giftUsername, usernameId, storedDiscordId, recipientDiscordId)
       setGiftRecipient(packageId, giftUsername, recipientDiscordId)
       setBasket(b); openCart(); return true
@@ -190,7 +205,7 @@ export function useCart() {
       try {
         const newBasket = await createBasket()
         // Re-add all packages to new basket
-        const storedDiscordId = typeof window !== 'undefined' ? sessionStorage.getItem('discordId') : null
+        const storedDiscordId = typeof window !== 'undefined' ? localStorage.getItem('discordId') : null
         const currentBasket = await getBasket(ident)
         const usernameId = currentBasket.username_id ? String(currentBasket.username_id) : null
         let lastBasket = newBasket

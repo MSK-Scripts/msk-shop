@@ -36,7 +36,11 @@ export const useCartStore = create<CartStore>()(
       isLoading: false,
       setIdent: (ident) => set({ ident }),
       setBasket: (basket) => set({ basket, username: basket.username ?? null }),
-      clearBasket: () => set({ ident: null, basket: null, username: null, subtotal: null, giftRecipients: {} }),
+      clearBasket: () => {
+        // Logout: the linked Discord ID belongs to the login state, drop it too
+        if (typeof window !== 'undefined') localStorage.removeItem('discordId')
+        set({ ident: null, basket: null, username: null, subtotal: null, giftRecipients: {} })
+      },
       openCart: () => set({ isOpen: true }),
       closeCart: () => set({ isOpen: false }),
       setLoading: (isLoading) => set({ isLoading }),
