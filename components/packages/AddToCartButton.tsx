@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import { ShoppingCart, Loader2, Download, Gift, X, LogIn } from 'lucide-react'
 import { useCart } from '@/lib/useCart'
 import { Button } from '@/components/ui/Button'
@@ -109,8 +110,11 @@ export function AddToCartButton({ pkg }: { pkg: TebexPackage }) {
         )}
       </div>
 
-      {/* Discord-ID Modal */}
-      {showDiscordModal && (
+      {/* Discord-ID Modal — portaled to <body>: the purchase sidebar is a
+          sticky Card, and position:sticky creates its own stacking context.
+          Rendered inside it, the modal's z-50 is trapped below the gallery
+          controls (z-10/z-20 in the root context). */}
+      {showDiscordModal && createPortal(
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowDiscordModal(false)} />
           <div className="relative w-full max-w-sm rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-6 shadow-2xl">
@@ -164,10 +168,10 @@ export function AddToCartButton({ pkg }: { pkg: TebexPackage }) {
             </form>
           </div>
         </div>
-      )}
+      , document.body)}
 
-      {/* Gift Modal */}
-      {showGiftModal && (
+      {/* Gift Modal — portaled for the same stacking-context reason */}
+      {showGiftModal && createPortal(
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowGiftModal(false)} />
           <div className="relative w-full max-w-sm rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-6 shadow-2xl">
@@ -229,7 +233,7 @@ export function AddToCartButton({ pkg }: { pkg: TebexPackage }) {
             </form>
           </div>
         </div>
-      )}
+      , document.body)}
     </>
   )
 }
