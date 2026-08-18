@@ -1,6 +1,6 @@
 # MSK Scripts Shop
 
-This is the headless storefront behind [msk-scripts.de](https://www.msk-scripts.de). It sells FiveM resources through the Tebex Headless API and doubles as the management platform for our Discord Ticket Bot and Giveaway Bot. Built on Next.js 15, React 19, TypeScript, Tailwind CSS and MariaDB.
+This is the headless storefront behind [msk-scripts.de](https://www.msk-scripts.de). It sells FiveM resources through the Tebex Headless API and doubles as the management platform for our Discord Ticket Bot and Giveaway Bot. Built on Next.js 16, React 19, TypeScript, Tailwind CSS and MariaDB.
 
 > **Live:** [msk-scripts.de](https://www.msk-scripts.de)
 
@@ -10,8 +10,8 @@ This is the headless storefront behind [msk-scripts.de](https://www.msk-scripts.
 
 | | |
 |---|---|
-| Framework | Next.js 15.5 (App Router) |
-| Language | TypeScript 5.8 (strict mode) |
+| Framework | Next.js 16.3 (App Router, Turbopack build) |
+| Language | TypeScript 5.9 (strict mode) |
 | UI | React 19.2 |
 | Styling | Tailwind CSS 4 (CSS-first, `@theme` tokens in `app/globals.css`) |
 | Theming | Light + Dark (Dark by default) via `next-themes` |
@@ -20,13 +20,14 @@ This is the headless storefront behind [msk-scripts.de](https://www.msk-scripts.
 | Data fetching | SWR 2 |
 | Database | MariaDB / MySQL (via mysql2) |
 | Payments | Tebex Headless API (shop) and Stripe (Ticket Bot subscriptions) |
-| Editor | CodeMirror (`@uiw/react-codemirror`) for the bot config editor |
-| JSONC parsing | `jsonc-parser` |
-| Icons | `lucide-react` |
+| Icons | `lucide-react` (brand marks are local inline SVG, see `components/icons/`) |
 | Image processing | `sharp`, re-encodes uploaded image attachments |
 | Cookies (client) | `js-cookie` |
 | Auth | CFX.re (FiveM) and Discord OAuth via Tebex |
 | Verify flow | Discord OAuth with signed session cookies |
+| Tests | Vitest 4 with `@vitest/coverage-v8` (294 tests under `tests/`) |
+| Linting | ESLint 10 flat config with `eslint-config-next` 16, run through the ESLint CLI |
+| Runtime | Node.js 24 (local, CI and production) |
 | Server | Debian, Apache2 reverse proxy, systemd |
 | Bot process manager | PM2 (`pm2-musiker15.service`) |
 | CI/CD | GitHub Actions: CI gate plus a server-side git deploy on push to `main` |
@@ -57,9 +58,9 @@ The Ticket Bot platform:
 - Stripe subscriptions: in-app checkout, a 14-day free trial for new customers, the Stripe customer portal for self-service cancellation, and webhook-driven tier assignment
 - Account dashboard that manages every server behind a single login (guild switcher), including subscriptions, API keys, domains and transcripts
 - Hosted bot management for `is_hosted` customers:
-  - Config editor for `config.jsonc`, `snippets.jsonc`, `.env` and the active locale file (`locales/<lang>.json`, falling back to `en.json`)
   - Start / stop / restart / update (git pull) through PM2
   - Live log console streaming the PM2 error log over Server-Sent Events (`tail -F`)
+  - An authenticated reverse proxy to the bot's own dashboard, which is never reachable directly
 - A logout endpoint to switch between bots
 
 The Giveaway Bot platform:
@@ -95,7 +96,6 @@ app/                        Next.js App Router pages & API routes
 │       │   └── [code]/     Remove specific coupon
 │       ├── packages/       Add & remove packages (+ remove/)
 │       └── route.ts        Fetch basket
-├── api/bot-config/         Read & write hosted bot configs (config.jsonc, snippets.jsonc, .env, locales/<lang>.json)
 ├── api/bot-control/        Start / stop / restart / update bot via PM2
 ├── api/bot-logs/           Fetch last 100 lines of PM2 error log (one-shot)
 ├── api/bot-logs-stream/    Server-Sent Events, real-time PM2 log stream via tail -F
@@ -151,7 +151,9 @@ components/
 ├── theme/                  ThemeProvider + ThemeToggle (next-themes, CSP-nonce-safe)
 ├── ui/                     Component library: Button, Card, Badge, Container, Input, Skeleton, NewsPopup
 │                           (DiscordButton is a deprecation stub)
-├── BotConfigEditor.tsx     Hosted-bot dashboard: config editor (incl. locale tab), bot control, live log console
+├── BotConfigEditor.tsx     Hosted-bot dashboard: bot control and live log console. The name is
+│                           historic, the config editor was removed in 735f094 because the bot
+│                           ships the same UI itself
 └── SalePriceFetcher.tsx    Client component that pre-fetches sale prices on mount
 
 content/
@@ -207,7 +209,8 @@ scripts/                    Deployed with the repo to /opt/msk-shop/scripts (kep
 docs/
 └── DEPLOYMENT.md           Server setup + deploy runbook
 
-middleware.ts               Edge middleware: generates a per-request nonce
+proxy.ts                    Edge proxy (the file convention Next 16 renamed
+                            from middleware): generates a per-request nonce
                             and sets every security header (CSP with
                             'strict-dynamic', HSTS, COOP, CORP, and so on)
 ```
@@ -505,7 +508,7 @@ The short version, the full write-up is in [SECURITY.md](SECURITY.md):
 - Markdown file reads use an allowlist, so there is no path traversal.
 - Transcript attachment uploads use a strict extension allowlist (no `html`, `svg` or `php`), store files as `<uuid>.<ext>` so an attacker-chosen name can't reach the web root, and re-encode image attachments through `sharp` to strip polyglots and reject anything that isn't really an image. Custom-domain vhosts serve transcripts locked down (`Options -Indexes`, `Require all denied` by default, a `FilesMatch` allowlist, no PHP handler).
 - Redirect URLs are always built server-side from `NEXT_PUBLIC_BASE_URL`.
-- All security headers are set in one place, in **`middleware.ts`** (Edge runtime, per request), so the Apache vhost never sends duplicates:
+- All security headers are set in one place, in **`proxy.ts`** (Edge runtime, per request), so the Apache vhost never sends duplicates. The file was called `middleware.ts` until Next 16 renamed the convention:
   - A CSP with a fresh cryptographic nonce per request plus `'strict-dynamic'`. No `'unsafe-inline'` or `'unsafe-eval'` in `script-src`, and no `'unsafe-inline'` in `style-src` either (Next.js attaches the nonce to its inline `<style>` tags automatically). `style-src-attr 'unsafe-inline'` covers React `style={{}}` attributes, which Mozilla Observatory does not score.
   - `default-src 'none'` (deny by default), with every used resource directive listed explicitly (`script-src`, `style-src`, `img-src`, `font-src`, `connect-src`, `worker-src`, `manifest-src`, `media-src`, `object-src`).
   - HSTS `max-age=63072000; includeSubDomains; preload` (2 years).
@@ -530,7 +533,6 @@ A couple of theme-specific styles also live in `globals.css`:
 
 - `.tebex-description` makes the Tebex HTML (`dangerouslySetInnerHTML`) readable.
 - `.legal-content` renders the Markdown legal pages (h1 to h3, lists, tables, code).
-- CodeMirror overrides for the bot config editor (`.cm-editor`, `.cm-scroller`).
 
 ---
 

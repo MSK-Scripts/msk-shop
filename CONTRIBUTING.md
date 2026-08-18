@@ -41,7 +41,7 @@ Guidelines:
   and file conventions, and the design tokens in `app/globals.css` (never
   hard-coded colors).
 - **Security matters.** Validate input server-side, never expose secrets to the
-  client, and keep the Content-Security-Policy intact (see `middleware.ts`).
+  client, and keep the Content-Security-Policy intact (see `proxy.ts`).
 - **Add tests** for logic where mistakes are costly (auth, permissions, billing,
   parsing). Tests live in `tests/`.
 - **Update the docs** when you change behavior, env variables, routes or the
@@ -56,7 +56,7 @@ for example:
 feat(admin): add gift card management
 fix(cart): keep gift recipient after reload
 test: cover the rate limiter window reset
-chore(deps): bump next to 15.5.20
+chore(deps): bump next to 16.3.1
 ```
 
 ## Pull request process

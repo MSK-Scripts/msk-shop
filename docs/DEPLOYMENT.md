@@ -73,7 +73,7 @@ TEBEX_PRIVATE_KEY=…
 
 ### 3. Node für den App-User sicherstellen
 `deploy.sh` baut als `musiker15` via Login-Shell (`sudo -u musiker15 -H bash -lc`).
-`command -v node` muss als `musiker15` Node 22+ liefern (System-Node oder NVM).
+`command -v node` muss als `musiker15` Node 24+ liefern (System-Node oder NVM). `engines` in der `package.json` verlangt seit dem Node-24-Upgrade `>=24.0.0`.
 
 ### 4. Erster manueller Deploy (Test)
 ```bash
