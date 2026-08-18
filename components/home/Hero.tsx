@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowRight, Github } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { ReleaseFeed } from '@/components/home/ReleaseFeed'
@@ -7,6 +7,7 @@ import { SITE_CONFIG } from '@/lib/config'
 import { homeTranslations, type Lang } from '@/lib/i18n'
 import type { HeadlineStat } from '@/lib/fivestats'
 import type { ReleaseEntry } from '@/lib/releases'
+import { GithubMark } from '@/components/icons/GithubMark'
 
 /**
  * Der Hero füllt bewusst den sichtbaren Bereich.
@@ -82,7 +83,7 @@ export function Hero({
               </Button>
               <Button asChild size="lg" variant="outline">
                 <a href={SITE_CONFIG.github} target="_blank" rel="noopener noreferrer">
-                  <Github className="h-4 w-4" />
+                  <GithubMark className="h-4 w-4" />
                   {t.hero_btn_github}
                 </a>
               </Button>

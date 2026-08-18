@@ -2,11 +2,12 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { Github, Receipt, ShieldCheck, Undo2 } from 'lucide-react'
+import { Receipt, ShieldCheck, Undo2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useLang } from '@/components/i18n/LangProvider'
 import { PaymentMarks } from '@/components/layout/PaymentMarks'
 import { layoutTranslations } from '@/lib/i18n'
+import { GithubMark } from '@/components/icons/GithubMark'
 
 const ECOSYSTEM_LINKS = [
   { label: 'MSK Forms',      href: 'https://forms.msk-scripts.de/',     external: true },
@@ -92,7 +93,7 @@ export function Footer() {
               </Button>
               <Button asChild variant="outline" size="sm" aria-label="GitHub">
                 <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">
-                  <Github className="h-4 w-4" />
+                  <GithubMark className="h-4 w-4" />
                 </a>
               </Button>
             </div>

@@ -2,7 +2,7 @@ import Link from 'next/link'
 import {
   Gift, Sparkles, RefreshCw, Globe, Palette, Layers,
   Shield, Users, PauseCircle, ScrollText, ClipboardList, Star,
-  Check, MessageSquare, FileText, Github, Terminal, UserCheck,
+  Check, MessageSquare, FileText, Terminal, UserCheck,
   CalendarClock, ListChecks, Mail, Bell, Pencil,
   LayoutDashboard, Trophy, Ticket, Languages, Package,
 } from 'lucide-react'
@@ -14,6 +14,7 @@ import { Card } from '@/components/ui/Card'
 import { SITE_CONFIG } from '@/lib/config'
 import type { Lang } from '@/lib/i18n'
 import { GIVEAWAY_COPY } from '@/content/giveaway-copy'
+import { GithubMark } from '@/components/icons/GithubMark'
 
 /**
  * Die Giveaway-Bot-Landingpage, einmal gebaut, zweimal gerendert.
@@ -246,7 +247,7 @@ export function GiveawayLanding({ lang }: { lang: Lang }) {
                 </Button>
                 <Button asChild variant="outline">
                   <a href={GIVEAWAY_GITHUB_URL} target="_blank" rel="noopener noreferrer">
-                    <Github className="h-4 w-4" />
+                    <GithubMark className="h-4 w-4" />
                     {t.settingsCtaSource}
                   </a>
                 </Button>

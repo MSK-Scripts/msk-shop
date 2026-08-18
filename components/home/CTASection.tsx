@@ -1,7 +1,7 @@
-import { Github } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { homeTranslations, type Lang } from '@/lib/i18n'
 import type { ShopStats } from '@/lib/shopStats'
+import { GithubMark } from '@/components/icons/GithubMark'
 
 const DISCORD_URL = 'https://discord.gg/5hHSBRHvJE'
 const GITHUB_URL = 'https://github.com/MSK-Scripts'
@@ -49,7 +49,7 @@ export function CTASection({ lang, stats }: { lang: Lang; stats: ShopStats | nul
           </Button>
           <Button asChild size="lg" variant="outline">
             <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">
-              <Github className="h-4 w-4" />
+              <GithubMark className="h-4 w-4" />
               {t.cta_btn_github}
             </a>
           </Button>

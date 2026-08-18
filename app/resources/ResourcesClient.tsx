@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Server, TrendingUp, TrendingDown, Minus, ArrowUpRight, Github, Hash } from 'lucide-react'
+import { Server, TrendingUp, TrendingDown, Minus, ArrowUpRight, Hash } from 'lucide-react'
 import { resourceStatsTranslations, type Lang } from '@/lib/i18n'
 import { useLang } from '@/components/i18n/LangProvider'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { cn } from '@/lib/utils'
 import type { ResourceStatsResult, ResourceStat, ResourceLink, HistoryPoint } from '@/lib/fivestats'
+import { GithubMark } from '@/components/icons/GithubMark'
 
 function formatNum(n: number, lang: Lang): string {
   return new Intl.NumberFormat(lang === 'de' ? 'de-DE' : 'en-US').format(n)
@@ -84,7 +85,7 @@ function TrendBadge({ change, lang }: { change: number; lang: Lang }) {
 function ResourceLinkButton({ link }: { link: ResourceLink }) {
   const content = (
     <>
-      {link.external ? <Github className="h-3.5 w-3.5" /> : <ArrowUpRight className="h-3.5 w-3.5" />}
+      {link.external ? <GithubMark className="h-3.5 w-3.5" /> : <ArrowUpRight className="h-3.5 w-3.5" />}
       {link.label}
     </>
   )
