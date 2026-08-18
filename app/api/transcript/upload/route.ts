@@ -156,7 +156,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     }
 
     // 4. Body-size ceiling BEFORE reading the body. This route is deliberately
-    //    exempt from the middleware body cap (large Premium+ uploads), and an
+    //    exempt from the proxy body cap (large Premium+ uploads), and an
     //    App Router handler has no default limit — so `await req.json()` would
     //    otherwise buffer an arbitrarily large body into the shared heap and let
     //    a single tenant OOM the whole process. Reject via Content-Length against
@@ -231,8 +231,16 @@ export async function POST(req: Request): Promise<NextResponse> {
     );
     const transcriptId    = existing[0]?.id ?? randomUUID();
     const urlPrefix       = transcriptUrlPrefix(guild);
-    const guildDir        = path.join(transcriptBasePath(), guild.guild_id);
-    const transcriptDir   = path.join(guildDir, transcriptId);
+    // turbopackIgnore: these paths are dynamic by design — the base directory
+    // comes from TRANSCRIPT_BASE_PATH and points outside the repo
+    // (/var/www/html/transcripts), the rest is the guild id plus a UUID from the
+    // database. Without the hint Turbopack traces the entire project into the
+    // build output. That output is unused here (no `output: 'standalone'`, the
+    // server runs `next start` from the full checkout), so this only silences
+    // noise — but it keeps a real problem visible if the deployment ever moves
+    // to standalone.
+    const guildDir        = path.join(/*turbopackIgnore: true*/ transcriptBasePath(), guild.guild_id);
+    const transcriptDir   = path.join(/*turbopackIgnore: true*/ guildDir, transcriptId);
     const htmlFilename    = 'transcript.html';
     const htmlFilePath    = path.join(transcriptDir, htmlFilename);
 
@@ -240,7 +248,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     // attachments cascade), then clear the reused directory so stale HTML and
     // attachments don't linger before we write the fresh version.
     for (const dup of existing.slice(1)) {
-      await rm(path.join(guildDir, dup.id), { recursive: true, force: true }).catch(() => {});
+      await rm(path.join(/*turbopackIgnore: true*/ guildDir, dup.id), { recursive: true, force: true }).catch(() => {});
       await query(`DELETE FROM ticketbot_transcripts WHERE id = ?`, [dup.id]);
     }
     await rm(transcriptDir, { recursive: true, force: true }).catch(() => {});

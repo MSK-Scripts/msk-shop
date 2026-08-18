@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+// Diese Datei hieß bis Next 16 `middleware.ts`. Next 16 hat die Konvention in
+// `proxy.ts` umbenannt (die alte warnt beim Build und entfällt später), die
+// exportierte Funktion heißt entsprechend `proxy` statt `middleware`. Inhaltlich
+// ist nichts anders: dasselbe Matching, dieselben Header, derselbe Nonce.
+
 // =============================================================================
 // Rate-Limiting + Body-Limit (In-Memory, Fixed-Window)
 // =============================================================================
@@ -62,7 +67,7 @@ function sweep(now: number): void {
 }
 
 // =============================================================================
-// Security Middleware — Nonce-basierte Content Security Policy
+// Security-Proxy — Nonce-basierte Content Security Policy
 // =============================================================================
 // Generiert pro Request einen kryptographisch sicheren Nonce, härtet das CSP
 // (kein 'unsafe-inline'/'unsafe-eval' mehr in script-src) und setzt zusätzlich
@@ -81,7 +86,7 @@ function sweep(now: number): void {
 // msk-shop's strict nonce CSP would break the bot's app.
 const BOT_DASHBOARD_HOST = (process.env.BOT_DASHBOARD_HOST || 'bot-dashboard.msk-scripts.de').toLowerCase()
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
   const now = Date.now()
 
@@ -187,16 +192,16 @@ export function middleware(request: NextRequest) {
   return response
 }
 
-// Middleware läuft auf allen Routen außer statischen Assets — diese liefert
+// Der Proxy läuft auf allen Routen außer statischen Assets — diese liefert
 // Next.js bzw. Apache direkt aus und brauchen die Header-Pipeline nicht.
 // Prefetch-Requests werden ausgeschlossen, damit der Nonce nicht gecacht wird.
 //
-// `api/transcript/upload` ist BEWUSST ausgenommen: läuft Middleware auf einer
+// `api/transcript/upload` ist BEWUSST ausgenommen: läuft der Proxy auf einer
 // Route, puffert Next.js 15 den Request-Body (Default 10 MB) und schneidet ihn
 // darüber hinaus ab → bei Premium+-Uploads (großes Transkript + Anhänge) wird
 // der JSON-Body abgeschnitten → "Invalid JSON body". Die Route ist eine
 // Bot-API mit eigener API-Key-Auth + tier-basierten Größenlimits; CSP/Nonce
-// sind für die JSON-Antwort irrelevant. Ohne Middleware kein Body-Limit.
+// sind für die JSON-Antwort irrelevant. Ohne Proxy kein Body-Limit.
 export const config = {
   matcher: [
     {

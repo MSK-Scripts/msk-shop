@@ -4,7 +4,7 @@ import type { JsonLdObject } from '@/lib/jsonLd'
  * Gibt strukturierte Daten als `<script type="application/ld+json">` aus.
  *
  * `application/ld+json` ist ein Datenblock und wird vom Browser nicht als
- * JavaScript ausgeführt. Die Nonce-CSP aus `middleware.ts` greift hier deshalb
+ * JavaScript ausgeführt. Die Nonce-CSP aus `proxy.ts` greift hier deshalb
  * nicht, und die Komponente braucht keinen Nonce. Das ist wichtig, weil die
  * Paketseiten statisch vorgerendert werden (`generateStaticParams`): Ein
  * `headers()`-Aufruf zum Lesen des Nonce würde sie zu dynamischen Seiten machen.

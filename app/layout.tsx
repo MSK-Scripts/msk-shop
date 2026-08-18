@@ -110,7 +110,7 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   // headers() opt-in zu Dynamic Rendering — Voraussetzung dafür, dass Next.js
-  // den Nonce aus middleware.ts in seine internen Hydration-Scripts injiziert.
+  // den Nonce aus proxy.ts in seine internen Hydration-Scripts injiziert.
   // Ohne diesen Aufruf bliebe das Root-Layout statisch und die CSP würde alle
   // Next.js-Scripts blockieren.
   const [hdrs, cookieStore] = await Promise.all([headers(), cookies()])
@@ -119,7 +119,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // Die /de/-Routen (die beiden Bot-Landingpages) sind sprachlich fest. Dort
   // würde ein englisches Cookie sonst einen deutschen Seiteninhalt in einen
   // englischen Header samt `<html lang="en">` setzen, und genau dieses Signal
-  // liest Google. Der Pfad kommt aus middleware.ts, Server Components haben
+  // liest Google. Der Pfad kommt aus proxy.ts, Server Components haben
   // ihn nicht von sich aus.
   const pathname = hdrs.get('x-pathname') ?? ''
   const lang = pathname.startsWith('/de/')

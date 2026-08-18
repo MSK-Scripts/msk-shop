@@ -10,7 +10,7 @@ import {
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
-// middleware.ts rewrites EVERY request on PROXY_HOST to this single route and
+// proxy.ts rewrites EVERY request on PROXY_HOST to this single route and
 // carries the real path in x-proxy-path (the query string is preserved on the
 // URL). We never build a path from anything the browser could smuggle past that.
 
@@ -23,7 +23,7 @@ const HOP_BY_HOP = new Set([
 const bounce = () => NextResponse.redirect(RETURN_URL, { status: 302 })
 
 async function handle(req: NextRequest): Promise<NextResponse> {
-  // This route only exists to serve the proxy host (middleware rewrites to it).
+  // This route only exists to serve the proxy host (proxy.ts rewrites to it).
   // Reject a direct hit on any other host so /_botproxy cannot be probed on the
   // main site, where a crafted x-proxy-path could otherwise be supplied.
   const reqHost = (req.headers.get('host') || '').toLowerCase().split(':')[0]

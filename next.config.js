@@ -10,25 +10,22 @@ const nextConfig = {
       { protocol: 'https', hostname: 'cdn.discordapp.com' },
     ],
   },
-  // Security-Header werden zentral in middleware.ts gesetzt, damit die
+  // Security-Header werden zentral in proxy.ts gesetzt, damit die
   // Nonce-basierte CSP funktioniert und keine doppelten Header entstehen.
-  // Siehe middleware.ts für alle gesetzten Header.
+  // Siehe proxy.ts für alle gesetzten Header.
   poweredByHeader: false,
 
-  /**
-   * Lint läuft in der CI (Job „Lint" in ci.yml) und lokal über `npm run lint`,
-   * nicht noch einmal im Build. Zwei Gründe:
+  /*
+   * Hier stand bis Next 16 ein `eslint: { ignoreDuringBuilds: true }`, damit der
+   * Build nicht ein zweites Mal lintet und das Deploy-Log mit Warnungen flutet.
+   * Next 16 kennt den Schlüssel nicht mehr und lintet im Build grundsätzlich
+   * nicht, das gewünschte Verhalten ist also jetzt der Standard.
    *
-   *  1. Der Deploy triggert per `workflow_run` erst nach grüner CI, der Build auf
-   *     dem Server käme also ohnehin zu spät als Gate.
-   *  2. `next build` gibt jede Warnung in voller Länge aus. Die 20 Treffer von
-   *     `react-hooks/set-state-in-effect` (neu in eslint-plugin-react-hooks 7,
-   *     bewusst auf `warn`) haben das Deploy-Log unbrauchbar gemacht — echte
-   *     Fehler wären darin untergegangen.
-   *
-   * Fehler im Lint bleiben blockierend, nur eben in der CI statt im Build.
+   * Gelintet wird weiterhin im CI-Job „Lint" und lokal über `npm run lint`, das
+   * seit Next 16 die ESLint-CLI direkt aufruft statt des entfallenen
+   * `next lint`. Der Deploy hängt per `workflow_run` an der grünen CI, das Gate
+   * sitzt also ohnehin vor dem Build und nicht darin.
    */
-  eslint: { ignoreDuringBuilds: true },
 
   /**
    * Permanente Redirects für Alt-URLs, die Google noch kennt und die aktuell
