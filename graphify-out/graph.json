@@ -862,7 +862,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 124,
-      "community_name": "Admin Audit Routes",
+      "community_name": "Admin Audit API",
       "norm_label": "api-keys/route.ts",
       "id": "app_api_admin_api_keys_route"
     },
@@ -873,7 +873,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "community": 124,
-      "community_name": "Admin Audit Routes",
+      "community_name": "Admin Audit API",
       "norm_label": "dynamic",
       "id": "app_api_admin_api_keys_route_dynamic"
     },
@@ -884,7 +884,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "community": 124,
-      "community_name": "Admin Audit Routes",
+      "community_name": "Admin Audit API",
       "norm_label": "guildrow",
       "id": "app_api_admin_api_keys_route_guildrow"
     },
@@ -895,7 +895,7 @@
       "source_location": "L23",
       "_origin": "ast",
       "community": 124,
-      "community_name": "Admin Audit Routes",
+      "community_name": "Admin Audit API",
       "norm_label": "get",
       "id": "app_api_admin_api_keys_route_get"
     },
@@ -906,7 +906,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 124,
-      "community_name": "Admin Audit Routes",
+      "community_name": "Admin Audit API",
       "norm_label": "audit/route.ts",
       "id": "app_api_admin_audit_route"
     },
@@ -917,7 +917,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "community": 124,
-      "community_name": "Admin Audit Routes",
+      "community_name": "Admin Audit API",
       "norm_label": "dynamic",
       "id": "app_api_admin_audit_route_dynamic"
     },
@@ -928,7 +928,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "community": 124,
-      "community_name": "Admin Audit Routes",
+      "community_name": "Admin Audit API",
       "norm_label": "auditrow",
       "id": "app_api_admin_audit_route_auditrow"
     },
@@ -939,7 +939,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "community": 124,
-      "community_name": "Admin Audit Routes",
+      "community_name": "Admin Audit API",
       "norm_label": "get",
       "id": "app_api_admin_audit_route_get"
     },
@@ -1060,7 +1060,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 124,
-      "community_name": "Admin Audit Routes",
+      "community_name": "Admin Audit API",
       "norm_label": "catalog/route.ts",
       "id": "app_api_admin_catalog_route"
     },
@@ -1071,7 +1071,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "community": 124,
-      "community_name": "Admin Audit Routes",
+      "community_name": "Admin Audit API",
       "norm_label": "dynamic",
       "id": "app_api_admin_catalog_route_dynamic"
     },
@@ -1082,7 +1082,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "community": 124,
-      "community_name": "Admin Audit Routes",
+      "community_name": "Admin Audit API",
       "norm_label": "get",
       "id": "app_api_admin_catalog_route_get"
     },
@@ -1159,7 +1159,7 @@
       "source_location": "L39",
       "_origin": "ast",
       "community": 23,
-      "community_name": "Team Management Tests",
+      "community_name": "Team Management API",
       "norm_label": "post",
       "id": "app_api_admin_coupons_route_post"
     },
@@ -1346,7 +1346,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 124,
-      "community_name": "Admin Audit Routes",
+      "community_name": "Admin Audit API",
       "norm_label": "admin/packages/route.ts",
       "id": "app_api_admin_packages_route"
     },
@@ -1357,7 +1357,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "community": 124,
-      "community_name": "Admin Audit Routes",
+      "community_name": "Admin Audit API",
       "norm_label": "dynamic",
       "id": "app_api_admin_packages_route_dynamic"
     },
@@ -1368,7 +1368,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "community": 124,
-      "community_name": "Admin Audit Routes",
+      "community_name": "Admin Audit API",
       "norm_label": "get",
       "id": "app_api_admin_packages_route_get"
     },
@@ -1478,7 +1478,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 23,
-      "community_name": "Team Management Tests",
+      "community_name": "Team Management API",
       "norm_label": "[discorduserid]/route.ts",
       "id": "app_api_admin_team_discorduserid_route"
     },
@@ -1489,7 +1489,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "community": 23,
-      "community_name": "Team Management Tests",
+      "community_name": "Team Management API",
       "norm_label": "dynamic",
       "id": "app_api_admin_team_discorduserid_route_dynamic"
     },
@@ -1500,7 +1500,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "community": 23,
-      "community_name": "Team Management Tests",
+      "community_name": "Team Management API",
       "norm_label": "ownerflag()",
       "id": "app_api_admin_team_discorduserid_route_ownerflag"
     },
@@ -1511,7 +1511,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "community": 23,
-      "community_name": "Team Management Tests",
+      "community_name": "Team Management API",
       "norm_label": "patch",
       "id": "app_api_admin_team_discorduserid_route_patch"
     },
@@ -1522,7 +1522,7 @@
       "source_location": "L58",
       "_origin": "ast",
       "community": 23,
-      "community_name": "Team Management Tests",
+      "community_name": "Team Management API",
       "norm_label": "delete",
       "id": "app_api_admin_team_discorduserid_route_delete"
     },
@@ -2116,7 +2116,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 69,
-      "community_name": "System Health API",
+      "community_name": "Health Check API",
       "norm_label": "health/route.ts",
       "id": "app_api_discord_health_route"
     },
@@ -2127,7 +2127,7 @@
       "source_location": "L3",
       "_origin": "ast",
       "community": 69,
-      "community_name": "System Health API",
+      "community_name": "Health Check API",
       "norm_label": "dynamic",
       "id": "app_api_discord_health_route_dynamic"
     },
@@ -2138,7 +2138,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "community": 69,
-      "community_name": "System Health API",
+      "community_name": "Health Check API",
       "norm_label": "statusresponse",
       "id": "app_api_discord_health_route_statusresponse"
     },
@@ -2149,7 +2149,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "community": 69,
-      "community_name": "System Health API",
+      "community_name": "Health Check API",
       "norm_label": "incidentsresponse",
       "id": "app_api_discord_health_route_incidentsresponse"
     },
@@ -2160,7 +2160,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "community": 69,
-      "community_name": "System Health API",
+      "community_name": "Health Check API",
       "norm_label": "severity",
       "id": "app_api_discord_health_route_severity"
     },
@@ -2171,7 +2171,7 @@
       "source_location": "L23",
       "_origin": "ast",
       "community": 69,
-      "community_name": "System Health API",
+      "community_name": "Health Check API",
       "norm_label": "get()",
       "id": "app_api_discord_health_route_get"
     },
@@ -2325,7 +2325,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 25,
-      "community_name": "Transcript and Winner API",
+      "community_name": "Transcript Management API",
       "norm_label": "delete/route.ts",
       "id": "app_api_giveaway_result_delete_route"
     },
@@ -2336,7 +2336,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "community": 25,
-      "community_name": "Transcript and Winner API",
+      "community_name": "Transcript Management API",
       "norm_label": "authorized()",
       "id": "app_api_giveaway_result_delete_route_authorized"
     },
@@ -2347,7 +2347,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "community": 25,
-      "community_name": "Transcript and Winner API",
+      "community_name": "Transcript Management API",
       "norm_label": "post()",
       "id": "app_api_giveaway_result_delete_route_post"
     },
@@ -2358,7 +2358,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 25,
-      "community_name": "Transcript and Winner API",
+      "community_name": "Transcript Management API",
       "norm_label": "publish/route.ts",
       "id": "app_api_giveaway_result_publish_route"
     },
@@ -2369,7 +2369,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "community": 25,
-      "community_name": "Transcript and Winner API",
+      "community_name": "Transcript Management API",
       "norm_label": "authorized()",
       "id": "app_api_giveaway_result_publish_route_authorized"
     },
@@ -2380,7 +2380,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "community": 25,
-      "community_name": "Transcript and Winner API",
+      "community_name": "Transcript Management API",
       "norm_label": "winnerin",
       "id": "app_api_giveaway_result_publish_route_winnerin"
     },
@@ -2391,7 +2391,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "community": 25,
-      "community_name": "Transcript and Winner API",
+      "community_name": "Transcript Management API",
       "norm_label": "resultrow",
       "id": "app_api_giveaway_result_publish_route_resultrow"
     },
@@ -2402,7 +2402,7 @@
       "source_location": "L24",
       "_origin": "ast",
       "community": 25,
-      "community_name": "Transcript and Winner API",
+      "community_name": "Transcript Management API",
       "norm_label": "post()",
       "id": "app_api_giveaway_result_publish_route_post"
     },
@@ -2643,8 +2643,8 @@
       "source_file": "app/api/giveaway/verify/complete/route.ts",
       "source_location": "L1",
       "_origin": "ast",
-      "community": 125,
-      "community_name": "Giveaway Verification API",
+      "community": 62,
+      "community_name": "Giveaway Verification Route",
       "norm_label": "giveaway/verify/complete/route.ts",
       "id": "app_api_giveaway_verify_complete_route"
     },
@@ -2654,8 +2654,8 @@
       "source_file": "app/api/giveaway/verify/complete/route.ts",
       "source_location": "L6",
       "_origin": "ast",
-      "community": 125,
-      "community_name": "Giveaway Verification API",
+      "community": 62,
+      "community_name": "Giveaway Verification Route",
       "norm_label": "post()",
       "id": "app_api_giveaway_verify_complete_route_post"
     },
@@ -2688,7 +2688,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 7,
-      "community_name": "Resource Usage Stats",
+      "community_name": "Resource Statistics API",
       "norm_label": "resource-stats/route.ts",
       "id": "app_api_resource_stats_route"
     },
@@ -2699,7 +2699,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "community": 7,
-      "community_name": "Resource Usage Stats",
+      "community_name": "Resource Statistics API",
       "norm_label": "dynamic",
       "id": "app_api_resource_stats_route_dynamic"
     },
@@ -2710,7 +2710,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "community": 7,
-      "community_name": "Resource Usage Stats",
+      "community_name": "Resource Statistics API",
       "norm_label": "get()",
       "id": "app_api_resource_stats_route_get"
     },
@@ -2985,7 +2985,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 120,
-      "community_name": "API Key Validation",
+      "community_name": "Guild URL API",
       "norm_label": "url/route.ts",
       "id": "app_api_transcript_url_route"
     },
@@ -2996,7 +2996,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "community": 120,
-      "community_name": "API Key Validation",
+      "community_name": "Guild URL API",
       "norm_label": "dynamic",
       "id": "app_api_transcript_url_route_dynamic"
     },
@@ -3007,7 +3007,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "community": 120,
-      "community_name": "API Key Validation",
+      "community_name": "Guild URL API",
       "norm_label": "guildrow",
       "id": "app_api_transcript_url_route_guildrow"
     },
@@ -3018,7 +3018,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "community": 120,
-      "community_name": "API Key Validation",
+      "community_name": "Guild URL API",
       "norm_label": "urlrow",
       "id": "app_api_transcript_url_route_urlrow"
     },
@@ -3029,7 +3029,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "community": 120,
-      "community_name": "API Key Validation",
+      "community_name": "Guild URL API",
       "norm_label": "extractapikey()",
       "id": "app_api_transcript_url_route_extractapikey"
     },
@@ -3040,7 +3040,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "community": 120,
-      "community_name": "API Key Validation",
+      "community_name": "Guild URL API",
       "norm_label": "get()",
       "id": "app_api_transcript_url_route_get"
     },
@@ -3051,7 +3051,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 25,
-      "community_name": "Transcript and Winner API",
+      "community_name": "Transcript Management API",
       "norm_label": "transcripts/route.ts",
       "id": "app_api_transcripts_route"
     },
@@ -3062,7 +3062,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "community": 25,
-      "community_name": "Transcript and Winner API",
+      "community_name": "Transcript Management API",
       "norm_label": "dynamic",
       "id": "app_api_transcripts_route_dynamic"
     },
@@ -3073,7 +3073,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "community": 25,
-      "community_name": "Transcript and Winner API",
+      "community_name": "Transcript Management API",
       "norm_label": "transcriptrow",
       "id": "app_api_transcripts_route_transcriptrow"
     },
@@ -3084,7 +3084,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "community": 25,
-      "community_name": "Transcript and Winner API",
+      "community_name": "Transcript Management API",
       "norm_label": "parsepositiveint()",
       "id": "app_api_transcripts_route_parsepositiveint"
     },
@@ -3095,7 +3095,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "community": 25,
-      "community_name": "Transcript and Winner API",
+      "community_name": "Transcript Management API",
       "norm_label": "parsedate()",
       "id": "app_api_transcripts_route_parsedate"
     },
@@ -3106,7 +3106,7 @@
       "source_location": "L33",
       "_origin": "ast",
       "community": 25,
-      "community_name": "Transcript and Winner API",
+      "community_name": "Transcript Management API",
       "norm_label": "get()",
       "id": "app_api_transcripts_route_get"
     },
@@ -4458,8 +4458,8 @@
       "source_file": "app/giveaway/verify/page.tsx",
       "source_location": "L1",
       "_origin": "ast",
-      "community": 125,
-      "community_name": "Giveaway Verification API",
+      "community": 62,
+      "community_name": "Giveaway Verification Route",
       "norm_label": "giveaway/verify/page.tsx",
       "id": "app_giveaway_verify_page"
     },
@@ -4469,8 +4469,8 @@
       "source_file": "app/giveaway/verify/page.tsx",
       "source_location": "L6",
       "_origin": "ast",
-      "community": 125,
-      "community_name": "Giveaway Verification API",
+      "community": 62,
+      "community_name": "Giveaway Verification Route",
       "norm_label": "dynamic",
       "id": "app_giveaway_verify_page_dynamic"
     },
@@ -4480,8 +4480,8 @@
       "source_file": "app/giveaway/verify/page.tsx",
       "source_location": "L8",
       "_origin": "ast",
-      "community": 125,
-      "community_name": "Giveaway Verification API",
+      "community": 62,
+      "community_name": "Giveaway Verification Route",
       "norm_label": "metadata",
       "id": "app_giveaway_verify_page_metadata"
     },
@@ -4491,8 +4491,8 @@
       "source_file": "app/giveaway/verify/page.tsx",
       "source_location": "L13",
       "_origin": "ast",
-      "community": 125,
-      "community_name": "Giveaway Verification API",
+      "community": 62,
+      "community_name": "Giveaway Verification Route",
       "norm_label": "botguild",
       "id": "app_giveaway_verify_page_botguild"
     },
@@ -4502,8 +4502,8 @@
       "source_file": "app/giveaway/verify/page.tsx",
       "source_location": "L15",
       "_origin": "ast",
-      "community": 125,
-      "community_name": "Giveaway Verification API",
+      "community": 62,
+      "community_name": "Giveaway Verification Route",
       "norm_label": "giveawayverifypage()",
       "id": "app_giveaway_verify_page_giveawayverifypage"
     },
@@ -4943,7 +4943,7 @@
       "source_location": "L185",
       "_origin": "ast",
       "community": 7,
-      "community_name": "Resource Usage Stats",
+      "community_name": "Resource Statistics API",
       "norm_label": "resourcesclient()",
       "id": "app_resources_resourcesclient_resourcesclient"
     },
@@ -4954,7 +4954,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 7,
-      "community_name": "Resource Usage Stats",
+      "community_name": "Resource Statistics API",
       "norm_label": "resources/page.tsx",
       "id": "app_resources_page"
     },
@@ -4965,7 +4965,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "community": 7,
-      "community_name": "Resource Usage Stats",
+      "community_name": "Resource Statistics API",
       "norm_label": "dynamic",
       "id": "app_resources_page_dynamic"
     },
@@ -4976,7 +4976,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "community": 7,
-      "community_name": "Resource Usage Stats",
+      "community_name": "Resource Statistics API",
       "norm_label": "metadata",
       "id": "app_resources_page_metadata"
     },
@@ -4987,7 +4987,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "community": 7,
-      "community_name": "Resource Usage Stats",
+      "community_name": "Resource Statistics API",
       "norm_label": "resourcespage()",
       "id": "app_resources_page_resourcespage"
     },
@@ -5086,7 +5086,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 19,
-      "community_name": "Legal and Privacy Pages",
+      "community_name": "Legal and Policy Pages",
       "norm_label": "imprint/page.tsx",
       "id": "app_terms_imprint_page"
     },
@@ -5097,7 +5097,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "community": 19,
-      "community_name": "Legal and Privacy Pages",
+      "community_name": "Legal and Policy Pages",
       "norm_label": "metadata",
       "id": "app_terms_imprint_page_metadata"
     },
@@ -5108,7 +5108,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "community": 19,
-      "community_name": "Legal and Privacy Pages",
+      "community_name": "Legal and Policy Pages",
       "norm_label": "imprintpage()",
       "id": "app_terms_imprint_page_imprintpage"
     },
@@ -5119,7 +5119,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 19,
-      "community_name": "Legal and Privacy Pages",
+      "community_name": "Legal and Policy Pages",
       "norm_label": "terms/page.tsx",
       "id": "app_terms_page"
     },
@@ -5130,7 +5130,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "community": 19,
-      "community_name": "Legal and Privacy Pages",
+      "community_name": "Legal and Policy Pages",
       "norm_label": "metadata",
       "id": "app_terms_page_metadata"
     },
@@ -5141,7 +5141,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "community": 19,
-      "community_name": "Legal and Privacy Pages",
+      "community_name": "Legal and Policy Pages",
       "norm_label": "termspage()",
       "id": "app_terms_page_termspage"
     },
@@ -5152,7 +5152,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 19,
-      "community_name": "Legal and Privacy Pages",
+      "community_name": "Legal and Policy Pages",
       "norm_label": "privacy/page.tsx",
       "id": "app_terms_privacy_page"
     },
@@ -5163,7 +5163,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "community": 19,
-      "community_name": "Legal and Privacy Pages",
+      "community_name": "Legal and Policy Pages",
       "norm_label": "metadata",
       "id": "app_terms_privacy_page_metadata"
     },
@@ -5174,7 +5174,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "community": 19,
-      "community_name": "Legal and Privacy Pages",
+      "community_name": "Legal and Policy Pages",
       "norm_label": "privacypage()",
       "id": "app_terms_privacy_page_privacypage"
     },
@@ -5823,7 +5823,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 26,
-      "community_name": "Bot Configuration UI",
+      "community_name": "Bot Config UI",
       "norm_label": "botconfigeditor.tsx",
       "id": "components_botconfigeditor"
     },
@@ -5834,7 +5834,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "community": 26,
-      "community_name": "Bot Configuration UI",
+      "community_name": "Bot Config UI",
       "norm_label": "botstatus",
       "id": "components_botconfigeditor_botstatus"
     },
@@ -5845,7 +5845,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "community": 26,
-      "community_name": "Bot Configuration UI",
+      "community_name": "Bot Config UI",
       "norm_label": "msg",
       "id": "components_botconfigeditor_msg"
     },
@@ -5856,7 +5856,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "community": 26,
-      "community_name": "Bot Configuration UI",
+      "community_name": "Bot Config UI",
       "norm_label": "loglineclass()",
       "id": "components_botconfigeditor_loglineclass"
     },
@@ -5867,7 +5867,7 @@
       "source_location": "L40",
       "_origin": "ast",
       "community": 26,
-      "community_name": "Bot Configuration UI",
+      "community_name": "Bot Config UI",
       "norm_label": "statusdot()",
       "id": "components_botconfigeditor_statusdot"
     },
@@ -5878,7 +5878,7 @@
       "source_location": "L56",
       "_origin": "ast",
       "community": 26,
-      "community_name": "Bot Configuration UI",
+      "community_name": "Bot Config UI",
       "norm_label": "banner()",
       "id": "components_botconfigeditor_banner"
     },
@@ -5889,7 +5889,7 @@
       "source_location": "L85",
       "_origin": "ast",
       "community": 26,
-      "community_name": "Bot Configuration UI",
+      "community_name": "Bot Config UI",
       "norm_label": "botconfigeditor()",
       "id": "components_botconfigeditor_botconfigeditor"
     },
@@ -5955,7 +5955,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 113,
-      "community_name": "Bot Marketing Components",
+      "community_name": "Bot Landing UI",
       "norm_label": "botcrosslink.tsx",
       "id": "components_bots_botcrosslink"
     },
@@ -5966,7 +5966,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "community": 113,
-      "community_name": "Bot Marketing Components",
+      "community_name": "Bot Landing UI",
       "norm_label": "botcrosslink()",
       "id": "components_bots_botcrosslink_botcrosslink"
     },
@@ -5977,7 +5977,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 113,
-      "community_name": "Bot Marketing Components",
+      "community_name": "Bot Landing UI",
       "norm_label": "giveawaylanding.tsx",
       "id": "components_bots_giveawaylanding"
     },
@@ -5988,7 +5988,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "community": 113,
-      "community_name": "Bot Marketing Components",
+      "community_name": "Bot Landing UI",
       "norm_label": "giveaway_invite_url",
       "id": "components_bots_giveawaylanding_giveaway_invite_url"
     },
@@ -5999,7 +5999,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "community": 113,
-      "community_name": "Bot Marketing Components",
+      "community_name": "Bot Landing UI",
       "norm_label": "giveaway_github_url",
       "id": "components_bots_giveawaylanding_giveaway_github_url"
     },
@@ -6010,7 +6010,7 @@
       "source_location": "L33",
       "_origin": "ast",
       "community": 113,
-      "community_name": "Bot Marketing Components",
+      "community_name": "Bot Landing UI",
       "norm_label": "step_icons",
       "id": "components_bots_giveawaylanding_step_icons"
     },
@@ -6021,7 +6021,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "community": 113,
-      "community_name": "Bot Marketing Components",
+      "community_name": "Bot Landing UI",
       "norm_label": "feature_icons",
       "id": "components_bots_giveawaylanding_feature_icons"
     },
@@ -6032,7 +6032,7 @@
       "source_location": "L41",
       "_origin": "ast",
       "community": 113,
-      "community_name": "Bot Marketing Components",
+      "community_name": "Bot Landing UI",
       "norm_label": "command_names",
       "id": "components_bots_giveawaylanding_command_names"
     },
@@ -6043,7 +6043,7 @@
       "source_location": "L47",
       "_origin": "ast",
       "community": 113,
-      "community_name": "Bot Marketing Components",
+      "community_name": "Bot Landing UI",
       "norm_label": "settings_icons",
       "id": "components_bots_giveawaylanding_settings_icons"
     },
@@ -6054,7 +6054,7 @@
       "source_location": "L49",
       "_origin": "ast",
       "community": 113,
-      "community_name": "Bot Marketing Components",
+      "community_name": "Bot Landing UI",
       "norm_label": "coupon_icons",
       "id": "components_bots_giveawaylanding_coupon_icons"
     },
@@ -6065,7 +6065,7 @@
       "source_location": "L51",
       "_origin": "ast",
       "community": 113,
-      "community_name": "Bot Marketing Components",
+      "community_name": "Bot Landing UI",
       "norm_label": "trust_icons",
       "id": "components_bots_giveawaylanding_trust_icons"
     },
@@ -6252,7 +6252,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 113,
-      "community_name": "Bot Marketing Components",
+      "community_name": "Bot Landing UI",
       "norm_label": "ctasection.tsx",
       "id": "components_home_ctasection"
     },
@@ -6263,7 +6263,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "community": 113,
-      "community_name": "Bot Marketing Components",
+      "community_name": "Bot Landing UI",
       "norm_label": "discordlogo()",
       "id": "components_home_ctasection_discordlogo"
     },
@@ -6274,7 +6274,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "community": 113,
-      "community_name": "Bot Marketing Components",
+      "community_name": "Bot Landing UI",
       "norm_label": "ctasection()",
       "id": "components_home_ctasection_ctasection"
     },
@@ -6714,7 +6714,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 113,
-      "community_name": "Bot Marketing Components",
+      "community_name": "Bot Landing UI",
       "norm_label": "githubmark.tsx",
       "id": "components_icons_githubmark"
     },
@@ -6725,7 +6725,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "community": 113,
-      "community_name": "Bot Marketing Components",
+      "community_name": "Bot Landing UI",
       "norm_label": "githubmark()",
       "id": "components_icons_githubmark_githubmark"
     },
@@ -6912,7 +6912,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 19,
-      "community_name": "Legal and Privacy Pages",
+      "community_name": "Legal and Policy Pages",
       "norm_label": "legalcontent.tsx",
       "id": "components_legal_legalcontent"
     },
@@ -6923,7 +6923,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "community": 19,
-      "community_name": "Legal and Privacy Pages",
+      "community_name": "Legal and Policy Pages",
       "norm_label": "props",
       "id": "components_legal_legalcontent_props"
     },
@@ -6934,7 +6934,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "community": 19,
-      "community_name": "Legal and Privacy Pages",
+      "community_name": "Legal and Policy Pages",
       "norm_label": "legalcontent()",
       "id": "components_legal_legalcontent_legalcontent"
     },
@@ -7660,7 +7660,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 7,
-      "community_name": "Resource Usage Stats",
+      "community_name": "Resource Statistics API",
       "norm_label": "resource-stats.ts",
       "id": "content_resource_stats"
     },
@@ -7671,7 +7671,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "community": 7,
-      "community_name": "Resource Usage Stats",
+      "community_name": "Resource Statistics API",
       "norm_label": "resource_stats_game",
       "id": "content_resource_stats_resource_stats_game"
     },
@@ -7682,7 +7682,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "community": 7,
-      "community_name": "Resource Usage Stats",
+      "community_name": "Resource Statistics API",
       "norm_label": "resource_stats_period_hours",
       "id": "content_resource_stats_resource_stats_period_hours"
     },
@@ -7693,7 +7693,7 @@
       "source_location": "L33",
       "_origin": "ast",
       "community": 7,
-      "community_name": "Resource Usage Stats",
+      "community_name": "Resource Statistics API",
       "norm_label": "resource_stats_headline",
       "id": "content_resource_stats_resource_stats_headline"
     },
@@ -7704,7 +7704,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "community": 7,
-      "community_name": "Resource Usage Stats",
+      "community_name": "Resource Statistics API",
       "norm_label": "resourcestatentry",
       "id": "content_resource_stats_resourcestatentry"
     },
@@ -7715,7 +7715,7 @@
       "source_location": "L63",
       "_origin": "ast",
       "community": 7,
-      "community_name": "Resource Usage Stats",
+      "community_name": "Resource Statistics API",
       "norm_label": "resource_stats",
       "id": "content_resource_stats_resource_stats"
     },
@@ -7968,7 +7968,7 @@
       "source_location": "L24",
       "_origin": "ast",
       "community": 124,
-      "community_name": "Admin Audit Routes",
+      "community_name": "Admin Audit API",
       "norm_label": "adminroute()",
       "id": "lib_adminapi_adminroute"
     },
@@ -8793,7 +8793,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 25,
-      "community_name": "Transcript and Winner API",
+      "community_name": "Transcript Management API",
       "norm_label": "customdomain.ts",
       "id": "lib_customdomain"
     },
@@ -8804,7 +8804,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "community": 25,
-      "community_name": "Transcript and Winner API",
+      "community_name": "Transcript Management API",
       "norm_label": "execfileasync",
       "id": "lib_customdomain_execfileasync"
     },
@@ -8815,7 +8815,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "community": 25,
-      "community_name": "Transcript and Winner API",
+      "community_name": "Transcript Management API",
       "norm_label": "teardowncustomdomain()",
       "id": "lib_customdomain_teardowncustomdomain"
     },
@@ -8947,7 +8947,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 25,
-      "community_name": "Transcript and Winner API",
+      "community_name": "Transcript Management API",
       "norm_label": "db.ts",
       "id": "lib_db"
     },
@@ -8958,7 +8958,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "community": 25,
-      "community_name": "Transcript and Winner API",
+      "community_name": "Transcript Management API",
       "norm_label": "getpool()",
       "id": "lib_db_getpool"
     },
@@ -8969,7 +8969,7 @@
       "source_location": "L24",
       "_origin": "ast",
       "community": 25,
-      "community_name": "Transcript and Winner API",
+      "community_name": "Transcript Management API",
       "norm_label": "query()",
       "id": "lib_db_query"
     },
@@ -9002,7 +9002,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 7,
-      "community_name": "Resource Usage Stats",
+      "community_name": "Resource Statistics API",
       "norm_label": "fivestats.ts",
       "id": "lib_fivestats"
     },
@@ -9013,7 +9013,7 @@
       "source_location": "L31",
       "_origin": "ast",
       "community": 7,
-      "community_name": "Resource Usage Stats",
+      "community_name": "Resource Statistics API",
       "norm_label": "fivestatscurrent",
       "id": "lib_fivestats_fivestatscurrent"
     },
@@ -9024,7 +9024,7 @@
       "source_location": "L39",
       "_origin": "ast",
       "community": 7,
-      "community_name": "Resource Usage Stats",
+      "community_name": "Resource Statistics API",
       "norm_label": "fivestatshistorypoint",
       "id": "lib_fivestats_fivestatshistorypoint"
     },
@@ -9090,7 +9090,7 @@
       "source_location": "L91",
       "_origin": "ast",
       "community": 7,
-      "community_name": "Resource Usage Stats",
+      "community_name": "Resource Statistics API",
       "norm_label": "buildlinks()",
       "id": "lib_fivestats_buildlinks"
     },
@@ -9101,7 +9101,7 @@
       "source_location": "L104",
       "_origin": "ast",
       "community": 7,
-      "community_name": "Resource Usage Stats",
+      "community_name": "Resource Statistics API",
       "norm_label": "fivestatsfetch()",
       "id": "lib_fivestats_fivestatsfetch"
     },
@@ -9112,7 +9112,7 @@
       "source_location": "L127",
       "_origin": "ast",
       "community": 7,
-      "community_name": "Resource Usage Stats",
+      "community_name": "Resource Statistics API",
       "norm_label": "loadone()",
       "id": "lib_fivestats_loadone"
     },
@@ -9145,7 +9145,7 @@
       "source_location": "L202",
       "_origin": "ast",
       "community": 7,
-      "community_name": "Resource Usage Stats",
+      "community_name": "Resource Statistics API",
       "norm_label": "loadresourcestats()",
       "id": "lib_fivestats_loadresourcestats"
     },
@@ -9156,7 +9156,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 7,
-      "community_name": "Resource Usage Stats",
+      "community_name": "Resource Statistics API",
       "norm_label": "note: server-only module. imported exclusively by the api route and the",
       "id": "lib_fivestats_rationale_1"
     },
@@ -9331,8 +9331,8 @@
       "source_file": "lib/giveawaySession.ts",
       "source_location": "L72",
       "_origin": "ast",
-      "community": 125,
-      "community_name": "Giveaway Verification API",
+      "community": 62,
+      "community_name": "Giveaway Verification Route",
       "norm_label": "signgiveawaysession()",
       "id": "lib_giveawaysession_signgiveawaysession"
     },
@@ -9386,8 +9386,8 @@
       "source_file": "lib/giveawaySession.ts",
       "source_location": "L94",
       "_origin": "ast",
-      "community": 125,
-      "community_name": "Giveaway Verification API",
+      "community": 62,
+      "community_name": "Giveaway Verification Route",
       "norm_label": "parsegiveawayverify()",
       "id": "lib_giveawaysession_parsegiveawayverify"
     },
@@ -9475,7 +9475,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 127,
-      "community_name": "Hosted Bot Management",
+      "community_name": "Hosted Bot Scoping",
       "norm_label": "guildscope.ts",
       "id": "lib_guildscope"
     },
@@ -9486,7 +9486,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "community": 127,
-      "community_name": "Hosted Bot Management",
+      "community_name": "Hosted Bot Scoping",
       "norm_label": "scopedguildid",
       "id": "lib_guildscope_scopedguildid"
     },
@@ -9497,7 +9497,7 @@
       "source_location": "L40",
       "_origin": "ast",
       "community": 127,
-      "community_name": "Hosted Bot Management",
+      "community_name": "Hosted Bot Scoping",
       "norm_label": "trustedguildsource",
       "id": "lib_guildscope_trustedguildsource"
     },
@@ -9508,7 +9508,7 @@
       "source_location": "L67",
       "_origin": "ast",
       "community": 127,
-      "community_name": "Hosted Bot Management",
+      "community_name": "Hosted Bot Scoping",
       "norm_label": "trustedguildid()",
       "id": "lib_guildscope_trustedguildid"
     },
@@ -9519,7 +9519,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 127,
-      "community_name": "Hosted Bot Management",
+      "community_name": "Hosted Bot Scoping",
       "norm_label": "hostedbot.ts",
       "id": "lib_hostedbot"
     },
@@ -9530,7 +9530,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "community": 127,
-      "community_name": "Hosted Bot Management",
+      "community_name": "Hosted Bot Scoping",
       "norm_label": "execasync",
       "id": "lib_hostedbot_execasync"
     },
@@ -9541,7 +9541,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "community": 127,
-      "community_name": "Hosted Bot Management",
+      "community_name": "Hosted Bot Scoping",
       "norm_label": "hostedrow",
       "id": "lib_hostedbot_hostedrow"
     },
@@ -9552,7 +9552,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "community": 127,
-      "community_name": "Hosted Bot Management",
+      "community_name": "Hosted Bot Scoping",
       "norm_label": "archivehostedbot()",
       "id": "lib_hostedbot_archivehostedbot"
     },
@@ -9640,7 +9640,7 @@
       "source_location": "L323",
       "_origin": "ast",
       "community": 26,
-      "community_name": "Bot Configuration UI",
+      "community_name": "Bot Config UI",
       "norm_label": "dashboardtranslations",
       "id": "lib_i18n_dashboardtranslations"
     },
@@ -9893,7 +9893,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 19,
-      "community_name": "Legal and Privacy Pages",
+      "community_name": "Legal and Policy Pages",
       "norm_label": "markdown.ts",
       "id": "lib_markdown"
     },
@@ -9904,7 +9904,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "community": 19,
-      "community_name": "Legal and Privacy Pages",
+      "community_name": "Legal and Policy Pages",
       "norm_label": "legal_dir",
       "id": "lib_markdown_legal_dir"
     },
@@ -9915,7 +9915,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "community": 19,
-      "community_name": "Legal and Privacy Pages",
+      "community_name": "Legal and Policy Pages",
       "norm_label": "allowed_slugs",
       "id": "lib_markdown_allowed_slugs"
     },
@@ -9926,7 +9926,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "community": 19,
-      "community_name": "Legal and Privacy Pages",
+      "community_name": "Legal and Policy Pages",
       "norm_label": "legalslug",
       "id": "lib_markdown_legalslug"
     },
@@ -9937,7 +9937,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "community": 19,
-      "community_name": "Legal and Privacy Pages",
+      "community_name": "Legal and Policy Pages",
       "norm_label": "getlegalcontent()",
       "id": "lib_markdown_getlegalcontent"
     },
@@ -9948,7 +9948,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "community": 19,
-      "community_name": "Legal and Privacy Pages",
+      "community_name": "Legal and Policy Pages",
       "norm_label": "rendermarkdown()",
       "id": "lib_markdown_rendermarkdown"
     },
@@ -9959,7 +9959,7 @@
       "source_location": "L109",
       "_origin": "ast",
       "community": 19,
-      "community_name": "Legal and Privacy Pages",
+      "community_name": "Legal and Policy Pages",
       "norm_label": "rendertable()",
       "id": "lib_markdown_rendertable"
     },
@@ -9970,7 +9970,7 @@
       "source_location": "L133",
       "_origin": "ast",
       "community": 19,
-      "community_name": "Legal and Privacy Pages",
+      "community_name": "Legal and Policy Pages",
       "norm_label": "inline()",
       "id": "lib_markdown_inline"
     },
@@ -10124,7 +10124,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 102,
-      "community_name": "Release Version Tracking",
+      "community_name": "Release Versioning Logic",
       "norm_label": "releases.ts",
       "id": "lib_releases"
     },
@@ -10146,7 +10146,7 @@
       "source_location": "L52",
       "_origin": "ast",
       "community": 102,
-      "community_name": "Release Version Tracking",
+      "community_name": "Release Versioning Logic",
       "norm_label": "versionsfileentry",
       "id": "lib_releases_versionsfileentry"
     },
@@ -10157,7 +10157,7 @@
       "source_location": "L58",
       "_origin": "ast",
       "community": 102,
-      "community_name": "Release Version Tracking",
+      "community_name": "Release Versioning Logic",
       "norm_label": "summarize()",
       "id": "lib_releases_summarize"
     },
@@ -10168,7 +10168,7 @@
       "source_location": "L77",
       "_origin": "ast",
       "community": 102,
-      "community_name": "Release Version Tracking",
+      "community_name": "Release Versioning Logic",
       "norm_label": "newestversion()",
       "id": "lib_releases_newestversion"
     },
@@ -10179,7 +10179,7 @@
       "source_location": "L86",
       "_origin": "ast",
       "community": 102,
-      "community_name": "Release Version Tracking",
+      "community_name": "Release Versioning Logic",
       "norm_label": "fetchjson()",
       "id": "lib_releases_fetchjson"
     },
@@ -10190,7 +10190,7 @@
       "source_location": "L95",
       "_origin": "ast",
       "community": 102,
-      "community_name": "Release Version Tracking",
+      "community_name": "Release Versioning Logic",
       "norm_label": "lastcommitdate()",
       "id": "lib_releases_lastcommitdate"
     },
@@ -10201,7 +10201,7 @@
       "source_location": "L112",
       "_origin": "ast",
       "community": 102,
-      "community_name": "Release Version Tracking",
+      "community_name": "Release Versioning Logic",
       "norm_label": "loadone()",
       "id": "lib_releases_loadone"
     },
@@ -10212,7 +10212,7 @@
       "source_location": "L142",
       "_origin": "ast",
       "community": 102,
-      "community_name": "Release Version Tracking",
+      "community_name": "Release Versioning Logic",
       "norm_label": "loadreleases()",
       "id": "lib_releases_loadreleases"
     },
@@ -12390,7 +12390,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 46,
-      "community_name": "Server Cleanup Scripts",
+      "community_name": "Server Cleanup Script",
       "norm_label": "cleanup.js",
       "id": "scripts_cleanup"
     },
@@ -12401,7 +12401,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "community": 46,
-      "community_name": "Server Cleanup Scripts",
+      "community_name": "Server Cleanup Script",
       "norm_label": "{ rm, readdir, stat }",
       "id": "scripts_cleanup_rm_readdir_stat"
     },
@@ -12412,7 +12412,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "community": 46,
-      "community_name": "Server Cleanup Scripts",
+      "community_name": "Server Cleanup Script",
       "norm_label": "{ execfile }",
       "id": "scripts_cleanup_execfile"
     },
@@ -12423,7 +12423,7 @@
       "source_location": "L23",
       "_origin": "ast",
       "community": 46,
-      "community_name": "Server Cleanup Scripts",
+      "community_name": "Server Cleanup Script",
       "norm_label": "{ promisify }",
       "id": "scripts_cleanup_promisify"
     },
@@ -12434,7 +12434,7 @@
       "source_location": "L24",
       "_origin": "ast",
       "community": 46,
-      "community_name": "Server Cleanup Scripts",
+      "community_name": "Server Cleanup Script",
       "norm_label": "path",
       "id": "scripts_cleanup_path"
     },
@@ -12445,7 +12445,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "community": 46,
-      "community_name": "Server Cleanup Scripts",
+      "community_name": "Server Cleanup Script",
       "norm_label": "mysql",
       "id": "scripts_cleanup_mysql"
     },
@@ -12456,7 +12456,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "community": 46,
-      "community_name": "Server Cleanup Scripts",
+      "community_name": "Server Cleanup Script",
       "norm_label": "execfileasync",
       "id": "scripts_cleanup_execfileasync"
     },
@@ -12467,7 +12467,7 @@
       "source_location": "L41",
       "_origin": "ast",
       "community": 46,
-      "community_name": "Server Cleanup Scripts",
+      "community_name": "Server Cleanup Script",
       "norm_label": "main()",
       "id": "scripts_cleanup_main"
     },
@@ -12961,7 +12961,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "community": 19,
-      "community_name": "Legal and Privacy Pages",
+      "community_name": "Legal and Policy Pages",
       "norm_label": "row()",
       "id": "tests_adminauth_test_row"
     },
@@ -13005,7 +13005,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 23,
-      "community_name": "Team Management Tests",
+      "community_name": "Team Management API",
       "norm_label": "adminteamroute.test.ts",
       "id": "tests_adminteamroute_test"
     },
@@ -13016,7 +13016,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "community": 23,
-      "community_name": "Team Management Tests",
+      "community_name": "Team Management API",
       "norm_label": "team_manage",
       "id": "tests_adminteamroute_test_team_manage"
     },
@@ -13027,7 +13027,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "community": 23,
-      "community_name": "Team Management Tests",
+      "community_name": "Team Management API",
       "norm_label": "ctx()",
       "id": "tests_adminteamroute_test_ctx"
     },
@@ -13038,7 +13038,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 23,
-      "community_name": "Team Management Tests",
+      "community_name": "Team Management API",
       "norm_label": "adminwriteroutes.test.ts",
       "id": "tests_adminwriteroutes_test"
     },
@@ -13280,7 +13280,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 127,
-      "community_name": "Hosted Bot Management",
+      "community_name": "Hosted Bot Scoping",
       "norm_label": "guildscope.test.ts",
       "id": "tests_guildscope_test"
     },
@@ -13291,7 +13291,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 23,
-      "community_name": "Team Management Tests",
+      "community_name": "Team Management API",
       "norm_label": "helpers.ts",
       "id": "tests_helpers"
     },
@@ -13302,7 +13302,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "community": 23,
-      "community_name": "Team Management Tests",
+      "community_name": "Team Management API",
       "norm_label": "adminreq()",
       "id": "tests_helpers_adminreq"
     },
@@ -13313,7 +13313,7 @@
       "source_location": "L34",
       "_origin": "ast",
       "community": 23,
-      "community_name": "Team Management Tests",
+      "community_name": "Team Management API",
       "norm_label": "staticctx",
       "id": "tests_helpers_staticctx"
     },
@@ -13324,7 +13324,7 @@
       "source_location": "L36",
       "_origin": "ast",
       "community": 23,
-      "community_name": "Team Management Tests",
+      "community_name": "Team Management API",
       "norm_label": "dbmember",
       "id": "tests_helpers_dbmember"
     },
@@ -13335,7 +13335,7 @@
       "source_location": "L49",
       "_origin": "ast",
       "community": 23,
-      "community_name": "Team Management Tests",
+      "community_name": "Team Management API",
       "norm_label": "serveadminteam()",
       "id": "tests_helpers_serveadminteam"
     },
@@ -13401,7 +13401,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 102,
-      "community_name": "Release Version Tracking",
+      "community_name": "Release Versioning Logic",
       "norm_label": "releases.test.ts",
       "id": "tests_releases_test"
     },
@@ -14454,7 +14454,7 @@
       "community": 76,
       "norm_label": "msk source available license (msk-sal v1.0)",
       "_origin": "semantic",
-      "community_name": "Software Licensing (CLA)",
+      "community_name": "Software License Terms",
       "id": "license_msk_sal"
     },
     {
@@ -14470,7 +14470,7 @@
       "community": 76,
       "norm_label": "protected components (verify system, dashboard, shop/website design)",
       "_origin": "semantic",
-      "community_name": "Software Licensing (CLA)",
+      "community_name": "Software License Terms",
       "id": "license_protected_components"
     },
     {
@@ -14486,7 +14486,7 @@
       "community": 76,
       "norm_label": "contribution rights assignment (cla, \u00a7 5)",
       "_origin": "semantic",
-      "community_name": "Software Licensing (CLA)",
+      "community_name": "Software License Terms",
       "id": "license_contributions_cla"
     },
     {
@@ -14501,7 +14501,7 @@
       "community": 76,
       "norm_label": "msk source available license (german version)",
       "_origin": "semantic",
-      "community_name": "Software Licensing (CLA)",
+      "community_name": "Software License Terms",
       "id": "license_de_msk_sal"
     },
     {
@@ -14841,7 +14841,7 @@
       "community": 51,
       "norm_label": "data collected by the shop",
       "_origin": "semantic",
-      "community_name": "Shop Terms and Data",
+      "community_name": "Shop Data Policy",
       "id": "content_legal_privacy_shop_data_collection"
     },
     {
@@ -14853,10 +14853,10 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 62,
+      "community": 125,
       "norm_label": "data collected by the transcript service",
       "_origin": "semantic",
-      "community_name": "Ticket Bot Privacy",
+      "community_name": "Data Processing Policy",
       "id": "content_legal_privacy_transcript_service_data"
     },
     {
@@ -14868,10 +14868,10 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 62,
+      "community": 125,
       "norm_label": "discord oauth verification and guild record",
       "_origin": "semantic",
-      "community_name": "Ticket Bot Privacy",
+      "community_name": "Data Processing Policy",
       "id": "content_legal_privacy_discord_oauth_verification"
     },
     {
@@ -14886,7 +14886,7 @@
       "community": 39,
       "norm_label": "transcript storage and tier retention",
       "_origin": "semantic",
-      "community_name": "Data Retention Policy",
+      "community_name": "Bot Hosting Terms",
       "id": "content_legal_privacy_transcript_storage"
     },
     {
@@ -14901,7 +14901,7 @@
       "community": 39,
       "norm_label": "attachment storage (premium and premium+)",
       "_origin": "semantic",
-      "community_name": "Data Retention Policy",
+      "community_name": "Bot Hosting Terms",
       "id": "content_legal_privacy_attachment_storage"
     },
     {
@@ -14929,10 +14929,10 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 62,
+      "community": 125,
       "norm_label": "stripe subscription webhook",
       "_origin": "semantic",
-      "community_name": "Ticket Bot Privacy",
+      "community_name": "Data Processing Policy",
       "id": "content_legal_privacy_stripe_subscription_webhook"
     },
     {
@@ -14944,10 +14944,10 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 62,
+      "community": 125,
       "norm_label": "stripe payments europe, ltd.",
       "_origin": "semantic",
-      "community_name": "Ticket Bot Privacy",
+      "community_name": "Data Processing Policy",
       "id": "content_legal_privacy_stripe_payments"
     },
     {
@@ -14962,7 +14962,7 @@
       "community": 51,
       "norm_label": "tebex payment processing (shop)",
       "_origin": "semantic",
-      "community_name": "Shop Terms and Data",
+      "community_name": "Shop Data Policy",
       "id": "content_legal_privacy_tebex_payment_processing"
     },
     {
@@ -14977,7 +14977,7 @@
       "community": 39,
       "norm_label": "hosted bot management data and access control",
       "_origin": "semantic",
-      "community_name": "Data Retention Policy",
+      "community_name": "Bot Hosting Terms",
       "id": "content_legal_privacy_hosted_bot_data"
     },
     {
@@ -15066,10 +15066,10 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 62,
+      "community": 125,
       "norm_label": "ticket bot session cookies",
       "_origin": "semantic",
-      "community_name": "Ticket Bot Privacy",
+      "community_name": "Data Processing Policy",
       "id": "content_legal_privacy_session_cookies"
     },
     {
@@ -15115,7 +15115,7 @@
       "community": 51,
       "norm_label": "basket localstorage and sessionstorage",
       "_origin": "semantic",
-      "community_name": "Shop Terms and Data",
+      "community_name": "Shop Data Policy",
       "id": "content_legal_privacy_local_storage_basket"
     },
     {
@@ -15208,7 +15208,7 @@
       "community": 39,
       "norm_label": "storage period table",
       "_origin": "semantic",
-      "community_name": "Data Retention Policy",
+      "community_name": "Bot Hosting Terms",
       "id": "content_legal_privacy_storage_periods"
     },
     {
@@ -15220,10 +15220,10 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 62,
+      "community": 125,
       "norm_label": "third country transfers (uk adequacy, sccs)",
       "_origin": "semantic",
-      "community_name": "Ticket Bot Privacy",
+      "community_name": "Data Processing Policy",
       "id": "content_legal_privacy_third_country_transfers"
     },
     {
@@ -15238,7 +15238,7 @@
       "community": 43,
       "norm_label": "nutzungsbedingungen (de)",
       "_origin": "semantic",
-      "community_name": "FiveM Licensing Terms",
+      "community_name": "FiveM License Terms",
       "id": "content_legal_terms_de_nutzungsbedingungen"
     },
     {
@@ -15253,7 +15253,7 @@
       "community": 43,
       "norm_label": "lizenzbedingungen (einzelserver-lizenz)",
       "_origin": "semantic",
-      "community_name": "FiveM Licensing Terms",
+      "community_name": "FiveM License Terms",
       "id": "content_legal_terms_de_lizenzbedingungen"
     },
     {
@@ -15283,7 +15283,7 @@
       "community": 43,
       "norm_label": "anwendbares recht (bundesrepublik deutschland)",
       "_origin": "semantic",
-      "community_name": "FiveM Licensing Terms",
+      "community_name": "FiveM License Terms",
       "id": "content_legal_terms_de_anwendbares_recht"
     },
     {
@@ -15298,7 +15298,7 @@
       "community": 43,
       "norm_label": "terms & conditions (en)",
       "_origin": "semantic",
-      "community_name": "FiveM Licensing Terms",
+      "community_name": "FiveM License Terms",
       "id": "content_legal_terms_terms_and_conditions"
     },
     {
@@ -15328,7 +15328,7 @@
       "community": 51,
       "norm_label": "msk scripts shop",
       "_origin": "semantic",
-      "community_name": "Shop Terms and Data",
+      "community_name": "Shop Data Policy",
       "id": "content_legal_terms_msk_scripts_shop"
     },
     {
@@ -15358,7 +15358,7 @@
       "community": 39,
       "norm_label": "hosted bot management service",
       "_origin": "semantic",
-      "community_name": "Data Retention Policy",
+      "community_name": "Bot Hosting Terms",
       "id": "content_legal_terms_hosted_bot_management"
     },
     {
@@ -15388,7 +15388,7 @@
       "community": 51,
       "norm_label": "tebex limited (merchant of record)",
       "_origin": "semantic",
-      "community_name": "Shop Terms and Data",
+      "community_name": "Shop Data Policy",
       "id": "content_legal_terms_tebex_limited"
     },
     {
@@ -15404,7 +15404,7 @@
       "community": 43,
       "norm_label": "single-server license terms",
       "_origin": "semantic",
-      "community_name": "FiveM Licensing Terms",
+      "community_name": "FiveM License Terms",
       "id": "content_legal_terms_license_terms"
     },
     {
@@ -15420,7 +15420,7 @@
       "community": 51,
       "norm_label": "returns & refunds (digital goods)",
       "_origin": "semantic",
-      "community_name": "Shop Terms and Data",
+      "community_name": "Shop Data Policy",
       "id": "content_legal_terms_returns_and_refunds"
     },
     {
@@ -15435,7 +15435,7 @@
       "community": 43,
       "norm_label": "fivem asset escrow system",
       "_origin": "semantic",
-      "community_name": "FiveM Licensing Terms",
+      "community_name": "FiveM License Terms",
       "id": "content_legal_terms_fivem_asset_escrow"
     },
     {
@@ -15450,7 +15450,7 @@
       "community": 43,
       "norm_label": "cfx.re account requirement",
       "_origin": "semantic",
-      "community_name": "FiveM Licensing Terms",
+      "community_name": "FiveM License Terms",
       "id": "content_legal_terms_cfx_re_account"
     },
     {
@@ -15465,7 +15465,7 @@
       "community": 51,
       "norm_label": "discord id and membership requirement",
       "_origin": "semantic",
-      "community_name": "Shop Terms and Data",
+      "community_name": "Shop Data Policy",
       "id": "content_legal_terms_discord_requirements"
     },
     {
@@ -15480,7 +15480,7 @@
       "community": 39,
       "norm_label": "subscription tiers (basic / premium / premium+)",
       "_origin": "semantic",
-      "community_name": "Data Retention Policy",
+      "community_name": "Bot Hosting Terms",
       "id": "content_legal_terms_subscription_tiers"
     },
     {
@@ -15633,7 +15633,7 @@
       "community": 39,
       "norm_label": "operator access to hosted bot credentials",
       "_origin": "semantic",
-      "community_name": "Data Retention Policy",
+      "community_name": "Bot Hosting Terms",
       "id": "content_legal_terms_hosted_bot_credentials_access"
     },
     {
@@ -15648,7 +15648,7 @@
       "community": 39,
       "norm_label": "hosted bot customer responsibilities",
       "_origin": "semantic",
-      "community_name": "Data Retention Policy",
+      "community_name": "Bot Hosting Terms",
       "id": "content_legal_terms_hosted_bot_customer_responsibilities"
     },
     {
@@ -15663,7 +15663,7 @@
       "community": 39,
       "norm_label": "hosting termination and 14-day deletion",
       "_origin": "semantic",
-      "community_name": "Data Retention Policy",
+      "community_name": "Bot Hosting Terms",
       "id": "content_legal_terms_hosting_termination"
     },
     {
@@ -15724,7 +15724,7 @@
       "community": 43,
       "norm_label": "governing law (federal republic of germany)",
       "_origin": "semantic",
-      "community_name": "FiveM Licensing Terms",
+      "community_name": "FiveM License Terms",
       "id": "content_legal_terms_governing_law"
     },
     {
@@ -16276,7 +16276,7 @@
       "community": 72,
       "norm_label": "kanbanly marketing banner (dark, 1200x630 og-style)",
       "_origin": "semantic",
-      "community_name": "Kanbanly Marketing Banner",
+      "community_name": "Kanbanly Marketing",
       "id": "public_kanbanly_banner_banner"
     },
     {
@@ -16291,7 +16291,7 @@
       "community": 72,
       "norm_label": "kanbanly (minimalist kanban tool)",
       "_origin": "semantic",
-      "community_name": "Kanbanly Marketing Banner",
+      "community_name": "Kanbanly Marketing",
       "id": "public_kanbanly_banner_kanbanly_product"
     },
     {
@@ -16306,7 +16306,7 @@
       "community": 72,
       "norm_label": "tagline: \"flow first. build fast.\"",
       "_origin": "semantic",
-      "community_name": "Kanbanly Marketing Banner",
+      "community_name": "Kanbanly Marketing",
       "id": "public_kanbanly_banner_tagline"
     },
     {
@@ -16321,7 +16321,7 @@
       "community": 72,
       "norm_label": "claim: minimalistisches kanban-tool, dsgvo-konform, kostenlos",
       "_origin": "semantic",
-      "community_name": "Kanbanly Marketing Banner",
+      "community_name": "Kanbanly Marketing",
       "id": "public_kanbanly_banner_claim_dsgvo_kostenlos"
     },
     {
@@ -16336,7 +16336,7 @@
       "community": 72,
       "norm_label": "kanban board glyph logo (indigo rounded tile, 3x4 card grid)",
       "_origin": "semantic",
-      "community_name": "Kanbanly Marketing Banner",
+      "community_name": "Kanbanly Marketing",
       "id": "public_kanbanly_banner_board_glyph"
     },
     {
@@ -16351,7 +16351,7 @@
       "community": 54,
       "norm_label": "kanbanly logo (horizontal lockup)",
       "_origin": "semantic",
-      "community_name": "Kanbanly Brand Assets",
+      "community_name": "Kanbanly Brand Identity",
       "id": "public_kanbanly_logo_logo"
     },
     {
@@ -16366,7 +16366,7 @@
       "community": 54,
       "norm_label": "kanbanly (brand)",
       "_origin": "semantic",
-      "community_name": "Kanbanly Brand Assets",
+      "community_name": "Kanbanly Brand Identity",
       "id": "public_kanbanly_logo_brand"
     },
     {
@@ -16381,7 +16381,7 @@
       "community": 54,
       "norm_label": "rounded-square kanban grid icon",
       "_origin": "semantic",
-      "community_name": "Kanbanly Brand Assets",
+      "community_name": "Kanbanly Brand Identity",
       "id": "public_kanbanly_logo_mark"
     },
     {
@@ -16396,7 +16396,7 @@
       "community": 54,
       "norm_label": "lowercase bold sans wordmark 'kanbanly'",
       "_origin": "semantic",
-      "community_name": "Kanbanly Brand Assets",
+      "community_name": "Kanbanly Brand Identity",
       "id": "public_kanbanly_logo_wordmark"
     },
     {
@@ -16411,7 +16411,7 @@
       "community": 54,
       "norm_label": "kanban board concept (3-column task cards)",
       "_origin": "semantic",
-      "community_name": "Kanbanly Brand Assets",
+      "community_name": "Kanbanly Brand Identity",
       "id": "public_kanbanly_logo_kanban_board"
     },
     {
@@ -16426,7 +16426,7 @@
       "community": 54,
       "norm_label": "indigo/periwinkle brand color with white tint steps",
       "_origin": "semantic",
-      "community_name": "Kanbanly Brand Assets",
+      "community_name": "Kanbanly Brand Identity",
       "id": "public_kanbanly_logo_indigo_palette"
     },
     {
@@ -16441,7 +16441,7 @@
       "community": 54,
       "norm_label": "custom package brand asset in public/",
       "_origin": "semantic",
-      "community_name": "Kanbanly Brand Assets",
+      "community_name": "Kanbanly Brand Identity",
       "id": "public_kanbanly_logo_custom_package_asset"
     },
     {
@@ -16561,7 +16561,7 @@
       "community": 73,
       "norm_label": "msk scripts logo (green m mark)",
       "_origin": "semantic",
-      "community_name": "MSK Brand Identity",
+      "community_name": "MSK Brand Assets",
       "id": "public_logo_msk_scripts_logo"
     },
     {
@@ -16576,7 +16576,7 @@
       "community": 73,
       "norm_label": "msk scripts brand identity",
       "_origin": "semantic",
-      "community_name": "MSK Brand Identity",
+      "community_name": "MSK Brand Assets",
       "id": "public_logo_msk_scripts_brand"
     },
     {
@@ -16591,7 +16591,7 @@
       "community": 73,
       "norm_label": "msk green accent color palette",
       "_origin": "semantic",
-      "community_name": "MSK Brand Identity",
+      "community_name": "MSK Brand Assets",
       "id": "public_logo_green_accent_palette"
     },
     {
@@ -16606,7 +16606,7 @@
       "community": 73,
       "norm_label": "angular geometric monogram style",
       "_origin": "semantic",
-      "community_name": "MSK Brand Identity",
+      "community_name": "MSK Brand Assets",
       "id": "public_logo_geometric_monogram_style"
     },
     {
@@ -16621,7 +16621,7 @@
       "community": 73,
       "norm_label": "site branding asset (favicon, header, metadata)",
       "_origin": "semantic",
-      "community_name": "MSK Brand Identity",
+      "community_name": "MSK Brand Assets",
       "id": "public_logo_site_branding_asset"
     },
     {
@@ -16756,7 +16756,7 @@
       "community": 68,
       "norm_label": "msk.docs official documentation banner",
       "_origin": "semantic",
-      "community_name": "Documentation Branding",
+      "community_name": "Documentation Brand",
       "id": "public_msk_scripts_docs_banner_banner"
     },
     {
@@ -16771,7 +16771,7 @@
       "community": 68,
       "norm_label": "msk.docs (docu.msk-scripts.de)",
       "_origin": "semantic",
-      "community_name": "Documentation Branding",
+      "community_name": "Documentation Brand",
       "id": "public_msk_scripts_docs_banner_msk_docs"
     },
     {
@@ -16786,7 +16786,7 @@
       "community": 68,
       "norm_label": "msk scripts brand identity (green m monogram)",
       "_origin": "semantic",
-      "community_name": "Documentation Branding",
+      "community_name": "Documentation Brand",
       "id": "public_msk_scripts_docs_banner_msk_scripts_brand"
     },
     {
@@ -16801,7 +16801,7 @@
       "community": 68,
       "norm_label": "setup guides & configs",
       "_origin": "semantic",
-      "community_name": "Documentation Branding",
+      "community_name": "Documentation Brand",
       "id": "public_msk_scripts_docs_banner_setup_guides"
     },
     {
@@ -16816,7 +16816,7 @@
       "community": 68,
       "norm_label": "api reference",
       "_origin": "semantic",
-      "community_name": "Documentation Branding",
+      "community_name": "Documentation Brand",
       "id": "public_msk_scripts_docs_banner_api_reference"
     },
     {
@@ -16831,7 +16831,7 @@
       "community": 68,
       "norm_label": "dark green tech visual style (monospace uppercase, accent green)",
       "_origin": "semantic",
-      "community_name": "Documentation Branding",
+      "community_name": "Documentation Brand",
       "id": "public_msk_scripts_docs_banner_dark_green_style"
     },
     {
@@ -16846,7 +16846,7 @@
       "community": 40,
       "norm_label": "msk scripts social/opengraph banner",
       "_origin": "semantic",
-      "community_name": "Brand Visual Identity",
+      "community_name": "Brand Identity Assets",
       "id": "public_msk_scripts_server_banner_banner"
     },
     {
@@ -16861,7 +16861,7 @@
       "community": 40,
       "norm_label": "msk.scripts wordmark and m logo",
       "_origin": "semantic",
-      "community_name": "Brand Visual Identity",
+      "community_name": "Brand Identity Assets",
       "id": "public_msk_scripts_server_banner_wordmark"
     },
     {
@@ -16876,7 +16876,7 @@
       "community": 40,
       "norm_label": "tagline: scripts, tools & discord bots for servers that want more.",
       "_origin": "semantic",
-      "community_name": "Brand Visual Identity",
+      "community_name": "Brand Identity Assets",
       "id": "public_msk_scripts_server_banner_tagline"
     },
     {
@@ -16891,7 +16891,7 @@
       "community": 40,
       "norm_label": "fivem resource development (eyebrow claim)",
       "_origin": "semantic",
-      "community_name": "Brand Visual Identity",
+      "community_name": "Brand Identity Assets",
       "id": "public_msk_scripts_server_banner_fivem_resource_development"
     },
     {
@@ -16906,7 +16906,7 @@
       "community": 40,
       "norm_label": "msk_core (product chip)",
       "_origin": "semantic",
-      "community_name": "Brand Visual Identity",
+      "community_name": "Brand Identity Assets",
       "id": "public_msk_scripts_server_banner_msk_core"
     },
     {
@@ -16921,7 +16921,7 @@
       "community": 40,
       "norm_label": "msk_handcuffs (product chip)",
       "_origin": "semantic",
-      "community_name": "Brand Visual Identity",
+      "community_name": "Brand Identity Assets",
       "id": "public_msk_scripts_server_banner_msk_handcuffs"
     },
     {
@@ -16936,7 +16936,7 @@
       "community": 40,
       "norm_label": "msk_vehiclekeys (product chip)",
       "_origin": "semantic",
-      "community_name": "Brand Visual Identity",
+      "community_name": "Brand Identity Assets",
       "id": "public_msk_scripts_server_banner_msk_vehiclekeys"
     },
     {
@@ -16951,7 +16951,7 @@
       "community": 40,
       "norm_label": "discord bots offering",
       "_origin": "semantic",
-      "community_name": "Brand Visual Identity",
+      "community_name": "Brand Identity Assets",
       "id": "public_msk_scripts_server_banner_discord_bots"
     },
     {
@@ -16966,7 +16966,7 @@
       "community": 40,
       "norm_label": "dark green tech brand style (msk green accent, mono labels)",
       "_origin": "semantic",
-      "community_name": "Brand Visual Identity",
+      "community_name": "Brand Identity Assets",
       "id": "public_msk_scripts_server_banner_dark_green_brand_style"
     },
     {
@@ -17656,7 +17656,7 @@
       "community": 67,
       "norm_label": "msk_givevehicle marketing banner",
       "_origin": "semantic",
-      "community_name": "Givevehicle Script Marketing",
+      "community_name": "Give Vehicle Marketing",
       "id": "public_msk_givevehicle_banner_banner"
     },
     {
@@ -17671,7 +17671,7 @@
       "community": 67,
       "norm_label": "msk_givevehicle (fivem admin tool)",
       "_origin": "semantic",
-      "community_name": "Givevehicle Script Marketing",
+      "community_name": "Give Vehicle Marketing",
       "id": "public_msk_givevehicle_banner_product"
     },
     {
@@ -17686,7 +17686,7 @@
       "community": 67,
       "norm_label": "claim: spawn & gift any vehicle to players in seconds",
       "_origin": "semantic",
-      "community_name": "Givevehicle Script Marketing",
+      "community_name": "Give Vehicle Marketing",
       "id": "public_msk_givevehicle_banner_tagline"
     },
     {
@@ -17701,7 +17701,7 @@
       "community": 67,
       "norm_label": "esx framework support badge",
       "_origin": "semantic",
-      "community_name": "Givevehicle Script Marketing",
+      "community_name": "Give Vehicle Marketing",
       "id": "public_msk_givevehicle_banner_esx"
     },
     {
@@ -17716,7 +17716,7 @@
       "community": 67,
       "norm_label": "qbcore framework support badge",
       "_origin": "semantic",
-      "community_name": "Givevehicle Script Marketing",
+      "community_name": "Give Vehicle Marketing",
       "id": "public_msk_givevehicle_banner_qbcore"
     },
     {
@@ -17731,7 +17731,7 @@
       "community": 67,
       "norm_label": "msk scripts brand identity (m logo, green-on-dark)",
       "_origin": "semantic",
-      "community_name": "Givevehicle Script Marketing",
+      "community_name": "Give Vehicle Marketing",
       "id": "public_msk_givevehicle_banner_brand"
     },
     {
@@ -17851,7 +17851,7 @@
       "community": 74,
       "norm_label": "msk paste screenshot",
       "_origin": "semantic",
-      "community_name": "Paste Service UI",
+      "community_name": "Paste Service Marketing",
       "id": "public_msk_paste_screenshot"
     },
     {
@@ -17866,7 +17866,7 @@
       "community": 74,
       "norm_label": "msk paste (self-hosted pastebin)",
       "_origin": "semantic",
-      "community_name": "Paste Service UI",
+      "community_name": "Paste Service Marketing",
       "id": "public_msk_paste_product"
     },
     {
@@ -17881,7 +17881,7 @@
       "community": 74,
       "norm_label": "syntax highlighting",
       "_origin": "semantic",
-      "community_name": "Paste Service UI",
+      "community_name": "Paste Service Marketing",
       "id": "public_msk_paste_syntax_highlighting"
     },
     {
@@ -17896,7 +17896,7 @@
       "community": 74,
       "norm_label": "paste creation form (title + content, 1 mb limit)",
       "_origin": "semantic",
-      "community_name": "Paste Service UI",
+      "community_name": "Paste Service Marketing",
       "id": "public_msk_paste_create_form"
     },
     {
@@ -17911,7 +17911,7 @@
       "community": 74,
       "norm_label": "msk dark theme with green accent",
       "_origin": "semantic",
-      "community_name": "Paste Service UI",
+      "community_name": "Paste Service Marketing",
       "id": "public_msk_paste_dark_theme"
     },
     {
@@ -47442,7 +47442,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/useCart.ts",
-      "source_location": "L22",
+      "source_location": "L27",
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_usecart_usecart",
@@ -47466,7 +47466,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/useCart.ts",
-      "source_location": "L20",
+      "source_location": "L23",
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_usecart_usecart",
@@ -47490,7 +47490,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/useCart.ts",
-      "source_location": "L46",
+      "source_location": "L51",
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_usecart_usecart",
@@ -47514,7 +47514,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/useCart.ts",
-      "source_location": "L95",
+      "source_location": "L100",
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_usecart_usecart",
@@ -47538,7 +47538,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/useCart.ts",
-      "source_location": "L140",
+      "source_location": "L155",
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_usecart_usecart",
@@ -47562,7 +47562,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/useCart.ts",
-      "source_location": "L151",
+      "source_location": "L166",
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_usecart_usecart",
@@ -47586,7 +47586,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/useCart.ts",
-      "source_location": "L166",
+      "source_location": "L181",
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_usecart_usecart",
@@ -47610,7 +47610,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/useCart.ts",
-      "source_location": "L182",
+      "source_location": "L197",
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_usecart_usecart",
@@ -54863,5 +54863,5 @@
       "source_file": "docs/DEPLOYMENT.md"
     }
   ],
-  "built_at_commit": "11c7daed5ad5d365577766f5aa7f71da382b53b2"
+  "built_at_commit": "80561eaeef9007bb7d288c77e8671272f26de46a"
 }

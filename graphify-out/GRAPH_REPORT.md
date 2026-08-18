@@ -6,10 +6,10 @@
 ## Summary
 - 1527 nodes · 3160 edges · 129 communities (114 shown, 15 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 92 edges (avg confidence: 0.86)
-- Token cost: 6,003 input · 1,457 output
+- Token cost: 6,003 input · 1,454 output
 
 ## Graph Freshness
-- Built from commit: `11c7daed`
+- Built from commit: `80561eae`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -21,7 +21,7 @@
 - Admin Management Tabs
 - Core Dependencies
 - Admin Audit Logging
-- Resource Usage Stats
+- Resource Statistics API
 - TypeScript Configuration
 - Stripe Subscription Management
 - Navigation and UI
@@ -33,14 +33,14 @@
 - Ticket Bot Statistics
 - Home Page Features
 - Bot Proxy Routes
-- Legal and Privacy Pages
+- Legal and Policy Pages
 - Ticket Verification Client
 - Giveaway Dashboard Components
 - Custom Package Listings
-- Team Management Tests
+- Team Management API
 - UI Utility Components
-- Transcript and Winner API
-- Bot Configuration UI
+- Transcript Management API
+- Bot Config UI
 - Admin Team Management
 - User Account Components
 - Product Catalog Pages
@@ -53,22 +53,22 @@
 - Tebex Integration API
 - GDPR Privacy Policy
 - Admin Error Handling
-- Data Retention Policy
-- Brand Visual Identity
+- Bot Hosting Terms
+- Brand Identity Assets
 - Stripe Reconciliation Script
 - Transcript Service Terms
-- FiveM Licensing Terms
+- FiveM License Terms
 - HTML Sanitization Utilities
 - Giveaway Bot Marketing
-- Server Cleanup Scripts
+- Server Cleanup Script
 - Package Browser Filtering
 - Giveaway Session Auth
 - Coupon Status Logic
 - Subscription and Domains
-- Shop Terms and Data
+- Shop Data Policy
 - Ticket Bot Marketing
 - Kanbanly Project Management
-- Kanbanly Brand Assets
+- Kanbanly Brand Identity
 - Forms Product Marketing
 - Fuel Script Marketing
 - Handcuffs Script Marketing
@@ -76,21 +76,21 @@
 - Vehicle Keys Marketing
 - Transcript Image Repair
 - Giveaway Bot Privacy
-- Ticket Bot Privacy
+- Giveaway Verification Route
 - Core Framework Marketing
 - Engine Toggle Marketing
 - Garage Script Marketing
 - Giveaway Bot Features
-- Givevehicle Script Marketing
-- Documentation Branding
-- System Health API
+- Give Vehicle Marketing
+- Documentation Brand
+- Health Check API
 - Footer and Payments
 - Codeberg Mirror Workflow
-- Kanbanly Marketing Banner
-- MSK Brand Identity
-- Paste Service UI
+- Kanbanly Marketing
+- MSK Brand Assets
+- Paste Service Marketing
 - Giveaway Use Policy
-- Software Licensing (CLA)
+- Software License Terms
 - URL Shortener UI
 - Project Contribution Guidelines
 - Code Coverage Workflow
@@ -107,7 +107,7 @@
 - Virtual Host Deletion
 - Tailwind CSS Configuration
 - Design System Tokens
-- Release Version Tracking
+- Release Versioning Logic
 - Tebex Type Definitions
 - Tebex Stats Aggregator
 - Coupon Management UI
@@ -116,21 +116,21 @@
 - Automated Release Workflow
 - Project Branding Assets
 - API Route Guards
-- Bot Marketing Components
+- Bot Landing UI
 - Guild Tier Configuration
 - Resource Stats UI
 - Database Schema
 - Transcript Upload Service
 - API Key Management
 - Transcript List UI
-- API Key Validation
+- Guild URL API
 - Giveaway Results Layout
 - Giveaway Stats Client
 - Rate Limiting Proxy
-- Admin Audit Routes
-- Giveaway Verification API
+- Admin Audit API
+- Data Processing Policy
 - Language Context Provider
-- Hosted Bot Management
+- Hosted Bot Scoping
 - Ticket Stats Client
 
 ## God Nodes (most connected - your core abstractions)
@@ -202,7 +202,7 @@ Nodes (39): clsx, @fontsource-variable/inter, @fontsource-variable/jetbrains-mon
 Cohesion: 0.15
 Nodes (12): DELETE, dynamic, DELETE, dynamic, PUT, dynamic, PUT, dynamic (+4 more)
 
-### Community 7 - "Resource Usage Stats"
+### Community 7 - "Resource Statistics API"
 Cohesion: 0.15
 Nodes (18): dynamic, GET(), dynamic, metadata, ResourcesPage(), ResourcesClient(), RESOURCE_STATS, RESOURCE_STATS_GAME (+10 more)
 
@@ -250,7 +250,7 @@ Nodes (11): STEP_ICONS, ReleaseFeed(), WhyMSK(), LangContextValue, HOME_FEATURE_
 Cohesion: 0.10
 Nodes (33): dynamic, GET(), runtime, bounce(), DELETE, dynamic, GET, handle() (+25 more)
 
-### Community 19 - "Legal and Privacy Pages"
+### Community 19 - "Legal and Policy Pages"
 Cohesion: 0.20
 Nodes (16): ImprintPage(), metadata, metadata, TermsPage(), metadata, PrivacyPage(), LegalContent(), Props (+8 more)
 
@@ -266,7 +266,7 @@ Nodes (37): BonusRoleEditor(), Channel, clampBonus(), CouponFields(), couponPayl
 Cohesion: 0.24
 Nodes (9): CustomPackageCard(), resolveImageSrc(), CustomPackages(), HOMEPAGE_TOOL_IDS, FIVEM_SCRIPT_IDS, FreeScripts(), CUSTOM_PACKAGES, CUSTOM_PACKAGES_TITLE (+1 more)
 
-### Community 23 - "Team Management Tests"
+### Community 23 - "Team Management API"
 Cohesion: 0.21
 Nodes (9): POST, DELETE, dynamic, PATCH, TEAM_MANAGE, adminReq(), DbMember, serveAdminTeam() (+1 more)
 
@@ -274,11 +274,11 @@ Nodes (9): POST, DELETE, dynamic, PATCH, TEAM_MANAGE, adminReq(), DbMember, serv
 Cohesion: 0.29
 Nodes (7): StatusBadge(), PackageGallery(), resolveImages(), Container, ContainerProps, Skeleton(), cn()
 
-### Community 25 - "Transcript and Winner API"
+### Community 25 - "Transcript Management API"
 Cohesion: 0.17
 Nodes (15): authorized(), POST(), authorized(), POST(), ResultRow, WinnerIn, dynamic, GET() (+7 more)
 
-### Community 26 - "Bot Configuration UI"
+### Community 26 - "Bot Config UI"
 Cohesion: 0.29
 Nodes (5): BotConfigEditor(), BotStatus, logLineClass(), Msg, dashboardTranslations
 
@@ -330,11 +330,11 @@ Nodes (11): Datenschutzerklärung (DE), Ihre Rechte nach der DSGVO, Rechtsgrundl
 Cohesion: 0.12
 Nodes (11): AdminClient(), dynamic, ERROR_MESSAGES, metadata, CheckoutContent(), Button, ButtonProps, ButtonSize (+3 more)
 
-### Community 39 - "Data Retention Policy"
+### Community 39 - "Bot Hosting Terms"
 Cohesion: 0.25
 Nodes (9): Attachment Storage (Premium and Premium+), Hosted Bot Management Data and Access Control, Storage Period Table, Transcript Storage and Tier Retention, Operator Access to Hosted Bot Credentials, Hosted Bot Customer Responsibilities, Hosted Bot Management Service, Hosting Termination and 14-Day Deletion (+1 more)
 
-### Community 40 - "Brand Visual Identity"
+### Community 40 - "Brand Identity Assets"
 Cohesion: 0.36
 Nodes (9): MSK Scripts Social/OpenGraph Banner, Dark Green Tech Brand Style (MSK green accent, mono labels), Discord Bots Offering, FiveM Resource Development (eyebrow claim), msk_core (product chip), msk_handcuffs (product chip), msk_vehiclekeys (product chip), Tagline: Scripts, Tools & Discord bots for servers that want more. (+1 more)
 
@@ -346,7 +346,7 @@ Nodes (8): DRY_RUN, { execFile }, execFileAsync, isActiveStatus(), main(), mysql
 Cohesion: 0.29
 Nodes (8): Public Giveaway Results Page, In-Memory IP Rate Limiting, Transcript Service API Key, Limitation of Liability, Public Transcript URLs (UUID, unlisted), No Guaranteed Uptime / SLA, MSK Ticket Bot Transcript Service, Transcript Content and Responsibility
 
-### Community 43 - "FiveM Licensing Terms"
+### Community 43 - "FiveM License Terms"
 Cohesion: 0.25
 Nodes (8): CFX.re Account Requirement, Anwendbares Recht (Bundesrepublik Deutschland), Lizenzbedingungen (Einzelserver-Lizenz), Nutzungsbedingungen (DE), FiveM Asset Escrow System, Governing Law (Federal Republic of Germany), Single-Server License Terms, Terms & Conditions (EN)
 
@@ -358,7 +358,7 @@ Nodes (6): convertPipeTables(), EMOJI, OPTIONS, replaceEmojiShortcodes(), saniti
 Cohesion: 0.46
 Nodes (8): MSK Giveaway Bot Marketing Banner, Dark Green Tech Banner Visual Style, Discord.js v14 Tech Badge, MSK Scripts Brand Wordmark and M Logo, Multilingual Giveaways Claim, Prisma Tech Badge, MSK.GiveawayBot (Discord Giveaway Bot), Slash Commands and Modals Feature
 
-### Community 46 - "Server Cleanup Scripts"
+### Community 46 - "Server Cleanup Script"
 Cohesion: 0.29
 Nodes (7): { execFile }, execFileAsync, main(), mysql, path, { promisify }, { rm, readdir, stat }
 
@@ -378,7 +378,7 @@ Nodes (10): dynamic, GET, countCouponStates(), CouponExpiry, CouponLike, couponS
 Cohesion: 0.33
 Nodes (7): Custom Domain: Certbot and Certificate Transparency, Cancellation and Downgrade, Custom Domain for Transcript Delivery, Abonnement und Zahlung (Stripe, Testphase), 14-Day Free Trial, Let's Encrypt SSL Certificate, Stripe Subscription Billing
 
-### Community 51 - "Shop Terms and Data"
+### Community 51 - "Shop Data Policy"
 Cohesion: 0.29
 Nodes (7): Basket localStorage and sessionStorage, Data Collected by the Shop, Tebex Payment Processing (Shop), Discord ID and Membership Requirement, MSK Scripts Shop, Returns & Refunds (Digital Goods), Tebex Limited (Merchant of Record)
 
@@ -390,7 +390,7 @@ Nodes (7): Discord Ticket Bot Marketing Banner, Create Ticket Panel / Open Ticke
 Cohesion: 0.43
 Nodes (7): Workspaces, Boards and Cards with Labels, Due Dates and Assignments, Custom Package Banner Asset (public/), Dark Navy Background with Purple Accent Branding, Zum Dashboard Call-to-Action, Drag & Drop with Live Saving, Kanbanly Hero Banner, Kanbanly Project Management Tool
 
-### Community 54 - "Kanbanly Brand Assets"
+### Community 54 - "Kanbanly Brand Identity"
 Cohesion: 0.33
 Nodes (7): Kanbanly (Brand), Custom Package Brand Asset in public/, Indigo/Periwinkle Brand Color with White Tint Steps, Kanban Board Concept (3-Column Task Cards), Kanbanly Logo (Horizontal Lockup), Rounded-Square Kanban Grid Icon, Lowercase Bold Sans Wordmark 'kanbanly'
 
@@ -422,9 +422,9 @@ Nodes (6): filenameFromUrl(), main(), mysql, parseArgs(), path, { readFile, writ
 Cohesion: 0.40
 Nodes (6): Giveaway Bot: Detaillierte Verarbeitung, Data Collected by the Giveaway Bot, Giveaway Data Retention (Deleted on Bot Removal), Giveaway Dashboard Session Cookies, Anonymous Public Statistics Page, Giveaway Web Dashboard (Discord OAuth)
 
-### Community 62 - "Ticket Bot Privacy"
-Cohesion: 0.33
-Nodes (6): Discord OAuth Verification and Guild Record, Ticket Bot Session Cookies, Stripe Payments Europe, Ltd., Stripe Subscription Webhook, Third Country Transfers (UK Adequacy, SCCs), Data Collected by the Transcript Service
+### Community 62 - "Giveaway Verification Route"
+Cohesion: 0.31
+Nodes (7): POST(), BotGuild, dynamic, GiveawayVerifyPage(), metadata, parseGiveawayVerify(), signGiveawaySession()
 
 ### Community 63 - "Core Framework Marketing"
 Cohesion: 0.60
@@ -442,15 +442,15 @@ Nodes (6): msk_garage Marketing Banner, ESX Framework Support, Full Garage Manag
 Cohesion: 0.40
 Nodes (6): Discord Giveaway Bot Marketing Banner, discord.js v14 (Tech Stack Claim), Multilingual Support Claim, Per-Guild Configurable Claim, Discord Giveaway Bot (Product), MSK Dark Theme with Green Accent Visual Style
 
-### Community 67 - "Givevehicle Script Marketing"
+### Community 67 - "Give Vehicle Marketing"
 Cohesion: 0.53
 Nodes (6): msk_givevehicle Marketing Banner, MSK Scripts Brand Identity (M logo, green-on-dark), ESX Framework Support Badge, msk_givevehicle (FiveM Admin Tool), QBCore Framework Support Badge, Claim: Spawn & gift any vehicle to players in seconds
 
-### Community 68 - "Documentation Branding"
+### Community 68 - "Documentation Brand"
 Cohesion: 0.60
 Nodes (6): API Reference, MSK.DOCS Official Documentation Banner, Dark Green Tech Visual Style (monospace uppercase, accent green), MSK.DOCS (docu.msk-scripts.de), MSK Scripts Brand Identity (green M monogram), Setup Guides & Configs
 
-### Community 69 - "System Health API"
+### Community 69 - "Health Check API"
 Cohesion: 0.33
 Nodes (4): dynamic, IncidentsResponse, SEVERITY, StatusResponse
 
@@ -462,15 +462,15 @@ Nodes (3): ECOSYSTEM_LINKS, Footer(), PaymentMarks()
 Cohesion: 0.40
 Nodes (5): Codeberg Mirror Secrets, Mirror Runs Only on Main and Tags, Mirror to Codeberg Workflow, Prune-Based Exact Mirror, Push to Codeberg Job
 
-### Community 72 - "Kanbanly Marketing Banner"
+### Community 72 - "Kanbanly Marketing"
 Cohesion: 0.70
 Nodes (5): Kanbanly Marketing Banner (dark, 1200x630 OG-style), Kanban board glyph logo (indigo rounded tile, 3x4 card grid), Claim: Minimalistisches Kanban-Tool, DSGVO-konform, Kostenlos, Kanbanly (minimalist Kanban tool), Tagline: "Flow first. Build fast."
 
-### Community 73 - "MSK Brand Identity"
+### Community 73 - "MSK Brand Assets"
 Cohesion: 0.60
 Nodes (5): Angular Geometric Monogram Style, MSK Green Accent Color Palette, MSK Scripts Brand Identity, MSK Scripts Logo (green M mark), Site Branding Asset (favicon, header, metadata)
 
-### Community 74 - "Paste Service UI"
+### Community 74 - "Paste Service Marketing"
 Cohesion: 0.60
 Nodes (5): Paste Creation Form (Title + Content, 1 MB limit), MSK Dark Theme with Green Accent, MSK Paste (Self-hosted Pastebin), MSK Paste Screenshot, Syntax Highlighting
 
@@ -478,7 +478,7 @@ Nodes (5): Paste Creation Form (Title + Content, 1 MB limit), MSK Dark Theme wit
 Cohesion: 0.50
 Nodes (4): Giveaway Bot Acceptable Use, MSK Giveaway Bot, Scope of Services, Server Operator Responsibility for Giveaways
 
-### Community 76 - "Software Licensing (CLA)"
+### Community 76 - "Software License Terms"
 Cohesion: 0.50
 Nodes (4): Contribution Rights Assignment (CLA, § 5), MSK Source Available License (German version), MSK Source Available License (MSK-SAL v1.0), Protected Components (Verify System, Dashboard, Shop/Website Design)
 
@@ -498,7 +498,7 @@ Nodes (3): Code Coverage Workflow, Coverage Job, Same-Repo-Only Coverage Upload 
 Cohesion: 0.31
 Nodes (9): channels(), contrast(), CSS, dark, light, linear(), luminance(), mix() (+1 more)
 
-### Community 102 - "Release Version Tracking"
+### Community 102 - "Release Versioning Logic"
 Cohesion: 0.47
 Nodes (7): fetchJson(), lastCommitDate(), loadOne(), loadReleases(), newestVersion(), summarize(), VersionsFileEntry
 
@@ -522,7 +522,7 @@ Nodes (44): GiveawayBotPageDe(), metadata, metadata, TicketBotPageDe(), Giveaway
 Cohesion: 0.22
 Nodes (5): API_DIR, DB_ROUTES, GUARDS, PUBLIC_BY_DESIGN, ROUTES
 
-### Community 113 - "Bot Marketing Components"
+### Community 113 - "Bot Landing UI"
 Cohesion: 0.15
 Nodes (11): BotCrossLink(), COMMAND_NAMES, COUPON_ICONS, FEATURE_ICONS, GIVEAWAY_GITHUB_URL, GIVEAWAY_INVITE_URL, SETTINGS_ICONS, STEP_ICONS (+3 more)
 
@@ -550,7 +550,7 @@ Nodes (7): ApiKey, ApiKeysTab(), maskKey(), Tier, TIER_LABELS, TIER_ORDER, tierB
 Cohesion: 0.38
 Nodes (6): EMPTY_QUERY, formatBytes(), Query, safeUrl(), TranscriptItem, TranscriptsCard()
 
-### Community 120 - "API Key Validation"
+### Community 120 - "Guild URL API"
 Cohesion: 0.40
 Nodes (5): dynamic, extractApiKey(), GET(), GuildRow, UrlRow
 
@@ -566,19 +566,19 @@ Nodes (6): Breakdown(), BreakdownItem, formatNum(), StatCard(), StatsClient(), g
 Cohesion: 0.22
 Nodes (12): BODY_LIMIT_PREFIXES, BOT_DASHBOARD_HOST, Bucket, buckets, clientIp(), config, isRateLimited(), proxy() (+4 more)
 
-### Community 124 - "Admin Audit Routes"
+### Community 124 - "Admin Audit API"
 Cohesion: 0.13
 Nodes (11): dynamic, GET, GuildRow, AuditRow, dynamic, GET, dynamic, GET (+3 more)
 
-### Community 125 - "Giveaway Verification API"
-Cohesion: 0.31
-Nodes (7): POST(), BotGuild, dynamic, GiveawayVerifyPage(), metadata, parseGiveawayVerify(), signGiveawaySession()
+### Community 125 - "Data Processing Policy"
+Cohesion: 0.33
+Nodes (6): Discord OAuth Verification and Guild Record, Ticket Bot Session Cookies, Stripe Payments Europe, Ltd., Stripe Subscription Webhook, Third Country Transfers (UK Adequacy, SCCs), Data Collected by the Transcript Service
 
 ### Community 126 - "Language Context Provider"
 Cohesion: 0.31
 Nodes (7): DashboardClient(), Guild, VerifyClient(), LangContext, LangProvider(), useLang(), setLangCookie()
 
-### Community 127 - "Hosted Bot Management"
+### Community 127 - "Hosted Bot Scoping"
 Cohesion: 0.31
 Nodes (6): ScopedGuildId, trustedGuildId(), TrustedGuildSource, archiveHostedBot(), execAsync, HostedRow
 
@@ -594,11 +594,11 @@ Nodes (5): formatBytes(), formatNum(), StatCard(), StatsClient(), TierBreakdown(
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Card` connect `User Account Components` to `Ticket Stats Client`, `Catalog Configuration`, `Ticket Dashboard Client`, `Language Context Provider`, `Admin Management Tabs`, `Admin Error Handling`, `Coupon Management UI`, `Bot Landing Pages`, `Bot Marketing Components`, `Resource Stats UI`, `Ticket Verification Client`, `Giveaway Dashboard Components`, `API Key Management`, `Transcript List UI`, `Giveaway Results Layout`, `Giveaway Stats Client`, `Product Catalog Pages`, `Shopping Cart Logic`?**
+- **Why does `Card` connect `User Account Components` to `Ticket Stats Client`, `Catalog Configuration`, `Ticket Dashboard Client`, `Language Context Provider`, `Admin Management Tabs`, `Admin Error Handling`, `Coupon Management UI`, `Bot Landing Pages`, `Bot Landing UI`, `Resource Stats UI`, `Ticket Verification Client`, `Giveaway Dashboard Components`, `API Key Management`, `Transcript List UI`, `Giveaway Results Layout`, `Giveaway Stats Client`, `Product Catalog Pages`, `Shopping Cart Logic`?**
   _High betweenness centrality (0.025) - this node is a cross-community bridge._
 - **Why does `Tier` connect `Guild Dashboard API` to `Ticket Dashboard Client`, `Stripe Subscription Management`, `Bot Landing Pages`, `Guild Tier Configuration`, `Ticket Verification Client`, `Transcript Upload Service`?**
   _High betweenness centrality (0.023) - this node is a cross-community bridge._
-- **Why does `Button` connect `Admin Error Handling` to `Ticket Dashboard Client`, `Admin Management Tabs`, `Footer and Payments`, `Coupon Management UI`, `Navigation and UI`, `Bot Landing Pages`, `Bot Marketing Components`, `Home Page Features`, `Resource Stats UI`, `Ticket Verification Client`, `Giveaway Dashboard Components`, `API Key Management`, `Transcript List UI`, `Language Context Provider`, `User Account Components`, `Product Catalog Pages`, `Shopping Cart Logic`?**
+- **Why does `Button` connect `Admin Error Handling` to `Ticket Dashboard Client`, `Admin Management Tabs`, `Footer and Payments`, `Coupon Management UI`, `Navigation and UI`, `Bot Landing Pages`, `Bot Landing UI`, `Home Page Features`, `Resource Stats UI`, `Ticket Verification Client`, `Giveaway Dashboard Components`, `API Key Management`, `Transcript List UI`, `Language Context Provider`, `User Account Components`, `Product Catalog Pages`, `Shopping Cart Logic`?**
   _High betweenness centrality (0.023) - this node is a cross-community bridge._
 - **What connects `ALL_TABS`, `Tier`, `ApiKey` to the rest of the system?**
   _450 weakly-connected nodes found - possible documentation gaps or missing edges._
