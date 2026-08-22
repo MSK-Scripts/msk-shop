@@ -45,7 +45,9 @@ function Sparkline({ history, id }: { history: HistoryPoint[]; id: string }) {
       viewBox={`0 0 ${W} ${H}`}
       preserveAspectRatio="none"
       className="h-16 w-full"
-      role="img"
+      // Dekorativ: Serverzahl und Veränderung stehen als Text direkt darüber.
+      // `role="img"` und `aria-hidden` zusammen widersprachen sich, das eine
+      // meldet ein Bild an, das andere nimmt es aus dem Baum.
       aria-hidden="true"
     >
       <defs>
@@ -90,7 +92,10 @@ function ResourceLinkButton({ link }: { link: ResourceLink }) {
     </>
   )
   return (
-    <Button asChild variant={link.variant} size="sm" className="flex-1">
+    // `tap-target` statt einer größeren Schaltfläche: die Karte trägt zwei
+    // Knöpfe nebeneinander, sichtbar höher würde das Raster verschieben. Die
+    // Trefferfläche liegt danach bei 44 px, gemessen waren es 32.
+    <Button asChild variant={link.variant} size="sm" className="tap-target flex-1">
       {link.external ? (
         <a href={link.href} target="_blank" rel="noopener noreferrer">{content}</a>
       ) : (
