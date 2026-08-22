@@ -422,7 +422,7 @@
       "file_type": "code",
       "norm_label": "translationkey",
       "source_file": "lib/i18n.ts",
-      "source_location": "L127"
+      "source_location": "L137"
     },
     {
       "id": "lib_releases_versionsfileentry",
@@ -1137,7 +1137,7 @@
       "file_type": "code",
       "norm_label": "props",
       "source_file": "app/ticketbot/verify/VerifyClient.tsx",
-      "source_location": "L110"
+      "source_location": "L127"
     },
     {
       "id": "lib_session_verifysession",
@@ -3439,6 +3439,18 @@
       "source_location": "L17"
     },
     {
+      "id": "app_resources_page_resourcespage",
+      "label": "ResourcesPage()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 115,
+      "community_name": "ResourcesClient.tsx",
+      "file_type": "code",
+      "norm_label": "resourcespage()",
+      "source_file": "app/resources/page.tsx",
+      "source_location": "L12"
+    },
+    {
       "id": "app_resources_resourcesclient_formatnum",
       "label": "formatNum()",
       "_callable": true,
@@ -5212,7 +5224,7 @@
       "file_type": "code",
       "norm_label": "discordicon()",
       "source_file": "app/ticketbot/verify/VerifyClient.tsx",
-      "source_location": "L68"
+      "source_location": "L82"
     },
     {
       "id": "app_ticketbot_verify_verifyclient_errorbanner",
@@ -5224,7 +5236,7 @@
       "file_type": "code",
       "norm_label": "errorbanner()",
       "source_file": "app/ticketbot/verify/VerifyClient.tsx",
-      "source_location": "L99"
+      "source_location": "L113"
     },
     {
       "id": "app_ticketbot_verify_verifyclient_guildicon",
@@ -5236,7 +5248,7 @@
       "file_type": "code",
       "norm_label": "guildicon()",
       "source_file": "app/ticketbot/verify/VerifyClient.tsx",
-      "source_location": "L78"
+      "source_location": "L92"
     },
     {
       "id": "app_ticketbot_verify_verifyclient_stepindicator",
@@ -5260,7 +5272,7 @@
       "file_type": "code",
       "norm_label": "verifyclient()",
       "source_file": "app/ticketbot/verify/VerifyClient.tsx",
-      "source_location": "L122"
+      "source_location": "L139"
     },
     {
       "id": "app_giveaway_dashboard_dashboardclient_bonusroleeditor",
@@ -7831,18 +7843,6 @@
       "source_location": "L6"
     },
     {
-      "id": "app_resources_page_resourcespage",
-      "label": "ResourcesPage()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "fivestats.ts",
-      "file_type": "code",
-      "norm_label": "resourcespage()",
-      "source_file": "app/resources/page.tsx",
-      "source_location": "L12"
-    },
-    {
       "id": "lib_fivestats_buildlinks",
       "label": "buildLinks()",
       "_callable": true,
@@ -8964,7 +8964,7 @@
       "file_type": "code",
       "norm_label": "carttranslations",
       "source_file": "lib/i18n.ts",
-      "source_location": "L1429"
+      "source_location": "L1439"
     },
     {
       "id": "lib_i18n_giveawaydashboardtranslations",
@@ -8975,7 +8975,7 @@
       "file_type": "code",
       "norm_label": "giveawaydashboardtranslations",
       "source_file": "lib/i18n.ts",
-      "source_location": "L632"
+      "source_location": "L642"
     },
     {
       "id": "lib_i18n_layouttranslations",
@@ -8986,7 +8986,7 @@
       "file_type": "code",
       "norm_label": "layouttranslations",
       "source_file": "lib/i18n.ts",
-      "source_location": "L1559"
+      "source_location": "L1569"
     },
     {
       "id": "tailwind_config",
@@ -9107,7 +9107,7 @@
       "file_type": "code",
       "norm_label": "packagestranslations",
       "source_file": "lib/i18n.ts",
-      "source_location": "L1270"
+      "source_location": "L1280"
     },
     {
       "id": "scripts_tebex_stats",
@@ -9547,7 +9547,7 @@
       "file_type": "code",
       "norm_label": "resourcestatstranslations",
       "source_file": "lib/i18n.ts",
-      "source_location": "L286"
+      "source_location": "L296"
     },
     {
       "id": "database_schema",
@@ -9844,7 +9844,7 @@
       "file_type": "code",
       "norm_label": "giveawaystatstranslations",
       "source_file": "lib/i18n.ts",
-      "source_location": "L217"
+      "source_location": "L227"
     },
     {
       "id": "lib_utils",
@@ -10119,7 +10119,7 @@
       "file_type": "code",
       "norm_label": "giveawayresulttranslations",
       "source_file": "lib/i18n.ts",
-      "source_location": "L966"
+      "source_location": "L976"
     },
     {
       "id": "lib_lang",
@@ -11340,7 +11340,7 @@
       "file_type": "code",
       "norm_label": "tier_labels",
       "source_file": "app/ticketbot/verify/VerifyClient.tsx",
-      "source_location": "L116"
+      "source_location": "L133"
     },
     {
       "id": "lib_i18n_translations",
@@ -11549,7 +11549,7 @@
       "file_type": "code",
       "norm_label": "statstranslations",
       "source_file": "lib/i18n.ts",
-      "source_location": "L130"
+      "source_location": "L140"
     },
     {
       "id": "app_api_admin_api_keys_guildid_route",
@@ -13166,7 +13166,7 @@
       "file_type": "code",
       "norm_label": "dashboardtranslations",
       "source_file": "lib/i18n.ts",
-      "source_location": "L328"
+      "source_location": "L338"
     },
     {
       "id": "components_home_ctasection",
@@ -13243,7 +13243,7 @@
       "file_type": "code",
       "norm_label": "hometranslations",
       "source_file": "lib/i18n.ts",
-      "source_location": "L993"
+      "source_location": "L1003"
     },
     {
       "id": "lib_shopstats",
@@ -14079,7 +14079,7 @@
       "file_type": "code",
       "norm_label": "categoriestranslations",
       "source_file": "lib/i18n.ts",
-      "source_location": "L1535"
+      "source_location": "L1545"
     },
     {
       "id": "lib_sanitize",
@@ -23220,7 +23220,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/giveaway/verify/VerifyClient.tsx",
-      "source_location": "L88",
+      "source_location": "L96",
       "weight": 1.0
     },
     {
@@ -23928,7 +23928,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/ticketbot/verify/VerifyClient.tsx",
-      "source_location": "L31",
+      "source_location": "L41",
       "weight": 1.0
     },
     {
@@ -23940,7 +23940,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/ticketbot/verify/VerifyClient.tsx",
-      "source_location": "L123",
+      "source_location": "L140",
       "weight": 1.0
     },
     {
@@ -23952,7 +23952,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/ticketbot/verify/VerifyClient.tsx",
-      "source_location": "L267",
+      "source_location": "L291",
       "weight": 1.0
     },
     {
@@ -26376,7 +26376,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "app/ticketbot/verify/VerifyClient.tsx",
-      "source_location": "L111",
+      "source_location": "L128",
       "weight": 1.0
     },
     {
@@ -48605,13 +48605,24 @@
     },
     {
       "source": "app_ticketbot_verify_verifyclient",
+      "target": "app_ticketbot_verify_verifyclient_errorbanner",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app/ticketbot/verify/VerifyClient.tsx",
+      "source_location": "L113",
+      "weight": 1.0
+    },
+    {
+      "source": "app_ticketbot_verify_verifyclient",
       "target": "app_ticketbot_verify_verifyclient_props",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/ticketbot/verify/VerifyClient.tsx",
-      "source_location": "L110",
+      "source_location": "L127",
       "weight": 1.0
     },
     {
@@ -48622,7 +48633,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/ticketbot/verify/VerifyClient.tsx",
-      "source_location": "L116",
+      "source_location": "L133",
       "weight": 1.0
     },
     {
@@ -48633,7 +48644,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/ticketbot/verify/VerifyClient.tsx",
-      "source_location": "L122",
+      "source_location": "L139",
       "weight": 1.0
     },
     {
@@ -48655,7 +48666,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/ticketbot/verify/VerifyClient.tsx",
-      "source_location": "L68",
+      "source_location": "L82",
       "weight": 1.0
     },
     {
@@ -48666,18 +48677,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/ticketbot/verify/VerifyClient.tsx",
-      "source_location": "L78",
-      "weight": 1.0
-    },
-    {
-      "source": "app_ticketbot_verify_verifyclient",
-      "target": "app_ticketbot_verify_verifyclient_errorbanner",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "app/ticketbot/verify/VerifyClient.tsx",
-      "source_location": "L99",
+      "source_location": "L92",
       "weight": 1.0
     },
     {
@@ -52092,13 +52092,13 @@
     },
     {
       "source": "lib_i18n",
-      "target": "lib_i18n_translationkey",
+      "target": "lib_i18n_hometranslations",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/i18n.ts",
-      "source_location": "L127",
+      "source_location": "L1003",
       "weight": 1.0
     },
     {
@@ -52109,7 +52109,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/i18n.ts",
-      "source_location": "L1270",
+      "source_location": "L1280",
+      "weight": 1.0
+    },
+    {
+      "source": "lib_i18n",
+      "target": "lib_i18n_translationkey",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/i18n.ts",
+      "source_location": "L137",
       "weight": 1.0
     },
     {
@@ -52120,7 +52131,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/i18n.ts",
-      "source_location": "L130",
+      "source_location": "L140",
       "weight": 1.0
     },
     {
@@ -52131,7 +52142,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/i18n.ts",
-      "source_location": "L1429",
+      "source_location": "L1439",
       "weight": 1.0
     },
     {
@@ -52142,7 +52153,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/i18n.ts",
-      "source_location": "L1535",
+      "source_location": "L1545",
       "weight": 1.0
     },
     {
@@ -52153,7 +52164,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/i18n.ts",
-      "source_location": "L1559",
+      "source_location": "L1569",
       "weight": 1.0
     },
     {
@@ -52164,7 +52175,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/i18n.ts",
-      "source_location": "L217",
+      "source_location": "L227",
       "weight": 1.0
     },
     {
@@ -52175,7 +52186,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/i18n.ts",
-      "source_location": "L286",
+      "source_location": "L296",
       "weight": 1.0
     },
     {
@@ -52197,7 +52208,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/i18n.ts",
-      "source_location": "L328",
+      "source_location": "L338",
       "weight": 1.0
     },
     {
@@ -52208,7 +52219,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/i18n.ts",
-      "source_location": "L632",
+      "source_location": "L642",
       "weight": 1.0
     },
     {
@@ -52219,18 +52230,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/i18n.ts",
-      "source_location": "L966",
-      "weight": 1.0
-    },
-    {
-      "source": "lib_i18n",
-      "target": "lib_i18n_hometranslations",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/i18n.ts",
-      "source_location": "L993",
+      "source_location": "L976",
       "weight": 1.0
     },
     {
@@ -59730,5 +59730,5 @@
       "source_file": "CONTRIBUTING.md"
     }
   ],
-  "built_at_commit": "9785af5a4ae17da35a3cc60450775d7d00587ecf"
+  "built_at_commit": "db4a9a18155338e8598ebe1c6008592234643153"
 }

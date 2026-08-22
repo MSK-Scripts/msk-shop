@@ -1,7 +1,7 @@
 # Graph Report - msk-shop  (2026-08-22)
 
 ## Corpus Check
-- 281 files · ~181,969 words
+- 281 files · ~182,191 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `9785af5a`
+- Built from commit: `db4a9a18`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -193,8 +193,8 @@ Cohesion: 0.07
 Nodes (27): Badges, Buttons, Cards, Colors, Components, Design System: MSK Scripts Shop, Do:, Do's and Don'ts (+19 more)
 
 ### Community 7 - "fivestats.ts"
-Cohesion: 0.15
-Nodes (17): dynamic, GET(), ResourcesPage(), RESOURCE_STATS, RESOURCE_STATS_GAME, RESOURCE_STATS_HEADLINE, RESOURCE_STATS_PERIOD_HOURS, ResourceStatEntry (+9 more)
+Cohesion: 0.16
+Nodes (16): dynamic, GET(), RESOURCE_STATS, RESOURCE_STATS_GAME, RESOURCE_STATS_HEADLINE, RESOURCE_STATS_PERIOD_HOURS, ResourceStatEntry, buildLinks() (+8 more)
 
 ### Community 8 - "TypeScript Configuration"
 Cohesion: 0.07
@@ -497,8 +497,8 @@ Cohesion: 0.20
 Nodes (9): BotCrossLink(), COMMAND_NAMES, COUPON_ICONS, FEATURE_ICONS, GIVEAWAY_GITHUB_URL, GIVEAWAY_INVITE_URL, SETTINGS_ICONS, STEP_ICONS (+1 more)
 
 ### Community 115 - "ResourcesClient.tsx"
-Cohesion: 0.15
-Nodes (12): dynamic, metadata, formatNum(), formatSigned(), ResourceCard(), ResourcesClient(), TrendBadge(), HistoryPoint (+4 more)
+Cohesion: 0.14
+Nodes (13): dynamic, metadata, ResourcesPage(), formatNum(), formatSigned(), ResourceCard(), ResourcesClient(), TrendBadge() (+5 more)
 
 ### Community 116 - "Database Schema"
 Cohesion: 0.24
