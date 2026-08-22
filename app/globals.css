@@ -76,6 +76,20 @@
      2,45:1 als Text auf der Kachel. */
   --color-chart-rose:     #be123c;
 
+  /* Live-Log-Konsole des gehosteten Bots. Die Fläche ist in **beiden** Themes
+     dunkel, wie bei einem Terminal, und die Zeilenfarben sind gegen genau diese
+     Fläche gewählt. Vorher stand die Konsole auf `--color-background`, im
+     hellen Theme also auf Weiß, und dort misst die normale Zeile 1,48:1: das
+     gesamte Log war unlesbar. Auf der dunklen Fläche liegen alle sieben
+     zwischen 6,8:1 und 12,8:1. */
+  --color-console:        #0d1117;
+  --color-log-text:       #d4d4d8;
+  --color-log-dim:        #a1a1aa;
+  --color-log-error:      #f87171;
+  --color-log-warn:       #facc15;
+  --color-log-ok:         #4ade80;
+  --color-log-info:       #38bdf8;
+
   --color-badge-esx:      #ab4e00;
   --color-badge-qb:       #8b48c5;
   --color-badge-lua:      #1469c1;

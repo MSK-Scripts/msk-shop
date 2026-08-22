@@ -23,16 +23,19 @@ type Msg = { type: 'success' | 'error' | 'info'; text: string; detail?: string }
 
 // ── Log line styling ───────────────────────────────────────────────────────────
 
+// Farben gegen `--color-console` gewählt, die Fläche ist in beiden Themes
+// dunkel. Bewusst ohne Deckkraft-Suffixe: `/60` auf dem Rot der Stapelzeilen
+// landete bei 3,2:1, die gedämpfte Farbe sagt dasselbe und besteht.
 function logLineClass(line: string): string {
-  if (line.startsWith('==>'))                                    return 'text-accent/50 font-semibold text-[10px] pt-2'
-  if (/\[FATAL\]|\[ERROR\]/.test(line))                         return 'text-red-400'
-  if (/\[WARN\s*\]|\[WARN\]/.test(line))                        return 'text-yellow-400'
-  if (/\[OK\s*\]/.test(line) || line.includes('✔'))             return 'text-green-400'
-  if (/\[INFO\s*\]/.test(line))                                 return 'text-sky-400/90'
-  if (/\[Commands\]|\[Events\]|\[Components\]/.test(line))      return 'text-zinc-400'
-  if (/\[Ready\]|\[StaffReminder\]/.test(line))                 return 'text-accent/80'
-  if (line.trim().startsWith('at ') || line.trim().startsWith('  at ')) return 'text-red-400/60 pl-4'
-  return 'text-zinc-300'
+  if (line.startsWith('==>'))                                    return 'text-[var(--color-log-dim)] font-semibold text-[10px] pt-2'
+  if (/\[FATAL\]|\[ERROR\]/.test(line))                         return 'text-[var(--color-log-error)]'
+  if (/\[WARN\s*\]|\[WARN\]/.test(line))                        return 'text-[var(--color-log-warn)]'
+  if (/\[OK\s*\]/.test(line) || line.includes('✔'))             return 'text-[var(--color-log-ok)]'
+  if (/\[INFO\s*\]/.test(line))                                 return 'text-[var(--color-log-info)]'
+  if (/\[Commands\]|\[Events\]|\[Components\]/.test(line))      return 'text-[var(--color-log-dim)]'
+  if (/\[Ready\]|\[StaffReminder\]/.test(line))                 return 'text-[var(--color-log-ok)]'
+  if (line.trim().startsWith('at ') || line.trim().startsWith('  at ')) return 'text-[var(--color-log-dim)] pl-4'
+  return 'text-[var(--color-log-text)]'
 }
 
 // ── Status helpers ─────────────────────────────────────────────────────────────
@@ -42,9 +45,9 @@ function StatusDot({ status }: { status: BotStatus | null }) {
   const colors: Record<BotStatus, string> = {
     online:    'bg-accent',
     stopped:   'bg-danger',
-    stopping:  'bg-yellow-400',
-    launching: 'bg-yellow-400 animate-pulse',
-    errored:   'bg-orange-500 animate-pulse',
+    stopping:  'bg-[var(--color-warning)]',
+    launching: 'bg-[var(--color-warning)] animate-pulse',
+    errored:   'bg-[var(--color-danger)] animate-pulse',
     not_found: 'bg-border',
     unknown:   'bg-border',
   }
@@ -57,7 +60,7 @@ function Banner({ msg, onClose }: { msg: Msg; onClose?: () => void }) {
   const styles = {
     success: 'bg-accent/10 border-accent/30 text-accent',
     error:   'bg-danger/10 border-danger/30 text-danger',
-    info:    'bg-yellow-500/10 border-yellow-500/30 text-yellow-400',
+    info:    'bg-[var(--color-warning)]/10 border-[var(--color-warning)]/30 text-[var(--color-warning)]',
   }
   const Icon = msg.type === 'success' ? CheckCircle : msg.type === 'info' ? Info : AlertCircle
   return (
@@ -308,7 +311,7 @@ export default function BotConfigEditor({ lang, guildId }: { lang: Lang; guildId
             {botStatus === 'errored' && !showLogs && (
               <button
                 onClick={() => { setShowLogs(true); void fetchLogs() }}
-                className="flex items-center gap-1 text-xs text-orange-400 hover:text-orange-300 transition-colors"
+                className="flex items-center gap-1 text-xs text-[var(--color-warning)] hover:underline transition-colors"
               >
                 <ScrollText size={13} /> {t.bot_show_logs}
               </button>
@@ -443,7 +446,7 @@ export default function BotConfigEditor({ lang, guildId }: { lang: Lang; guildId
         {liveOpen && (
           <div
             ref={liveScrollRef}
-            className="bg-bg border border-borderlt rounded-lg p-3 h-80 overflow-y-auto font-mono"
+            className="bg-[var(--color-console)] border border-borderlt rounded-lg p-3 h-80 overflow-y-auto font-mono"
           >
             {liveLines.length === 0 ? (
               <span className="text-xs text-dim">{t.bot_live_empty}</span>

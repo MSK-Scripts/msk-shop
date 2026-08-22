@@ -88,6 +88,16 @@ describe.each([
     ['Diagrammfarbe Rosé auf Kachel',      t['chart-rose'],         t.muted,      4.5],
     ['Gefahrfarbe als Text auf Kachel',    t.danger,                t.muted,      4.5],
     ['Gefahrfarbe als Text auf Karte',     t.danger,                t.card,       4.5],
+    // Live-Log-Konsole des gehosteten Bots. Ihre Fläche ist in beiden Themes
+    // dunkel, deshalb stehen hier in beiden Durchläufen dieselben Zahlen.
+    // Vorher stand die Konsole auf `--color-background`, im hellen Theme also
+    // auf Weiß, wo die normale Zeile 1,48:1 mass.
+    ['Logzeile auf der Konsole',        t['log-text'],           t.console,    4.5],
+    ['Gedämpfte Logzeile',              t['log-dim'],            t.console,    4.5],
+    ['Fehlerzeile im Log',              t['log-error'],          t.console,    4.5],
+    ['Warnzeile im Log',                t['log-warn'],           t.console,    4.5],
+    ['Erfolgszeile im Log',             t['log-ok'],             t.console,    4.5],
+    ['Infozeile im Log',                t['log-info'],           t.console,    4.5],
   ]
 
   it.each(paare)('%s', (_label, fg, bg, need) => {
