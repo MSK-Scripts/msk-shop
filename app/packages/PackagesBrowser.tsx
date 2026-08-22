@@ -5,6 +5,9 @@ import Link from 'next/link'
 import { X } from 'lucide-react'
 import { PackageCard } from '@/components/packages/PackageCard'
 import { PACKAGE_BADGES, PACKAGE_TAGS, PACKAGE_DESCRIPTIONS } from '@/lib/config'
+import {
+  bucketLabel, countBy, countPriceBuckets, priceBucket, type Facet,
+} from '@/lib/packageFacets'
 import { packagesTranslations, type Lang } from '@/lib/i18n'
 import type { TebexPackage } from '@/types/tebex'
 
@@ -21,51 +24,21 @@ import type { TebexPackage } from '@/types/tebex'
  * Filter state is local rather than in the URL. Nothing here is worth linking
  * to on its own, and a query string would have to be kept in sync with the
  * facets on every catalogue change.
+ *
+ * Counting and ordering live in lib/packageFacets.ts so they can be tested.
  */
-
-interface Facet {
-  /** Stable value used for comparison. */
-  value: string
-  /** How many packages carry it, before this facet's own filter is applied. */
-  count: number
-}
 
 interface Props {
   lang: Lang
   packages: TebexPackage[]
 }
 
-/** Price bucket boundaries in EUR. Chosen from the actual catalogue spread. */
-const PRICE_STEPS = [10, 20, 40] as const
-
-function priceBucket(price: number): string {
-  if (price < PRICE_STEPS[0]) return `<${PRICE_STEPS[0]}`
-  if (price < PRICE_STEPS[1]) return `${PRICE_STEPS[0]}-${PRICE_STEPS[1]}`
-  if (price < PRICE_STEPS[2]) return `${PRICE_STEPS[1]}-${PRICE_STEPS[2]}`
-  return `${PRICE_STEPS[2]}+`
-}
-
-function bucketLabel(bucket: string, lang: Lang): string {
-  const under = lang === 'de' ? 'unter' : 'under'
-  const from = lang === 'de' ? 'ab' : 'from'
-  if (bucket.startsWith('<')) return `${under} ${bucket.slice(1)} €`
-  if (bucket.endsWith('+')) return `${from} ${bucket.slice(0, -1)} €`
-  const [lo, hi] = bucket.split('-')
-  return `${lo}–${hi} €`
+function priceOf(pkg: TebexPackage): number {
+  return pkg.total_price ?? pkg.base_price ?? 0
 }
 
 function tagsOf(pkg: TebexPackage): string[] {
   return PACKAGE_TAGS[pkg.id] ?? []
-}
-
-function countBy(packages: TebexPackage[], pick: (p: TebexPackage) => string[]): Facet[] {
-  const counts = new Map<string, number>()
-  for (const p of packages) {
-    for (const v of pick(p)) counts.set(v, (counts.get(v) ?? 0) + 1)
-  }
-  return [...counts.entries()]
-    .map(([value, count]) => ({ value, count }))
-    .sort((a, b) => b.count - a.count || a.value.localeCompare(b.value))
 }
 
 function FacetGroup({
@@ -128,7 +101,7 @@ export function PackagesBrowser({ lang, packages }: Props) {
   const facets = useMemo(() => ({
     variants: countBy(packages, p => (p.category?.name ? [p.category.name] : [])),
     compat:   countBy(packages, tagsOf),
-    buckets:  countBy(packages, p => [priceBucket(p.total_price ?? p.base_price ?? 0)]),
+    buckets:  countPriceBuckets(packages, priceOf),
   }), [packages])
 
   const shown = useMemo(() => packages.filter(p => {
@@ -136,7 +109,7 @@ export function PackagesBrowser({ lang, packages }: Props) {
     // Mehrere Kompatibilitäts-Haken heißen „alle davon", nicht „irgendeins":
     // wer ox_inventory und msk_core anklickt, sucht etwas, das mit beidem läuft.
     if (compat.size > 0 && ![...compat].every(c => tagsOf(p).includes(c))) return false
-    if (buckets.size > 0 && !buckets.has(priceBucket(p.total_price ?? p.base_price ?? 0))) return false
+    if (buckets.size > 0 && !buckets.has(priceBucket(priceOf(p)))) return false
     return true
   }), [packages, variants, compat, buckets])
 
