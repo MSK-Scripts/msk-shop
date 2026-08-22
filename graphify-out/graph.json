@@ -1400,6 +1400,45 @@
       "source_location": "L13"
     },
     {
+      "id": "components_packages_packageprice_props",
+      "label": "Props",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 29,
+      "community_name": "packages/[id]/page.tsx",
+      "file_type": "code",
+      "norm_label": "props",
+      "source_file": "components/packages/PackagePrice.tsx",
+      "source_location": "L7"
+    },
+    {
+      "id": "components_ui_badge_badgeprops",
+      "label": "BadgeProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 29,
+      "community_name": "packages/[id]/page.tsx",
+      "file_type": "code",
+      "norm_label": "badgeprops",
+      "source_file": "components/ui/Badge.tsx",
+      "source_location": "L19"
+    },
+    {
+      "id": "components_ui_badge_badgevariant",
+      "label": "BadgeVariant",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 29,
+      "community_name": "packages/[id]/page.tsx",
+      "file_type": "code",
+      "norm_label": "badgevariant",
+      "source_file": "components/ui/Badge.tsx",
+      "source_location": "L4"
+    },
+    {
       "id": "store_cart_cartstore",
       "label": "CartStore",
       "_callable": true,
@@ -1673,32 +1712,6 @@
       "source_location": "L7"
     },
     {
-      "id": "components_packages_packageprice_props",
-      "label": "Props",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 32,
-      "community_name": "useCartStore",
-      "file_type": "code",
-      "norm_label": "props",
-      "source_file": "components/packages/PackagePrice.tsx",
-      "source_location": "L7"
-    },
-    {
-      "id": "lib_price_displayprice",
-      "label": "DisplayPrice",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 32,
-      "community_name": "useCartStore",
-      "file_type": "code",
-      "norm_label": "displayprice",
-      "source_file": "lib/price.ts",
-      "source_location": "L18"
-    },
-    {
       "id": "lib_price_saledata",
       "label": "SaleData",
       "_callable": true,
@@ -1723,32 +1736,6 @@
       "norm_label": "salepricesstore",
       "source_file": "store/salePrices.ts",
       "source_location": "L8"
-    },
-    {
-      "id": "components_ui_badge_badgeprops",
-      "label": "BadgeProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 33,
-      "community_name": "Catalog.tsx",
-      "file_type": "code",
-      "norm_label": "badgeprops",
-      "source_file": "components/ui/Badge.tsx",
-      "source_location": "L19"
-    },
-    {
-      "id": "components_ui_badge_badgevariant",
-      "label": "BadgeVariant",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 33,
-      "community_name": "Catalog.tsx",
-      "file_type": "code",
-      "norm_label": "badgevariant",
-      "source_file": "components/ui/Badge.tsx",
-      "source_location": "L4"
     },
     {
       "id": "lib_config_badgevariant",
@@ -1788,6 +1775,19 @@
       "norm_label": "searchsnippet",
       "source_file": "lib/config.ts",
       "source_location": "L96"
+    },
+    {
+      "id": "lib_price_displayprice",
+      "label": "DisplayPrice",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 33,
+      "community_name": "Catalog.tsx",
+      "file_type": "code",
+      "norm_label": "displayprice",
+      "source_file": "lib/price.ts",
+      "source_location": "L18"
     },
     {
       "id": "app_ticketbot_dashboard_dashboardclient_props",
@@ -3472,7 +3472,7 @@
       "file_type": "code",
       "norm_label": "resourcecard()",
       "source_file": "app/resources/ResourcesClient.tsx",
-      "source_location": "L103"
+      "source_location": "L108"
     },
     {
       "id": "app_resources_resourcesclient_resourcelinkbutton",
@@ -3484,7 +3484,7 @@
       "file_type": "code",
       "norm_label": "resourcelinkbutton()",
       "source_file": "app/resources/ResourcesClient.tsx",
-      "source_location": "L85"
+      "source_location": "L87"
     },
     {
       "id": "app_resources_resourcesclient_resourcesclient",
@@ -3496,7 +3496,7 @@
       "file_type": "code",
       "norm_label": "resourcesclient()",
       "source_file": "app/resources/ResourcesClient.tsx",
-      "source_location": "L185"
+      "source_location": "L190"
     },
     {
       "id": "app_resources_resourcesclient_section",
@@ -3508,7 +3508,7 @@
       "file_type": "code",
       "norm_label": "section()",
       "source_file": "app/resources/ResourcesClient.tsx",
-      "source_location": "L166"
+      "source_location": "L171"
     },
     {
       "id": "app_resources_resourcesclient_sparkline",
@@ -3532,7 +3532,7 @@
       "file_type": "code",
       "norm_label": "trendbadge()",
       "source_file": "app/resources/ResourcesClient.tsx",
-      "source_location": "L71"
+      "source_location": "L73"
     },
     {
       "id": "app_admin_error_adminerror",
@@ -4061,30 +4061,6 @@
       "norm_label": "sweep()",
       "source_file": "proxy.ts",
       "source_location": "L63"
-    },
-    {
-      "id": "app_categories_id_page_generatestaticparams",
-      "label": "generateStaticParams()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "sitemap.ts",
-      "file_type": "code",
-      "norm_label": "generatestaticparams()",
-      "source_file": "app/categories/[id]/page.tsx",
-      "source_location": "L20"
-    },
-    {
-      "id": "app_packages_id_page_generatestaticparams",
-      "label": "generateStaticParams()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "sitemap.ts",
-      "file_type": "code",
-      "norm_label": "generatestaticparams()",
-      "source_file": "app/packages/[id]/page.tsx",
-      "source_location": "L24"
     },
     {
       "id": "app_sitemap_xml_route_get",
@@ -6151,6 +6127,18 @@
       "source_location": "L37"
     },
     {
+      "id": "app_packages_id_page_generatestaticparams",
+      "label": "generateStaticParams()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 29,
+      "community_name": "packages/[id]/page.tsx",
+      "file_type": "code",
+      "norm_label": "generatestaticparams()",
+      "source_file": "app/packages/[id]/page.tsx",
+      "source_location": "L24"
+    },
+    {
       "id": "app_packages_id_page_packagedetailpage",
       "label": "PackageDetailPage()",
       "_callable": true,
@@ -6161,6 +6149,18 @@
       "norm_label": "packagedetailpage()",
       "source_file": "app/packages/[id]/page.tsx",
       "source_location": "L79"
+    },
+    {
+      "id": "components_packages_packageprice_packageprice",
+      "label": "PackagePrice()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 29,
+      "community_name": "packages/[id]/page.tsx",
+      "file_type": "code",
+      "norm_label": "packageprice()",
+      "source_file": "components/packages/PackagePrice.tsx",
+      "source_location": "L14"
     },
     {
       "id": "lib_seo_decodeentities",
@@ -6823,18 +6823,6 @@
       "source_location": "L28"
     },
     {
-      "id": "components_packages_packageprice_packageprice",
-      "label": "PackagePrice()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 32,
-      "community_name": "useCartStore",
-      "file_type": "code",
-      "norm_label": "packageprice()",
-      "source_file": "components/packages/PackagePrice.tsx",
-      "source_location": "L14"
-    },
-    {
       "id": "components_salepricefetcher_salepricefetcher",
       "label": "SalePriceFetcher()",
       "_callable": true,
@@ -6857,18 +6845,6 @@
       "norm_label": "fetchsaleprices()",
       "source_file": "components/SalePriceFetcher.tsx",
       "source_location": "L17"
-    },
-    {
-      "id": "lib_price_resolvedisplayprice",
-      "label": "resolveDisplayPrice()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 32,
-      "community_name": "useCartStore",
-      "file_type": "code",
-      "norm_label": "resolvedisplayprice()",
-      "source_file": "lib/price.ts",
-      "source_location": "L29"
     },
     {
       "id": "components_home_catalog_catalogcard",
@@ -6905,6 +6881,18 @@
       "norm_label": "variant()",
       "source_file": "components/home/Catalog.tsx",
       "source_location": "L55"
+    },
+    {
+      "id": "lib_price_resolvedisplayprice",
+      "label": "resolveDisplayPrice()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 33,
+      "community_name": "Catalog.tsx",
+      "file_type": "code",
+      "norm_label": "resolvedisplayprice()",
+      "source_file": "lib/price.ts",
+      "source_location": "L29"
     },
     {
       "id": "app_ticketbot_dashboard_dashboardclient_botdashboardlauncher",
@@ -7469,6 +7457,18 @@
       "norm_label": "generatemetadata()",
       "source_file": "app/categories/[id]/page.tsx",
       "source_location": "L34"
+    },
+    {
+      "id": "app_categories_id_page_generatestaticparams",
+      "label": "generateStaticParams()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 44,
+      "community_name": "categories/[id]/page.tsx",
+      "file_type": "code",
+      "norm_label": "generatestaticparams()",
+      "source_file": "app/categories/[id]/page.tsx",
+      "source_location": "L20"
     },
     {
       "id": "components_packages_packagecard_packagecard",
@@ -8964,7 +8964,7 @@
       "file_type": "code",
       "norm_label": "carttranslations",
       "source_file": "lib/i18n.ts",
-      "source_location": "L1424"
+      "source_location": "L1429"
     },
     {
       "id": "lib_i18n_giveawaydashboardtranslations",
@@ -8975,7 +8975,7 @@
       "file_type": "code",
       "norm_label": "giveawaydashboardtranslations",
       "source_file": "lib/i18n.ts",
-      "source_location": "L627"
+      "source_location": "L632"
     },
     {
       "id": "lib_i18n_layouttranslations",
@@ -8986,7 +8986,7 @@
       "file_type": "code",
       "norm_label": "layouttranslations",
       "source_file": "lib/i18n.ts",
-      "source_location": "L1554"
+      "source_location": "L1559"
     },
     {
       "id": "tailwind_config",
@@ -9107,7 +9107,7 @@
       "file_type": "code",
       "norm_label": "packagestranslations",
       "source_file": "lib/i18n.ts",
-      "source_location": "L1265"
+      "source_location": "L1270"
     },
     {
       "id": "scripts_tebex_stats",
@@ -9547,7 +9547,7 @@
       "file_type": "code",
       "norm_label": "resourcestatstranslations",
       "source_file": "lib/i18n.ts",
-      "source_location": "L281"
+      "source_location": "L286"
     },
     {
       "id": "database_schema",
@@ -9844,7 +9844,7 @@
       "file_type": "code",
       "norm_label": "giveawaystatstranslations",
       "source_file": "lib/i18n.ts",
-      "source_location": "L214"
+      "source_location": "L217"
     },
     {
       "id": "lib_utils",
@@ -10119,7 +10119,7 @@
       "file_type": "code",
       "norm_label": "giveawayresulttranslations",
       "source_file": "lib/i18n.ts",
-      "source_location": "L961"
+      "source_location": "L966"
     },
     {
       "id": "lib_lang",
@@ -11893,6 +11893,50 @@
       "source_location": "L8"
     },
     {
+      "id": "components_packages_packageprice",
+      "label": "PackagePrice.tsx",
+      "_origin": "ast",
+      "community": 29,
+      "community_name": "packages/[id]/page.tsx",
+      "file_type": "code",
+      "norm_label": "packageprice.tsx",
+      "source_file": "components/packages/PackagePrice.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "components_ui_badge",
+      "label": "Badge.tsx",
+      "_origin": "ast",
+      "community": 29,
+      "community_name": "packages/[id]/page.tsx",
+      "file_type": "code",
+      "norm_label": "badge.tsx",
+      "source_file": "components/ui/Badge.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "components_ui_badge_badge",
+      "label": "Badge",
+      "_origin": "ast",
+      "community": 29,
+      "community_name": "packages/[id]/page.tsx",
+      "file_type": "code",
+      "norm_label": "badge",
+      "source_file": "components/ui/Badge.tsx",
+      "source_location": "L55"
+    },
+    {
+      "id": "components_ui_badge_variantclasses",
+      "label": "variantClasses",
+      "_origin": "ast",
+      "community": 29,
+      "community_name": "packages/[id]/page.tsx",
+      "file_type": "code",
+      "norm_label": "variantclasses",
+      "source_file": "components/ui/Badge.tsx",
+      "source_location": "L23"
+    },
+    {
       "id": "lib_seo",
       "label": "seo.ts",
       "_origin": "ast",
@@ -12850,17 +12894,6 @@
       "source_location": "L1"
     },
     {
-      "id": "components_packages_packageprice",
-      "label": "PackagePrice.tsx",
-      "_origin": "ast",
-      "community": 32,
-      "community_name": "useCartStore",
-      "file_type": "code",
-      "norm_label": "packageprice.tsx",
-      "source_file": "components/packages/PackagePrice.tsx",
-      "source_location": "L1"
-    },
-    {
       "id": "components_salepricefetcher",
       "label": "SalePriceFetcher.tsx",
       "_origin": "ast",
@@ -12869,28 +12902,6 @@
       "file_type": "code",
       "norm_label": "salepricefetcher.tsx",
       "source_file": "components/SalePriceFetcher.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "components_ui_badge_badge",
-      "label": "Badge",
-      "_origin": "ast",
-      "community": 32,
-      "community_name": "useCartStore",
-      "file_type": "code",
-      "norm_label": "badge",
-      "source_file": "components/ui/Badge.tsx",
-      "source_location": "L55"
-    },
-    {
-      "id": "lib_price",
-      "label": "price.ts",
-      "_origin": "ast",
-      "community": 32,
-      "community_name": "useCartStore",
-      "file_type": "code",
-      "norm_label": "price.ts",
-      "source_file": "lib/price.ts",
       "source_location": "L1"
     },
     {
@@ -12927,17 +12938,6 @@
       "source_location": "L14"
     },
     {
-      "id": "tests_price_test",
-      "label": "price.test.ts",
-      "_origin": "ast",
-      "community": 32,
-      "community_name": "useCartStore",
-      "file_type": "code",
-      "norm_label": "price.test.ts",
-      "source_file": "tests/price.test.ts",
-      "source_location": "L1"
-    },
-    {
       "id": "components_home_catalog",
       "label": "Catalog.tsx",
       "_origin": "ast",
@@ -12947,28 +12947,6 @@
       "norm_label": "catalog.tsx",
       "source_file": "components/home/Catalog.tsx",
       "source_location": "L1"
-    },
-    {
-      "id": "components_ui_badge",
-      "label": "Badge.tsx",
-      "_origin": "ast",
-      "community": 33,
-      "community_name": "Catalog.tsx",
-      "file_type": "code",
-      "norm_label": "badge.tsx",
-      "source_file": "components/ui/Badge.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "components_ui_badge_variantclasses",
-      "label": "variantClasses",
-      "_origin": "ast",
-      "community": 33,
-      "community_name": "Catalog.tsx",
-      "file_type": "code",
-      "norm_label": "variantclasses",
-      "source_file": "components/ui/Badge.tsx",
-      "source_location": "L23"
     },
     {
       "id": "lib_config",
@@ -13081,6 +13059,28 @@
       "source_location": "L17"
     },
     {
+      "id": "lib_price",
+      "label": "price.ts",
+      "_origin": "ast",
+      "community": 33,
+      "community_name": "Catalog.tsx",
+      "file_type": "code",
+      "norm_label": "price.ts",
+      "source_file": "lib/price.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "tests_price_test",
+      "label": "price.test.ts",
+      "_origin": "ast",
+      "community": 33,
+      "community_name": "Catalog.tsx",
+      "file_type": "code",
+      "norm_label": "price.test.ts",
+      "source_file": "tests/price.test.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "app_ticketbot_dashboard_dashboardclient",
       "label": "ticketbot/dashboard/DashboardClient.tsx",
       "_origin": "ast",
@@ -13166,7 +13166,7 @@
       "file_type": "code",
       "norm_label": "dashboardtranslations",
       "source_file": "lib/i18n.ts",
-      "source_location": "L323"
+      "source_location": "L328"
     },
     {
       "id": "components_home_ctasection",
@@ -13243,7 +13243,7 @@
       "file_type": "code",
       "norm_label": "hometranslations",
       "source_file": "lib/i18n.ts",
-      "source_location": "L988"
+      "source_location": "L993"
     },
     {
       "id": "lib_shopstats",
@@ -14079,7 +14079,7 @@
       "file_type": "code",
       "norm_label": "categoriestranslations",
       "source_file": "lib/i18n.ts",
-      "source_location": "L1530"
+      "source_location": "L1535"
     },
     {
       "id": "lib_sanitize",
@@ -23556,7 +23556,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/resources/ResourcesClient.tsx",
-      "source_location": "L127",
+      "source_location": "L132",
       "weight": 1.0
     },
     {
@@ -23568,7 +23568,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/resources/ResourcesClient.tsx",
-      "source_location": "L186",
+      "source_location": "L191",
       "weight": 1.0
     },
     {
@@ -23580,7 +23580,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/resources/ResourcesClient.tsx",
-      "source_location": "L78",
+      "source_location": "L80",
       "weight": 1.0
     },
     {
@@ -23592,7 +23592,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/resources/ResourcesClient.tsx",
-      "source_location": "L80",
+      "source_location": "L82",
       "weight": 1.0
     },
     {
@@ -47918,7 +47918,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/resources/ResourcesClient.tsx",
-      "source_location": "L103",
+      "source_location": "L108",
       "weight": 1.0
     },
     {
@@ -47940,7 +47940,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/resources/ResourcesClient.tsx",
-      "source_location": "L166",
+      "source_location": "L171",
       "weight": 1.0
     },
     {
@@ -47962,7 +47962,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/resources/ResourcesClient.tsx",
-      "source_location": "L185",
+      "source_location": "L190",
       "weight": 1.0
     },
     {
@@ -47984,7 +47984,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/resources/ResourcesClient.tsx",
-      "source_location": "L71",
+      "source_location": "L73",
       "weight": 1.0
     },
     {
@@ -47995,7 +47995,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/resources/ResourcesClient.tsx",
-      "source_location": "L85",
+      "source_location": "L87",
       "weight": 1.0
     },
     {
@@ -52092,17 +52092,6 @@
     },
     {
       "source": "lib_i18n",
-      "target": "lib_i18n_packagestranslations",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/i18n.ts",
-      "source_location": "L1265",
-      "weight": 1.0
-    },
-    {
-      "source": "lib_i18n",
       "target": "lib_i18n_translationkey",
       "relation": "contains",
       "_origin": "ast",
@@ -52110,6 +52099,17 @@
       "confidence_score": 1.0,
       "source_file": "lib/i18n.ts",
       "source_location": "L127",
+      "weight": 1.0
+    },
+    {
+      "source": "lib_i18n",
+      "target": "lib_i18n_packagestranslations",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/i18n.ts",
+      "source_location": "L1270",
       "weight": 1.0
     },
     {
@@ -52131,7 +52131,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/i18n.ts",
-      "source_location": "L1424",
+      "source_location": "L1429",
       "weight": 1.0
     },
     {
@@ -52142,7 +52142,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/i18n.ts",
-      "source_location": "L1530",
+      "source_location": "L1535",
       "weight": 1.0
     },
     {
@@ -52153,7 +52153,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/i18n.ts",
-      "source_location": "L1554",
+      "source_location": "L1559",
       "weight": 1.0
     },
     {
@@ -52164,7 +52164,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/i18n.ts",
-      "source_location": "L214",
+      "source_location": "L217",
       "weight": 1.0
     },
     {
@@ -52175,7 +52175,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/i18n.ts",
-      "source_location": "L281",
+      "source_location": "L286",
       "weight": 1.0
     },
     {
@@ -52197,7 +52197,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/i18n.ts",
-      "source_location": "L323",
+      "source_location": "L328",
       "weight": 1.0
     },
     {
@@ -52208,7 +52208,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/i18n.ts",
-      "source_location": "L627",
+      "source_location": "L632",
       "weight": 1.0
     },
     {
@@ -52219,7 +52219,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/i18n.ts",
-      "source_location": "L961",
+      "source_location": "L966",
       "weight": 1.0
     },
     {
@@ -52230,7 +52230,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/i18n.ts",
-      "source_location": "L988",
+      "source_location": "L993",
       "weight": 1.0
     },
     {
@@ -59730,5 +59730,5 @@
       "source_file": "CONTRIBUTING.md"
     }
   ],
-  "built_at_commit": "41c09098aea6a57a445e3f344e6a8ef14adea91e"
+  "built_at_commit": "9785af5a4ae17da35a3cc60450775d7d00587ecf"
 }

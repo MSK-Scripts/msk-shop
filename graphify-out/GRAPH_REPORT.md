@@ -1,7 +1,7 @@
 # Graph Report - msk-shop  (2026-08-22)
 
 ## Corpus Check
-- 281 files · ~181,731 words
+- 281 files · ~181,969 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `41c09098`
+- Built from commit: `9785af5a`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -142,10 +142,10 @@
   app/api/admin/packages/route.ts → lib/tebex.ts
 - `PATCH` --indirect_call--> `isAdminPermission()`  [INFERRED]
   app/api/admin/team/[discordUserId]/route.ts → lib/adminPerms.ts
-- `StatCard()` --calls--> `cn()`  [EXTRACTED]
-  app/ticketbot/stats/StatsClient.tsx → lib/utils.ts
-- `StepIndicator()` --calls--> `cn()`  [EXTRACTED]
-  app/ticketbot/verify/VerifyClient.tsx → lib/utils.ts
+- `generateStaticParams()` --calls--> `getCategories()`  [EXTRACTED]
+  app/categories/[id]/page.tsx → lib/tebex.ts
+- `generateStaticParams()` --calls--> `getPackages()`  [EXTRACTED]
+  app/packages/[id]/page.tsx → lib/tebex.ts
 
 ## Import Cycles
 - None detected.
@@ -221,8 +221,8 @@ Cohesion: 0.11
 Nodes (24): Moritz Kohm (data controller / licensor), Stripe Payments Europe, Ltd. (subscriptions), Tebex Limited (payment MoR, UK), Imprint (EN), Impressum (DE), 8-permission admin model + is_owner, Admin Dashboard Implementation Plan, Admin route auth pattern (authorizeAdmin → rate limit → Plugin call → writeAudit) (+16 more)
 
 ### Community 14 - "sitemap.ts"
-Cohesion: 0.12
-Nodes (20): dynamic, GET, generateStaticParams(), generateStaticParams(), GET(), revalidate, Props, SearchDialog() (+12 more)
+Cohesion: 0.14
+Nodes (18): dynamic, GET, GET(), revalidate, Props, SearchDialog(), run(), botLandingEntries() (+10 more)
 
 ### Community 15 - "adminAuth.ts"
 Cohesion: 0.14
@@ -277,8 +277,8 @@ Cohesion: 0.40
 Nodes (5): dynamic, extractApiKey(), GET(), GuildRow, UrlRow
 
 ### Community 29 - "packages/[id]/page.tsx"
-Cohesion: 0.26
-Nodes (12): generateMetadata(), PackageDetailPage(), revalidate, metadata, decodeEntities(), DEFAULT_OG_IMAGE, HTML_ENTITIES, openGraphFor() (+4 more)
+Cohesion: 0.15
+Nodes (19): generateMetadata(), generateStaticParams(), PackageDetailPage(), revalidate, metadata, PackagePrice(), Props, Badge (+11 more)
 
 ### Community 30 - "lib/tebex.ts"
 Cohesion: 0.16
@@ -289,12 +289,12 @@ Cohesion: 0.05
 Nodes (56): dynamic, GET(), ADMINISTRATOR, GET(), isAdmin(), GET(), AttachmentInput, checkRateLimit() (+48 more)
 
 ### Community 32 - "useCartStore"
-Cohesion: 0.15
-Nodes (12): CartPage(), CartDrawer(), PackagePrice(), Props, SalePriceFetcher(), Badge, DisplayPrice, resolveDisplayPrice() (+4 more)
+Cohesion: 0.21
+Nodes (7): CartPage(), CartDrawer(), SalePriceFetcher(), SaleData, useCartStore, SalePricesStore, useSalePricesStore
 
 ### Community 33 - "Catalog.tsx"
-Cohesion: 0.12
-Nodes (17): price(), Variant(), BadgeProps, BadgeVariant, variantClasses, BadgeVariant, CATEGORY_SEO, CATEGORY_VARIANT (+9 more)
+Cohesion: 0.13
+Nodes (16): price(), Variant(), BadgeVariant, CATEGORY_SEO, CATEGORY_VARIANT, FEATURED_PACKAGE_IDS, NEWS_POPUP, PACKAGE_BADGES (+8 more)
 
 ### Community 34 - "ticketbot/dashboard/DashboardClient.tsx"
 Cohesion: 0.09
@@ -333,8 +333,8 @@ Cohesion: 0.25
 Nodes (8): CFX.re Account Requirement, Anwendbares Recht (Bundesrepublik Deutschland), Lizenzbedingungen (Einzelserver-Lizenz), Nutzungsbedingungen (DE), FiveM Asset Escrow System, Governing Law (Federal Republic of Germany), Single-Server License Terms, Terms & Conditions (EN)
 
 ### Community 44 - "categories/[id]/page.tsx"
-Cohesion: 0.20
-Nodes (14): CategoryPage(), generateMetadata(), revalidate, PackageCard(), resolveVariant(), categoriesTranslations, convertPipeTables(), EMOJI (+6 more)
+Cohesion: 0.18
+Nodes (15): CategoryPage(), generateMetadata(), generateStaticParams(), revalidate, PackageCard(), resolveVariant(), categoriesTranslations, convertPipeTables() (+7 more)
 
 ### Community 45 - "Giveaway Bot Marketing"
 Cohesion: 0.46
@@ -536,7 +536,7 @@ Nodes (8): Public Giveaway Results Page, In-Memory IP Rate Limiting, Transcript 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `cn()` connect `cn` to `AdminClient.tsx`, `giveawaySession.ts`, `ticketbot/dashboard/DashboardClient.tsx`, `Catalog.tsx`, `CouponsTab.tsx`, `useCartStore`, `Lang`, `i18n.ts`, `adminAuth.ts`, `PackagesBrowser.tsx`, `HeaderInner`, `ResourcesClient.tsx`, `ticketbot/verify/VerifyClient.tsx`, `giveaway/dashboard/DashboardClient.tsx`, `ticketbot/stats/StatsClient.tsx`?**
+- **Why does `cn()` connect `cn` to `AdminClient.tsx`, `giveawaySession.ts`, `ticketbot/dashboard/DashboardClient.tsx`, `CouponsTab.tsx`, `Lang`, `i18n.ts`, `adminAuth.ts`, `PackagesBrowser.tsx`, `HeaderInner`, `ResourcesClient.tsx`, `ticketbot/verify/VerifyClient.tsx`, `giveaway/dashboard/DashboardClient.tsx`, `ticketbot/stats/StatsClient.tsx`, `packages/[id]/page.tsx`?**
   _High betweenness centrality (0.030) - this node is a cross-community bridge._
 - **Why does `Tier` connect `upload/route.ts` to `ticketbot/dashboard/DashboardClient.tsx`, `getClientIp`, `stripe/route.ts`, `TicketBotLanding.tsx`, `ticketbot/verify/VerifyClient.tsx`, `query`?**
   _High betweenness centrality (0.026) - this node is a cross-community bridge._
