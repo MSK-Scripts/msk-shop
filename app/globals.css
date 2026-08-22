@@ -313,8 +313,12 @@
   transform: translate(-50%, -50%);
 }
 
+/* Lesebreite. Bewusst in rem und nicht in ch: `ch` ist die Breite der Null,
+   und die misst in Inter 10 px, die mittlere Buchstabenbreite aber 7,8 px.
+   `65ch` ergibt damit 656 px und darin 84 Zeichen pro Zeile, nicht 65. 34rem
+   sind gemessen rund 70 Zeichen, also das obere Ende des bequemen Bereichs. */
 @utility container-prose {
-  max-width: 65ch;
+  max-width: 34rem;
   margin-inline: auto;
 }
 
@@ -483,8 +487,25 @@
    ============================================================================ */
 @layer components {
   .legal-content {
-    color: var(--color-muted-foreground);
+    /* Vorher `muted-foreground`: das ganze Dokument stand in der Farbe für
+       Nebensachen. Auf diesen drei Seiten ist der Fließtext die Hauptsache,
+       und es ist der längste Text der Website. Kontrast 5,28:1 auf 19:1. */
+    color: var(--color-foreground);
     line-height: 1.7;
+  }
+  /* Zeilenlänge nur für den laufenden Text, nicht für die Tabellen. Gemessen
+     bei 1440 px mit der echten Schrift der Seite: vorher 768 px Spaltenbreite
+     und damit 98 Zeichen pro Zeile. DESIGN.md nennt für Rechtstexte
+     `container-prose`, das sind jetzt 34rem und rund 70 Zeichen.
+     Der Deckel sitzt an den Textelementen, damit die sieben Tabellen weiter die
+     volle Spaltenbreite behalten und nicht auch am Desktop scrollen müssen. */
+  .legal-content > p,
+  .legal-content > ul,
+  .legal-content > ol,
+  .legal-content > h1,
+  .legal-content > h2,
+  .legal-content > h3 {
+    max-width: 34rem;
   }
   .legal-content h1 {
     font-size: 1.875rem;

@@ -8,7 +8,7 @@ export default function TermsPage() {
     <LegalContent
       htmlEn={renderMarkdown(getLegalContent('terms'))}
       htmlDe={renderMarkdown(getLegalContent('terms-de'))}
-      breadcrumb="Terms & Conditions"
+      breadcrumbKey="legal_terms"
       href="/terms"
     />
   )

@@ -8,7 +8,7 @@ export default function ImprintPage() {
     <LegalContent
       htmlEn={renderMarkdown(getLegalContent('imprint'))}
       htmlDe={renderMarkdown(getLegalContent('imprint-de'))}
-      breadcrumb="Imprint"
+      breadcrumbKey="legal_imprint"
       href="/terms/imprint"
     />
   )

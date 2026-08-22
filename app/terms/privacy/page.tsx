@@ -8,7 +8,7 @@ export default function PrivacyPage() {
     <LegalContent
       htmlEn={renderMarkdown(getLegalContent('privacy'))}
       htmlDe={renderMarkdown(getLegalContent('privacy-de'))}
-      breadcrumb="Privacy Policy"
+      breadcrumbKey="legal_privacy"
       href="/terms/privacy"
     />
   )

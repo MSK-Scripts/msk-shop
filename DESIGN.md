@@ -208,7 +208,8 @@ pairing, plain lettering on the sign and stencilled type on the parts bin.
   headings.
 - **Title** (700, 1.125rem, 1.25): card and panel headings.
 - **Body** (400, 0.875rem base, 1.625): running copy, in Quiet for anything
-  secondary. Prose columns cap at 65ch through `container-prose`.
+  secondary. Prose columns cap at 34rem through `container-prose`, which is
+  about 70 characters in Inter.
 - **Label** (600, 0.6875rem, 0.15em, uppercase, mono): section labels, table
   headers, key fragments, counts.
 
@@ -231,7 +232,11 @@ rather than by page type. This is the distinction the system got wrong until
 22 August 2026, when statistics pages and dashboards were still using the catalog
 container and ran to 2560 px.
 
-- **`container-prose`** (65ch): running text. Legal pages, long-form copy.
+- **`container-prose`** (34rem): running text. Legal pages, long-form copy.
+  Deliberately not in `ch`. A `ch` is the width of the digit zero, 10 px in
+  Inter, while the average letter measures 7.8 px, so the obvious-looking
+  `65ch` produces 84 characters per line rather than 65. Measured on
+  /terms at 1440 px with the page's own font: 34rem gives 74.
 - **`container-app`** (90rem / 1440 px): work surfaces. Both dashboards, both
   statistics pages, the admin cockpit. Someone here is reading rows and numbers,
   and a figure parked 2000 px from the page edge is slower to find, not faster.
