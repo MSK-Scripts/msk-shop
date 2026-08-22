@@ -2,13 +2,14 @@
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
-import { X } from 'lucide-react'
+import { ChevronDown, SlidersHorizontal, X } from 'lucide-react'
 import { PackageCard } from '@/components/packages/PackageCard'
 import { PACKAGE_BADGES, PACKAGE_TAGS, PACKAGE_DESCRIPTIONS } from '@/lib/config'
 import {
   bucketLabel, countBy, countPriceBuckets, priceBucket, type Facet,
 } from '@/lib/packageFacets'
 import { packagesTranslations, type Lang } from '@/lib/i18n'
+import { cn } from '@/lib/utils'
 import type { TebexPackage } from '@/types/tebex'
 
 /**
@@ -97,6 +98,10 @@ export function PackagesBrowser({ lang, packages }: Props) {
   const [variants, setVariants] = useState<Set<string>>(new Set())
   const [compat, setCompat] = useState<Set<string>>(new Set())
   const [buckets, setBuckets] = useState<Set<string>>(new Set())
+  // Wirkt nur unterhalb von lg. Am Telefon stand die Filterspalte 852 px hoch
+  // vor der ersten Produktkarte (gemessen am 22.08.2026 bei 375 × 812: erste
+  // Karte bei y = 1114), also anderthalb Bildschirme Kästen vor der Ware.
+  const [filtersOpen, setFiltersOpen] = useState(false)
 
   const facets = useMemo(() => ({
     variants: countBy(packages, p => (p.category?.name ? [p.category.name] : [])),
@@ -140,37 +145,69 @@ export function PackagesBrowser({ lang, packages }: Props) {
 
   return (
     <div className="grid gap-0 border-t border-[var(--color-border)] lg:grid-cols-[232px_minmax(0,1fr)]">
-      <aside className="py-7 lg:border-r lg:border-[var(--color-border)] lg:pr-7" aria-label={t.filters}>
-        <FacetGroup
-          title={t.facet_variant}
-          facets={facets.variants}
-          selected={variants}
-          onToggle={toggle(setVariants)}
-        />
-        <FacetGroup
-          title={t.facet_price}
-          facets={facets.buckets}
-          selected={buckets}
-          onToggle={toggle(setBuckets)}
-          label={v => bucketLabel(v, lang)}
-        />
-        <FacetGroup
-          title={t.facet_compat}
-          facets={facets.compat}
-          selected={compat}
-          onToggle={toggle(setCompat)}
-        />
+      <div className="lg:border-r lg:border-[var(--color-border)] lg:pr-7">
+        {/* Ab lg ist die Spalte immer offen und der Schalter verschwindet.
+            Deshalb steht er außerhalb des <aside>: das wird am Telefon
+            ausgeblendet, der Schalter muss aber sichtbar bleiben. */}
+        <button
+          type="button"
+          onClick={() => setFiltersOpen(o => !o)}
+          aria-expanded={filtersOpen}
+          aria-controls="package-filters"
+          className="flex w-full items-center gap-2.5 border-b border-[var(--color-border)] py-3.5 text-sm font-semibold transition-colors hover:text-[var(--color-primary)] lg:hidden"
+        >
+          <SlidersHorizontal className="h-4 w-4 text-[var(--color-muted-foreground)]" aria-hidden />
+          {t.filters}
+          {active.length > 0 ? (
+            <span className="grid h-5 min-w-5 place-items-center rounded-sm bg-[var(--color-primary)] px-1 font-mono text-xs tabular-nums text-[var(--color-primary-foreground)]">
+              {active.length}
+            </span>
+          ) : null}
+          <ChevronDown
+            aria-hidden
+            className={cn(
+              'ml-auto h-4 w-4 text-[var(--color-muted-foreground)] transition-transform',
+              filtersOpen && 'rotate-180',
+            )}
+          />
+        </button>
 
-        <p className="mt-7 border-t border-[var(--color-border)] pt-4 text-xs leading-relaxed text-[var(--color-muted-foreground)]">
-          {t.escrow_note}
-          <Link
-            href="/#ablauf"
-            className="mt-1.5 block font-semibold text-[var(--color-primary)] hover:underline"
-          >
-            {t.escrow_link} →
-          </Link>
-        </p>
-      </aside>
+        <aside
+          id="package-filters"
+          aria-label={t.filters}
+          className={cn('py-7', filtersOpen ? 'block' : 'hidden lg:block')}
+        >
+          <FacetGroup
+            title={t.facet_variant}
+            facets={facets.variants}
+            selected={variants}
+            onToggle={toggle(setVariants)}
+          />
+          <FacetGroup
+            title={t.facet_price}
+            facets={facets.buckets}
+            selected={buckets}
+            onToggle={toggle(setBuckets)}
+            label={v => bucketLabel(v, lang)}
+          />
+          <FacetGroup
+            title={t.facet_compat}
+            facets={facets.compat}
+            selected={compat}
+            onToggle={toggle(setCompat)}
+          />
+
+          <p className="mt-7 border-t border-[var(--color-border)] pt-4 text-xs leading-relaxed text-[var(--color-muted-foreground)]">
+            {t.escrow_note}
+            <Link
+              href="/#ablauf"
+              className="mt-1.5 block font-semibold text-[var(--color-primary)] hover:underline"
+            >
+              {t.escrow_link} →
+            </Link>
+          </p>
+        </aside>
+      </div>
 
       <div className="py-7 lg:pl-8">
         {/* Der Lizenzunterschied ist Schritt 1 des Kaufablaufs und stand bis
