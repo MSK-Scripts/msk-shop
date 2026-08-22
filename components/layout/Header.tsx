@@ -453,7 +453,7 @@ function HeaderInner() {
           {/* Logo */}
           <Link
             href="/"
-            className="flex shrink-0 items-center gap-2 font-bold tracking-tight transition-opacity hover:opacity-90"
+            className="tap-target flex shrink-0 items-center gap-2 font-bold tracking-tight transition-opacity hover:opacity-90"
             aria-label="MSK Scripts"
           >
             <Image
@@ -495,7 +495,7 @@ function HeaderInner() {
               variant="ghost"
               size="icon"
               onClick={() => setSearchOpen(true)}
-              className="h-8 w-8 shrink-0 lg:hidden"
+              className="shrink-0 lg:hidden"
               aria-label={t.action_search}
               title={t.action_search}
             >
@@ -511,7 +511,7 @@ function HeaderInner() {
               variant="outline"
               size="sm"
               onClick={openCart}
-              className="relative"
+              className="relative tap-target"
               aria-label={`Cart (${effectiveItemCount} items)`}
             >
               <ShoppingCart className="h-4 w-4" />

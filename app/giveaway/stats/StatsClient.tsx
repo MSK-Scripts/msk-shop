@@ -154,7 +154,7 @@ export default function StatsClient({
   const statusTotal = statusItems.reduce((s, i) => s + (stats.status[i.key] ?? 0), 0)
 
   return (
-    <div className="container-wide py-10 md:py-14">
+    <div className="container-app py-10 md:py-14">
       <div>
 
         {/* Header */}

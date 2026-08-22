@@ -151,7 +151,7 @@ export default function StatsClient({ stats }: { stats: Stats }) {
   ]
 
   return (
-    <div className="container-wide py-10 md:py-14">
+    <div className="container-app py-10 md:py-14">
       <div>
 
         {/* Header */}

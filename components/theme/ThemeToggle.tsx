@@ -47,7 +47,7 @@ export function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" aria-label={t.action_theme}>
+      <Button variant="ghost" size="icon" className="shrink-0" aria-label={t.action_theme}>
         {/* Platzhalter — selbe Größe, kein Icon → kein Hydration-Mismatch */}
         <span className="block h-4 w-4" />
       </Button>
@@ -66,7 +66,7 @@ export function ThemeToggle() {
         variant="ghost"
         size="icon"
         onClick={() => setOpen(v => !v)}
-        className="h-8 w-8 shrink-0"
+        className="shrink-0"
         aria-haspopup="menu"
         aria-expanded={open}
         aria-label={t.action_theme}

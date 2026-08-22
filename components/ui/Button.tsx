@@ -32,7 +32,7 @@ const sizeClasses: Record<ButtonSize, string> = {
   sm:   'h-8  px-3 text-xs   gap-1.5 rounded-md',
   md:   'h-10 px-4 text-sm   gap-2   rounded-md',
   lg:   'h-12 px-6 text-base gap-2   rounded-md',
-  icon: 'h-10 w-10           rounded-md',
+  icon: 'h-10 w-10           rounded-md tap-target',
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(

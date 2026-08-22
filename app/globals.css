@@ -197,7 +197,7 @@
 }
 
 /* Breiter Container für Listenansichten (aktuell `/packages`).
-   `container-page` deckelt bei 80rem, weil dort Fließtext steht und lange
+   `container-page` deckelt bei 120rem, weil dort Fließtext steht und lange
    Zeilen schlecht lesbar sind. Eine gefilterte Kartenliste hat dieses Problem
    nicht, sie gewinnt mit jeder zusätzlichen Spalte. Der Deckel liegt bei
    160rem (2560 px), greift also erst jenseits eines üblichen 4K-Monitors und
@@ -213,6 +213,58 @@
 }
 @media (min-width: 1536px) {
   .container-wide { padding-inline: 3rem; }
+}
+
+/* Mittlerer Container für Arbeitsflächen: beide Dashboards, beide
+   Statistikseiten und das Admin-Cockpit.
+
+   Warum eine dritte Stufe und nicht `container-wide`: der breite Container ist
+   für Kartenraster gebaut, die mit jeder Spalte gewinnen. Eine Kennzahl gewinnt
+   nicht mit Breite, sie verliert. Auf `/ticketbot/stats` gemessen (22.08.2026,
+   Viewport 1920): mit `container-wide` lief der Container über die vollen
+   1910 px und das KPI-Raster stand auf **sechs** Spalten. Mit 90rem sind es
+   **fünf**, und die 14 Kennzahlen der Seite gehen glatt in 5 + 5 + 4 auf,
+   statt in 6 + 6 + 2 mit zwei einsamen Karten in der letzten Reihe.
+
+   Das Giveaway-Dashboard stand vorher auf `max-w-6xl` (1152 px). Der Deckel
+   war richtig, er galt nur nicht für das Ticketbot-Dashboard daneben, das bis
+   2560 px lief. Beide teilen sich jetzt diese Stufe. */
+@utility container-app {
+  max-width: 90rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+@media (min-width: 768px) {
+  .container-app { padding-inline: 2rem; }
+}
+
+/* Vergrößert die Trefferfläche eines Bedienelements auf 44 px, ohne seine
+   sichtbare Größe anzufassen.
+
+   Warum nicht einfach die Buttons größer machen: die Kopfzeile trägt bei 375 px
+   sechs Bedienelemente nebeneinander. Wächst jedes sichtbar auf 44 px, wird die
+   Leiste zu voll. Ein Pseudo-Element außerhalb des Layoutflusses löst das,
+   ohne irgendetwas zu verschieben.
+
+   Zur Einordnung: WCAG 2.2 AA (SC 2.5.8) verlangt 24 × 24 px, das erfüllten die
+   Elemente schon vorher. Die 44 px stammen aus Apples HIG und sind hier das
+   Ziel, weil der Shop am Telefon gekauft wird. Gemessen am 22.08.2026 lagen bei
+   375 px 23 Elemente darunter.
+
+   Der Abstand in der Kopfzeile ist `gap-1.5` (6 px). Bei 40 px sichtbarer
+   Breite ergibt das 46 px Raster, zwei 44er Flächen berühren sich also nicht
+   und es gibt keine mehrdeutigen Überlappungen. */
+@utility tap-target {
+  position: relative;
+}
+.tap-target::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max(100%, 44px);
+  height: max(100%, 44px);
+  transform: translate(-50%, -50%);
 }
 
 @utility container-prose {

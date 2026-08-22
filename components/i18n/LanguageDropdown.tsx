@@ -47,7 +47,7 @@ export function LanguageDropdown() {
         variant="ghost"
         size="icon"
         onClick={() => setOpen(v => !v)}
-        className="h-8 w-8 shrink-0"
+        className="shrink-0"
         aria-haspopup="menu"
         aria-expanded={open}
         aria-label={t.action_language}
