@@ -1,7 +1,7 @@
 # Graph Report - msk-shop  (2026-08-22)
 
 ## Corpus Check
-- 281 files · ~179,975 words
+- 281 files · ~180,122 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `ac2ad35b`
+- Built from commit: `2af98003`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
