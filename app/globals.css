@@ -54,6 +54,31 @@
   --color-discord:            #5865F2;   /* Fläche, Weiß darauf 4,61:1 */
   --color-discord-text:       #5865F2;   /* Text, im Dark-Mode überschrieben */
 
+  /* Ökosystem-Badges (ESX, QBCore, Lua, …)
+     DESIGN.md lässt diese Fremdfarben ausdrücklich zu, weil ein Käufer nach
+     ihnen scannt. Genau deshalb müssen sie lesbar sein, und im Light-Theme
+     waren sie es nicht: die rohen Tailwind-Paletten lagen zwischen 1,46:1
+     (js) und 3,20:1 (sale) auf der getönten Badgefläche.
+
+     Sie standen als Tailwind-Klassen in `components/ui/Badge.tsx` und waren
+     damit für `tests/contrast.test.ts` unsichtbar, der ausschließlich
+     `--color-*` aus dieser Datei liest. Die Regel galt also nur auf dem Papier.
+
+     Die Werte sind gerechnet, nicht geschätzt: Farbton und Buntheit bleiben,
+     nur die Helligkeit wandert so weit, bis der Text auf seiner eigenen
+     12-%-Fläche 4,6:1 erreicht, also mit
+     etwas Abstand zur AA-Grenze von 4,5. Die Marke bleibt erkennbar, ESX ist weiterhin
+     orange. */
+  --color-badge-esx:      #ab4e00;
+  --color-badge-qb:       #8b48c5;
+  --color-badge-lua:      #1469c1;
+  --color-badge-js:       #906000;
+  --color-badge-ts:       #276cac;
+  --color-badge-py:       #006eac;
+  --color-badge-discord:  #585cd0;
+  --color-badge-fivem:    #b44600;
+  --color-badge-sale:     #ce0004;
+
   /* Radien */
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
@@ -110,6 +135,18 @@
     --color-warning-foreground: #0d1117;
     /* 5,68:1 auf dem dunklen Grund. Die Flächenfarbe bleibt unverändert. */
     --color-discord-text:       #7d86f5;
+
+    /* Auf dem dunklen Grund tragen die Markenfarben selbst. Einzige Ausnahme
+       ist `sale`: #fb2c36 kam dort auf 4,13:1 und musste aufgehellt werden. */
+    --color-badge-esx:      #F7941D;
+    --color-badge-qb:       #c07eff;
+    --color-badge-lua:      #54a2ff;
+    --color-badge-js:       #fac800;
+    --color-badge-ts:       #5b9fe3;
+    --color-badge-py:       #00bcfe;
+    --color-badge-discord:  #7d87ff;
+    --color-badge-fivem:    #ff8b1a;
+    --color-badge-sale:     #ff4b4c;
 
     --shadow-card:       0 1px 2px 0 rgb(0 0 0 / 0.4);
     --shadow-card-hover: 0 12px 32px -8px rgb(0 0 0 / 0.6);

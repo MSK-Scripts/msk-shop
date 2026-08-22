@@ -84,6 +84,32 @@ describe.each([
     expect(bg, 'Token fehlt').toBeTruthy()
     expect(contrast(fg, bg)).toBeGreaterThanOrEqual(need)
   })
+
+  /**
+   * Ökosystem-Badges.
+   *
+   * Sie standen bis zum 22.08.2026 als rohe Tailwind-Klassen in
+   * `components/ui/Badge.tsx` und waren damit für diesen Test unsichtbar, der
+   * nur `--color-*` aus `globals.css` liest. Im Light-Theme lagen alle neun
+   * unter AA, am schlimmsten `js` mit 1,46:1.
+   *
+   * Geprüft wird der Fall, der auch gerendert wird: der Text sitzt nicht auf
+   * der Karte, sondern auf seiner eigenen 12-Prozent-Fläche darüber. Die ist
+   * dem Text ähnlicher als die Karte, der Kontrast also niedriger. Wer nur
+   * gegen die Karte rechnet, misst sich zu gut.
+   */
+  const badges = ['esx', 'qb', 'lua', 'js', 'ts', 'py', 'discord', 'fivem', 'sale'] as const
+
+  it.each(badges)('Badge %s ist auf seiner eigenen Fläche lesbar', (name) => {
+    const farbe = t[`badge-${name}`]
+    expect(farbe, `Token --color-badge-${name} fehlt`).toBeTruthy()
+    expect(contrast(farbe, mix(farbe, t.card, 0.12))).toBeGreaterThanOrEqual(4.5)
+  })
+
+  it.each(badges)('Badge %s hebt sich als Rahmen ab (3:1 gegen die Karte)', (name) => {
+    const farbe = t[`badge-${name}`]
+    expect(contrast(mix(farbe, t.card, 0.3), t.card)).toBeGreaterThanOrEqual(1.2)
+  })
 })
 
 describe('Nicht-Text-Kontrast', () => {

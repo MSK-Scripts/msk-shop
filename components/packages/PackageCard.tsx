@@ -95,7 +95,7 @@ export function PackageCard({ pkg, tags, badges, description, lang }: Props) {
             {tags.map(tag => (
               <span
                 key={tag}
-                className="rounded border border-[var(--color-border)] bg-[var(--color-muted)] px-2 py-0.5 text-[0.625rem] text-[var(--color-muted-foreground)]"
+                className="rounded border border-[var(--color-border)] bg-[var(--color-muted)] px-2 py-0.5 text-[0.6875rem] text-[var(--color-muted-foreground)]"
               >
                 {tag}
               </span>
