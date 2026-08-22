@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { cn } from '@/lib/utils'
 import { useAdminResource } from '@/lib/useAdminResource'
+import { ErrorCard } from '@/app/admin/ErrorCard'
 
 type Tier = 'basic' | 'premium' | 'premium_plus'
 
@@ -124,9 +125,7 @@ export default function ApiKeysTab({ canChange }: { canChange: boolean }) {
       )}
 
       {error && (
-        <Card className="flex items-center gap-2 p-6 text-sm text-[var(--color-danger)]">
-          <AlertCircle className="h-4 w-4" /> {error}
-        </Card>
+        <ErrorCard message={error} />
       )}
 
       {!error && !keys && (

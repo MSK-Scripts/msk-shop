@@ -1,13 +1,14 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Loader2, AlertCircle, Gift, Undo2, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Loader2, Gift, Undo2, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { StatusBadge } from './StatusBadge'
 import { selectClass } from './styles'
 import { useAdminResource } from '@/lib/useAdminResource'
+import { ErrorCard } from '@/app/admin/ErrorCard'
 
 interface Payment {
   /** Tebex transaction id. Numeric on the wire, kept loose for safety. */
@@ -126,9 +127,7 @@ export default function PaymentsTab({ canCreate, canRefund }: { canCreate: boole
       )}
 
       {error && (
-        <Card className="flex items-center gap-2 p-6 text-sm text-[var(--color-danger)]">
-          <AlertCircle className="h-4 w-4" /> {error}
-        </Card>
+        <ErrorCard message={error} />
       )}
 
       {!error && !payments && (

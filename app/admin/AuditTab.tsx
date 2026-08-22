@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Loader2, AlertCircle } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
+import { ErrorCard } from '@/app/admin/ErrorCard'
 
 interface AuditEntry {
   id:            number
@@ -32,9 +33,7 @@ export default function AuditTab() {
 
   if (error) {
     return (
-      <Card className="flex items-center gap-2 p-6 text-sm text-[var(--color-danger)]">
-        <AlertCircle className="h-4 w-4" /> {error}
-      </Card>
+      <ErrorCard message={error} />
     )
   }
   if (!entries) {

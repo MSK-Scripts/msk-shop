@@ -474,6 +474,8 @@ export const dashboardTranslations = {
     botdash_opening:      'Opening…',
     botdash_hint:         'Manage tickets, statistics and settings in the full bot dashboard (opens in a new tab).',
     botdash_error:        'Could not open the bot dashboard. Please try again.',
+    dash_copied:          'Copied',
+    dash_err_generic:     'Something went wrong. Please try again.',
 
     // Account / subscription (Stripe)
     switch_server:        'Server',
@@ -624,6 +626,8 @@ export const dashboardTranslations = {
     botdash_opening:      'Öffne…',
     botdash_hint:         'Tickets, Statistiken und Einstellungen im vollen Bot-Dashboard verwalten (öffnet in neuem Tab).',
     botdash_error:        'Bot-Dashboard konnte nicht geöffnet werden. Bitte erneut versuchen.',
+    dash_copied:          'Kopiert',
+    dash_err_generic:     'Etwas ist schiefgelaufen. Bitte erneut versuchen.',
 
     // Account / subscription (Stripe)
     switch_server:        'Server',

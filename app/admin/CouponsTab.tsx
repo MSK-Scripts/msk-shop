@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { selectClass } from './styles'
 import { useAdminResource } from '@/lib/useAdminResource'
+import { ErrorCard } from '@/app/admin/ErrorCard'
 
 type CouponState = 'active' | 'scheduled' | 'expired' | 'used_up'
 
@@ -170,9 +171,7 @@ export default function CouponsTab() {
       </Card>
 
       {error && (
-        <Card className="flex items-center gap-2 p-6 text-sm text-[var(--color-danger)]">
-          <AlertCircle className="h-4 w-4" /> {error}
-        </Card>
+        <ErrorCard message={error} />
       )}
 
       {!error && !payload && (

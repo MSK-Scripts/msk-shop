@@ -92,7 +92,7 @@ function clampBonus(value: Record<string, number> | undefined): Record<string, n
 
 const STATUS_STYLE: Record<Giveaway['status'], string> = {
   ACTIVE:    'bg-[var(--color-primary)]/15 text-[var(--color-primary)]',
-  PAUSED:    'bg-amber-500/15 text-amber-500',
+  PAUSED:    'bg-[var(--color-warning)]/15 text-[var(--color-warning)]',
   ENDED:     'bg-[var(--color-muted)] text-[var(--color-muted-foreground)]',
   CANCELLED: 'bg-[var(--color-danger)]/15 text-[var(--color-danger)]',
 };
@@ -219,7 +219,7 @@ export default function DashboardClient({ guildId, owner }: { guildId: string; o
         </div>
 
         {error && (
-          <div className="mb-4 rounded-lg border border-[var(--color-danger)]/40 bg-[var(--color-danger)]/10 px-4 py-3 text-sm text-[var(--color-danger)]">{error}</div>
+          <div role="alert" className="mb-4 rounded-lg border border-[var(--color-danger)]/40 bg-[var(--color-danger)]/10 px-4 py-3 text-sm text-[var(--color-danger)]">{error}</div>
         )}
 
         <div className="mb-6 flex gap-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)] p-1 text-sm font-semibold">
@@ -1326,7 +1326,7 @@ function StoreTab({ tebex, packages, onChanged, setError }: {
         </div>
 
         {!tebex.encryptionReady && (
-          <div className="rounded-lg border border-[var(--color-danger)]/40 bg-[var(--color-danger)]/10 px-3 py-2 text-sm text-[var(--color-danger)]">
+          <div role="alert" className="rounded-lg border border-[var(--color-danger)]/40 bg-[var(--color-danger)]/10 px-3 py-2 text-sm text-[var(--color-danger)]">
             {t.store_no_key}
           </div>
         )}

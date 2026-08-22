@@ -59,7 +59,7 @@ function StatusBadge({ status, t }: { status: Guild['domain_status']; t: { activ
     </span>
   )
   if (status === 'pending_dns') return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-yellow-500/30 bg-yellow-500/10 px-2.5 py-0.5 text-xs font-semibold text-yellow-500">
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-warning)]/30 bg-[var(--color-warning)]/10 px-2.5 py-0.5 text-xs font-semibold text-[var(--color-warning)]">
       <Clock className="h-3 w-3" /> {t.pending_label}
     </span>
   )
@@ -219,7 +219,7 @@ function GuildPanel({
         body:    JSON.stringify({ guildId, domain: domain.trim() }),
       })
       const data = await res.json()
-      if (!res.ok) { showMsg('error', data.error ?? 'Error'); return }
+      if (!res.ok) { showMsg('error', data.error ?? t.dash_err_generic); return }
       setDomainStatus(data.status)
       if (data.status === 'active') showMsg('success', `✅ ${data.domain} is now active!`)
       else showMsg('info', data.message)
@@ -237,7 +237,7 @@ function GuildPanel({
         body:    JSON.stringify({ guildId }),
       })
       const data = await res.json()
-      if (!res.ok) { showMsg('error', data.error ?? 'Error'); return }
+      if (!res.ok) { showMsg('error', data.error ?? t.dash_err_generic); return }
       setDomainStatus(data.status)
       if (data.status === 'active') showMsg('success', `✅ DNS confirmed! Domain is now active.`)
       else showMsg('info', lang === 'en'
@@ -261,7 +261,7 @@ function GuildPanel({
         body:    JSON.stringify({ guildId }),
       })
       const data = await res.json()
-      if (!res.ok) { showMsg('error', data.error ?? 'Error'); return }
+      if (!res.ok) { showMsg('error', data.error ?? t.dash_err_generic); return }
       setDomain('')
       setDomainStatus('none')
       showMsg('success', lang === 'en' ? 'Domain successfully removed.' : 'Domain erfolgreich entfernt.')
@@ -417,11 +417,14 @@ function GuildPanel({
           <>
             {message && (
               <div
+                // Die Meldung erscheint nach einer Aktion. Fehler unterbrechen,
+                // Erfolg und Hinweis melden sich höflich.
+                role={message.type === 'error' ? 'alert' : 'status'}
                 className={cn(
                   'mb-4 flex items-start gap-2 rounded-lg border px-3 py-2.5 text-xs',
                   message.type === 'success' && 'border-[var(--color-primary)]/30 bg-[var(--color-primary)]/10 text-[var(--color-primary)]',
                   message.type === 'error'   && 'border-[var(--color-danger)]/30 bg-[var(--color-danger)]/10 text-[var(--color-danger)]',
-                  message.type === 'info'    && 'border-yellow-500/30 bg-yellow-500/10 text-yellow-500',
+                  message.type === 'info'    && 'border-[var(--color-warning)]/30 bg-[var(--color-warning)]/10 text-[var(--color-warning)]',
                 )}
               >
                 {message.type === 'success' && <CheckCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />}
@@ -466,12 +469,12 @@ function GuildPanel({
                   >
                     <div className="mb-1 text-[var(--color-muted-foreground)]">{t.dns_target}</div>
                     <div className="font-mono font-semibold text-[var(--color-primary)]">
-                      {copied ? '✓ Copied!' : serverIp}
+                      {copied ? `✓ ${t.dash_copied}` : serverIp}
                     </div>
                   </button>
                 </div>
                 <p className="mb-3 text-xs text-[var(--color-muted-foreground)]">{t.dns_note}</p>
-                <p className="mb-3 flex items-start gap-1.5 rounded-lg border border-yellow-500/30 bg-yellow-500/10 px-2.5 py-2 text-xs text-yellow-600 dark:text-yellow-500">
+                <p className="mb-3 flex items-start gap-1.5 rounded-lg border border-[var(--color-warning)]/30 bg-[var(--color-warning)]/10 px-2.5 py-2 text-xs text-[var(--color-warning)]">
                   <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                   <span>{t.dns_cloudflare}</span>
                 </p>

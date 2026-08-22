@@ -1,11 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { Loader2, AlertCircle, Ban } from 'lucide-react'
+import { Loader2, Ban } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { useAdminResource } from '@/lib/useAdminResource'
+import { ErrorCard } from '@/app/admin/ErrorCard'
 
 interface BanEntry {
   id:     number
@@ -71,9 +72,7 @@ export default function BansTab() {
       </Card>
 
       {error && (
-        <Card className="flex items-center gap-2 p-6 text-sm text-[var(--color-danger)]">
-          <AlertCircle className="h-4 w-4" /> {error}
-        </Card>
+        <ErrorCard message={error} />
       )}
 
       {!error && !bans && (
