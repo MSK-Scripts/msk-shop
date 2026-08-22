@@ -205,8 +205,11 @@ export const PACKAGE_TAGS: Record<number, string[]> = {
   6372865: ['msk_core', 'ox_inventory', 'Chezza Inventory'], // MSK Storage - S
   6446936: ['oxmysql', 'msk_core', 'ox_inventory', 'msk_enginetoggle'], // MSK VehicleKeys - E
   6446947: ['oxmysql', 'msk_core', 'ox_inventory', 'msk_enginetoggle'], // MSK VehicleKeys - S
-  7569109: ['Subscription'], // Subscription - Encrypted Version
-  7569121: ['Subscription'], // Subscription - Source Version
+  // Die beiden Abo-Pakete stehen bewusst ohne Eintrag. `Subscription` ist keine
+  // Abhängigkeit, sondern die Produktart, und als Badge steht sie oben auf dem
+  // Bild bereits auf der Karte (PACKAGE_BADGES). In dieser Liste landete sie
+  // zusätzlich in der Filtergruppe "Funktioniert mit", zwischen saltychat und
+  // oxmysql, wo sie nichts zu suchen hat.
 }
 
 // ── News Popup ────────────────────────────────────────────
