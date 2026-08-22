@@ -44,7 +44,7 @@
   --color-success-foreground: #ffffff;
   --color-warning:            #a45709;   /* vorher #f59e0b, 2,15:1 */
   --color-warning-foreground: #ffffff;
-  --color-danger:             #dc2626;
+  --color-danger:             #c81e1e;   /* vorher #dc2626, 4,39:1 auf der Kachel */
   --color-danger-foreground:  #ffffff;
   --color-info:               #0369a1;   /* vorher #0284c7, 4,10:1 */
   --color-info-foreground:    #ffffff;
@@ -69,6 +69,13 @@
      12-%-Fläche 4,6:1 erreicht, also mit
      etwas Abstand zur AA-Grenze von 4,5. Die Marke bleibt erkennbar, ESX ist weiterhin
      orange. */
+  /* Vierte Farbe der Aufteilungsdiagramme auf den beiden Statistikseiten.
+     Die ersten drei Stufen sind `primary`, `warning` und `info`, die es
+     ohnehin gibt. Nur fuer diese eine fehlte eine, und rohe
+     Tailwind-Klassen taugten nicht: `rose-400` misst im hellen Theme
+     2,45:1 als Text auf der Kachel. */
+  --color-chart-rose:     #be123c;
+
   --color-badge-esx:      #ab4e00;
   --color-badge-qb:       #8b48c5;
   --color-badge-lua:      #1469c1;
@@ -138,6 +145,8 @@
 
     /* Auf dem dunklen Grund tragen die Markenfarben selbst. Einzige Ausnahme
        ist `sale`: #fb2c36 kam dort auf 4,13:1 und musste aufgehellt werden. */
+    --color-chart-rose:     #fb7185;
+
     --color-badge-esx:      #F7941D;
     --color-badge-qb:       #c07eff;
     --color-badge-lua:      #54a2ff;

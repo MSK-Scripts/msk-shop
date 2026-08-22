@@ -77,7 +77,7 @@ function TierBreakdown({ tiers, total, label, lang, hideBasic = false }: {
   const allItems = [
     { key: 'basic',        tierLabel: 'Basic',    bg: 'bg-[var(--color-muted-foreground)]', text: 'text-[var(--color-muted-foreground)]' },
     { key: 'premium',      tierLabel: 'Premium',  bg: 'bg-[var(--color-primary)]',          text: 'text-[var(--color-primary)]' },
-    { key: 'premium_plus', tierLabel: 'Premium+', bg: 'bg-yellow-400',                       text: 'text-yellow-400' },
+    { key: 'premium_plus', tierLabel: 'Premium+', bg: 'bg-[var(--color-warning)]',          text: 'text-[var(--color-warning)]' },
   ]
   const items = hideBasic ? allItems.filter(i => i.key !== 'basic') : allItems
 
@@ -87,9 +87,9 @@ function TierBreakdown({ tiers, total, label, lang, hideBasic = false }: {
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--color-muted)] text-[var(--color-muted-foreground)]">
           <BarChart3 className="h-4 w-4" />
         </div>
-        <span className="font-mono text-[0.6875rem] font-bold uppercase tracking-widest text-[var(--color-muted-foreground)]">
+        <h2 className="font-mono text-[0.6875rem] font-bold uppercase tracking-widest text-[var(--color-muted-foreground)]">
           {label}
-        </span>
+        </h2>
       </div>
 
       {total > 0 ? (
@@ -185,10 +185,15 @@ export default function StatsClient({ stats }: { stats: Stats }) {
           </div>
         </div>
 
-        {/* Stat Cards */}
-        <div className="mb-4 grid grid-cols-[repeat(auto-fill,minmax(min(100%,260px),1fr))] gap-4">
-          {cards.map(c => <StatCard key={c.label} {...c} />)}
-        </div>
+        {/* Stat Cards. Die Überschrift ist `sr-only`: sichtbar wäre sie eine
+            Doppelung des Seitentitels, im Baum fehlte bisher jede Zwischenebene
+            zwischen H1 und den 14 Kacheln. */}
+        <section aria-labelledby="figures-heading">
+          <h2 id="figures-heading" className="sr-only">{t.region_figures}</h2>
+          <div className="mb-4 grid grid-cols-[repeat(auto-fill,minmax(min(100%,260px),1fr))] gap-4">
+            {cards.map(c => <StatCard key={c.label} {...c} />)}
+          </div>
+        </section>
 
         {/* Tier Breakdowns */}
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">

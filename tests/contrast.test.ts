@@ -77,6 +77,17 @@ describe.each([
     ['Text auf Karte',                 t['card-foreground'],     t.card,       4.5],
     ['Text auf Sekundärfüllung',       t['secondary-foreground'], t.secondary, 4.5],
     ['Text auf Akzentfüllung',         t['accent-foreground'],   t.accent,     4.5],
+    // Die vier Farben der Aufteilungsdiagramme auf beiden Statistikseiten.
+    // Sie stehen als Text auf der getönten Kachel, nicht nur als Balkenfläche.
+    // Vorher waren es rohe Tailwind-Klassen, die dieser Test nicht sehen konnte:
+    // `yellow-400` mass dort 1,39:1, `sky-400` 1,95:1, `rose-400` 2,45:1. Alle
+    // drei waren nur fürs dunkle Theme gewählt.
+    ['Diagrammfarbe Grün auf Kachel',      t.primary,               t.muted,      4.5],
+    ['Diagrammfarbe Bernstein auf Kachel', t.warning,               t.muted,      4.5],
+    ['Diagrammfarbe Blau auf Kachel',      t.info,                  t.muted,      4.5],
+    ['Diagrammfarbe Rosé auf Kachel',      t['chart-rose'],         t.muted,      4.5],
+    ['Gefahrfarbe als Text auf Kachel',    t.danger,                t.muted,      4.5],
+    ['Gefahrfarbe als Text auf Karte',     t.danger,                t.card,       4.5],
   ]
 
   it.each(paare)('%s', (_label, fg, bg, need) => {

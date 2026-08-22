@@ -67,9 +67,9 @@ function Breakdown({
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--color-muted)] text-[var(--color-muted-foreground)]">
           <BarChart3 className="h-4 w-4" />
         </div>
-        <span className="font-mono text-[0.6875rem] font-bold uppercase tracking-widest text-[var(--color-muted-foreground)]">
+        <h2 className="font-mono text-[0.6875rem] font-bold uppercase tracking-widest text-[var(--color-muted-foreground)]">
           {label}
-        </span>
+        </h2>
       </div>
 
       {total > 0 ? (
@@ -139,15 +139,15 @@ export default function StatsClient({
 
   const langItems: BreakdownItem[] = [
     { key: 'en', label: 'EN', bg: 'bg-[var(--color-primary)]',          text: 'text-[var(--color-primary)]' },
-    { key: 'de', label: 'DE', bg: 'bg-yellow-400',                       text: 'text-yellow-400' },
-    { key: 'fr', label: 'FR', bg: 'bg-sky-400',                          text: 'text-sky-400' },
-    { key: 'es', label: 'ES', bg: 'bg-rose-400',                         text: 'text-rose-400' },
+    { key: 'de', label: 'DE', bg: 'bg-[var(--color-warning)]',    text: 'text-[var(--color-warning)]' },
+    { key: 'fr', label: 'FR', bg: 'bg-[var(--color-info)]',       text: 'text-[var(--color-info)]' },
+    { key: 'es', label: 'ES', bg: 'bg-[var(--color-chart-rose)]', text: 'text-[var(--color-chart-rose)]' },
   ]
   const langTotal = langItems.reduce((s, i) => s + (stats.langs[i.key] ?? 0), 0)
 
   const statusItems: BreakdownItem[] = [
     { key: 'ACTIVE',    label: t.status_active,    bg: 'bg-[var(--color-primary)]',          text: 'text-[var(--color-primary)]' },
-    { key: 'PAUSED',    label: t.status_paused,    bg: 'bg-yellow-400',                       text: 'text-yellow-400' },
+    { key: 'PAUSED',    label: t.status_paused,    bg: 'bg-[var(--color-warning)]',          text: 'text-[var(--color-warning)]' },
     { key: 'ENDED',     label: t.status_ended,     bg: 'bg-[var(--color-muted-foreground)]', text: 'text-[var(--color-muted-foreground)]' },
     { key: 'CANCELLED', label: t.status_cancelled, bg: 'bg-[var(--color-danger)]',           text: 'text-[var(--color-danger)]' },
   ]
@@ -188,10 +188,15 @@ export default function StatsClient({
           </div>
         </div>
 
-        {/* Stat Cards */}
-        <div className="mb-4 grid grid-cols-[repeat(auto-fill,minmax(min(100%,260px),1fr))] gap-4">
-          {cards.map(c => <StatCard key={c.label} {...c} />)}
-        </div>
+        {/* Stat Cards. Die Überschrift ist `sr-only`: sichtbar wäre sie eine
+            Doppelung des Seitentitels, im Baum fehlte bisher jede Zwischenebene
+            zwischen H1 und den 14 Kacheln. */}
+        <section aria-labelledby="figures-heading">
+          <h2 id="figures-heading" className="sr-only">{t.region_figures}</h2>
+          <div className="mb-4 grid grid-cols-[repeat(auto-fill,minmax(min(100%,260px),1fr))] gap-4">
+            {cards.map(c => <StatCard key={c.label} {...c} />)}
+          </div>
+        </section>
 
         {/* Breakdowns */}
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
