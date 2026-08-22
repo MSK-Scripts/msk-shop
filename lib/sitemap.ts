@@ -1,6 +1,6 @@
-import { BOT_LANDING_PATHS } from '@/lib/botSeo'
 import { getCategories, getPackages } from '@/lib/tebex'
 import { absoluteUrl } from '@/lib/siteUrl'
+import { alternatePaths } from '@/lib/lang'
 
 /**
  * Sitemap: Datenaufbau und Serialisierung.
@@ -44,8 +44,8 @@ const STATIC_ROUTES = [
   '/',
   '/packages',
   '/resources',
-  // /ticketbot und /giveaway kommen aus botLandingEntries(), weil sie
-  // zweisprachig sind und hreflang-Alternates brauchen.
+  '/ticketbot',
+  '/giveaway',
   '/ticketbot/stats',
   '/giveaway/stats',
   '/terms',
@@ -73,26 +73,30 @@ function newest(dates: Array<Date | undefined>): Date | undefined {
 }
 
 /**
- * Die beiden Bot-Landingpages gibt es zweisprachig unter eigenen URLs. Jeder
- * Eintrag nennt beide Fassungen plus `x-default`, damit die Sitemap dieselben
- * hreflang-Angaben trägt wie das HTML. Ein einseitiges oder abweichendes Paar
- * wertet Google nicht.
+ * Jede Seite steht zweimal in der Sitemap, einmal je Sprache, und beide
+ * Einträge nennen dasselbe hreflang-Trio. Ein einseitiges oder abweichendes
+ * Paar wertet Google nicht.
+ *
+ * Seit dem 22.08.2026 gilt das für den ganzen Baum und nicht mehr nur für die
+ * beiden Bot-Landingpages: die Sprache steckt im Pfad, `/de/packages` ist eine
+ * eigene Adresse mit eigenem Inhalt.
  */
-function botLandingEntries(): SitemapEntry[] {
-  return Object.values(BOT_LANDING_PATHS).flatMap(paths =>
-    (['en', 'de'] as const).map(lang => ({
-      url: absoluteUrl(paths[lang]),
-      alternates: {
-        'en':        absoluteUrl(paths.en),
-        'de':        absoluteUrl(paths.de),
-        'x-default': absoluteUrl(paths.en),
-      },
-    })),
-  )
+function bothLanguages(path: string, lastModified?: Date): SitemapEntry[] {
+  const alt = alternatePaths(path)
+  const alternates = {
+    'en':        absoluteUrl(alt.en),
+    'de':        absoluteUrl(alt.de),
+    'x-default': absoluteUrl(alt.en),
+  }
+  return (['en', 'de'] as const).map(lang => ({
+    url: absoluteUrl(alt[lang]),
+    lastModified,
+    alternates,
+  }))
 }
 
 export async function buildSitemapEntries(): Promise<SitemapEntry[]> {
-  const staticEntries: SitemapEntry[] = STATIC_ROUTES.map(path => ({ url: absoluteUrl(path) }))
+  const staticEntries: SitemapEntry[] = STATIC_ROUTES.flatMap(path => bothLanguages(path))
 
   // Fail-soft: Ist Tebex nicht erreichbar (CI-Build ohne Secrets, API-Ausfall),
   // wird trotzdem eine gültige Sitemap mit den statischen Seiten ausgeliefert,
@@ -108,20 +112,18 @@ export async function buildSitemapEntries(): Promise<SitemapEntry[]> {
     }),
   ])
 
-  const packageEntries: SitemapEntry[] = packages.map(pkg => ({
-    url:          absoluteUrl(`/packages/${pkg.id}`),
-    lastModified: parseTimestamp(pkg.updated_at),
-  }))
+  const packageEntries: SitemapEntry[] = packages.flatMap(pkg =>
+    bothLanguages(`/packages/${pkg.id}`, parseTimestamp(pkg.updated_at)),
+  )
 
   // `getCategories()` fragt mit `includePackages=1` ab, die Pakete liegen also
   // vor. Eine Kategorieseite ändert sich genau dann, wenn eines ihrer Pakete
   // sich ändert.
-  const categoryEntries: SitemapEntry[] = categories.map(cat => ({
-    url:          absoluteUrl(`/categories/${cat.id}`),
-    lastModified: newest((cat.packages ?? []).map(pkg => parseTimestamp(pkg.updated_at))),
-  }))
+  const categoryEntries: SitemapEntry[] = categories.flatMap(cat =>
+    bothLanguages(`/categories/${cat.id}`, newest((cat.packages ?? []).map(pkg => parseTimestamp(pkg.updated_at)))),
+  )
 
-  return [...staticEntries, ...botLandingEntries(), ...packageEntries, ...categoryEntries]
+  return [...staticEntries, ...packageEntries, ...categoryEntries]
 }
 
 /**
