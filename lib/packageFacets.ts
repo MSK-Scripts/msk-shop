@@ -73,3 +73,32 @@ export function countPriceBuckets<T>(items: T[], priceOf: (item: T) => number): 
     (a, b) => rank(a.value) - rank(b.value),
   )
 }
+
+/**
+ * Kurze Gruppen bleiben immer ganz sichtbar. Erst darueber lohnt ein
+ * Ausklapper, sonst versteckt er zwei Zeilen hinter einer dritten.
+ */
+const COLLAPSE_FROM = 6
+
+/**
+ * Trennt die Facetten, die wirklich einengen, von ihrem Schwanz.
+ *
+ * Anlass: "Funktioniert mit" hatte elf Einträge, acht davon mit Zähler 2.
+ * Zwei heißt im heutigen Katalog "genau ein Produkt", weil jedes Script
+ * doppelt im Regal steht, encrypted und source. So ein Haken engt nichts ein,
+ * er springt zu einem einzelnen Produkt, das auf derselben Seite ohnehin schon
+ * sichtbar ist.
+ *
+ * Die Grenze kommt deshalb aus den Daten und nicht aus einer festen Zahl:
+ * alles, was so selten vorkommt wie der seltenste Eintrag, wandert hinter den
+ * Ausklapper. Das überlebt auch die geplante Zusammenfassung der Paare, nach
+ * der die Zähler sich halbieren. Sind alle Einträge gleich häufig, gibt es
+ * keinen Schwanz und die Gruppe bleibt vollständig stehen.
+ */
+export function splitFacets(facets: Facet[]): { primary: Facet[]; rest: Facet[] } {
+  if (facets.length < COLLAPSE_FROM) return { primary: facets, rest: [] }
+  const rarest = Math.min(...facets.map(f => f.count))
+  const primary = facets.filter(f => f.count > rarest)
+  if (primary.length === 0) return { primary: facets, rest: [] }
+  return { primary, rest: facets.filter(f => f.count <= rarest) }
+}

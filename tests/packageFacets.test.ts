@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import {
-  PRICE_BUCKETS, bucketLabel, countBy, countPriceBuckets, priceBucket,
+  PRICE_BUCKETS, bucketLabel, countBy, countPriceBuckets, priceBucket, splitFacets,
 } from '@/lib/packageFacets'
 
 /**
@@ -33,7 +33,7 @@ describe('priceBucket', () => {
 
 describe('countPriceBuckets', () => {
   it('sortiert nach Preis, nicht nach Haeufigkeit', () => {
-    // Genau die Lage aus dem Katalog: die mittlere Stufe ist die haeufigste.
+    // Genau die Lage aus dem Katalog: die mittlere Stufe ist die häufigste.
     const packages = [
       price(14.99), price(16.99), price(12.99), price(19.99),
       price(4.99),
@@ -75,7 +75,7 @@ describe('countBy', () => {
     expect(countBy(items, i => i.tags).map(f => f.value)).toEqual(['alpha', 'zebra'])
   })
 
-  it('zaehlt Eintraege ohne Wert gar nicht mit', () => {
+  it('zaehlt Einträge ohne Wert gar nicht mit', () => {
     expect(countBy([{ tags: [] }, { tags: ['esx'] }], i => i.tags)).toEqual([
       { value: 'esx', count: 1 },
     ])
@@ -93,5 +93,47 @@ describe('bucketLabel', () => {
   it('schreibt Spannen mit Halbgeviertstrich, in beiden Sprachen gleich', () => {
     expect(bucketLabel('10-20', 'en')).toBe('10–20 €')
     expect(bucketLabel('10-20', 'de')).toBe('10–20 €')
+  })
+})
+
+describe('splitFacets', () => {
+  const f = (value: string, count: number) => ({ value, count })
+
+  it('schiebt die Einträge hinter den Ausklapper, die nur ein Produkt treffen', () => {
+    // Die echte Lage der Gruppe "Funktioniert mit": drei Einträge tragen,
+    // sieben stehen für je ein Produkt, das doppelt im Regal liegt.
+    const facets = [
+      f('msk_core', 8), f('ox_inventory', 4), f('oxmysql', 4),
+      f('AdvancedParking', 2), f('Chezza Inventory', 2), f('Jaksam Vehicle Keys', 2),
+      f('MSK VehicleKeys', 2), f('msk_enginetoggle', 2), f('pma-voice', 2), f('saltychat', 2),
+    ]
+    const { primary, rest } = splitFacets(facets)
+    expect(primary.map(x => x.value)).toEqual(['msk_core', 'ox_inventory', 'oxmysql'])
+    expect(rest).toHaveLength(7)
+  })
+
+  it('hält kurze Gruppen vollständig sichtbar', () => {
+    const facets = [f('Encrypted Version', 4), f('Source Version', 4), f('Subscriptions', 2)]
+    expect(splitFacets(facets)).toEqual({ primary: facets, rest: [] })
+  })
+
+  it('versteckt nichts, wenn alle gleich häufig sind', () => {
+    const facets = Array.from({ length: 8 }, (_, i) => f(`t${i}`, 2))
+    expect(splitFacets(facets).rest).toEqual([])
+  })
+
+  it('hält zusammen, was es trennt', () => {
+    const facets = [f('a', 9), f('b', 3), f('c', 1), f('d', 1), f('e', 1), f('f', 1)]
+    const { primary, rest } = splitFacets(facets)
+    expect(primary.length + rest.length).toBe(facets.length)
+    expect([...primary, ...rest].map(x => x.value)).toEqual(['a', 'b', 'c', 'd', 'e', 'f'])
+  })
+
+  it('überlebt die geplante Zusammenfassung der Paare, die Zähler halbieren sich', () => {
+    const facets = [f('msk_core', 4), f('ox_inventory', 2), f('oxmysql', 2),
+                    f('pma-voice', 1), f('saltychat', 1), f('Chezza Inventory', 1)]
+    const { primary, rest } = splitFacets(facets)
+    expect(primary.map(x => x.value)).toEqual(['msk_core', 'ox_inventory', 'oxmysql'])
+    expect(rest).toHaveLength(3)
   })
 })

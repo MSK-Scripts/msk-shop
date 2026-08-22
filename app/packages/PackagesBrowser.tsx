@@ -6,7 +6,7 @@ import { ChevronDown, SlidersHorizontal, X } from 'lucide-react'
 import { PackageCard } from '@/components/packages/PackageCard'
 import { PACKAGE_BADGES, PACKAGE_TAGS, PACKAGE_DESCRIPTIONS } from '@/lib/config'
 import {
-  bucketLabel, countBy, countPriceBuckets, priceBucket, type Facet,
+  bucketLabel, countBy, countPriceBuckets, priceBucket, splitFacets, type Facet,
 } from '@/lib/packageFacets'
 import { packagesTranslations, type Lang } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
@@ -43,7 +43,7 @@ function tagsOf(pkg: TebexPackage): string[] {
 }
 
 function FacetGroup({
-  title, facets, selected, onToggle, label, countLabel,
+  title, facets, selected, onToggle, label, countLabel, moreLabel, lessLabel,
 }: {
   title: string
   facets: Facet[]
@@ -52,7 +52,17 @@ function FacetGroup({
   label?: (value: string) => string
   /** Liest die nackte Zahl für Screenreader aus, siehe unten. */
   countLabel: (count: number) => string
+  moreLabel: (count: number) => string
+  lessLabel: string
 }) {
+  const [expanded, setExpanded] = useState(false)
+  const { rest } = splitFacets(facets)
+  // Ein angehakter Eintrag bleibt sichtbar, auch wenn er in den Schwanz
+  // gehört. Ein Filter, der wirkt und den man nicht sieht, ist schlimmer als
+  // eine lange Liste.
+  const hidden = expanded ? [] : rest.filter(f => !selected.has(f.value))
+  const visible = facets.filter(f => !hidden.includes(f))
+
   if (facets.length === 0) return null
   return (
     <fieldset className="mt-6 first:mt-0">
@@ -60,7 +70,7 @@ function FacetGroup({
         {title}
       </legend>
       <div className="flex flex-col gap-0.5">
-        {facets.map(f => (
+        {visible.map(f => (
           <label
             key={f.value}
             className="group flex cursor-pointer items-center gap-2.5 py-1.5 text-sm text-[var(--color-muted-foreground)] transition-colors hover:text-[var(--color-foreground)]"
@@ -93,6 +103,16 @@ function FacetGroup({
             <span className="sr-only">{countLabel(f.count)}</span>
           </label>
         ))}
+        {rest.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setExpanded(e => !e)}
+            aria-expanded={expanded}
+            className="tap-target mt-1.5 self-start py-1.5 text-xs font-semibold text-[var(--color-primary)] hover:underline"
+          >
+            {expanded ? lessLabel : moreLabel(hidden.length)}
+          </button>
+        )}
       </div>
     </fieldset>
   )
@@ -150,6 +170,8 @@ export function PackagesBrowser({ lang, packages }: Props) {
   const countLabel = (n: number) =>
     (n === 1 ? t.count_one : t.count_many).replace('{n}', String(n))
 
+  const moreLabel = (n: number) => t.facet_more.replace('{n}', String(n))
+
   const resetAll = () => { setVariants(new Set()); setCompat(new Set()); setBuckets(new Set()) }
 
   return (
@@ -193,6 +215,8 @@ export function PackagesBrowser({ lang, packages }: Props) {
             selected={variants}
             onToggle={toggle(setVariants)}
             countLabel={countLabel}
+            moreLabel={moreLabel}
+            lessLabel={t.facet_less}
           />
           <FacetGroup
             title={t.facet_price}
@@ -201,6 +225,8 @@ export function PackagesBrowser({ lang, packages }: Props) {
             onToggle={toggle(setBuckets)}
             label={v => bucketLabel(v, lang)}
             countLabel={countLabel}
+            moreLabel={moreLabel}
+            lessLabel={t.facet_less}
           />
           <FacetGroup
             title={t.facet_compat}
@@ -208,6 +234,8 @@ export function PackagesBrowser({ lang, packages }: Props) {
             selected={compat}
             onToggle={toggle(setCompat)}
             countLabel={countLabel}
+            moreLabel={moreLabel}
+            lessLabel={t.facet_less}
           />
 
           <p className="mt-7 border-t border-[var(--color-border)] pt-4 text-xs leading-relaxed text-[var(--color-muted-foreground)]">

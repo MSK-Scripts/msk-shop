@@ -1275,6 +1275,8 @@ export const packagesTranslations = {
     // stehen beschriftet da, und über dem Raster steht bereits der Zähler.
     region_filters: "Filters",
     region_results: "Packages",
+    facet_more: "Show {n} more",
+    facet_less: "Show fewer",
     facet_variant: "Variant",
     facet_compat: "Works with",
     facet_price: "Price",
@@ -1310,6 +1312,8 @@ export const packagesTranslations = {
     filters: "Filter",
     region_filters: "Filter",
     region_results: "Pakete",
+    facet_more: "{n} weitere anzeigen",
+    facet_less: "Weniger anzeigen",
     facet_variant: "Variante",
     facet_compat: "Funktioniert mit",
     facet_price: "Preis",
