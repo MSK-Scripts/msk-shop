@@ -8,38 +8,74 @@ import { absoluteUrl } from '@/lib/siteUrl'
 // Revalidierung wie die Katalogseiten, damit neue Pakete zeitnah drin stehen.
 export const revalidate = 3600
 
-type Entry = MetadataRoute.Sitemap[number]
+/**
+ * Warum hier weder `priority` noch `changefreq` steht:
+ *
+ * Google ignoriert beide Felder vollständig (Search Central, „Build and Submit
+ * a Sitemap"). Sie standen bis zum 22.08.2026 drin und haben nichts getan,
+ * ausser eine Steuerung vorzutäuschen, die es nicht gibt.
+ *
+ * `lastmod` dagegen wertet Google aus, aber nur wenn der Wert „consistently and
+ * verifiably accurate" ist. Vorher stand hier `new Date()` für **alle** URLs,
+ * der Wert wanderte also mit jeder Revalidierung weiter und sagte nichts über
+ * die Seite aus. Jetzt gilt:
+ *
+ *   - Paketseiten     → `updated_at` aus der Tebex-API, der echte Wert
+ *   - Kategorieseiten → das jüngste `updated_at` ihrer Pakete
+ *   - alles Statische → **gar kein** `lastmod`
+ *
+ * Kein Datum ist besser als ein falsches: fehlt es, nutzt Google es einfach
+ * nicht. Ist es erkennbar erfunden, verliert die ganze Datei ihre Glaubwürdigkeit.
+ */
 
-/** Statische, öffentlich indexierbare Seiten mit ihrer relativen Wichtigkeit. */
-const STATIC_ROUTES: Array<{ path: string; priority: number; changeFrequency: Entry['changeFrequency'] }> = [
-  { path: '/',                 priority: 1.0, changeFrequency: 'daily'   },
-  { path: '/packages',         priority: 0.9, changeFrequency: 'daily'   },
-  { path: '/resources',        priority: 0.7, changeFrequency: 'daily'   },
+/** Statische, öffentlich indexierbare Seiten. */
+const STATIC_ROUTES = [
+  '/',
+  '/packages',
+  '/resources',
   // /ticketbot und /giveaway kommen aus botLandingEntries(), weil sie
   // zweisprachig sind und hreflang-Alternates brauchen.
-  { path: '/ticketbot/stats',  priority: 0.5, changeFrequency: 'daily'   },
-  { path: '/giveaway/stats',   priority: 0.5, changeFrequency: 'daily'   },
-  { path: '/terms',            priority: 0.3, changeFrequency: 'yearly'  },
-  { path: '/terms/imprint',    priority: 0.3, changeFrequency: 'yearly'  },
-  { path: '/terms/privacy',    priority: 0.3, changeFrequency: 'yearly'  },
+  '/ticketbot/stats',
+  '/giveaway/stats',
+  '/terms',
+  '/terms/imprint',
+  '/terms/privacy',
 ]
 
 /**
- * Die beiden Bot-Landingpages gibt es zweisprachig unter eigenen URLs. Jeder
- * Eintrag nennt beide Fassungen über `alternates.languages`, damit die
- * hreflang-Angaben aus den Metadaten in der Sitemap ihre Entsprechung haben.
+ * Parst einen Tebex-Zeitstempel defensiv. Fehlt er oder ist er unbrauchbar,
+ * kommt `undefined` zurück und der Eintrag bekommt kein `lastmod` — siehe die
+ * Begründung oben. `created_at` liefert die API für manche Pakete bereits als
+ * `null`, auf `updated_at` ist deshalb kein Verlass ohne Prüfung.
  */
-function botLandingEntries(lastModified: Date): MetadataRoute.Sitemap {
+function parseTimestamp(value?: string | null): Date | undefined {
+  if (!value) return undefined
+  const date = new Date(value)
+  return Number.isNaN(date.getTime()) ? undefined : date
+}
+
+/** Jüngstes Datum einer Liste, oder `undefined` wenn keins brauchbar ist. */
+function newest(dates: Array<Date | undefined>): Date | undefined {
+  const usable = dates.filter((d): d is Date => d !== undefined)
+  if (usable.length === 0) return undefined
+  return usable.reduce((a, b) => (a > b ? a : b))
+}
+
+/**
+ * Die beiden Bot-Landingpages gibt es zweisprachig unter eigenen URLs. Jeder
+ * Eintrag nennt beide Fassungen plus `x-default` über `alternates.languages`,
+ * damit die Sitemap dieselben hreflang-Angaben trägt wie das HTML. Ein
+ * einseitiges oder abweichendes Paar wertet Google nicht.
+ */
+function botLandingEntries(): MetadataRoute.Sitemap {
   return Object.values(BOT_LANDING_PATHS).flatMap(paths =>
     (['en', 'de'] as const).map(lang => ({
       url: absoluteUrl(paths[lang]),
-      lastModified,
-      changeFrequency: 'weekly' as const,
-      priority:        0.8,
       alternates: {
         languages: {
-          en: absoluteUrl(paths.en),
-          de: absoluteUrl(paths.de),
+          'en':        absoluteUrl(paths.en),
+          'de':        absoluteUrl(paths.de),
+          'x-default': absoluteUrl(paths.en),
         },
       },
     })),
@@ -47,13 +83,8 @@ function botLandingEntries(lastModified: Date): MetadataRoute.Sitemap {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const lastModified = new Date()
-
-  const staticEntries: MetadataRoute.Sitemap = STATIC_ROUTES.map(route => ({
-    url: absoluteUrl(route.path),
-    lastModified,
-    changeFrequency: route.changeFrequency,
-    priority:        route.priority,
+  const staticEntries: MetadataRoute.Sitemap = STATIC_ROUTES.map(path => ({
+    url: absoluteUrl(path),
   }))
 
   // Fail-soft: Ist Tebex nicht erreichbar (CI-Build ohne Secrets, API-Ausfall),
@@ -71,18 +102,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ])
 
   const packageEntries: MetadataRoute.Sitemap = packages.map(pkg => ({
-    url: absoluteUrl(`/packages/${pkg.id}`),
-    lastModified,
-    changeFrequency: 'weekly',
-    priority:        0.8,
+    url:          absoluteUrl(`/packages/${pkg.id}`),
+    lastModified: parseTimestamp(pkg.updated_at),
   }))
 
+  // `getCategories()` fragt mit `includePackages=1` ab, die Pakete liegen also
+  // vor. Eine Kategorieseite ändert sich genau dann, wenn eines ihrer Pakete
+  // sich ändert.
   const categoryEntries: MetadataRoute.Sitemap = categories.map(cat => ({
-    url: absoluteUrl(`/categories/${cat.id}`),
-    lastModified,
-    changeFrequency: 'weekly',
-    priority:        0.6,
+    url:          absoluteUrl(`/categories/${cat.id}`),
+    lastModified: newest((cat.packages ?? []).map(pkg => parseTimestamp(pkg.updated_at))),
   }))
 
-  return [...staticEntries, ...botLandingEntries(lastModified), ...packageEntries, ...categoryEntries]
+  return [...staticEntries, ...botLandingEntries(), ...packageEntries, ...categoryEntries]
 }
