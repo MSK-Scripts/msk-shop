@@ -148,18 +148,24 @@ export default async function CategoryPage({
       </header>
 
       {category.packages && category.packages.length > 0 ? (
-        <div className="grid gap-6 grid-cols-[repeat(auto-fill,minmax(min(100%,300px),1fr))]">
-          {category.packages.map(pkg => (
-            <PackageCard
-              key={pkg.id}
-              lang={lang}
-              pkg={pkg}
-              badges={PACKAGE_BADGES[pkg.id]}
-              tags={PACKAGE_TAGS[pkg.id]}
-              description={PACKAGE_DESCRIPTIONS[pkg.id]}
-            />
-          ))}
-        </div>
+        <section aria-labelledby="category-results-heading">
+          {/* Nur für Screenreader: die Seite sprang von H1 auf die H3 der
+              Karten. Sichtbar wäre die Überschrift eine Doppelung, der
+              Kategoriename steht schon als H1 darüber. */}
+          <h2 id="category-results-heading" className="sr-only">{t.region_results}</h2>
+          <div className="grid gap-6 grid-cols-[repeat(auto-fill,minmax(min(100%,300px),1fr))]">
+            {category.packages.map(pkg => (
+              <PackageCard
+                key={pkg.id}
+                lang={lang}
+                pkg={pkg}
+                badges={PACKAGE_BADGES[pkg.id]}
+                tags={PACKAGE_TAGS[pkg.id]}
+                description={PACKAGE_DESCRIPTIONS[pkg.id]}
+              />
+            ))}
+          </div>
+        </section>
       ) : (
         <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-[var(--color-border)] py-20 text-center">
           <p className="text-lg font-semibold">{t.none_title}</p>

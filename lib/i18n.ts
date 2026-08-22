@@ -1269,6 +1269,12 @@ export const packagesTranslations = {
     count_one: "{n} package",
     count_many: "{n} packages",
     filters: "Filters",
+    // Nur für Screenreader. Beide Katalogrouten sprangen von H1 auf die H3 der
+    // Karten, es gab keine Zwischenebene, an der man die Seite entlanghangeln
+    // kann. Sichtbar wären die beiden Überschriften Doppelungen: die Filter
+    // stehen beschriftet da, und über dem Raster steht bereits der Zähler.
+    region_filters: "Filters",
+    region_results: "Packages",
     facet_variant: "Variant",
     facet_compat: "Works with",
     facet_price: "Price",
@@ -1302,6 +1308,8 @@ export const packagesTranslations = {
     count_one: "{n} Paket",
     count_many: "{n} Pakete",
     filters: "Filter",
+    region_filters: "Filter",
+    region_results: "Pakete",
     facet_variant: "Variante",
     facet_compat: "Funktioniert mit",
     facet_price: "Preis",
@@ -1336,6 +1344,7 @@ export const categoriesTranslations = {
   en: {
     breadcrumb_home:     'Home',
     breadcrumb_packages: 'Packages',
+    region_results:      'Packages',
     count_one:           '{n} package in this category',
     count_many:          '{n} packages in this category',
     none_title:          'No packages in this category yet.',
@@ -1344,6 +1353,7 @@ export const categoriesTranslations = {
   de: {
     breadcrumb_home:     'Start',
     breadcrumb_packages: 'Pakete',
+    region_results:      'Pakete',
     count_one:           '{n} Paket in dieser Kategorie',
     count_many:          '{n} Pakete in dieser Kategorie',
     none_title:          'In dieser Kategorie gibt es noch keine Pakete.',

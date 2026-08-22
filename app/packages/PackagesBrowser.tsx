@@ -43,13 +43,15 @@ function tagsOf(pkg: TebexPackage): string[] {
 }
 
 function FacetGroup({
-  title, facets, selected, onToggle, label,
+  title, facets, selected, onToggle, label, countLabel,
 }: {
   title: string
   facets: Facet[]
   selected: Set<string>
   onToggle: (value: string) => void
   label?: (value: string) => string
+  /** Liest die nackte Zahl für Screenreader aus, siehe unten. */
+  countLabel: (count: number) => string
 }) {
   if (facets.length === 0) return null
   return (
@@ -84,7 +86,11 @@ function FacetGroup({
             <span className="peer-checked:font-semibold peer-checked:text-[var(--color-foreground)]">
               {label ? label(f.value) : f.value}
             </span>
-            <span className="ml-auto font-mono text-xs tabular-nums">{f.count}</span>
+            {/* Die nackte Zahl stand im <label> und wurde als „Encrypted
+                Version 4" vorgelesen. Sichtbar bleibt sie eine Zahl, gehört
+                wird sie zu „4 Pakete". */}
+            <span aria-hidden className="ml-auto font-mono text-xs tabular-nums">{f.count}</span>
+            <span className="sr-only">{countLabel(f.count)}</span>
           </label>
         ))}
       </div>
@@ -141,6 +147,9 @@ export function PackagesBrowser({ lang, packages }: Props) {
       return next
     })
 
+  const countLabel = (n: number) =>
+    (n === 1 ? t.count_one : t.count_many).replace('{n}', String(n))
+
   const resetAll = () => { setVariants(new Set()); setCompat(new Set()); setBuckets(new Set()) }
 
   return (
@@ -174,14 +183,16 @@ export function PackagesBrowser({ lang, packages }: Props) {
 
         <aside
           id="package-filters"
-          aria-label={t.filters}
+          aria-labelledby="package-filters-heading"
           className={cn('py-7', filtersOpen ? 'block' : 'hidden lg:block')}
         >
+          <h2 id="package-filters-heading" className="sr-only">{t.region_filters}</h2>
           <FacetGroup
             title={t.facet_variant}
             facets={facets.variants}
             selected={variants}
             onToggle={toggle(setVariants)}
+            countLabel={countLabel}
           />
           <FacetGroup
             title={t.facet_price}
@@ -189,12 +200,14 @@ export function PackagesBrowser({ lang, packages }: Props) {
             selected={buckets}
             onToggle={toggle(setBuckets)}
             label={v => bucketLabel(v, lang)}
+            countLabel={countLabel}
           />
           <FacetGroup
             title={t.facet_compat}
             facets={facets.compat}
             selected={compat}
             onToggle={toggle(setCompat)}
+            countLabel={countLabel}
           />
 
           <p className="mt-7 border-t border-[var(--color-border)] pt-4 text-xs leading-relaxed text-[var(--color-muted-foreground)]">
@@ -209,7 +222,8 @@ export function PackagesBrowser({ lang, packages }: Props) {
         </aside>
       </div>
 
-      <div className="py-7 lg:pl-8">
+      <section className="py-7 lg:pl-8" aria-labelledby="package-results-heading">
+        <h2 id="package-results-heading" className="sr-only">{t.region_results}</h2>
         {/* Der Lizenzunterschied ist Schritt 1 des Kaufablaufs und stand bis
             zum 22.08.2026 nur in der Meta-Description, also fuer Google. */}
         <p className="mb-5 rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)] px-4 py-3 text-xs leading-relaxed text-[var(--color-muted-foreground)]">
@@ -241,7 +255,10 @@ export function PackagesBrowser({ lang, packages }: Props) {
               </button>
             </>
           ) : null}
-          <span className="ml-auto font-mono text-xs tabular-nums">
+          {/* role="status" meldet die neue Trefferzahl nach jedem Filterklick.
+              Ohne das ändert sich das Raster still, und wer es nicht sieht,
+              erfährt nicht, dass überhaupt etwas passiert ist. */}
+          <span role="status" className="ml-auto font-mono text-xs tabular-nums">
             {t.showing.replace('{shown}', String(shown.length)).replace('{total}', String(packages.length))}
           </span>
         </div>
@@ -278,7 +295,7 @@ export function PackagesBrowser({ lang, packages }: Props) {
             ))}
           </div>
         )}
-      </div>
+      </section>
     </div>
   )
 }
