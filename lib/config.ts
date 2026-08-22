@@ -1,3 +1,5 @@
+import type { Lang } from '@/lib/i18n'
+
 // ── Featured Package IDs ─────────────────────────────────────
 // Add the Tebex package IDs you want to show on the homepage.
 // Find the ID in your Tebex control panel URL when editing a package.
@@ -100,64 +102,153 @@ export interface SearchSnippet {
   description: string
 }
 
-export const PACKAGE_SEO: Record<number, SearchSnippet> = {
+/**
+ * Ein Suchergebnis je Sprache. Seit dem 22.08.2026 hat jede Paket- und
+ * Kategorieseite zwei Adressen, und eine deutsche URL mit englischem Titel
+ * rankt für nichts.
+ *
+ * Produktnamen und die Fachbegriffe der Szene bleiben englisch: ein deutscher
+ * Serverbetreiber sucht nach „fivem handcuff script", nicht nach
+ * „FiveM Handschellen-Skript". Übersetzt ist, was ihm etwas erklärt.
+ */
+export type SearchSnippets = Record<Lang, SearchSnippet>
+
+export const PACKAGE_SEO: Record<number, SearchSnippets> = {
   5732587: { // MSK Garage - Encrypted
-    title:       'MSK Garage (Encrypted), FiveM Garage & Impound',
-    description: 'Server-authoritative FiveM garage and impound system for ESX with a React admin dashboard. Encrypted release, config and locale files stay open.',
+    en: {
+      title:       'MSK Garage (Encrypted), FiveM Garage & Impound',
+      description: 'Server-authoritative FiveM garage and impound system for ESX with a React admin dashboard. Encrypted release, config and locale files stay open.',
+    },
+    de: {
+      title:       'MSK Garage (Encrypted), FiveM Garage & Impound',
+      description: 'Server-autoritatives FiveM Garage- und Impound-System für ESX mit React-Admin-Dashboard. Encrypted-Fassung, Config- und Sprachdateien bleiben offen.',
+    },
   },
   5732588: { // MSK Garage - Source
-    title:       'MSK Garage (Source), FiveM Garage & Impound',
-    description: 'Server-authoritative FiveM garage and impound system for ESX with a React admin dashboard. Source release, only the core functions stay encrypted.',
+    en: {
+      title:       'MSK Garage (Source), FiveM Garage & Impound',
+      description: 'Server-authoritative FiveM garage and impound system for ESX with a React admin dashboard. Source release, only the core functions stay encrypted.',
+    },
+    de: {
+      title:       'MSK Garage (Source), FiveM Garage & Impound',
+      description: 'Server-autoritatives FiveM Garage- und Impound-System für ESX mit React-Admin-Dashboard. Source-Fassung, nur die Kernfunktionen bleiben verschlüsselt.',
+    },
   },
   5159927: { // MSK Handcuffs - Encrypted
-    title:       'MSK Handcuffs (Encrypted), FiveM Handcuff Script',
-    description: 'Realistic FiveM handcuffs for ESX and QBCore: animations, props, drag, headbag, tape and ankle tracker. Encrypted release, config files stay open.',
+    en: {
+      title:       'MSK Handcuffs (Encrypted), FiveM Handcuff Script',
+      description: 'Realistic FiveM handcuffs for ESX and QBCore: animations, props, drag, headbag, tape and ankle tracker. Encrypted release, config files stay open.',
+    },
+    de: {
+      title:       'MSK Handcuffs (Encrypted), FiveM Handcuff Script',
+      description: 'Realistische FiveM-Handschellen für ESX und QBCore: Animationen, Props, Ziehen, Kopfsack, Klebeband und Fußfessel. Encrypted, Config bleibt offen.',
+    },
   },
   5301828: { // MSK Handcuffs - Source
-    title:       'MSK Handcuffs (Source), FiveM Handcuff Script',
-    description: 'Realistic FiveM handcuffs for ESX and QBCore: animations, props, drag, headbag, tape and ankle tracker. Source release, only core code encrypted.',
+    en: {
+      title:       'MSK Handcuffs (Source), FiveM Handcuff Script',
+      description: 'Realistic FiveM handcuffs for ESX and QBCore: animations, props, drag, headbag, tape and ankle tracker. Source release, only core code encrypted.',
+    },
+    de: {
+      title:       'MSK Handcuffs (Source), FiveM Handcuff Script',
+      description: 'Realistische FiveM-Handschellen für ESX und QBCore: Animationen, Props, Ziehen, Kopfsack, Klebeband und Fußfessel. Source, nur der Kern verschlüsselt.',
+    },
   },
   6372773: { // MSK Storage - Encrypted
-    title:       'MSK Storage (Encrypted), FiveM Storage Script',
-    description: 'Flexible FiveM storage system for ESX with ox_inventory and Chezza Inventory support. Encrypted release, config and locale files stay open.',
+    en: {
+      title:       'MSK Storage (Encrypted), FiveM Storage Script',
+      description: 'Flexible FiveM storage system for ESX with ox_inventory and Chezza Inventory support. Encrypted release, config and locale files stay open.',
+    },
+    de: {
+      title:       'MSK Storage (Encrypted), FiveM Storage Script',
+      description: 'Flexibles FiveM-Lagersystem für ESX, mit Unterstützung für ox_inventory und Chezza Inventory. Encrypted-Fassung, Config- und Sprachdateien bleiben offen.',
+    },
   },
   6372865: { // MSK Storage - Source
-    title:       'MSK Storage (Source), FiveM Storage Script',
-    description: 'Flexible FiveM storage system for ESX with ox_inventory and Chezza Inventory support. Source release, only the core functions stay encrypted.',
+    en: {
+      title:       'MSK Storage (Source), FiveM Storage Script',
+      description: 'Flexible FiveM storage system for ESX with ox_inventory and Chezza Inventory support. Source release, only the core functions stay encrypted.',
+    },
+    de: {
+      title:       'MSK Storage (Source), FiveM Storage Script',
+      description: 'Flexibles FiveM-Lagersystem für ESX, mit Unterstützung für ox_inventory und Chezza Inventory. Source-Fassung, nur die Kernfunktionen verschlüsselt.',
+    },
   },
   6446936: { // MSK VehicleKeys - Encrypted
-    title:       'MSK VehicleKeys (Encrypted), FiveM Vehicle Keys',
-    description: 'FiveM vehicle keys for ESX and QBCore: unique key items, lock/unlock, key menu, job vehicles, admin dashboard. Encrypted release, config stays open.',
+    en: {
+      title:       'MSK VehicleKeys (Encrypted), FiveM Vehicle Keys',
+      description: 'FiveM vehicle keys for ESX and QBCore: unique key items, lock/unlock, key menu, job vehicles, admin dashboard. Encrypted release, config stays open.',
+    },
+    de: {
+      title:       'MSK VehicleKeys (Encrypted), FiveM Vehicle Keys',
+      description: 'FiveM Vehicle Keys für ESX und QBCore: Schlüssel als Item, Auf- und Zuschliessen, Schlüsselmenü, Jobfahrzeuge, Admin-Dashboard. Config bleibt offen.',
+    },
   },
   6446947: { // MSK VehicleKeys - Source
-    title:       'MSK VehicleKeys (Source), FiveM Vehicle Keys',
-    description: 'FiveM vehicle keys for ESX and QBCore: unique key items, lock/unlock, key menu, job vehicles, admin dashboard. Source release, only core encrypted.',
+    en: {
+      title:       'MSK VehicleKeys (Source), FiveM Vehicle Keys',
+      description: 'FiveM vehicle keys for ESX and QBCore: unique key items, lock/unlock, key menu, job vehicles, admin dashboard. Source release, only core encrypted.',
+    },
+    de: {
+      title:       'MSK VehicleKeys (Source), FiveM Vehicle Keys',
+      description: 'FiveM Vehicle Keys für ESX und QBCore: Schlüssel als Item, Auf- und Zuschliessen, Schlüsselmenü, Jobfahrzeuge, Admin-Dashboard. Nur der Kern verschlüsselt.',
+    },
   },
   7569109: { // Subscription - Encrypted
-    title:       'All MSK FiveM Scripts, Monthly (Encrypted)',
-    description: 'Try every MSK FiveM script for a month before buying a single resource. Encrypted release. A trial model, not a permanent license purchase.',
+    en: {
+      title:       'All MSK FiveM Scripts, Monthly (Encrypted)',
+      description: 'Try every MSK FiveM script for a month before buying a single resource. Encrypted release. A trial model, not a permanent license purchase.',
+    },
+    de: {
+      title:       'Alle MSK FiveM Scripts im Monatsabo (Encrypted)',
+      description: 'Einen Monat lang jedes MSK FiveM Script testen, bevor du dich für eine einzelne Ressource entscheidest. Encrypted-Fassung. Ein Testmodell, kein Lizenzkauf.',
+    },
   },
   7569121: { // Subscription - Source
-    title:       'All MSK FiveM Scripts, Monthly (Source)',
-    description: 'Try every MSK FiveM script for a month before buying a single resource. Source release. A trial model, not a permanent license purchase.',
+    en: {
+      title:       'All MSK FiveM Scripts, Monthly (Source)',
+      description: 'Try every MSK FiveM script for a month before buying a single resource. Source release. A trial model, not a permanent license purchase.',
+    },
+    de: {
+      title:       'Alle MSK FiveM Scripts im Monatsabo (Source)',
+      description: 'Einen Monat lang jedes MSK FiveM Script testen, bevor du dich für eine einzelne Ressource entscheidest. Source-Fassung. Ein Testmodell, kein Lizenzkauf.',
+    },
   },
 }
 
 // Die Tebex-Kategoriebeschreibungen sind zweisprachige [GER]/[ENG]-Blöcke. Ein
 // Auszug daraus liefert immer den deutschen Teil, weshalb die englischen
 // Kategorieseiten bis zum 22.08.2026 eine deutsche Meta-Description trugen.
-export const CATEGORY_SEO: Record<number, SearchSnippet> = {
+export const CATEGORY_SEO: Record<number, SearchSnippets> = {
   2105296: { // Encrypted Version
-    title:       'Encrypted FiveM Scripts',
-    description: 'MSK FiveM scripts in the encrypted release: everything is escrow protected except config.lua, translation.lua and server_discordlog.lua.',
+    en: {
+      title:       'Encrypted FiveM Scripts',
+      description: 'MSK FiveM scripts in the encrypted release: everything is escrow protected except config.lua, translation.lua and server_discordlog.lua.',
+    },
+    de: {
+      title:       'Verschlüsselte FiveM Scripts',
+      description: 'MSK FiveM Scripts in der Encrypted-Fassung: alles ist Escrow-geschützt ausser config.lua, translation.lua und server_discordlog.lua.',
+    },
   },
   2228937: { // Source Version
-    title:       'Source FiveM Scripts',
-    description: 'MSK FiveM scripts in the source release: most of the code is open, only the core functions stay encrypted so the script cannot be copied.',
+    en: {
+      title:       'Source FiveM Scripts',
+      description: 'MSK FiveM scripts in the source release: most of the code is open, only the core functions stay encrypted so the script cannot be copied.',
+    },
+    de: {
+      title:       'FiveM Scripts mit Quellcode',
+      description: 'MSK FiveM Scripts in der Source-Fassung: der grösste Teil des Codes liegt offen, nur die Kernfunktionen bleiben verschlüsselt und damit kopiergeschützt.',
+    },
   },
   3392436: { // Subscriptions
-    title:       'FiveM Script Subscriptions',
-    description: 'Try every MSK FiveM script for a month before deciding on a single resource. Available as an encrypted or a source subscription.',
+    en: {
+      title:       'FiveM Script Subscriptions',
+      description: 'Try every MSK FiveM script for a month before deciding on a single resource. Available as an encrypted or a source subscription.',
+    },
+    de: {
+      title:       'FiveM Script Abos',
+      description: 'Jedes MSK FiveM Script einen Monat lang ausprobieren, bevor du dich für eine einzelne Ressource entscheidest. Als Encrypted- oder Source-Abo.',
+    },
   },
 }
 

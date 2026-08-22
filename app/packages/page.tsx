@@ -1,30 +1,28 @@
 import type { Metadata } from 'next'
 import { getPackages } from '@/lib/tebex'
 import { PackagesBrowser } from '@/app/packages/PackagesBrowser'
+import { pageSeo } from '@/lib/pageSeo'
 import { getRequestLang } from '@/lib/serverLang'
 import { packagesTranslations } from '@/lib/i18n'
 import { alternatesFor, DEFAULT_OG_IMAGE, openGraphFor } from '@/lib/seo'
 
 export async function generateMetadata(): Promise<Metadata> {
   const { lang } = await getRequestLang()
+  const seo = pageSeo('/packages', lang)
   return {
-  title:       'All Packages',
-  description: 'Browse all FiveM resources, tools and Discord bots from MSK Scripts.',
-  alternates:  alternatesFor(lang, '/packages'),
-  openGraph: openGraphFor({
-    url:         '/packages',
-    title:       'All Packages',
-    description: 'Browse all FiveM resources, tools and Discord bots from MSK Scripts.',
-  }),
-  // `twitter` wird genauso flach ersetzt wie `openGraph` und muss darum
-  // explizit mitgesetzt werden, sonst bleiben die Root-Layout-Texte stehen.
-  twitter: {
-    card:        'summary_large_image' as const,
-    title:       'All Packages',
-    description: 'Browse all FiveM resources, tools and Discord bots from MSK Scripts.',
-    images:      [DEFAULT_OG_IMAGE],
-  },
-}
+    title:       seo.absolute ? { absolute: seo.title } : seo.title,
+    description: seo.description,
+    alternates:  alternatesFor(lang, '/packages'),
+    openGraph:   openGraphFor({ url: '/packages', title: seo.title, description: seo.description }),
+    // `twitter` wird genauso flach ersetzt wie `openGraph` und muss darum
+    // explizit mitgesetzt werden, sonst bleiben die Root-Layout-Texte stehen.
+    twitter: {
+      card:        'summary_large_image' as const,
+      title:       seo.title,
+      description: seo.description,
+      images:      [DEFAULT_OG_IMAGE],
+    },
+  }
 }
 
 export default async function PackagesPage() {

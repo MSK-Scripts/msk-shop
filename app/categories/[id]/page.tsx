@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     const cat = await getCategory(id)
     const canonical = `/categories/${cat.id}`
     const count = cat.packages?.length ?? 0
-    const snippet = CATEGORY_SEO[cat.id]
+    const snippet = CATEGORY_SEO[cat.id]?.[lang]
 
     // `plainExcerpt(cat.description)` liefert bei diesen Kategorien den
     // **deutschen** Teil, weil die Tebex-Texte als [GER]-Block beginnen und

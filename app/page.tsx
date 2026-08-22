@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { pageSeo } from '@/lib/pageSeo'
 import { getRequestLang } from '@/lib/serverLang'
 import { Hero } from '@/components/home/Hero'
 import { ProofLine } from '@/components/home/ProofLine'
@@ -16,22 +17,17 @@ import { loadShopStats } from '@/lib/shopStats'
 
 // Der Titel des Root-Layouts ist reiner Markenname ("MSK Scripts – Website &
 // Shop"). Die Startseite sammelt aber Impressionen auf generische Anfragen
-// ("free tebex scripts", "fivem scripts"), deshalb nennt sie hier selbst, was
-// es zu holen gibt. `absolute`, damit das '%s | MSK Scripts'-Template nicht
-// noch ein zweites Mal die Marke anhängt.
-const HOME_TITLE       = 'FiveM Scripts, Tools & Discord Bots | MSK Scripts'
-const HOME_DESCRIPTION =
-  'FiveM scripts and resources for ESX and QBCore, plus free self-hosted Discord bots. '
-  + 'Escrow protected releases, delivered through the CFX.re Keymaster.'
-
+// nach FiveM-Scripts, deshalb hat sie einen eigenen. Beide Fassungen stehen in
+// lib/pageSeo.ts, seit es die Seite zweimal gibt.
 export async function generateMetadata(): Promise<Metadata> {
   const { lang } = await getRequestLang()
+  const seo = pageSeo('/', lang)
   return {
-  title:       { absolute: HOME_TITLE },
-  description: HOME_DESCRIPTION,
-  alternates:  alternatesFor(lang, '/'),
-  openGraph:   openGraphFor({ url: '/', title: HOME_TITLE, description: HOME_DESCRIPTION }),
-}
+    title:       seo.absolute ? { absolute: seo.title } : seo.title,
+    description: seo.description,
+    alternates:  alternatesFor(lang, '/'),
+    openGraph:   openGraphFor({ url: '/', title: seo.title, description: seo.description }),
+  }
 }
 
 /**

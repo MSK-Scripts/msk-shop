@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     const pkg = await getPackage(id)
     const canonical = `/packages/${pkg.id}`
     const image = packageImage(pkg)
-    const snippet = PACKAGE_SEO[pkg.id]
+    const snippet = PACKAGE_SEO[pkg.id]?.[lang]
 
     // Reihenfolge: kuratiertes Such-Snippet, dann der sichtbare Kartentext,
     // dann der Tebex-Auszug. Der rohe Tebex-Name enthält das Wort "FiveM"

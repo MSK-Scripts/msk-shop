@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { alternatesFor } from '@/lib/seo'
+import { pageSeo } from '@/lib/pageSeo'
 import { getRequestLang } from '@/lib/serverLang'
 import { query, queryOne }    from '@/lib/db'
 import { getIgnoredApiKeys } from '@/lib/statsIgnore'
@@ -10,11 +11,12 @@ export const dynamic = 'force-dynamic'
 
 export async function generateMetadata(): Promise<Metadata> {
   const { lang } = await getRequestLang()
+  const seo = pageSeo('/ticketbot/stats', lang)
   return {
-  title:       'Bot Statistics',
-  alternates:  alternatesFor(lang, '/ticketbot/stats'),
-  description: 'Anonymous live statistics of the MSK Ticket Bot across all servers.',
-}
+    title:       seo.absolute ? { absolute: seo.title } : seo.title,
+    description: seo.description,
+    alternates:  alternatesFor(lang, '/ticketbot/stats'),
+  }
 }
 
 interface CountRow { total: number }

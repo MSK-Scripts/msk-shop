@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { alternatesFor } from '@/lib/seo'
+import { pageSeo } from '@/lib/pageSeo'
 import { getRequestLang } from '@/lib/serverLang'
 import { loadResourceStats } from '@/lib/fivestats'
 import ResourcesClient       from './ResourcesClient'
@@ -8,11 +9,12 @@ export const dynamic = 'force-dynamic'
 
 export async function generateMetadata(): Promise<Metadata> {
   const { lang } = await getRequestLang()
+  const seo = pageSeo('/resources', lang)
   return {
-  title:       'Resource Statistics',
-  alternates:  alternatesFor(lang, '/resources'),
-  description: 'Live adoption statistics of MSK Scripts FiveM resources across all servers, powered by fivestats.io.',
-}
+    title:       seo.absolute ? { absolute: seo.title } : seo.title,
+    description: seo.description,
+    alternates:  alternatesFor(lang, '/resources'),
+  }
 }
 
 export default async function ResourcesPage() {
