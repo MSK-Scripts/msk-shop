@@ -14,9 +14,21 @@ import { loadHeadlineStat } from '@/lib/fivestats'
 import { loadReleases } from '@/lib/releases'
 import { loadShopStats } from '@/lib/shopStats'
 
+// Der Titel des Root-Layouts ist reiner Markenname ("MSK Scripts – Website &
+// Shop"). Die Startseite sammelt aber Impressionen auf generische Anfragen
+// ("free tebex scripts", "fivem scripts"), deshalb nennt sie hier selbst, was
+// es zu holen gibt. `absolute`, damit das '%s | MSK Scripts'-Template nicht
+// noch ein zweites Mal die Marke anhängt.
+const HOME_TITLE       = 'FiveM Scripts, Tools & Discord Bots | MSK Scripts'
+const HOME_DESCRIPTION =
+  'FiveM scripts and resources for ESX and QBCore, plus free self-hosted Discord bots. '
+  + 'Escrow protected releases, delivered through the CFX.re Keymaster.'
+
 export const metadata = {
-  alternates: { canonical: '/' },
-  openGraph:  openGraphFor({ url: '/' }),
+  title:       { absolute: HOME_TITLE },
+  description: HOME_DESCRIPTION,
+  alternates:  { canonical: '/' },
+  openGraph:   openGraphFor({ url: '/', title: HOME_TITLE, description: HOME_DESCRIPTION }),
 }
 
 /**

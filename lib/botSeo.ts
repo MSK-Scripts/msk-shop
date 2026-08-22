@@ -44,6 +44,7 @@ const TICKETBOT: BotDefinition = {
   paths: { en: '/ticketbot', de: '/de/ticketbot' },
   image: '/discord_ticketbot_banner.webp',
   appName: 'MSK Discord Ticket Bot',
+  codeRepository: 'https://github.com/MSK-Scripts/discord_ticketbot',
   seo: {
     en: {
       title: 'Self-Hosted Discord Ticket Bot with Transcripts | MSK Scripts',

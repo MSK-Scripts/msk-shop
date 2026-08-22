@@ -68,6 +68,100 @@ export const PACKAGE_DESCRIPTIONS: Record<number, string> = {
   7569121: 'This subscription is intended purely as a trial model. The goal is to let you test all scripts thoroughly within one month before deciding on the final purchase of individual resources. It does not replace a permanent license purchase.', // Subscription - Source Version 
 }
 
+// ── Search snippets ──────────────────────────────────────────
+// Titel und Meta-Description der Paket- und Kategorieseiten, also das was in
+// der Google-Trefferliste steht. Bewusst getrennt von PACKAGE_DESCRIPTIONS:
+// das ist der sichtbare Kartentext auf der Seite selbst.
+//
+// Zwei Gründe für die Kuratierung, beide am 22.08.2026 in der Search Console
+// nachgemessen:
+//
+//   1. Der Shop sammelt Impressionen auf generische Anfragen wie
+//      "fivem handcuff script" (24) und "fivem job creator" (21), aber in
+//      keinem Tebex-Paketnamen steht das Wort "FiveM". Der rohe Name als
+//      <title> liess ausgerechnet den gesuchten Begriff weg.
+//   2. Encrypted und Source sind pro Produkt zwei Seiten mit identischem Text.
+//      Google meldet 6 Seiten als "Duplikat, vom Nutzer nicht als kanonisch
+//      festgelegt". Beide Fassungen sollen indexierbar bleiben, also müssen
+//      Titel und Description den Lizenzunterschied benennen.
+//
+// Die Formulierung des Unterschieds stammt aus Tebex' eigenen Kategorietexten,
+// sie ist nicht ausgedacht: Encrypted verschlüsselt alles ausser config.lua,
+// translation.lua und server_discordlog.lua, Source lässt den Grossteil offen
+// und verschlüsselt nur die CORE-Funktionen.
+//
+// Ohne Eintrag fällt die Seite auf den Tebex-Namen und den Tebex-Text zurück.
+// Neue Pakete und Kategorien gehören deshalb hier ergänzt.
+
+export interface SearchSnippet {
+  /** <title> ohne das " | MSK Scripts"-Suffix. Zielmarke: unter 50 Zeichen. */
+  title:       string
+  /** Meta-Description. Zielmarke: unter 160 Zeichen, sonst kürzt Google. */
+  description: string
+}
+
+export const PACKAGE_SEO: Record<number, SearchSnippet> = {
+  5732587: { // MSK Garage - Encrypted
+    title:       'MSK Garage (Encrypted), FiveM Garage & Impound',
+    description: 'Server-authoritative FiveM garage and impound system for ESX with a React admin dashboard. Encrypted release, config and locale files stay open.',
+  },
+  5732588: { // MSK Garage - Source
+    title:       'MSK Garage (Source), FiveM Garage & Impound',
+    description: 'Server-authoritative FiveM garage and impound system for ESX with a React admin dashboard. Source release, only the core functions stay encrypted.',
+  },
+  5159927: { // MSK Handcuffs - Encrypted
+    title:       'MSK Handcuffs (Encrypted), FiveM Handcuff Script',
+    description: 'Realistic FiveM handcuffs for ESX and QBCore: animations, props, drag, headbag, tape and ankle tracker. Encrypted release, config files stay open.',
+  },
+  5301828: { // MSK Handcuffs - Source
+    title:       'MSK Handcuffs (Source), FiveM Handcuff Script',
+    description: 'Realistic FiveM handcuffs for ESX and QBCore: animations, props, drag, headbag, tape and ankle tracker. Source release, only core code encrypted.',
+  },
+  6372773: { // MSK Storage - Encrypted
+    title:       'MSK Storage (Encrypted), FiveM Storage Script',
+    description: 'Flexible FiveM storage system for ESX with ox_inventory and Chezza Inventory support. Encrypted release, config and locale files stay open.',
+  },
+  6372865: { // MSK Storage - Source
+    title:       'MSK Storage (Source), FiveM Storage Script',
+    description: 'Flexible FiveM storage system for ESX with ox_inventory and Chezza Inventory support. Source release, only the core functions stay encrypted.',
+  },
+  6446936: { // MSK VehicleKeys - Encrypted
+    title:       'MSK VehicleKeys (Encrypted), FiveM Vehicle Keys',
+    description: 'FiveM vehicle keys for ESX and QBCore: unique key items, lock/unlock, key menu, job vehicles, admin dashboard. Encrypted release, config stays open.',
+  },
+  6446947: { // MSK VehicleKeys - Source
+    title:       'MSK VehicleKeys (Source), FiveM Vehicle Keys',
+    description: 'FiveM vehicle keys for ESX and QBCore: unique key items, lock/unlock, key menu, job vehicles, admin dashboard. Source release, only core encrypted.',
+  },
+  7569109: { // Subscription - Encrypted
+    title:       'All MSK FiveM Scripts, Monthly (Encrypted)',
+    description: 'Try every MSK FiveM script for a month before buying a single resource. Encrypted release. A trial model, not a permanent license purchase.',
+  },
+  7569121: { // Subscription - Source
+    title:       'All MSK FiveM Scripts, Monthly (Source)',
+    description: 'Try every MSK FiveM script for a month before buying a single resource. Source release. A trial model, not a permanent license purchase.',
+  },
+}
+
+// Die Tebex-Kategoriebeschreibungen sind zweisprachige [GER]/[ENG]-Blöcke. Ein
+// Auszug daraus liefert immer den deutschen Teil, weshalb die englischen
+// Kategorieseiten bis zum 22.08.2026 eine deutsche Meta-Description trugen.
+export const CATEGORY_SEO: Record<number, SearchSnippet> = {
+  2105296: { // Encrypted Version
+    title:       'Encrypted FiveM Scripts',
+    description: 'MSK FiveM scripts in the encrypted release: everything is escrow protected except config.lua, translation.lua and server_discordlog.lua.',
+  },
+  2228937: { // Source Version
+    title:       'Source FiveM Scripts',
+    description: 'MSK FiveM scripts in the source release: most of the code is open, only the core functions stay encrypted so the script cannot be copied.',
+  },
+  3392436: { // Subscriptions
+    title:       'FiveM Script Subscriptions',
+    description: 'Try every MSK FiveM script for a month before deciding on a single resource. Available as an encrypted or a source subscription.',
+  },
+}
+
+
 // ── Package Tags ──────────────────────────────────────────────
 // Optional small tags shown below the package name on cards.
 // Example: ['ESX', 'oxmysql', 'msk_core']

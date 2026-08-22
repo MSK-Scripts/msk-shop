@@ -5,7 +5,7 @@ import { ChevronRight, ArrowLeft } from 'lucide-react'
 import { getCategory, getCategories } from '@/lib/tebex'
 import { PackageCard } from '@/components/packages/PackageCard'
 import { Button } from '@/components/ui/Button'
-import { PACKAGE_BADGES, PACKAGE_TAGS, PACKAGE_DESCRIPTIONS } from '@/lib/config'
+import { PACKAGE_BADGES, PACKAGE_TAGS, PACKAGE_DESCRIPTIONS, CATEGORY_SEO } from '@/lib/config'
 import { sanitizeTebexHtml } from '@/lib/sanitize'
 import { DEFAULT_OG_IMAGE, openGraphFor, plainExcerpt } from '@/lib/seo'
 import { JsonLd } from '@/components/JsonLd'
@@ -34,22 +34,30 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     const cat = await getCategory(id)
     const canonical = `/categories/${cat.id}`
     const count = cat.packages?.length ?? 0
+    const snippet = CATEGORY_SEO[cat.id]
+
+    // `plainExcerpt(cat.description)` liefert bei diesen Kategorien den
+    // **deutschen** Teil, weil die Tebex-Texte als [GER]-Block beginnen und
+    // erst danach [ENG] folgt. Auf einer englischen Seite ist das falsch,
+    // deshalb hat das kuratierte Snippet Vorrang.
     const description =
+      snippet?.description ||
       plainExcerpt(cat.description) ||
       `Browse ${count} ${count === 1 ? 'package' : 'packages'} in ${cat.name} from MSK Scripts.`
+    const title = snippet?.title ?? cat.name
 
     return {
-      title:      cat.name,
+      title,
       description,
       alternates: { canonical },
       openGraph: openGraphFor({
         url:   canonical,
-        title: cat.name,
+        title,
         description,
       }),
       twitter: {
         card:  'summary_large_image',
-        title: cat.name,
+        title,
         description,
         images: [DEFAULT_OG_IMAGE],
       },

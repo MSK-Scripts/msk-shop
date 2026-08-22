@@ -46,30 +46,6 @@ export const metadata: Metadata = {
     { name: "Musiker15", url: "https://www.musiker15.de" },
     { name: "MSK Scripts", url: "https://www.msk-scripts.de" },
   ],
-  keywords: [
-    "FiveM",
-    "fivem",
-    "FiveM Resources",
-    "FiveM Scripts",
-    "FiveM Mods",
-    "FiveM Vehicles",
-    "FiveM Scripts Shop",
-    "FiveM Resources Shop",
-
-    "Discord Bots",
-    "Discord Ticket Bot",
-    "Ticket Bot",
-    "Ticketbot",
-    "Discord Ticket Bot",
-    "Discord Giveaway Bot",
-    "Giveawaybot",
-
-    "Tools",
-    
-    "MSK",
-    "MSK Scripts",
-    "msk-scripts.de",
-  ],
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },

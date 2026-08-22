@@ -9,7 +9,7 @@ import { PackagePrice } from '@/components/packages/PackagePrice'
 import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
-import { PACKAGE_BADGES, PACKAGE_TAGS, PACKAGE_DESCRIPTIONS, SITE_CONFIG } from '@/lib/config'
+import { PACKAGE_BADGES, PACKAGE_TAGS, PACKAGE_DESCRIPTIONS, PACKAGE_SEO, SITE_CONFIG } from '@/lib/config'
 import { sanitizeTebexHtml } from '@/lib/sanitize'
 import { openGraphFor, packageImage, plainExcerpt } from '@/lib/seo'
 import { JsonLd } from '@/components/JsonLd'
@@ -38,26 +38,32 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     const pkg = await getPackage(id)
     const canonical = `/packages/${pkg.id}`
     const image = packageImage(pkg)
-    // Die kuratierte Kurzbeschreibung aus lib/config schlägt den Tebex-Text,
-    // weil sie schon auf einen Satz getrimmt ist.
+    const snippet = PACKAGE_SEO[pkg.id]
+
+    // Reihenfolge: kuratiertes Such-Snippet, dann der sichtbare Kartentext,
+    // dann der Tebex-Auszug. Der rohe Tebex-Name enthält das Wort "FiveM"
+    // nirgends, und Encrypted/Source unterscheiden sich in ihm nur durch ein
+    // Wort — beides ist genau das, was PACKAGE_SEO geradezieht.
     const description =
+      snippet?.description ??
       PACKAGE_DESCRIPTIONS[pkg.id] ??
       plainExcerpt(pkg.description) ??
       SITE_CONFIG.tagline
+    const title = snippet?.title ?? pkg.name
 
     return {
-      title:       pkg.name,
+      title,
       description,
       alternates:  { canonical },
       openGraph: openGraphFor({
         url:   canonical,
-        title: pkg.name,
+        title,
         description,
         images: [{ url: image, alt: pkg.name }],
       }),
       twitter: {
         card:  'summary_large_image',
-        title: pkg.name,
+        title,
         description,
         images: [image],
       },
