@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
+import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 import { ShoppingCart, Loader2, LogIn } from 'lucide-react'
 import { useCart } from '@/lib/useCart'
 import { useSalePricesStore } from '@/store/salePrices'

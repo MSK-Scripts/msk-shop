@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { Languages } from 'lucide-react'
+import Link from 'next/link'
 import { useLang } from './LangProvider'
 import { Button } from '@/components/ui/Button'
 import { layoutTranslations } from '@/lib/i18n'
@@ -20,7 +21,7 @@ const languages = [
  * blockt zur Laufzeit injizierte <style>-Tags (Radix' Scroll-Lock).
  */
 export function LanguageDropdown() {
-  const { lang, setLang } = useLang()
+  const { lang, hrefFor } = useLang()
   const t = layoutTranslations[lang]
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -62,11 +63,16 @@ export function LanguageDropdown() {
           className="absolute right-0 top-full z-[60] mt-1 min-w-[10rem] overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] p-1 shadow-xl"
         >
           {languages.map(l => (
-            <button
+            // Ein echter Link, kein Knopf: der Sprachwechsel ist seit dem
+            // 22.08.2026 eine Navigation zur Gegenstueck-URL. Damit greifen
+            // Mittelklick, "in neuem Tab oeffnen" und der Zurueck-Knopf.
+            <Link
               key={l.code}
-              type="button"
+              href={hrefFor(l.code)}
               role="menuitem"
-              onClick={() => { setLang(l.code); setOpen(false) }}
+              hrefLang={l.code}
+              aria-current={lang === l.code ? 'true' : undefined}
+              onClick={() => setOpen(false)}
               className={cn(
                 'flex w-full items-center justify-between gap-4 rounded-md px-3 py-2 text-sm outline-none transition-colors',
                 'hover:bg-[var(--color-muted)] focus-visible:bg-[var(--color-muted)]',
@@ -76,8 +82,8 @@ export function LanguageDropdown() {
               )}
             >
               <span>{l.label}</span>
-              <span className="font-mono text-xs uppercase opacity-70">{l.code}</span>
-            </button>
+              <span className="font-mono text-xs uppercase">{l.code}</span>
+            </Link>
           ))}
         </div>
       )}

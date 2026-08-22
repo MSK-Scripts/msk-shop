@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+import { LANG_HEADER, PATH_HEADER, splitLangPath } from '@/lib/lang'
+
 // Diese Datei hieß bis Next 16 `middleware.ts`. Next 16 hat die Konvention in
 // `proxy.ts` umbenannt (die alte warnt beim Build und entfällt später), die
 // exportierte Funktion heißt entsprechend `proxy` statt `middleware`. Inhaltlich
@@ -169,14 +171,24 @@ export function proxy(request: NextRequest) {
   const requestHeaders = new Headers(request.headers)
   requestHeaders.set('x-nonce', nonce)
   requestHeaders.set('Content-Security-Policy', csp)
-  // Server Components sehen den Pfad sonst nicht. Das Root-Layout braucht ihn,
-  // um auf den fest deutschen /de/-Routen `<html lang>` und die Chrome-Sprache
-  // an den Seiteninhalt anzugleichen, statt dem msk_lang-Cookie zu folgen.
-  requestHeaders.set('x-pathname', pathname)
 
-  const response = NextResponse.next({
-    request: { headers: requestHeaders },
-  })
+  // Sprache steckt im Pfad: Englisch auf der Wurzel, Deutsch unter /de/.
+  // `/de/pakete` wird intern auf `/pakete` umgeschrieben und die Sprache in
+  // einen Header gelegt. So gibt es den Routenbaum genau einmal, statt jede
+  // Seite doppelt anzulegen, und Server Components sehen beides.
+  //
+  // Der sprachlose Pfad ist ausserdem die Basis für Canonical, hreflang und
+  // den Sprachumschalter, der zur Gegenstück-URL navigiert.
+  const { lang, path } = splitLangPath(pathname)
+  requestHeaders.set(LANG_HEADER, lang)
+  requestHeaders.set(PATH_HEADER, path)
+
+  const response = lang === 'en'
+    ? NextResponse.next({ request: { headers: requestHeaders } })
+    : NextResponse.rewrite(
+        new URL(`${path}${request.nextUrl.search}`, request.url),
+        { request: { headers: requestHeaders } },
+      )
 
   // Response-Header — diese werden tatsächlich an den Browser geliefert.
   response.headers.set('Content-Security-Policy', csp)

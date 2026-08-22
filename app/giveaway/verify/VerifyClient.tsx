@@ -13,7 +13,7 @@ interface Guild { id: string; name: string; icon: string | null }
 
 export default function VerifyClient({ step, guilds }: { step: 'login' | 'select'; guilds: Guild[] }) {
   const router = useRouter();
-  const { lang } = useLang();
+  const { lang, localize } = useLang();
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const t = giveawayDashboardTranslations[lang];
@@ -77,7 +77,7 @@ export default function VerifyClient({ step, guilds }: { step: 'login' | 'select
               <ShieldCheck className="h-8 w-8 text-[var(--color-muted-foreground)]" />
               <p className="text-sm text-[var(--color-muted-foreground)]">{t.v_no_guilds}</p>
               <Button variant="outline" asChild>
-                <a href="/giveaway">{t.v_back}</a>
+                <a href={localize('/giveaway')}>{t.v_back}</a>
               </Button>
             </Card>
           ) : (

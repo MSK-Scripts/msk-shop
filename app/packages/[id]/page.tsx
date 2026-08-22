@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
-import { cookies, headers } from 'next/headers'
 import { notFound } from 'next/navigation'
-import Link from 'next/link'
+import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 import { ChevronRight, ArrowLeft } from 'lucide-react'
 import { getPackage, getPackages } from '@/lib/tebex'
 import { AddToCartButton } from '@/components/packages/AddToCartButton'
@@ -12,10 +11,10 @@ import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { PACKAGE_BADGES, PACKAGE_TAGS, PACKAGE_DESCRIPTIONS, PACKAGE_SEO, SITE_CONFIG } from '@/lib/config'
 import { sanitizeTebexHtml } from '@/lib/sanitize'
-import { openGraphFor, packageImage, plainExcerpt } from '@/lib/seo'
+import { alternatesFor, openGraphFor, packageImage, plainExcerpt } from '@/lib/seo'
 import { JsonLd } from '@/components/JsonLd'
 import { breadcrumbJsonLd, productJsonLd } from '@/lib/jsonLd'
-import { LANG_COOKIE_NAME, resolveLang } from '@/lib/lang'
+import { getRequestLang } from '@/lib/serverLang'
 import { packagesTranslations } from '@/lib/i18n'
 import type { BadgeVariant } from '@/components/ui/Badge'
 
@@ -35,7 +34,7 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
-  const { id } = await params
+  const [{ id }, { lang }] = await Promise.all([params, getRequestLang()])
 
   try {
     const pkg = await getPackage(id)
@@ -57,7 +56,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     return {
       title,
       description,
-      alternates:  { canonical },
+      alternates:  alternatesFor(lang, canonical),
       openGraph: openGraphFor({
         url:   canonical,
         title,
@@ -72,7 +71,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       },
     }
   } catch {
-    return { title: 'Package', alternates: { canonical: `/packages/${id}` } }
+    return { title: 'Package', alternates: alternatesFor(lang, `/packages/${id}`) }
   }
 }
 
@@ -90,8 +89,7 @@ export default async function PackageDetailPage({
     notFound()
   }
 
-  const [cookieStore, headerStore] = await Promise.all([cookies(), headers()])
-  const lang = resolveLang(cookieStore.get(LANG_COOKIE_NAME)?.value, headerStore.get('accept-language'))
+  const { lang } = await getRequestLang()
   const t = packagesTranslations[lang]
 
   const basePrice = pkg.base_price ?? 0

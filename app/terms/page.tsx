@@ -1,7 +1,13 @@
+import type { Metadata } from 'next'
+import { alternatesFor } from '@/lib/seo'
+import { getRequestLang } from '@/lib/serverLang'
 import { getLegalContent, renderMarkdown } from '@/lib/markdown'
 import { LegalContent } from '@/components/legal/LegalContent'
 
-export const metadata = { title: 'Terms & Conditions', alternates: { canonical: '/terms' } }
+export async function generateMetadata(): Promise<Metadata> {
+  const { lang } = await getRequestLang()
+  return { title: 'Terms & Conditions', alternates: alternatesFor(lang, '/terms') }
+}
 
 export default function TermsPage() {
   return (

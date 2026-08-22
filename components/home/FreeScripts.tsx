@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 import { ArrowRight } from 'lucide-react'
 import { CustomPackageCard } from '@/components/home/CustomPackageCard'
 import { CUSTOM_PACKAGES } from '@/content/custom-packages'

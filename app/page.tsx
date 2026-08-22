@@ -1,5 +1,5 @@
-import { cookies, headers } from 'next/headers'
-import { LANG_COOKIE_NAME, resolveLang } from '@/lib/lang'
+import type { Metadata } from 'next'
+import { getRequestLang } from '@/lib/serverLang'
 import { Hero } from '@/components/home/Hero'
 import { ProofLine } from '@/components/home/ProofLine'
 import { Catalog } from '@/components/home/Catalog'
@@ -9,7 +9,7 @@ import { Bots } from '@/components/home/Bots'
 import { FreeScripts } from '@/components/home/FreeScripts'
 import { CustomPackages } from '@/components/home/CustomPackages'
 import { CTASection } from '@/components/home/CTASection'
-import { openGraphFor } from '@/lib/seo'
+import { alternatesFor, openGraphFor } from '@/lib/seo'
 import { loadHeadlineStat } from '@/lib/fivestats'
 import { loadReleases } from '@/lib/releases'
 import { loadShopStats } from '@/lib/shopStats'
@@ -24,11 +24,14 @@ const HOME_DESCRIPTION =
   'FiveM scripts and resources for ESX and QBCore, plus free self-hosted Discord bots. '
   + 'Escrow protected releases, delivered through the CFX.re Keymaster.'
 
-export const metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  const { lang } = await getRequestLang()
+  return {
   title:       { absolute: HOME_TITLE },
   description: HOME_DESCRIPTION,
-  alternates:  { canonical: '/' },
+  alternates:  alternatesFor(lang, '/'),
   openGraph:   openGraphFor({ url: '/', title: HOME_TITLE, description: HOME_DESCRIPTION }),
+}
 }
 
 /**
@@ -48,9 +51,8 @@ export const metadata = {
  * sie noch gar nicht überzeugt hat.
  */
 export default async function HomePage() {
-  const [cookieStore, headerStore, headline, releases, stats] = await Promise.all([
-    cookies(),
-    headers(),
+  const [{ lang }, headline, releases, stats] = await Promise.all([
+    getRequestLang(),
     // Fail-soft: keine dieser Quellen darf die Startseite kippen. Fällt eine
     // aus, verschwindet die zugehörige Angabe — es wird nichts geschätzt.
     loadHeadlineStat().catch(err => {
@@ -66,7 +68,6 @@ export default async function HomePage() {
       return null
     }),
   ])
-  const lang = resolveLang(cookieStore.get(LANG_COOKIE_NAME)?.value, headerStore.get('accept-language'))
 
   return (
     <>

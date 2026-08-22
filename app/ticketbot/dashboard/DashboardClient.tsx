@@ -153,6 +153,7 @@ function GuildPanel({
   onLogout: () => void
 }) {
   const guildId = guild.guild_id
+  const { localize } = useLang()
 
   const [tab, setTab] = useState<TabKey>('domain')
   const tabs: { key: TabKey; label: string; icon: LucideIcon }[] = [
@@ -326,7 +327,7 @@ function GuildPanel({
         </div>
         <div className="flex gap-2">
           <Button asChild variant="outline" size="sm">
-            <a href="/ticketbot/verify">{t.new_api_key}</a>
+            <a href={localize('/ticketbot/verify')}>{t.new_api_key}</a>
           </Button>
           <Button asChild variant="outline" size="sm">
             <a

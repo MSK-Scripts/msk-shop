@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
-import { cookies, headers } from 'next/headers'
 import { notFound } from 'next/navigation'
-import Link from 'next/link'
+import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 import { ChevronRight, ArrowLeft } from 'lucide-react'
 import { getCategory, getCategories } from '@/lib/tebex'
 import { PackageCard } from '@/components/packages/PackageCard'
@@ -9,9 +8,8 @@ import { Button } from '@/components/ui/Button'
 import { PACKAGE_BADGES, PACKAGE_TAGS, PACKAGE_DESCRIPTIONS, CATEGORY_SEO, resolveVariant } from '@/lib/config'
 import { sanitizeTebexHtml, pickLanguageBlock } from '@/lib/sanitize'
 import { categoriesTranslations, packagesTranslations } from '@/lib/i18n'
-import { resolveLang } from '@/lib/lang'
-import { LANG_COOKIE_NAME } from '@/lib/lang'
-import { DEFAULT_OG_IMAGE, openGraphFor, plainExcerpt } from '@/lib/seo'
+import { getRequestLang } from '@/lib/serverLang'
+import { alternatesFor, DEFAULT_OG_IMAGE, openGraphFor, plainExcerpt } from '@/lib/seo'
 import { JsonLd } from '@/components/JsonLd'
 import { breadcrumbJsonLd } from '@/lib/jsonLd'
 
@@ -32,7 +30,7 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
-  const { id } = await params
+  const [{ id }, { lang }] = await Promise.all([params, getRequestLang()])
 
   try {
     const cat = await getCategory(id)
@@ -53,7 +51,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     return {
       title,
       description,
-      alternates: { canonical },
+      alternates: alternatesFor(lang, canonical),
       openGraph: openGraphFor({
         url:   canonical,
         title,
@@ -67,7 +65,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       },
     }
   } catch {
-    return { title: 'Category', alternates: { canonical: `/categories/${id}` } }
+    return { title: 'Category', alternates: alternatesFor(lang, `/categories/${id}`) }
   }
 }
 
@@ -81,14 +79,12 @@ export default async function CategoryPage({
   // Diese Seite hat bis zum 22.08.2026 gar keine Sprache aufgeloest: sie erbte
   // `lang="de"` aus dem Root-Layout und lieferte darunter jeden Text auf
   // Englisch. Aufloesung jetzt wie in `app/packages/page.tsx`.
-  const [cookieStore, headerStore, category] = await Promise.all([
-    cookies(),
-    headers(),
+  const [{ lang }, category] = await Promise.all([
+    getRequestLang(),
     getCategory(id).catch(() => null),
   ])
   if (!category) notFound()
 
-  const lang = resolveLang(cookieStore.get(LANG_COOKIE_NAME)?.value, headerStore.get('accept-language'))
   const t = categoriesTranslations[lang]
   // Nur auf den beiden Varianten-Kategorien: dort erklaert der Hinweis, dass
   // es dasselbe Script auch in der anderen Fassung gibt.

@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 import Image from 'next/image'
 import { Receipt, ShieldCheck, Undo2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'

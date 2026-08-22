@@ -1,9 +1,8 @@
 import { notFound }    from 'next/navigation';
-import { cookies, headers } from 'next/headers';
 import { Trophy, Gift, Users, CalendarClock } from 'lucide-react';
 import { queryOne }     from '@/lib/db';
 import { Card }         from '@/components/ui/Card';
-import { LANG_COOKIE_NAME, resolveLang } from '@/lib/lang';
+import { getRequestLang } from '@/lib/serverLang';
 import { giveawayResultTranslations } from '@/lib/i18n';
 
 export const dynamic = 'force-dynamic';
@@ -40,14 +39,12 @@ export default async function GiveawayResultPage({ params }: { params: Promise<{
   const { token } = await params;
   if (!/^[a-f0-9]{32}$/.test(token)) notFound();
 
-  const [row, cookieStore, headerStore] = await Promise.all([
+  const [row, { lang }] = await Promise.all([
     queryOne<ResultRow>('SELECT * FROM giveaway_results WHERE token = ?', [token]),
-    cookies(),
-    headers(),
+    getRequestLang(),
   ]);
   if (!row) notFound();
 
-  const lang = resolveLang(cookieStore.get(LANG_COOKIE_NAME)?.value, headerStore.get('accept-language'));
   const t = giveawayResultTranslations[lang];
   const winners = parseWinners(row.winners);
   const endedAt = new Date(row.ended_at);

@@ -1,3 +1,7 @@
+import type { Metadata } from 'next'
+
+import { alternatePaths } from '@/lib/lang'
+import type { Lang } from '@/lib/i18n'
 import type { OpenGraph } from 'next/dist/lib/metadata/types/opengraph-types'
 
 import type { TebexPackage } from '@/types/tebex'
@@ -114,4 +118,26 @@ export function packageImage(pkg: Pick<TebexPackage, 'image' | 'media'>): string
 
   const first = media.find(m => m.url)
   return first ? first.url : DEFAULT_OG_IMAGE
+}
+
+/**
+ * Canonical und hreflang fuer eine Seite, die es in beiden Sprachen gibt.
+ *
+ * Beides gehoert zusammen: das Canonical zeigt auf die Fassung, die man gerade
+ * liest, `languages` nennt beide plus `x-default`. Ein Canonical ohne
+ * hreflang-Paar laesst Google eine der beiden Fassungen als Dublette werten,
+ * ein hreflang ohne Rueckverweis ignoriert es.
+ *
+ * `path` ist der sprachlose Pfad, also `/packages`, nicht `/de/packages`.
+ */
+export function alternatesFor(lang: Lang, path: string): NonNullable<Metadata['alternates']> {
+  const alt = alternatePaths(path)
+  return {
+    canonical: alt[lang],
+    languages: {
+      en:          alt.en,
+      de:          alt.de,
+      'x-default': alt.en,
+    },
+  }
 }

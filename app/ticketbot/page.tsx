@@ -3,21 +3,27 @@ import type { Metadata } from 'next'
 import { TicketBotLanding } from '@/components/bots/TicketBotLanding'
 import { JsonLd } from '@/components/JsonLd'
 import { ticketBotAppJsonLd, ticketBotMetadata } from '@/lib/botSeo'
+import { getRequestLang } from '@/lib/serverLang'
 
 /**
- * Englische Fassung der Ticket-Bot-Landingpage.
+ * Landingpage des Ticket-Bots, zweisprachig über den Pfad.
  *
- * Die Sprache ist hier **fest**, nicht cookie-abhängig: Die deutsche Fassung
- * hat mit `/de/ticketbot` eine eigene URL, und zwei URLs, die je nach Cookie
- * denselben Inhalt zeigen könnten, wären Duplicate Content.
+ * `/ticketbot` und `/de/ticketbot` sind zwei indexierbare Adressen mit
+ * reziprokem hreflang. Bis zum 22.08.2026 gab es dafür zwei Dateien; seit der
+ * Proxy `/de/…` intern umschreibt, reicht diese eine, und die Sprache kommt
+ * aus dem Request.
  */
-export const metadata: Metadata = ticketBotMetadata('en')
+export async function generateMetadata(): Promise<Metadata> {
+  const { lang } = await getRequestLang()
+  return ticketBotMetadata(lang)
+}
 
-export default function TicketBotPage() {
+export default async function TicketBotPage() {
+  const { lang } = await getRequestLang()
   return (
     <>
-      <JsonLd data={ticketBotAppJsonLd('en')} />
-      <TicketBotLanding lang="en" />
+      <JsonLd data={ticketBotAppJsonLd(lang)} />
+      <TicketBotLanding lang={lang} />
     </>
   )
 }

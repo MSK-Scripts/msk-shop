@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import Link from 'next/link'
+import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 import { Trash2, ShoppingBag, Loader2, ArrowLeft, Tag, ShieldCheck, Lock, Globe } from 'lucide-react'
 import { useCart } from '@/lib/useCart'
 import { useCartStore } from '@/store/cart'

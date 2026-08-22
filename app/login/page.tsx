@@ -1,13 +1,11 @@
-import { cookies, headers } from 'next/headers'
-import Link from 'next/link'
+import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import { LANG_COOKIE_NAME, resolveLang } from '@/lib/lang'
+import { getRequestLang } from '@/lib/serverLang'
 import { cartTranslations } from '@/lib/i18n'
 
 export default async function LoginPage() {
-  const [cookieStore, headerStore] = await Promise.all([cookies(), headers()])
-  const lang = resolveLang(cookieStore.get(LANG_COOKIE_NAME)?.value, headerStore.get('accept-language'))
+  const { lang } = await getRequestLang()
   const t = cartTranslations[lang]
 
   return (

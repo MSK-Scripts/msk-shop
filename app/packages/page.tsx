@@ -1,14 +1,16 @@
-import { cookies, headers } from 'next/headers'
+import type { Metadata } from 'next'
 import { getPackages } from '@/lib/tebex'
 import { PackagesBrowser } from '@/app/packages/PackagesBrowser'
-import { LANG_COOKIE_NAME, resolveLang } from '@/lib/lang'
+import { getRequestLang } from '@/lib/serverLang'
 import { packagesTranslations } from '@/lib/i18n'
-import { DEFAULT_OG_IMAGE, openGraphFor } from '@/lib/seo'
+import { alternatesFor, DEFAULT_OG_IMAGE, openGraphFor } from '@/lib/seo'
 
-export const metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  const { lang } = await getRequestLang()
+  return {
   title:       'All Packages',
   description: 'Browse all FiveM resources, tools and Discord bots from MSK Scripts.',
-  alternates:  { canonical: '/packages' },
+  alternates:  alternatesFor(lang, '/packages'),
   openGraph: openGraphFor({
     url:         '/packages',
     title:       'All Packages',
@@ -23,15 +25,11 @@ export const metadata = {
     images:      [DEFAULT_OG_IMAGE],
   },
 }
+}
 
 export default async function PackagesPage() {
   // Die Sprache steckt in einem Cookie, die Seite ist damit ohnehin dynamisch.
-  const [cookieStore, headerStore, packages] = await Promise.all([
-    cookies(),
-    headers(),
-    getPackages(),
-  ])
-  const lang = resolveLang(cookieStore.get(LANG_COOKIE_NAME)?.value, headerStore.get('accept-language'))
+  const [{ lang }, packages] = await Promise.all([getRequestLang(), getPackages()])
   const t = packagesTranslations[lang]
 
   const count = (packages.length === 1 ? t.count_one : t.count_many)

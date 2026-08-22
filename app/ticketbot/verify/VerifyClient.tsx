@@ -137,7 +137,7 @@ const TIER_LABELS: Record<string, { en: string; de: string }> = {
 }
 
 export default function VerifyClient({ session, step: _step, errorCode }: Props) {
-  const { lang } = useLang()
+  const { lang, localize } = useLang()
   const t = translations[lang]
 
   const [selectedGuildId, setSelectedGuildId] = useState<string>('')
@@ -506,7 +506,7 @@ export default function VerifyClient({ session, step: _step, errorCode }: Props)
               </Button>
 
               <Button asChild className="w-full">
-                <a href="/ticketbot/dashboard">
+                <a href={localize('/ticketbot/dashboard')}>
                   <Globe className="h-3.5 w-3.5" />
                   {t.done_dashboard}
                 </a>

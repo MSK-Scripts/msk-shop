@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 import Image from 'next/image'
 import { ArrowRight } from 'lucide-react'
 import { getPackages } from '@/lib/tebex'

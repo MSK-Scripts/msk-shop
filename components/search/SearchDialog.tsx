@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import Link from 'next/link'
+import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 import Image from 'next/image'
 import { Search, X, Loader2, ArrowRight } from 'lucide-react'
 import { getPackages } from '@/lib/tebex'

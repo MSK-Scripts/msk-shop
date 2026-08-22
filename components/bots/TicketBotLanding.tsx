@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 import {
   ArrowRight, KeyRound, LayoutDashboard, BarChart3, Ticket, ClipboardList,
   UserCheck, Flag, Star, Clock, FileText, MessageSquareText, Globe, Lock,

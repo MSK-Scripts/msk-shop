@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { cookies, headers } from 'next/headers'
+import { headers } from 'next/headers'
 
 // Fonts werden 100% lokal über @fontsource-variable geladen.
 // Keine Kommunikation zu fonts.googleapis.com — auch nicht zur Build-Zeit.
@@ -15,7 +15,7 @@ import { SalePriceFetcher } from '@/components/SalePriceFetcher'
 import { NewsPopup } from '@/components/ui/NewsPopup'
 import { ThemeProvider } from '@/components/theme/ThemeProvider'
 import { LangProvider } from '@/components/i18n/LangProvider'
-import { LANG_COOKIE_NAME, resolveLang } from '@/lib/lang'
+import { LANG_HEADER, PATH_HEADER, langFromHeader } from '@/lib/lang'
 import { siteUrl } from '@/lib/siteUrl'
 import { JsonLd } from '@/components/JsonLd'
 import { organizationJsonLd } from '@/lib/jsonLd'
@@ -89,18 +89,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // den Nonce aus proxy.ts in seine internen Hydration-Scripts injiziert.
   // Ohne diesen Aufruf bliebe das Root-Layout statisch und die CSP würde alle
   // Next.js-Scripts blockieren.
-  const [hdrs, cookieStore] = await Promise.all([headers(), cookies()])
+  const hdrs = await headers()
   const nonce = hdrs.get('x-nonce') ?? undefined
 
-  // Die /de/-Routen (die beiden Bot-Landingpages) sind sprachlich fest. Dort
-  // würde ein englisches Cookie sonst einen deutschen Seiteninhalt in einen
-  // englischen Header samt `<html lang="en">` setzen, und genau dieses Signal
-  // liest Google. Der Pfad kommt aus proxy.ts, Server Components haben
-  // ihn nicht von sich aus.
-  const pathname = hdrs.get('x-pathname') ?? ''
-  const lang = pathname.startsWith('/de/')
-    ? 'de'
-    : resolveLang(cookieStore.get(LANG_COOKIE_NAME)?.value, hdrs.get('accept-language'))
+  // Sprache und sprachloser Pfad kommen aus proxy.ts. Server Components sehen
+  // die Adresse sonst nicht, und der Umschalter braucht den Pfad, um zur
+  // Gegenstück-URL zu navigieren.
+  const lang = langFromHeader(hdrs.get(LANG_HEADER))
+  const path = hdrs.get(PATH_HEADER) || '/'
 
   return (
     <html lang={lang} suppressHydrationWarning>
@@ -112,7 +108,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           disableTransitionOnChange
           nonce={nonce}
         >
-          <LangProvider initial={lang}>
+          <LangProvider lang={lang} path={path}>
             <JsonLd data={organizationJsonLd()} />
             <Header />
             <CartDrawer />

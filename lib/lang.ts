@@ -1,54 +1,56 @@
 import type { Lang } from './i18n';
 
-export const LANG_COOKIE_NAME = 'msk_lang';
-export const LANG_COOKIE_MAX_AGE = 60 * 60 * 24 * 365; // 1 year
-
-const SUPPORTED: readonly Lang[] = ['en', 'de'] as const;
-
-function isSupportedLang(value: unknown): value is Lang {
-  return typeof value === 'string' && (SUPPORTED as readonly string[]).includes(value);
-}
-
 /**
- * Parse an Accept-Language header and pick the highest-quality supported
- * language. Falls back to 'en' if no language matches.
- */
-export function parseAcceptLanguage(header: string | null | undefined): Lang {
-  if (!header) return 'en';
-  const parts = header.split(',').map(part => {
-    const [tag, ...params] = part.trim().split(';');
-    const qParam = params.find(p => p.trim().toLowerCase().startsWith('q='));
-    const quality = qParam ? parseFloat(qParam.split('=')[1]) : 1;
-    return { primary: tag.split('-')[0].toLowerCase(), quality: Number.isFinite(quality) ? quality : 0 };
-  });
-  parts.sort((a, b) => b.quality - a.quality);
-  for (const { primary } of parts) {
-    if (primary === 'de') return 'de';
-    if (primary === 'en') return 'en';
-  }
-  return 'en';
-}
-
-/**
- * Resolve the active language for a request: cookie first (explicit user
- * choice), then Accept-Language header, default 'en'.
+ * Sprache steckt seit dem 22.08.2026 im **Pfad**, nicht mehr in einem Cookie.
+ * Englisch liegt auf der Wurzel, Deutsch unter `/de/`. Der Proxy schreibt
+ * `/de/<pfad>` intern auf `<pfad>` um und legt die Sprache in einen
+ * Request-Header, damit der Routenbaum nicht doppelt existieren muss.
  *
- * `cookieValue` and `acceptLanguage` are passed in directly so this helper
- * stays compatible with both Server Components (next/headers) and route
- * handlers (Request.headers).
+ * Warum kein Cookie mehr: zwei Quellen für dieselbe Frage haben an einem Tag
+ * drei Fehler produziert, jedes Mal eine Seite mit `lang="de"` und englischem
+ * Inhalt. Eine URL ist ausserdem das Einzige, was sich verlinken, teilen und
+ * indexieren lässt.
  */
-export function resolveLang(cookieValue: string | undefined, acceptLanguage: string | null | undefined): Lang {
-  if (isSupportedLang(cookieValue)) return cookieValue;
-  return parseAcceptLanguage(acceptLanguage);
+
+export const LANG_HEADER = 'x-lang';
+/** Pfad ohne Sprachpräfix. Basis für Canonical und hreflang. */
+export const PATH_HEADER = 'x-path';
+
+export const LANGS: readonly Lang[] = ['en', 'de'] as const;
+
+/** Sprache, die ohne Präfix ausgeliefert wird. */
+export const DEFAULT_LANG: Lang = 'en';
+
+export function isLang(value: unknown): value is Lang {
+  return typeof value === 'string' && (LANGS as readonly string[]).includes(value);
+}
+
+export function langFromHeader(value: string | null | undefined): Lang {
+  return isLang(value) ? value : DEFAULT_LANG;
 }
 
 /**
- * Client-side: persist the chosen language in the msk_lang cookie. Must run
- * in the browser. Uses Secure on HTTPS, omits it on http://localhost so dev
- * still works.
+ * Zerlegt einen eingehenden Pfad in Sprache und Restpfad.
+ *
+ * `/de` und `/de/pakete` gehören dazu, `/deals` nicht: geprüft wird auf das
+ * vollständige Segment.
  */
-export function setLangCookie(lang: Lang): void {
-  if (typeof document === 'undefined') return;
-  const secure = window.location.protocol === 'https:' ? '; Secure' : '';
-  document.cookie = `${LANG_COOKIE_NAME}=${lang}; Path=/; Max-Age=${LANG_COOKIE_MAX_AGE}; SameSite=Lax${secure}`;
+export function splitLangPath(pathname: string): { lang: Lang; path: string } {
+  if (pathname === '/de' || pathname.startsWith('/de/')) {
+    const rest = pathname.slice(3);
+    return { lang: 'de', path: rest === '' ? '/' : rest };
+  }
+  return { lang: DEFAULT_LANG, path: pathname };
+}
+
+/** Baut aus einem sprachlosen Pfad die Adresse in der gewünschten Sprache. */
+export function localePath(lang: Lang, path: string): string {
+  const clean = path.startsWith('/') ? path : `/${path}`;
+  if (lang === DEFAULT_LANG) return clean;
+  return clean === '/' ? '/de' : `/de${clean}`;
+}
+
+/** Beide Fassungen einer Seite, für hreflang und den Sprachumschalter. */
+export function alternatePaths(path: string): Record<Lang, string> {
+  return { en: localePath('en', path), de: localePath('de', path) };
 }

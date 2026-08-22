@@ -1,3 +1,6 @@
+import type { Metadata } from 'next'
+import { alternatesFor } from '@/lib/seo'
+import { getRequestLang } from '@/lib/serverLang'
 import { query, queryOne }    from '@/lib/db'
 import { getIgnoredApiKeys } from '@/lib/statsIgnore'
 import StatsClient            from './StatsClient'
@@ -5,10 +8,13 @@ import type { Stats }         from './StatsClient'
 
 export const dynamic = 'force-dynamic'
 
-export const metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  const { lang } = await getRequestLang()
+  return {
   title:       'Bot Statistics',
-  alternates:  { canonical: '/ticketbot/stats' },
+  alternates:  alternatesFor(lang, '/ticketbot/stats'),
   description: 'Anonymous live statistics of the MSK Ticket Bot across all servers.',
+}
 }
 
 interface CountRow { total: number }
