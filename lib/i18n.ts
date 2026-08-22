@@ -1281,6 +1281,15 @@ export const packagesTranslations = {
     escrow_link:    'How buying works',
     none_title:     'No packages yet',
     none_body:      'Check back soon.',
+    // Kartentexte. Stehen hier und nicht in der Komponente, weil PackageCard
+    // von /packages und von /categories/[id] gerendert wird und beide Routen
+    // dieselbe Sprache auflösen müssen.
+    card_add:       'Add',
+    card_login:     'Login',
+    card_download:  'Download',
+    card_details:   'Details',
+    card_free:      'Free',
+    card_sale:      'Sale',
   },
   de: {
     heading:        'Alle Pakete',
@@ -1300,6 +1309,34 @@ export const packagesTranslations = {
     escrow_link:    'Wie der Kauf abläuft',
     none_title:     'Noch keine Pakete',
     none_body:      'Schau später nochmal vorbei.',
+    card_add:       'In den Warenkorb',
+    card_login:     'Anmelden',
+    card_download:  'Herunterladen',
+    card_details:   'Details',
+    card_free:      'Kostenlos',
+    card_sale:      'Aktion',
+  },
+} as const;
+
+// ── Kategorieseiten ──────────────────────────────────────────────────────────
+// `/categories/[id]` löste bis zum 22.08.2026 gar keine Sprache auf: die Seite
+// lieferte `lang="de"` aus dem Root-Layout und darunter jeden Text auf Englisch.
+export const categoriesTranslations = {
+  en: {
+    breadcrumb_home:     'Home',
+    breadcrumb_packages: 'Packages',
+    count_one:           '{n} package in this category',
+    count_many:          '{n} packages in this category',
+    none_title:          'No packages in this category yet.',
+    back_to_shop:        'Back to shop',
+  },
+  de: {
+    breadcrumb_home:     'Start',
+    breadcrumb_packages: 'Pakete',
+    count_one:           '{n} Paket in dieser Kategorie',
+    count_many:          '{n} Pakete in dieser Kategorie',
+    none_title:          'In dieser Kategorie gibt es noch keine Pakete.',
+    back_to_shop:        'Zurück zum Shop',
   },
 } as const;
 

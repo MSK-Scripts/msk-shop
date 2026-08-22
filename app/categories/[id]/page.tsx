@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { cookies, headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronRight, ArrowLeft } from 'lucide-react'
@@ -6,7 +7,10 @@ import { getCategory, getCategories } from '@/lib/tebex'
 import { PackageCard } from '@/components/packages/PackageCard'
 import { Button } from '@/components/ui/Button'
 import { PACKAGE_BADGES, PACKAGE_TAGS, PACKAGE_DESCRIPTIONS, CATEGORY_SEO } from '@/lib/config'
-import { sanitizeTebexHtml } from '@/lib/sanitize'
+import { sanitizeTebexHtml, pickLanguageBlock } from '@/lib/sanitize'
+import { categoriesTranslations } from '@/lib/i18n'
+import { resolveLang } from '@/lib/lang'
+import { LANG_COOKIE_NAME } from '@/lib/lang'
 import { DEFAULT_OG_IMAGE, openGraphFor, plainExcerpt } from '@/lib/seo'
 import { JsonLd } from '@/components/JsonLd'
 import { breadcrumbJsonLd } from '@/lib/jsonLd'
@@ -74,17 +78,28 @@ export default async function CategoryPage({
 }) {
   const { id } = await params
 
-  let category
-  try {
-    category = await getCategory(id)
-  } catch {
-    notFound()
-  }
+  // Diese Seite hat bis zum 22.08.2026 gar keine Sprache aufgeloest: sie erbte
+  // `lang="de"` aus dem Root-Layout und lieferte darunter jeden Text auf
+  // Englisch. Aufloesung jetzt wie in `app/packages/page.tsx`.
+  const [cookieStore, headerStore, category] = await Promise.all([
+    cookies(),
+    headers(),
+    getCategory(id).catch(() => null),
+  ])
+  if (!category) notFound()
+
+  const lang = resolveLang(cookieStore.get(LANG_COOKIE_NAME)?.value, headerStore.get('accept-language'))
+  const t = categoriesTranslations[lang]
 
   const packageCount = category.packages?.length ?? 0
+  const countLabel = (packageCount === 1 ? t.count_one : t.count_many)
+    .replace('{n}', packageCount.toLocaleString(lang === 'de' ? 'de-DE' : 'en-US'))
 
   return (
-    <div className="container-page py-10 md:py-14">
+    // `container-wide` wie `/packages`: beide Routen sind reine Kartenraster,
+    // und DESIGN.md nennt den breiten Container genau dafuer. Beim
+    // Container-Aufraeumen am 22.08. war diese Seite uebersehen worden.
+    <div className="container-wide py-10 md:py-14">
       {/* Muss mit der sichtbaren Breadcrumb darunter übereinstimmen. */}
       <JsonLd
         data={breadcrumbJsonLd([
@@ -96,25 +111,31 @@ export default async function CategoryPage({
 
       {/* Breadcrumb */}
       <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-1.5 text-xs text-[var(--color-muted-foreground)]">
-        <Link href="/" className="transition-colors hover:text-[var(--color-foreground)]">Home</Link>
+        <Link href="/" className="transition-colors hover:text-[var(--color-foreground)]">{t.breadcrumb_home}</Link>
         <ChevronRight className="h-3 w-3" />
-        <Link href="/packages" className="transition-colors hover:text-[var(--color-foreground)]">Packages</Link>
+        <Link href="/packages" className="transition-colors hover:text-[var(--color-foreground)]">{t.breadcrumb_packages}</Link>
         <ChevronRight className="h-3 w-3" />
         <span className="text-[var(--color-foreground)]">{category.name}</span>
       </nav>
 
+      {/* Kein Eyebrow mehr: die Seite hat genau einen Abschnitt, das Wort
+          verdoppelte die Navigationsgruppe und trug keine Information.
+          DESIGN.md rationiert das Element auf hoechstens eins pro drei
+          Abschnitten. */}
       <header className="mb-10">
-        <span className="eyebrow">Resources</span>
-        <h1 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">{category.name}</h1>
+        <h1 className="text-3xl font-bold tracking-tight md:text-4xl">{category.name}</h1>
         {category.description && (
           <div
             className="tebex-description mt-3 max-w-3xl"
-            dangerouslySetInnerHTML={{ __html: sanitizeTebexHtml(category.description) }}
+            dangerouslySetInnerHTML={{
+              // Die Tebex-Texte pflegen beide Sprachen in einem HTML als
+              // [GER]-Block gefolgt von [ENG]. Ohne den Schnitt stehen sie
+              // untereinander auf der Seite.
+              __html: sanitizeTebexHtml(pickLanguageBlock(category.description, lang)),
+            }}
           />
         )}
-        <p className="mt-3 text-sm text-[var(--color-muted-foreground)]">
-          {packageCount} {packageCount === 1 ? 'package' : 'packages'} in this category
-        </p>
+        <p className="mt-3 text-sm text-[var(--color-muted-foreground)]">{countLabel}</p>
       </header>
 
       {category.packages && category.packages.length > 0 ? (
@@ -122,6 +143,7 @@ export default async function CategoryPage({
           {category.packages.map(pkg => (
             <PackageCard
               key={pkg.id}
+              lang={lang}
               pkg={pkg}
               badges={PACKAGE_BADGES[pkg.id]}
               tags={PACKAGE_TAGS[pkg.id]}
@@ -131,11 +153,11 @@ export default async function CategoryPage({
         </div>
       ) : (
         <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-[var(--color-border)] py-20 text-center">
-          <p className="text-lg font-semibold">No packages in this category yet.</p>
+          <p className="text-lg font-semibold">{t.none_title}</p>
           <Button asChild>
             <Link href="/packages">
               <ArrowLeft className="h-4 w-4" />
-              Back to Shop
+              {t.back_to_shop}
             </Link>
           </Button>
         </div>

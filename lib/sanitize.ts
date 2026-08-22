@@ -95,6 +95,39 @@ function convertPipeTables(html: string): string {
   })
 }
 
+/**
+ * Schneidet aus einer zweisprachigen Tebex-Beschreibung den passenden Block.
+ *
+ * Die Kategorietexte im Store sind als ein einziges HTML gepflegt, in der Form
+ * `<p><strong>[GER]</strong></p><p>…</p><p><strong>[ENG]</strong></p><p>…</p>`.
+ * Bis zum 22.08.2026 landete das komplett auf der Seite, also beide Sprachen
+ * untereinander, und `plainExcerpt()` nahm für die Meta-Description immer den
+ * deutschen Anfang, auch auf der englischen Fassung.
+ *
+ * Fehlt einer der beiden Marker, bleibt der Text unangetastet. Lieber der ganze
+ * Text als ein halber, wenn die Struktur nicht die erwartete ist.
+ *
+ * Die Ränder werden bewusst nur grob geputzt: der Schnitt hinterlässt vorne
+ * verwaiste schließende und hinten verwaiste öffnende Tags. Beides räumt
+ * `sanitizeTebexHtml()` ohnehin auf, hier fallen nur die leeren Hüllen weg,
+ * damit kein leerer Absatz stehen bleibt.
+ */
+export function pickLanguageBlock(html: string, lang: 'en' | 'de'): string {
+  const ger = html.search(/\[GER\]/i)
+  const eng = html.search(/\[ENG\]/i)
+  if (ger < 0 || eng < 0) return html
+
+  const wanted = lang === 'de' ? ger : eng
+  const other  = lang === 'de' ? eng : ger
+  const start  = wanted + 5
+  const slice  = other > wanted ? html.slice(start, other) : html.slice(start)
+
+  return slice
+    .replace(/^(?:\s*<\/[a-z][^>]*>\s*)+/i, '')
+    .replace(/(?:\s*<[a-z][^>]*>\s*)+$/i, '')
+    .trim()
+}
+
 export function sanitizeTebexHtml(html: string | null | undefined): string {
   const pre = convertPipeTables(replaceEmojiShortcodes(html ?? ''))
   return sanitizeHtml(pre, OPTIONS)

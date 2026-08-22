@@ -11,16 +11,22 @@ import { Badge, type BadgeVariant } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import type { Badge as ConfigBadge } from '@/lib/config'
 import type { TebexPackage } from '@/types/tebex'
+import { packagesTranslations, type Lang } from '@/lib/i18n'
 
 interface Props {
   pkg: TebexPackage
   tags?: string[]
   badges?: ConfigBadge[]
   description?: string
+  /** Beide Routen, die diese Karte rendern, loesen die Sprache serverseitig auf
+   *  und reichen sie durch. Ohne die Prop blieben die Beschriftungen englisch,
+   *  auch auf einer Seite mit `lang="de"`. */
+  lang: Lang
 }
 
-export function PackageCard({ pkg, tags, badges, description }: Props) {
+export function PackageCard({ pkg, tags, badges, description, lang }: Props) {
   const { addPackage, isLoading, username } = useCart()
+  const t = packagesTranslations[lang]
   const { prices } = useSalePricesStore()
 
   const { original, price, isFree, hasDiscount, discountPct } =
@@ -51,7 +57,7 @@ export function PackageCard({ pkg, tags, badges, description }: Props) {
         {/* Sale Badge — top right */}
         {hasDiscount && (
           <div className="absolute right-3 top-3 z-10">
-            <Badge variant="sale">Sale −{discountPct}%</Badge>
+            <Badge variant="sale">{t.card_sale} −{discountPct}%</Badge>
           </div>
         )}
 
@@ -95,7 +101,7 @@ export function PackageCard({ pkg, tags, badges, description }: Props) {
               </span>
             )}
             <span className={`font-mono font-bold tracking-tight ${isFree ? 'text-xl text-[var(--color-muted-foreground)]' : 'text-2xl text-[var(--color-primary)]'}`}>
-              {isFree ? 'Free' : `${price.toFixed(2)}€`}
+              {isFree ? t.card_free : `${price.toFixed(2)}€`}
             </span>
           </div>
 
@@ -108,22 +114,22 @@ export function PackageCard({ pkg, tags, badges, description }: Props) {
               {isLoading
                 ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
                 : isFree ? (
-                    <>Download</>
+                    <>{t.card_download}</>
                   ) : needsLogin ? (
                     <>
                       <LogIn className="h-3.5 w-3.5" />
-                      Login
+                      {t.card_login}
                     </>
                   ) : (
                     <>
                       <ShoppingCart className="h-3.5 w-3.5" />
-                      Add
+                      {t.card_add}
                     </>
                   )}
             </Button>
             <Button asChild size="sm" variant="outline">
               <Link href={`/packages/${pkg.id}`} prefetch={true}>
-                Details
+                {t.card_details}
               </Link>
             </Button>
           </div>

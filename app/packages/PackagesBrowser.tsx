@@ -253,6 +253,7 @@ export function PackagesBrowser({ lang, packages }: Props) {
             {shown.map(pkg => (
               <PackageCard
                 key={pkg.id}
+                lang={lang}
                 pkg={pkg}
                 badges={PACKAGE_BADGES[pkg.id]}
                 tags={PACKAGE_TAGS[pkg.id]}
