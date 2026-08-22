@@ -47,17 +47,26 @@ export function PackageCard({ pkg, tags, badges, description, lang }: Props) {
       {/* Image */}
       <div className="relative h-48 overflow-hidden bg-gradient-to-br from-[color-mix(in_oklab,var(--color-primary)_8%,var(--color-card))] to-[color-mix(in_oklab,var(--color-primary)_2%,var(--color-card))]">
         {pkg.image ? (
-          <Image
-            src={pkg.image}
-            alt={pkg.name}
-            fill
-            // Das Raster ist `auto-fill minmax(300px, 1fr)`, eine Karte wird
-            // also nie breiter als rund 450 px, egal wie breit das Fenster ist.
-            // `33vw` forderte bei 1920 aber 634 px an und ließ den Browser die
-            // 3840er Fassung laden, für eine 370 px breite Karte.
-            sizes="(max-width: 640px) 100vw, 450px"
-            className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-          />
+          // Zweiter Weg zum selben Ziel, deshalb aus der Tabreihenfolge und aus
+          // dem Accessibility-Baum heraus: der Titel darunter ist der Link.
+          <Link
+            href={`/packages/${pkg.id}`}
+            aria-hidden
+            tabIndex={-1}
+            className="absolute inset-0"
+          >
+            <Image
+              src={pkg.image}
+              alt={pkg.name}
+              fill
+              // Das Raster ist `auto-fill minmax(300px, 1fr)`, eine Karte wird
+              // also nie breiter als rund 450 px, egal wie breit das Fenster
+              // ist. `33vw` forderte bei 1920 aber 634 px an und ließ den
+              // Browser die 3840er Fassung laden, für eine 370 px breite Karte.
+              sizes="(max-width: 640px) 100vw, 450px"
+              className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            />
+          </Link>
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
             <span className="font-mono text-2xl font-semibold tracking-wider text-[color-mix(in_oklab,var(--color-foreground)_18%,transparent)]">
@@ -65,18 +74,18 @@ export function PackageCard({ pkg, tags, badges, description, lang }: Props) {
             </span>
           </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
 
         {/* Sale Badge — top right */}
         {hasDiscount && (
-          <div className="absolute right-3 top-3 z-10">
+          <div className="pointer-events-none absolute right-3 top-3 z-10">
             <Badge variant="sale">{t.card_sale} −{discountPct}%</Badge>
           </div>
         )}
 
         {/* Other Badges — bottom left */}
         {((badges && badges.length > 0) || variant) && (
-          <div className="absolute bottom-3 left-3 z-10 flex flex-wrap gap-1.5">
+          <div className="pointer-events-none absolute bottom-3 left-3 z-10 flex flex-wrap gap-1.5">
             {variant && (
               <Badge variant="outline" className="bg-[var(--color-card)]">
                 {variant === 'source' ? t.variant_source : t.variant_encrypted}
@@ -90,7 +99,16 @@ export function PackageCard({ pkg, tags, badges, description, lang }: Props) {
       </div>
 
       <CardContent className="flex flex-1 flex-col gap-3 p-5">
-        <CardTitle className="text-lg">{pkg.name}</CardTitle>
+        {/* Der Titel war reiner Text, navigiert hat nur der Details-Knopf.
+            Auf einer Produktkarte erwartet man beides anklickbar. */}
+        <CardTitle className="text-lg">
+          <Link
+            href={`/packages/${pkg.id}`}
+            className="rounded-sm outline-offset-4 hover:text-[var(--color-primary)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--color-ring)]"
+          >
+            {pkg.name}
+          </Link>
+        </CardTitle>
 
         {description && <CardDescription>{description}</CardDescription>}
 
