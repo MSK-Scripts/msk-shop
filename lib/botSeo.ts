@@ -16,6 +16,12 @@ import { softwareApplicationJsonLd, type JsonLdObject } from '@/lib/jsonLd'
  * externen Links nichts zu holen. Die Formulierungen zielen auf die Anfragen,
  * auf denen die Seiten heute schon Seite 1 erreichen (self-hosted, Transkripte,
  * neustartsicher, gewichtete Lose).
+ *
+ * **Kein `keywords`.** Bis zum 22.08.2026 trug jede der vier Seiten eine
+ * eigene Liste. Google schreibt dazu: "The meta-keyword tag is not used by
+ * Google Search, and it has no effect on indexing and ranking at all." Bing
+ * hat dasselbe 2014 im eigenen Webmaster-Blog festgehalten. Nicht wieder
+ * einbauen.
  */
 
 const LOCALE: Record<Lang, string> = { en: 'en_US', de: 'de_DE' }
@@ -26,7 +32,6 @@ interface BotSeo {
   ogTitle:     string
   ogDescription: string
   twitterDescription: string
-  keywords:    string[]
   /** Kurzbeschreibung fürs JSON-LD. Darf knapper sein als die Meta-Description. */
   appDescription: string
 }
@@ -58,11 +63,6 @@ const TICKETBOT: BotDefinition = {
       twitterDescription:
         'Free self-hosted Discord ticket bot on Discord.js v14: SQLite, MySQL or PostgreSQL, transcripts, '
         + 'ratings and a hosted dashboard.',
-      keywords: [
-        'self-hosted Discord ticket bot', 'Discord ticket bot transcripts', 'open source Discord ticket bot',
-        'free Discord ticket bot', 'Discord.js ticket system', 'Discord support bot', 'HTML ticket transcripts',
-        'Discord ticket bot MySQL', 'MSK Scripts',
-      ],
       appDescription:
         'Free self-hosted Discord ticket bot with HTML transcripts, ticket types, claim system and ratings.',
     },
@@ -79,11 +79,6 @@ const TICKETBOT: BotDefinition = {
       twitterDescription:
         'Kostenloser Discord Ticket Bot auf Discord.js v14: SQLite, MySQL oder PostgreSQL, Transkripte, '
         + 'Bewertungen und ein Dashboard.',
-      keywords: [
-        'Discord Ticket Bot selbst hosten', 'Discord Ticket Bot deutsch', 'Discord Ticketsystem',
-        'kostenloser Discord Ticket Bot', 'Discord Support Bot', 'Ticket Transkripte', 'Discord.js Ticketsystem',
-        'Discord Ticket Bot MySQL', 'MSK Scripts',
-      ],
       appDescription:
         'Kostenloser Discord Ticket Bot zum Selbsthosten, mit HTML-Transkripten, Ticket-Typen, Claim-System und Bewertungen.',
     },
@@ -108,11 +103,6 @@ const GIVEAWAY: BotDefinition = {
       twitterDescription:
         'Free Discord giveaway bot on Discord.js v14: button entry, weighted entries, eligibility rules, '
         + 'templates and reroll.',
-      keywords: [
-        'free Discord giveaway bot', 'restart-safe giveaway bot', 'weighted giveaway entries',
-        'Discord giveaway bot with role requirements', 'button entry giveaway', 'multilingual giveaway bot',
-        'Discord.js giveaway bot', 'Tebex giveaway coupon', 'MSK Scripts',
-      ],
       appDescription:
         'Free Discord giveaway bot with button entry, restart-safe scheduling, weighted bonus entries and reroll.',
     },
@@ -129,11 +119,6 @@ const GIVEAWAY: BotDefinition = {
       twitterDescription:
         'Kostenloser Discord Giveaway Bot auf Discord.js v14: Teilnahme per Knopfdruck, gewichtete Lose, '
         + 'Teilnahmeregeln, Vorlagen und Neuauslosung.',
-      keywords: [
-        'Discord Giveaway Bot deutsch', 'kostenloser Discord Giveaway Bot', 'Discord Gewinnspiel Bot',
-        'Giveaway Bot mit Rollen', 'gewichtete Lose Giveaway', 'mehrsprachiger Giveaway Bot',
-        'Discord.js Giveaway Bot', 'Tebex Gutschein Gewinnspiel', 'MSK Scripts',
-      ],
       appDescription:
         'Kostenloser Discord Giveaway Bot mit Teilnahme per Knopfdruck, neustartsicherer Zeitsteuerung, gewichteten Bonuslosen und Neuauslosung.',
     },
@@ -149,7 +134,6 @@ function metadataFor(bot: BotDefinition, lang: Lang): Metadata {
     // '%s | MSK Scripts'-Template des Root-Layouts zu bekommen.
     title:       { absolute: seo.title },
     description: seo.description,
-    keywords:    seo.keywords,
     alternates: {
       canonical: path,
       // Beide Fassungen nennen beide Pfade, sonst ist das hreflang-Paar
