@@ -59,7 +59,8 @@ rounded:
   xl: "1rem"
 spacing:
   card: "1.5rem"
-  grid-gap: "1rem"
+  card-compact: "1.25rem"
+  grid-gap: "1.5rem"
   section: "2.5rem"
   section-lg: "3.5rem"
 components:
@@ -235,13 +236,21 @@ container and ran to 2560 px.
   statistics pages, the admin cockpit. Someone here is reading rows and numbers,
   and a figure parked 2000 px from the page edge is slower to find, not faster.
 - **`container-page`** (120rem / 1920 px): ordinary pages.
-- **`container-wide`** (160rem / 2560 px): card grids only, currently `/packages`
-  and `/resources`. These are the only layouts that genuinely gain from another
-  column.
+- **`container-wide`** (160rem / 2560 px): card grids only, currently `/packages`,
+  `/categories/[id]` and `/resources`. These are the only layouts that genuinely
+  gain from another column.
 
 Horizontal padding steps 1rem, 2rem at 768 px, 3rem at 1536 px. Section rhythm is
-`2.5rem` vertical, `3.5rem` from the medium breakpoint. Card interiors are
-`1.5rem`, grid gaps `1rem`.
+`2.5rem` vertical, `3.5rem` from the medium breakpoint.
+
+Card interiors come in two sizes and the distinction is repetition, not
+importance. A card that stands alone or holds a form gets `1.5rem`, which is also
+what the `Card` primitive applies when nothing overrides it. A card that repeats
+inside a grid gets `1.25rem`: product cards, statistics tiles, resource cards,
+the panels in both dashboards. Twelve of them beside each other turn every extra
+step of padding into a shorter description and one more line of scrolling.
+Grid gaps are `1.5rem` throughout, so the space between two cards always reads as
+wider than the space inside one.
 
 Card grids use `repeat(auto-fit, minmax(min(100%, <n>px), 1fr))` rather than
 breakpoint column counts, with a fixed image height instead of an aspect ratio.
