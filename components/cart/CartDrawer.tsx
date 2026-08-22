@@ -6,6 +6,8 @@ import { useCartStore } from '@/store/cart'
 import { useCart } from '@/lib/useCart'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { useLang } from '@/components/i18n/LangProvider'
+import { cartTranslations } from '@/lib/i18n'
 
 export function CartDrawer() {
   const { isOpen, closeCart, basket } = useCartStore()
@@ -17,6 +19,8 @@ export function CartDrawer() {
   const [couponLoading, setCouponLoading] = useState(false)
   const [couponError, setCouponError] = useState('')
   const [showCoupon, setShowCoupon] = useState(false)
+  const { lang } = useLang()
+  const t = cartTranslations[lang]
 
   const coupons = basket?.coupons ?? []
 
@@ -37,7 +41,7 @@ export function CartDrawer() {
     e.preventDefault()
     if (!couponInput.trim()) return
     if (coupons.length > 0) {
-      setCouponError('Please remove the active coupon first.')
+      setCouponError(t.err_coupon_active)
       return
     }
     setCouponLoading(true)
@@ -48,9 +52,9 @@ export function CartDrawer() {
       setCouponInput('')
       setShowCoupon(false)
     } else if (result === 'not_applicable') {
-      setCouponError('This coupon cannot be applied to the items in your cart.')
+      setCouponError(t.err_coupon_scope)
     } else {
-      setCouponError('Invalid or expired coupon code.')
+      setCouponError(t.err_coupon_invalid)
     }
   }
 
@@ -73,20 +77,20 @@ export function CartDrawer() {
       <aside
         className="fixed right-0 top-0 z-50 flex h-full w-full max-w-sm flex-col border-l border-[var(--color-border)] bg-[var(--color-card)] shadow-2xl"
         role="dialog"
-        aria-label="Shopping cart"
+        aria-label={t.drawer_aria}
       >
         {/* Header */}
         <div className="flex shrink-0 items-center justify-between border-b border-[var(--color-border)] px-5 py-4">
           <div className="flex items-center gap-2">
             <ShoppingBag className="h-4 w-4 text-[var(--color-primary)]" aria-hidden="true" />
-            <h2 className="font-bold">Cart</h2>
+            <h2 className="font-bold">{t.drawer_title}</h2>
             {itemCount > 0 && (
               <span className="rounded-full bg-[var(--color-primary)] px-2 py-0.5 text-[0.625rem] font-bold leading-none text-[var(--color-primary-foreground)]">
                 {itemCount}
               </span>
             )}
           </div>
-          <Button variant="ghost" size="icon" onClick={closeCart} aria-label="Close cart" className="h-8 w-8">
+          <Button variant="ghost" size="icon" onClick={closeCart} aria-label={t.drawer_close} className="h-8 w-8">
             <X className="h-4 w-4" />
           </Button>
         </div>
@@ -96,8 +100,8 @@ export function CartDrawer() {
           {!basket?.packages || basket.packages.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
               <ShoppingBag className="h-10 w-10 text-[var(--color-muted-foreground)] opacity-50" aria-hidden="true" />
-              <p className="text-sm text-[var(--color-muted-foreground)]">Your cart is empty</p>
-              <Button onClick={closeCart} size="sm">Browse Packages</Button>
+              <p className="text-sm text-[var(--color-muted-foreground)]">{t.empty_title}</p>
+              <Button onClick={closeCart} size="sm">{t.browse}</Button>
             </div>
           ) : (
             <div className="flex flex-col gap-3">
@@ -125,7 +129,7 @@ export function CartDrawer() {
                         return (
                           <div className="mt-0.5">
                             <p className="text-[0.625rem] font-medium text-[var(--color-discord-text)]">
-                              🎁 Gift for {name}
+                              🎁 {t.gift_for.replace('{name}', String(name))}
                             </p>
                             {dId && (
                               <p className="font-mono text-[0.625rem] text-[var(--color-muted-foreground)]">
@@ -136,7 +140,7 @@ export function CartDrawer() {
                         )
                       })()}
                       <p className="mt-0.5 font-mono text-xs font-bold text-[var(--color-primary)]">
-                        {itemPrice === 0 ? 'Free' : `${itemPrice.toFixed(2)}€`}
+                        {itemPrice === 0 ? t.free : `${itemPrice.toFixed(2)}€`}
                       </p>
                     </div>
                     <Button
@@ -145,7 +149,7 @@ export function CartDrawer() {
                       onClick={() => removePackage(item.id)}
                       disabled={isLoading}
                       className="h-8 w-8 text-[var(--color-muted-foreground)] hover:text-[var(--color-danger)]"
-                      aria-label={`Remove ${item.name}`}
+                      aria-label={t.remove_item.replace('{name}', item.name)}
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
@@ -177,7 +181,7 @@ export function CartDrawer() {
                       <button
                         onClick={() => removeCode(code)}
                         disabled={isLoading}
-                        title="Remove coupon"
+                        title={t.coupon_remove}
                         className="text-[var(--color-muted-foreground)] transition-colors hover:text-[var(--color-danger)] disabled:opacity-50"
                       >
                         {isLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <X className="h-3 w-3" />}
@@ -196,7 +200,7 @@ export function CartDrawer() {
                   className="flex items-center gap-2 text-xs text-[var(--color-muted-foreground)] transition-colors hover:text-[var(--color-foreground)]"
                 >
                   <Tag className="h-3 w-3" aria-hidden="true" />
-                  Have a coupon code?
+                  {t.have_coupon}
                   <ChevronDown className={`ml-auto h-3 w-3 transition-transform ${showCoupon ? 'rotate-180' : ''}`} />
                 </button>
 
@@ -206,7 +210,7 @@ export function CartDrawer() {
                       type="text"
                       value={couponInput}
                       onChange={e => { setCouponInput(e.target.value); setCouponError('') }}
-                      placeholder="Enter coupon code…"
+                      placeholder={t.coupon_placeholder}
                       className="flex-1 py-2 text-xs"
                       autoFocus
                     />
@@ -215,7 +219,7 @@ export function CartDrawer() {
                       size="sm"
                       disabled={couponLoading || !couponInput.trim()}
                     >
-                      {couponLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : 'Apply'}
+                      {couponLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : t.coupon_apply}
                     </Button>
                   </form>
                 )}
@@ -231,14 +235,14 @@ export function CartDrawer() {
               {hasDiscount && (
                 <>
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-[var(--color-muted-foreground)]">Subtotal</span>
+                    <span className="text-[var(--color-muted-foreground)]">{t.subtotal}</span>
                     <span className="font-mono text-[var(--color-muted-foreground)] line-through">
                       {effectiveSubtotal.toFixed(2)}€
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-xs">
                     <span className="flex items-center gap-1 text-[var(--color-primary)]">
-                      <Tag className="h-2.5 w-2.5" aria-hidden="true" /> Coupon
+                      <Tag className="h-2.5 w-2.5" aria-hidden="true" /> {t.coupon}
                     </span>
                     <span className="font-mono font-semibold text-[var(--color-primary)]">
                       −{discount.toFixed(2)}€
@@ -247,7 +251,7 @@ export function CartDrawer() {
                 </>
               )}
               <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold">Total</span>
+                <span className="text-sm font-semibold">{t.total}</span>
                 <span className="font-mono text-lg font-bold text-[var(--color-primary)]">
                   {finalTotal.toFixed(2)}€ <span className="text-xs text-[var(--color-muted-foreground)]">{currency}</span>
                 </span>
@@ -256,12 +260,12 @@ export function CartDrawer() {
 
             {checkoutUrl ? (
               <Button asChild className="w-full">
-                <a href={checkoutUrl}>Proceed to Checkout</a>
+                <a href={checkoutUrl}>{t.checkout}</a>
               </Button>
             ) : (
               <Button disabled className="w-full">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Loading checkout…
+                {t.loading_checkout}
               </Button>
             )}
           </div>

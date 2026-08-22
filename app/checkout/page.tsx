@@ -3,7 +3,7 @@ import CheckoutContent from './CheckoutContent'
 
 export default function CheckoutPage() {
   return (
-    <Suspense fallback={<div className="text-center py-24">Loading...</div>}>
+    <Suspense fallback={<div className="py-24 text-center" />}>
       <CheckoutContent />
     </Suspense>
   )

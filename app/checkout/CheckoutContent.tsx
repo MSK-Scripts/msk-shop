@@ -7,11 +7,15 @@ import { CheckCircle, XCircle, ArrowLeft } from 'lucide-react'
 import { useCartStore } from '@/store/cart'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
+import { useLang } from '@/components/i18n/LangProvider'
+import { cartTranslations } from '@/lib/i18n'
 
 export default function CheckoutContent() {
   const searchParams = useSearchParams()
   const status = searchParams.get('status')
   const { clearBasket } = useCartStore()
+  const { lang } = useLang()
+  const t = cartTranslations[lang]
 
   useEffect(() => {
     if (status === 'complete') {
@@ -25,15 +29,14 @@ export default function CheckoutContent() {
         <div className="mx-auto max-w-lg text-center">
           <Card className="p-8">
             <CheckCircle className="mx-auto mb-4 h-14 w-14 text-[var(--color-primary)]" />
-            <h1 className="mb-3 text-2xl font-bold tracking-tight">Payment Successful!</h1>
+            <h1 className="mb-3 text-2xl font-bold tracking-tight">{t.success_title}</h1>
             <p className="mb-8 text-sm text-[var(--color-muted-foreground)]">
-              Thank you for your purchase. You will receive a confirmation email shortly.
-              Your download should be available immediately.
+              {t.success_body}
             </p>
             <Button asChild>
               <Link href="/">
                 <ArrowLeft className="h-4 w-4" />
-                Back to Shop
+                {t.back_to_shop}
               </Link>
             </Button>
           </Card>
@@ -48,16 +51,16 @@ export default function CheckoutContent() {
         <div className="mx-auto max-w-lg text-center">
           <Card className="p-8">
             <XCircle className="mx-auto mb-4 h-14 w-14 text-[var(--color-danger)]" />
-            <h1 className="mb-3 text-2xl font-bold tracking-tight">Payment Cancelled</h1>
+            <h1 className="mb-3 text-2xl font-bold tracking-tight">{t.cancelled_title}</h1>
             <p className="mb-8 text-sm text-[var(--color-muted-foreground)]">
-              Your payment was cancelled. Your cart items are still saved.
+              {t.cancelled_body}
             </p>
             <div className="flex justify-center gap-3">
               <Button asChild>
-                <Link href="/cart">Back to Cart</Link>
+                <Link href="/cart">{t.back_to_cart}</Link>
               </Button>
               <Button asChild variant="outline">
-                <Link href="/packages">Browse Packages</Link>
+                <Link href="/packages">{t.browse}</Link>
               </Button>
             </div>
           </Card>
@@ -70,12 +73,12 @@ export default function CheckoutContent() {
     <div className="container-page py-20 md:py-24">
       <div className="mx-auto max-w-lg text-center">
         <Card className="p-8">
-          <h1 className="mb-3 text-2xl font-bold tracking-tight">Checkout</h1>
+          <h1 className="mb-3 text-2xl font-bold tracking-tight">{t.checkout_title}</h1>
           <p className="mb-8 text-sm text-[var(--color-muted-foreground)]">
-            Add items to your cart and proceed to checkout from the cart page.
+            {t.checkout_body}
           </p>
           <Button asChild>
-            <Link href="/cart">View Cart</Link>
+            <Link href="/cart">{t.view_cart}</Link>
           </Button>
         </Card>
       </div>

@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { Trash2, ShoppingBag, Loader2, ArrowLeft, Tag, ShieldCheck, Lock, Globe } from 'lucide-react'
 import { useCart } from '@/lib/useCart'
 import { useCartStore } from '@/store/cart'
+import { useLang } from '@/components/i18n/LangProvider'
+import { cartTranslations } from '@/lib/i18n'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 
@@ -15,6 +17,8 @@ export default function CartPage() {
     refreshBasket, giftRecipients,
   } = useCart()
   const { openCart } = useCartStore()
+  const { lang } = useLang()
+  const t = cartTranslations[lang]
 
   useEffect(() => {
     refreshBasket()
@@ -37,29 +41,31 @@ export default function CartPage() {
 
   function formatPrice(price: number | undefined | null): string {
     const p = price ?? 0
-    return p === 0 ? 'Free' : `${p.toFixed(2)}€`
+    return p === 0 ? t.free : `${p.toFixed(2)}€`
   }
 
   return (
     <div className="container-page py-10 md:py-14">
+      {/* Kein Eyebrow: die Seite hat einen Abschnitt, und „Checkout“ über
+          „Dein Warenkorb“ war eine Verdopplung. DESIGN.md rationiert das
+          Element auf höchstens eins pro drei Abschnitten. */}
       <header className="mb-10">
-        <span className="eyebrow">Checkout</span>
-        <h1 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">Your Cart</h1>
+        <h1 className="text-3xl font-bold tracking-tight md:text-4xl">{t.heading}</h1>
       </header>
 
       {packages.length === 0 ? (
         <div className="flex flex-col items-center gap-4 rounded-xl border border-dashed border-[var(--color-border)] py-24 text-center">
           <ShoppingBag className="h-12 w-12 text-[var(--color-muted-foreground)] opacity-50" aria-hidden="true" />
           <div>
-            <p className="text-lg font-semibold">Your cart is empty</p>
+            <p className="text-lg font-semibold">{t.empty_title}</p>
             <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">
-              Browse our packages to add something to your cart.
+              {t.empty_body}
             </p>
           </div>
           <Button asChild>
             <Link href="/packages">
               <ArrowLeft className="h-4 w-4" />
-              Browse Packages
+              {t.browse}
             </Link>
           </Button>
         </div>
@@ -91,7 +97,7 @@ export default function CartPage() {
                       return (
                         <div className="mt-0.5">
                           <p className="text-[0.625rem] font-medium text-[var(--color-discord-text)]">
-                            🎁 Gift for {name}
+                            🎁 {t.gift_for.replace('{name}', String(name))}
                           </p>
                           {dId && (
                             <p className="font-mono text-[0.625rem] text-[var(--color-muted-foreground)]">
@@ -116,7 +122,7 @@ export default function CartPage() {
                     onClick={() => removePackage(item.id)}
                     disabled={isLoading}
                     className="h-9 w-9 text-[var(--color-muted-foreground)] hover:text-[var(--color-danger)]"
-                    aria-label={`Remove ${item.name} from cart`}
+                    aria-label={t.remove_item.replace('{name}', item.name)}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -130,7 +136,7 @@ export default function CartPage() {
                 <div className="mb-2 flex items-center gap-2">
                   <Tag className="h-3.5 w-3.5 text-[var(--color-primary)]" aria-hidden="true" />
                   <p className="font-mono text-xs font-bold uppercase tracking-wider text-[var(--color-primary)]">
-                    Active coupon
+                    {t.coupon_active}
                   </p>
                 </div>
                 {coupons.map(c => {
@@ -145,7 +151,7 @@ export default function CartPage() {
                         disabled={isLoading}
                         className="text-xs text-[var(--color-muted-foreground)] hover:text-[var(--color-danger)]"
                       >
-                        Remove
+                        {t.remove}
                       </Button>
                     </div>
                   )
@@ -156,7 +162,7 @@ export default function CartPage() {
             {!hasCoupon && (
               <Button variant="outline" onClick={openCart} className="w-full justify-center">
                 <Tag className="h-3.5 w-3.5" />
-                Have a coupon code? Open cart →
+                {t.have_coupon_open} →
               </Button>
             )}
           </div>
@@ -165,7 +171,7 @@ export default function CartPage() {
           <div>
             <Card className="sticky top-20 p-6">
               <h2 className="mb-4 border-b border-[var(--color-border)] pb-3 font-mono text-[0.6875rem] font-bold uppercase tracking-widest text-[var(--color-muted-foreground)]">
-                Order Summary
+                {t.summary}
               </h2>
 
               <div className="mb-4 flex flex-col gap-2">
@@ -184,13 +190,13 @@ export default function CartPage() {
                 {hasDiscount && (
                   <>
                     <div className="flex justify-between text-xs">
-                      <span className="text-[var(--color-muted-foreground)]">Subtotal</span>
+                      <span className="text-[var(--color-muted-foreground)]">{t.subtotal}</span>
                       <span className="font-mono text-[var(--color-muted-foreground)] line-through">
                         {effectiveSubtotal.toFixed(2)}€
                       </span>
                     </div>
                     <div className="flex justify-between text-xs">
-                      <span className="text-[var(--color-primary)]">Coupon</span>
+                      <span className="text-[var(--color-primary)]">{t.coupon}</span>
                       <span className="font-mono font-semibold text-[var(--color-primary)]">
                         −{discount.toFixed(2)}€
                       </span>
@@ -198,7 +204,7 @@ export default function CartPage() {
                   </>
                 )}
                 <div className="mt-1 flex items-center justify-between">
-                  <span className="font-bold">Total</span>
+                  <span className="font-bold">{t.total}</span>
                   <span className="font-mono text-2xl font-bold tracking-tight text-[var(--color-primary)]">
                     {finalTotal.toFixed(2)}€ <span className="text-xs text-[var(--color-muted-foreground)]">{currency}</span>
                   </span>
@@ -207,19 +213,19 @@ export default function CartPage() {
 
               {checkoutUrl ? (
                 <Button asChild size="lg" className="w-full">
-                  <a href={checkoutUrl}>Proceed to Checkout</a>
+                  <a href={checkoutUrl}>{t.checkout}</a>
                 </Button>
               ) : (
                 <Button disabled size="lg" className="w-full">
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Loading…
+                  {t.loading}
                 </Button>
               )}
 
               <Button asChild variant="ghost" size="sm" className="mt-2 w-full">
                 <Link href="/packages">
                   <ArrowLeft className="h-3.5 w-3.5" />
-                  Continue Shopping
+                  {t.continue_shopping}
                 </Link>
               </Button>
 
@@ -227,15 +233,15 @@ export default function CartPage() {
               <ul className="mt-5 flex flex-col gap-2 border-t border-[var(--color-border)] pt-4 text-xs text-[var(--color-muted-foreground)]">
                 <li className="flex items-center gap-2">
                   <Lock className="h-3.5 w-3.5 text-[var(--color-primary)]" aria-hidden="true" />
-                  SSL-encrypted checkout
+                  {t.trust_ssl}
                 </li>
                 <li className="flex items-center gap-2">
                   <Globe className="h-3.5 w-3.5 text-[var(--color-primary)]" aria-hidden="true" />
-                  EU VAT included
+                  {t.trust_vat}
                 </li>
                 <li className="flex items-center gap-2">
                   <ShieldCheck className="h-3.5 w-3.5 text-[var(--color-primary)]" aria-hidden="true" />
-                  Powered by Tebex
+                  {t.trust_tebex}
                 </li>
               </ul>
             </Card>
