@@ -51,7 +51,11 @@ export function PackageCard({ pkg, tags, badges, description, lang }: Props) {
             src={pkg.image}
             alt={pkg.name}
             fill
-            sizes="(max-width: 768px) 100vw, 33vw"
+            // Das Raster ist `auto-fill minmax(300px, 1fr)`, eine Karte wird
+            // also nie breiter als rund 450 px, egal wie breit das Fenster ist.
+            // `33vw` forderte bei 1920 aber 634 px an und ließ den Browser die
+            // 3840er Fassung laden, für eine 370 px breite Karte.
+            sizes="(max-width: 640px) 100vw, 450px"
             className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
           />
         ) : (
