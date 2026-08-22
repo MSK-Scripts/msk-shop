@@ -5,8 +5,11 @@ import Image from 'next/image'
 import { ChevronLeft, ChevronRight, ZoomIn, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { TebexPackage } from '@/types/tebex'
+import { packagesTranslations, type Lang } from '@/lib/i18n'
 
 interface PackageGalleryProps {
+  /** Sprache der Bedienbeschriftungen. Kommt von der Detailseite. */
+  lang: Lang
   /** Tebex `media` array — may contain several images. */
   media?: TebexPackage['media']
   /** Fallback single image (Tebex `image`) when `media` is empty. */
@@ -39,7 +42,8 @@ function resolveImages(media: PackageGalleryProps['media'], image?: string): str
 
 const FRAME = 'relative h-64 overflow-hidden bg-gradient-to-br from-[color-mix(in_oklab,var(--color-primary)_8%,var(--color-card))] to-[color-mix(in_oklab,var(--color-primary)_2%,var(--color-card))] md:h-80'
 
-export function PackageGallery({ media, image, alt, overlay, className }: PackageGalleryProps) {
+export function PackageGallery({ lang, media, image, alt, overlay, className }: PackageGalleryProps) {
+  const t = packagesTranslations[lang]
   const images = resolveImages(media, image)
   const count = images.length
   const [rawIndex, setIndex] = useState(0)
@@ -96,7 +100,7 @@ export function PackageGallery({ media, image, alt, overlay, className }: Packag
       className={cn(FRAME, className)}
       role={multiple ? 'group' : undefined}
       aria-roledescription={multiple ? 'carousel' : undefined}
-      aria-label={multiple ? `${alt} image gallery` : undefined}
+      aria-label={multiple ? t.gallery_of.replace('{alt}', alt) : undefined}
       tabIndex={multiple ? 0 : undefined}
       onKeyDown={
         multiple
@@ -132,7 +136,7 @@ export function PackageGallery({ media, image, alt, overlay, className }: Packag
       <button
         type="button"
         onClick={() => setZoomed(true)}
-        aria-label="Enlarge image"
+        aria-label={t.gallery_enlarge}
         className="group absolute inset-0 z-10 cursor-zoom-in"
       >
         <span className="absolute right-3 bottom-3 flex h-8 w-8 items-center justify-center rounded-full border border-[var(--color-border)] bg-[color-mix(in_oklab,var(--color-background)_70%,transparent)] text-[var(--color-foreground)] opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100">
@@ -146,7 +150,7 @@ export function PackageGallery({ media, image, alt, overlay, className }: Packag
           <button
             type="button"
             onClick={() => go(-1)}
-            aria-label="Previous image"
+            aria-label={t.gallery_prev}
             className="absolute left-3 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-[var(--color-border)] bg-[color-mix(in_oklab,var(--color-background)_70%,transparent)] text-[var(--color-foreground)] backdrop-blur-sm transition-colors hover:bg-[var(--color-background)]"
           >
             <ChevronLeft className="h-5 w-5" />
@@ -154,7 +158,7 @@ export function PackageGallery({ media, image, alt, overlay, className }: Packag
           <button
             type="button"
             onClick={() => go(1)}
-            aria-label="Next image"
+            aria-label={t.gallery_next}
             className="absolute right-3 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-[var(--color-border)] bg-[color-mix(in_oklab,var(--color-background)_70%,transparent)] text-[var(--color-foreground)] backdrop-blur-sm transition-colors hover:bg-[var(--color-background)]"
           >
             <ChevronRight className="h-5 w-5" />
@@ -172,7 +176,7 @@ export function PackageGallery({ media, image, alt, overlay, className }: Packag
                 key={url}
                 type="button"
                 onClick={() => setIndex(i)}
-                aria-label={`Go to image ${i + 1}`}
+                aria-label={t.gallery_goto.replace('{n}', String(i + 1))}
                 aria-current={i === index}
                 className={cn(
                   'h-1.5 rounded-full transition-all',
@@ -193,7 +197,7 @@ export function PackageGallery({ media, image, alt, overlay, className }: Packag
         <div
           role="dialog"
           aria-modal="true"
-          aria-label={`${alt} enlarged image`}
+          aria-label={t.gallery_enlarged.replace('{alt}', alt)}
           onClick={() => setZoomed(false)}
           className="fixed inset-0 z-[100] flex items-center justify-center bg-[color-mix(in_oklab,#000_88%,transparent)] p-4 backdrop-blur-sm md:p-10"
         >
@@ -201,7 +205,7 @@ export function PackageGallery({ media, image, alt, overlay, className }: Packag
           <button
             type="button"
             onClick={() => setZoomed(false)}
-            aria-label="Close"
+            aria-label={t.detail_close}
             className="absolute right-4 top-4 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition-colors hover:bg-white/20"
           >
             <X className="h-5 w-5" />
@@ -226,7 +230,7 @@ export function PackageGallery({ media, image, alt, overlay, className }: Packag
               <button
                 type="button"
                 onClick={e => { e.stopPropagation(); go(-1) }}
-                aria-label="Previous image"
+                aria-label={t.gallery_prev}
                 className="absolute left-4 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition-colors hover:bg-white/20"
               >
                 <ChevronLeft className="h-6 w-6" />
@@ -234,7 +238,7 @@ export function PackageGallery({ media, image, alt, overlay, className }: Packag
               <button
                 type="button"
                 onClick={e => { e.stopPropagation(); go(1) }}
-                aria-label="Next image"
+                aria-label={t.gallery_next}
                 className="absolute right-4 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition-colors hover:bg-white/20"
               >
                 <ChevronRight className="h-6 w-6" />

@@ -7,12 +7,29 @@ import { useCart } from '@/lib/useCart'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import type { TebexPackage } from '@/types/tebex'
+import { packagesTranslations, type Lang } from '@/lib/i18n'
+
+/**
+ * Setzt {name} in einen Satz ein und hebt den Paketnamen hervor. Zwei Teile
+ * statt zweier Schluessel, weil der Name im Deutschen mitten im Satz steht.
+ */
+function withName(template: string, name: string) {
+  const [before, after = ''] = template.split('{name}')
+  return (
+    <>
+      {before}
+      <span className="font-semibold text-[var(--color-foreground)]">{name}</span>
+      {after}
+    </>
+  )
+}
 
 /** `useCart` stores the linked Discord ID in localStorage alongside the login state. */
 const readStoredDiscordId = () =>
   typeof window !== 'undefined' && !!localStorage.getItem('discordId')
 
-export function AddToCartButton({ pkg }: { pkg: TebexPackage }) {
+export function AddToCartButton({ pkg, lang }: { pkg: TebexPackage; lang: Lang }) {
+  const t = packagesTranslations[lang]
   const { addPackage, giftPackage, isLoading, username } = useCart()
   const [hasDiscordId, setHasDiscordId] = useState(readStoredDiscordId)
   const [showDiscordModal, setShowDiscordModal] = useState(false)
@@ -24,10 +41,8 @@ export function AddToCartButton({ pkg }: { pkg: TebexPackage }) {
   const [giftDiscordId, setGiftDiscordId] = useState('')
   const [giftError, setGiftError] = useState('')
   const [giftLoading, setGiftLoading] = useState(false)
-  // Bis zum 22.08.2026 verschwand ein fehlgeschlagenes Hinzufuegen still in
-  // `console.error`. Der Text ist hier noch englisch wie der Rest dieser
-  // Komponente; die Detailseite bekommt ihre Uebersetzung in einem eigenen
-  // Durchgang.
+  // Bis zum 22.08.2026 verschwand ein fehlgeschlagenes Hinzufügen still in
+  // `console.error`.
   const [addFailed, setAddFailed] = useState(false)
 
   const isFree = (pkg.base_price ?? 0) === 0
@@ -61,9 +76,9 @@ export function AddToCartButton({ pkg }: { pkg: TebexPackage }) {
   async function handleDiscordSubmit(e: React.FormEvent) {
     e.preventDefault()
     const id = discordId.trim()
-    if (!id) { setDiscordError('Please enter your Discord ID.'); return }
+    if (!id) { setDiscordError(t.err_discord_required); return }
     if (!/^\d{15,20}$/.test(id)) {
-      setDiscordError('Discord ID must be 15-20 digits.')
+      setDiscordError(t.err_discord_digits)
       return
     }
     setDiscordLoading(true)
@@ -77,13 +92,13 @@ export function AddToCartButton({ pkg }: { pkg: TebexPackage }) {
 
   async function handleGiftSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!giftUsername.trim()) { setGiftError('Please enter a username.'); return }
+    if (!giftUsername.trim()) { setGiftError(t.err_gift_username); return }
     setGiftError('')
     setGiftLoading(true)
     const ok = await giftPackage(pkg.id, pkg.type, giftUsername.trim(), giftDiscordId.trim() || undefined)
     setGiftLoading(false)
     if (ok) { setShowGiftModal(false); setGiftUsername(''); setGiftDiscordId('') }
-    else setGiftError('Could not add gift. Please check the username.')
+    else setGiftError(t.err_gift_failed)
   }
 
   return (
@@ -97,27 +112,27 @@ export function AddToCartButton({ pkg }: { pkg: TebexPackage }) {
         >
           {isLoading || discordLoading
             ? <Loader2 className="h-4 w-4 animate-spin" />
-            : isFree ? <><Download className="h-4 w-4" />Download Free</>
-            : needsLogin ? <><LogIn className="h-4 w-4" />Login to Purchase</>
-            : <><ShoppingCart className="h-4 w-4" />Add to Cart</>}
+            : isFree ? <><Download className="h-4 w-4" />{t.detail_download_free}</>
+            : needsLogin ? <><LogIn className="h-4 w-4" />{t.detail_login}</>
+            : <><ShoppingCart className="h-4 w-4" />{t.detail_add}</>}
         </Button>
 
         {addFailed && (
           <p role="alert" className="text-center text-xs text-[var(--color-danger)]">
-            Could not add this to the cart. Please try again.
+            {t.card_error}
           </p>
         )}
 
         {needsLogin && !isFree && (
           <p className="text-center text-xs text-[var(--color-muted-foreground)]">
-            Login with your CFX.re account to purchase
+            {t.detail_login_hint}
           </p>
         )}
 
         {canGift && !needsLogin && (
           <Button onClick={() => setShowGiftModal(true)} variant="outline" className="w-full">
             <Gift className="h-4 w-4" />
-            Gift this
+            {t.detail_gift}
           </Button>
         )}
       </div>
@@ -133,7 +148,7 @@ export function AddToCartButton({ pkg }: { pkg: TebexPackage }) {
             <button
               onClick={() => setShowDiscordModal(false)}
               className="absolute right-4 top-4 text-[var(--color-muted-foreground)] transition-colors hover:text-[var(--color-foreground)]"
-              aria-label="Close"
+              aria-label={t.detail_close}
             >
               <X className="h-4 w-4" />
             </button>
@@ -141,27 +156,26 @@ export function AddToCartButton({ pkg }: { pkg: TebexPackage }) {
               <svg className="h-5 w-5 text-[var(--color-discord)]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
               </svg>
-              <h3 className="font-bold">Discord ID Required</h3>
+              <h3 className="font-bold">{t.discord_title}</h3>
             </div>
             <p className="mb-4 text-sm text-[var(--color-muted-foreground)]">
-              Enter your Discord User ID to purchase{' '}
-              <span className="font-semibold text-[var(--color-foreground)]">{pkg.name}</span>.
+              {withName(t.discord_body, pkg.name)}
             </p>
             <div className="mb-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)] p-3 text-xs text-[var(--color-muted-foreground)]">
-              <p className="mb-1 font-semibold">How to find your Discord ID:</p>
+              <p className="mb-1 font-semibold">{t.discord_how}</p>
               <ol className="flex list-decimal flex-col gap-1 pl-4">
-                <li>Discord → Settings → Advanced → Enable <span className="text-[var(--color-foreground)]">Developer Mode</span></li>
-                <li>Right-click your profile → <span className="text-[var(--color-foreground)]">Copy User ID</span></li>
+                <li>{t.discord_step1}</li>
+                <li>{t.discord_step2}</li>
               </ol>
             </div>
             <form onSubmit={handleDiscordSubmit} className="flex flex-col gap-3">
               <div>
-                <label className="mb-1.5 block text-xs text-[var(--color-muted-foreground)]">Discord User ID</label>
+                <label className="mb-1.5 block text-xs text-[var(--color-muted-foreground)]">{t.discord_label}</label>
                 <Input
                   type="text"
                   value={discordId}
                   onChange={e => setDiscordId(e.target.value)}
-                  placeholder="e.g. 123456789012345678"
+                  placeholder={t.discord_placeholder}
                   className="font-mono"
                   autoFocus
                 />
@@ -171,10 +185,10 @@ export function AddToCartButton({ pkg }: { pkg: TebexPackage }) {
                 <Button type="submit" disabled={isLoading || !discordId.trim()} className="flex-1">
                   {isLoading
                     ? <Loader2 className="h-4 w-4 animate-spin" />
-                    : <><ShoppingCart className="h-4 w-4" />Add to Cart</>}
+                    : <><ShoppingCart className="h-4 w-4" />{t.detail_add}</>}
                 </Button>
                 <Button type="button" variant="outline" onClick={() => setShowDiscordModal(false)}>
-                  Cancel
+                  {t.detail_cancel}
                 </Button>
               </div>
             </form>
@@ -190,45 +204,44 @@ export function AddToCartButton({ pkg }: { pkg: TebexPackage }) {
             <button
               onClick={() => setShowGiftModal(false)}
               className="absolute right-4 top-4 text-[var(--color-muted-foreground)] transition-colors hover:text-[var(--color-foreground)]"
-              aria-label="Close"
+              aria-label={t.detail_close}
             >
               <X className="h-4 w-4" />
             </button>
             <div className="mb-4 flex items-center gap-2">
               <Gift className="h-4 w-4 text-[var(--color-primary)]" />
-              <h3 className="font-bold">Gift Package</h3>
+              <h3 className="font-bold">{t.gift_title}</h3>
             </div>
             <p className="mb-4 text-sm text-[var(--color-muted-foreground)]">
-              Enter the FiveM/CFX username for{' '}
-              <span className="font-semibold text-[var(--color-foreground)]">{pkg.name}</span>.
+              {withName(t.gift_body, pkg.name)}
             </p>
             <form onSubmit={handleGiftSubmit} className="flex flex-col gap-3">
               <div>
                 <label className="mb-1.5 block text-xs text-[var(--color-muted-foreground)]">
-                  Recipient FiveM Username <span className="text-[var(--color-danger)]">*</span>
+                  {t.gift_user_label} <span className="text-[var(--color-danger)]">*</span>
                 </label>
                 <Input
                   type="text"
                   value={giftUsername}
                   onChange={e => setGiftUsername(e.target.value)}
-                  placeholder="Enter FiveM username..."
+                  placeholder={t.gift_user_placeholder}
                   autoFocus
                 />
               </div>
               <div>
                 <label className="mb-1.5 block text-xs text-[var(--color-muted-foreground)]">
-                  Recipient Discord ID
-                  <span className="ml-1 text-[var(--color-muted-foreground)]">(optional, for Discord roles)</span>
+                  {t.gift_discord_label}
+                  <span className="ml-1 text-[var(--color-muted-foreground)]">{t.gift_discord_optional}</span>
                 </label>
                 <Input
                   type="text"
                   value={giftDiscordId}
                   onChange={e => setGiftDiscordId(e.target.value)}
-                  placeholder="e.g. 123456789012345678"
+                  placeholder={t.discord_placeholder}
                   className="font-mono"
                 />
                 <p className="mt-1 text-[0.625rem] text-[var(--color-muted-foreground)]">
-                  Discord → Settings → Advanced → Developer Mode → right-click profile → Copy User ID
+                  {t.gift_discord_hint}
                 </p>
               </div>
               {giftError && <p className="text-xs text-[var(--color-danger)]">{giftError}</p>}
@@ -236,10 +249,10 @@ export function AddToCartButton({ pkg }: { pkg: TebexPackage }) {
                 <Button type="submit" disabled={giftLoading || !giftUsername.trim()} className="flex-1">
                   {giftLoading
                     ? <Loader2 className="h-4 w-4 animate-spin" />
-                    : <><Gift className="h-4 w-4" />Add Gift to Cart</>}
+                    : <><Gift className="h-4 w-4" />{t.gift_submit}</>}
                 </Button>
                 <Button type="button" variant="outline" onClick={() => setShowGiftModal(false)}>
-                  Cancel
+                  {t.detail_cancel}
                 </Button>
               </div>
             </form>

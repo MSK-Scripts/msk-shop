@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { cookies, headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronRight, ArrowLeft } from 'lucide-react'
@@ -14,6 +15,8 @@ import { sanitizeTebexHtml } from '@/lib/sanitize'
 import { openGraphFor, packageImage, plainExcerpt } from '@/lib/seo'
 import { JsonLd } from '@/components/JsonLd'
 import { breadcrumbJsonLd, productJsonLd } from '@/lib/jsonLd'
+import { LANG_COOKIE_NAME, resolveLang } from '@/lib/lang'
+import { packagesTranslations } from '@/lib/i18n'
 import type { BadgeVariant } from '@/components/ui/Badge'
 
 export const revalidate = 60
@@ -87,6 +90,10 @@ export default async function PackageDetailPage({
     notFound()
   }
 
+  const [cookieStore, headerStore] = await Promise.all([cookies(), headers()])
+  const lang = resolveLang(cookieStore.get(LANG_COOKIE_NAME)?.value, headerStore.get('accept-language'))
+  const t = packagesTranslations[lang]
+
   const basePrice = pkg.base_price ?? 0
   const totalPrice = pkg.total_price ?? basePrice
   const configBadges = PACKAGE_BADGES[pkg.id]
@@ -110,9 +117,9 @@ export default async function PackageDetailPage({
 
       {/* Breadcrumb */}
       <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-1.5 text-xs text-[var(--color-muted-foreground)]">
-        <Link href="/" className="transition-colors hover:text-[var(--color-foreground)]">Home</Link>
+        <Link href="/" className="transition-colors hover:text-[var(--color-foreground)]">{t.breadcrumb_home}</Link>
         <ChevronRight className="h-3 w-3" />
-        <Link href="/packages" className="transition-colors hover:text-[var(--color-foreground)]">Packages</Link>
+        <Link href="/packages" className="transition-colors hover:text-[var(--color-foreground)]">{t.breadcrumb_packages}</Link>
         <ChevronRight className="h-3 w-3" />
         <span className="text-[var(--color-foreground)]">{pkg.name}</span>
       </nav>
@@ -123,6 +130,7 @@ export default async function PackageDetailPage({
         <div className="min-w-0">
           <Card className="overflow-hidden">
             <PackageGallery
+              lang={lang}
               media={pkg.media}
               image={pkg.image}
               alt={pkg.name}
@@ -179,7 +187,7 @@ export default async function PackageDetailPage({
         <div>
           <Card className="sticky top-20 p-6">
             <h2 className="mb-4 border-b border-[var(--color-border)] pb-3 font-mono text-[0.6875rem] font-bold uppercase tracking-widest text-[var(--color-muted-foreground)]">
-              Purchase
+              {t.detail_purchase}
             </h2>
 
             <div className="mb-6">
@@ -190,16 +198,16 @@ export default async function PackageDetailPage({
                 currency={pkg.currency ?? 'EUR'}
               />
               <p className="mt-2 text-xs text-[var(--color-muted-foreground)]">
-                Incl. VAT · Instant delivery
+                {t.detail_vat}
               </p>
             </div>
 
-            <AddToCartButton pkg={pkg} />
+            <AddToCartButton pkg={pkg} lang={lang} />
 
             <Button asChild variant="ghost" size="sm" className="mt-3 w-full">
               <Link href="/packages">
                 <ArrowLeft className="h-3.5 w-3.5" />
-                Back to Packages
+                {t.detail_back}
               </Link>
             </Button>
           </Card>
