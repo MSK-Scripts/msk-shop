@@ -52,12 +52,18 @@ export const translations = {
     done_warning:       '⚠️ Never share this key. Anyone who has it can upload transcripts on your behalf.',
     done_close:         '✅ You can close this page once you have safely copied the key.',
     done_copy:          'Copy',
+    done_copy_failed:   'Could not copy. Please select the key and copy it by hand.',
     done_copied:        'Copied!',
     done_docs:          'Documentation',
     done_dashboard:     'Go to Dashboard (Custom Domain)',
 
     // Errors
     err_invalid_state:        'Security check failed. Please try again.',
+    err_network:              'Network error. Please try again.',
+    // Nur für Screenreader: welcher Schritt erledigt ist, stand bisher
+    // ausschließlich in der Farbe.
+    step_completed:           'completed',
+    step_current:             'current step',
     err_discord_token_failed: 'Discord authentication failed. Please try again.',
     err_discord_guilds_failed:'Could not retrieve Discord servers.',
   },
@@ -113,12 +119,16 @@ export const translations = {
     done_warning:       '⚠️ Teile diesen Key mit niemandem. Wer ihn kennt, kann Transkripte in deinem Namen hochladen.',
     done_close:         '✅ Du kannst diese Seite schließen, sobald du den Key sicher kopiert hast.',
     done_copy:          'Kopieren',
+    done_copy_failed:   'Kopieren hat nicht geklappt. Bitte markiere den Schlüssel und kopiere ihn von Hand.',
     done_copied:        'Kopiert!',
     done_docs:          'Zur Installationsanleitung',
     done_dashboard:     'Zum Dashboard (Eigene Domain)',
 
     // Errors
     err_invalid_state:        'Sicherheitsüberprüfung fehlgeschlagen. Bitte versuche es erneut.',
+    err_network:              'Netzwerkfehler. Bitte versuche es erneut.',
+    step_completed:           'erledigt',
+    step_current:             'aktueller Schritt',
     err_discord_token_failed: 'Discord-Authentifizierung fehlgeschlagen. Bitte versuche es erneut.',
     err_discord_guilds_failed:'Discord-Server konnten nicht abgerufen werden.',
   },

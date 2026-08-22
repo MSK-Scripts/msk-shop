@@ -16,16 +16,26 @@ import { cn } from '@/lib/utils'
 
 // ── Step Indicator ─────────────────────────────────────────────────────────────
 
-function StepIndicator({ current, t }: { current: number; t: { step_discord: string; step_select: string; step_done: string } }) {
+function StepIndicator({ current, t }: {
+  current: number
+  t: { step_discord: string; step_select: string; step_done: string; step_completed: string; step_current: string }
+}) {
   const steps = [t.step_discord, t.step_select, t.step_done]
+  // Welcher Schritt gerade dran und welcher erledigt ist, stand bis zum
+  // 22.08.2026 ausschließlich in der Farbe: grüner Ring gegen graue Umrandung.
+  // Wer die nicht sieht, hörte drei gleichwertige Wörter.
   return (
-    <div className="mx-auto mb-8 flex w-full max-w-md items-center justify-center gap-0">
+    <ol className="mx-auto mb-8 flex w-full max-w-md items-center justify-center gap-0">
       {steps.map((label, i) => {
         const idx = i + 1
         const done = idx < current
         const active = idx === current
         return (
-          <div key={label} className="flex flex-1 items-center last:flex-none">
+          <li
+            key={label}
+            className="flex flex-1 items-center last:flex-none"
+            aria-current={active ? 'step' : undefined}
+          >
             <div className="flex flex-col items-center gap-1">
               <div
                 className={cn(
@@ -42,11 +52,15 @@ function StepIndicator({ current, t }: { current: number; t: { step_discord: str
                   'whitespace-nowrap text-[10px] font-medium',
                   active && 'text-[var(--color-primary)]',
                   done && !active && 'text-[var(--color-muted-foreground)]',
-                  !done && !active && 'text-[var(--color-muted-foreground)] opacity-70',
+                  // `opacity-70` lag hier bei rund 3,1:1 auf 10-px-Text.
+                  !done && !active && 'text-[var(--color-muted-foreground)]',
                 )}
               >
                 {label}
               </span>
+              {(done || active) && (
+                <span className="sr-only">{done ? t.step_completed : t.step_current}</span>
+              )}
             </div>
             {i < steps.length - 1 && (
               <div
@@ -56,10 +70,10 @@ function StepIndicator({ current, t }: { current: number; t: { step_discord: str
                 )}
               />
             )}
-          </div>
+          </li>
         )
       })}
-    </div>
+    </ol>
   )
 }
 
@@ -98,7 +112,10 @@ function GuildIcon({ guild }: { guild: DiscordGuild }) {
 
 function ErrorBanner({ message }: { message: string }) {
   return (
-    <div className="mb-6 flex items-center gap-3 rounded-lg border border-[var(--color-danger)]/30 bg-[var(--color-danger)]/10 px-4 py-3 text-sm text-[var(--color-danger)]">
+    <div
+      role="alert"
+      className="mb-6 flex items-center gap-3 rounded-lg border border-[var(--color-danger)]/30 bg-[var(--color-danger)]/10 px-4 py-3 text-sm text-[var(--color-danger)]"
+    >
       <AlertCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
       {message}
     </div>
@@ -160,7 +177,7 @@ export default function VerifyClient({ session, step: _step, errorCode }: Props)
       } else {
         await handleGenerateKey()
       }
-    } catch { setCompleteError('Network error. Please try again.') }
+    } catch { setCompleteError(t.err_network) }
     finally   { setLoading(false) }
   }
 
@@ -177,7 +194,7 @@ export default function VerifyClient({ session, step: _step, errorCode }: Props)
       const data = await res.json()
       if (!res.ok) setCompleteError(data.error ?? 'Error')
       else { setExistingGuild(null); setResult({ apiKey: data.apiKey, tier: data.tier }) }
-    } catch { setCompleteError('Network error. Please try again.') }
+    } catch { setCompleteError(t.err_network) }
     finally   { setLoading(false) }
   }
 
@@ -200,7 +217,7 @@ export default function VerifyClient({ session, step: _step, errorCode }: Props)
       // schlägt router.push() vor, das hier nachweislich den Login zerlegt hat.
       // eslint-disable-next-line @next/next/no-location-assign-relative-destination
       window.location.href = '/ticketbot/dashboard'
-    } catch { setCompleteError('Network error. Please try again.') }
+    } catch { setCompleteError(t.err_network) }
     finally   { setDashboardLoading(false) }
   }
 
@@ -227,11 +244,18 @@ export default function VerifyClient({ session, step: _step, errorCode }: Props)
     }
   }
 
-  const handleCopy = () => {
+  const handleCopy = async () => {
     if (!result) return
-    navigator.clipboard.writeText(result.apiKey)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    // In einem unsicheren Kontext lehnt die Zwischenablage ab. Ohne `catch`
+    // bleibt eine unbehandelte Ablehnung stehen und der Haken erscheint
+    // trotzdem, obwohl nichts kopiert wurde.
+    try {
+      await navigator.clipboard.writeText(result.apiKey)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      setCompleteError(t.done_copy_failed)
+    }
   }
 
   return (
@@ -451,8 +475,12 @@ export default function VerifyClient({ session, step: _step, errorCode }: Props)
                   <code className="flex-1 break-all font-mono text-xs text-[var(--color-primary)]">{result.apiKey}</code>
                   <button
                     onClick={handleCopy}
-                    className="shrink-0 rounded p-1.5 text-[var(--color-muted-foreground)] transition-colors hover:bg-[var(--color-card)] hover:text-[var(--color-foreground)]"
-                    title={t.done_copy}
+                    className="tap-target shrink-0 rounded p-1.5 text-[var(--color-muted-foreground)] transition-colors hover:bg-[var(--color-card)] hover:text-[var(--color-foreground)]"
+                    // Der Knopf trägt nur ein Symbol. Der Name wechselt mit dem
+                    // Zustand mit, sonst bleibt das Kopieren unbestätigt, wenn
+                    // man den Haken nicht sieht.
+                    aria-label={copied ? t.done_copied : t.done_copy}
+                    title={copied ? t.done_copied : t.done_copy}
                   >
                     {copied ? <Check className="h-4 w-4 text-[var(--color-primary)]" /> : <Copy className="h-4 w-4" />}
                   </button>

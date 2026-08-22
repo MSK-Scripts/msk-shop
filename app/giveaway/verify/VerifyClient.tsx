@@ -42,7 +42,9 @@ export default function VerifyClient({ step, guilds }: { step: 'login' | 'select
   }
 
   return (
-    <main className="mx-auto flex min-h-[70vh] w-full max-w-2xl flex-col items-center justify-center px-4 py-16">
+    // Kein zweites <main>: das Root-Layout rendert bereits eines, und zwei
+    // davon sind im Dokument nicht erlaubt.
+    <div className="mx-auto flex min-h-[70vh] w-full max-w-2xl flex-col items-center justify-center px-4 py-16">
       <div className="mb-8 flex flex-col items-center text-center">
         <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--color-primary)]/15 text-[var(--color-primary)]">
           <Gift className="h-6 w-6" />
@@ -52,7 +54,10 @@ export default function VerifyClient({ step, guilds }: { step: 'login' | 'select
       </div>
 
       {error && (
-        <div className="mb-4 w-full rounded-lg border border-[var(--color-danger)]/40 bg-[var(--color-danger)]/10 px-4 py-3 text-sm text-[var(--color-danger)]">
+        <div
+          role="alert"
+          className="mb-4 w-full rounded-lg border border-[var(--color-danger)]/40 bg-[var(--color-danger)]/10 px-4 py-3 text-sm text-[var(--color-danger)]"
+        >
           {error}
         </div>
       )}
@@ -77,9 +82,12 @@ export default function VerifyClient({ step, guilds }: { step: 'login' | 'select
             </Card>
           ) : (
             <div className="flex flex-col gap-2">
-              <p className="mb-1 font-mono text-[0.6875rem] font-bold uppercase tracking-widest text-[var(--color-muted-foreground)]">
+              {/* War ein <p>, ist aber die Überschrift über der Serverliste. */}
+              <h2
+                className="mb-1 font-mono text-[0.6875rem] font-bold uppercase tracking-widest text-[var(--color-muted-foreground)]"
+              >
                 {t.v_select_server}
-              </p>
+              </h2>
               {guilds.map((g) => (
                 <button
                   key={g.id}
@@ -104,6 +112,6 @@ export default function VerifyClient({ step, guilds }: { step: 'login' | 'select
           )}
         </div>
       )}
-    </main>
+    </div>
   );
 }
