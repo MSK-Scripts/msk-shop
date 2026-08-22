@@ -291,7 +291,7 @@ export default function VerifyClient({ session, step: _step, errorCode }: Props)
                   className={cn(
                     'mb-4 flex flex-col gap-2 rounded-lg border px-4 py-3 text-left text-sm',
                     discordStatus === 'minor' || discordStatus === 'unknown'
-                      ? 'border-yellow-500/30 bg-yellow-500/10 text-yellow-500'
+                      ? 'border-[var(--color-warning)]/30 bg-[var(--color-warning)]/10 text-[var(--color-warning)]'
                       : 'border-[var(--color-danger)]/30 bg-[var(--color-danger)]/10 text-[var(--color-danger)]',
                   )}
                 >
@@ -331,7 +331,7 @@ export default function VerifyClient({ session, step: _step, errorCode }: Props)
               <h2 className="mb-1 text-lg font-bold">{t.select_title}</h2>
               <p className="mb-3 text-sm text-[var(--color-muted-foreground)]">{t.select_desc}</p>
 
-              <div className="mb-4 flex items-start gap-2 rounded-lg border border-yellow-500/30 bg-yellow-500/10 px-3 py-2.5 text-xs text-yellow-500">
+              <div className="mb-4 flex items-start gap-2 rounded-lg border border-[var(--color-warning)]/30 bg-[var(--color-warning)]/10 px-3 py-2.5 text-xs text-[var(--color-warning)]">
                 <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                 <span>{t.select_warning}</span>
               </div>
@@ -383,7 +383,7 @@ export default function VerifyClient({ session, step: _step, errorCode }: Props)
           {currentStep === 2 && !result && existingGuild && (
             <div>
               <div className="mb-4 flex items-center gap-2.5">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-yellow-500/30 bg-yellow-500/15 text-yellow-500">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--color-warning)]/30 bg-[var(--color-warning)]/15 text-[var(--color-warning)]">
                   <AlertCircle className="h-5 w-5" />
                 </div>
                 <div>
