@@ -162,6 +162,36 @@ export const CATEGORY_SEO: Record<number, SearchSnippet> = {
 }
 
 
+// ── Lizenzvariante ────────────────────────────────────────────
+// Jedes Script gibt es zweimal, als Encrypted und als Source. Bis zum
+// 22.08.2026 stand der Unterschied nirgends auf der Kaufflaeche: die beiden
+// Karten trugen dieselbe Beschreibung, dieselben Tags und teils dasselbe Bild
+// und unterschieden sich sichtbar nur durch ein Titelsuffix und den Preis.
+// Formuliert war er da, aber nur in CATEGORY_SEO, also fuer Google.
+//
+// Die Zuordnung kommt aus den vorhandenen Daten, nichts wird geraten: die
+// beiden Katalogkategorien tragen sie direkt. Bei den Abo-Paketen liegen beide
+// Varianten in derselben Kategorie, dort entscheidet der Paketname.
+
+export type PackageVariant = 'encrypted' | 'source'
+
+const CATEGORY_VARIANT: Record<number, PackageVariant> = {
+  2105296: 'encrypted',
+  2228937: 'source',
+}
+
+export function resolveVariant(
+  pkg: { name?: string; category?: { id?: number } },
+): PackageVariant | null {
+  const byCategory = pkg.category?.id ? CATEGORY_VARIANT[pkg.category.id] : undefined
+  if (byCategory) return byCategory
+
+  const name = pkg.name ?? ''
+  if (/\bsource\b/i.test(name))    return 'source'
+  if (/\bencrypted\b/i.test(name)) return 'encrypted'
+  return null
+}
+
 // ── Package Tags ──────────────────────────────────────────────
 // Optional small tags shown below the package name on cards.
 // Example: ['ESX', 'oxmysql', 'msk_core']

@@ -200,6 +200,12 @@ export function PackagesBrowser({ lang, packages }: Props) {
       </aside>
 
       <div className="py-7 lg:pl-8">
+        {/* Der Lizenzunterschied ist Schritt 1 des Kaufablaufs und stand bis
+            zum 22.08.2026 nur in der Meta-Description, also fuer Google. */}
+        <p className="mb-5 rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)] px-4 py-3 text-xs leading-relaxed text-[var(--color-muted-foreground)]">
+          {t.variant_note}
+        </p>
+
         <div className="mb-5 flex flex-wrap items-center gap-2.5 text-sm text-[var(--color-muted-foreground)]">
           {active.length > 0 ? (
             <>

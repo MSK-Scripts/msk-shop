@@ -10,7 +10,7 @@ import { resolveDisplayPrice } from '@/lib/price'
 import { Card, CardContent, CardTitle, CardDescription } from '@/components/ui/Card'
 import { Badge, type BadgeVariant } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
-import type { Badge as ConfigBadge } from '@/lib/config'
+import { resolveVariant, type Badge as ConfigBadge } from '@/lib/config'
 import type { TebexPackage } from '@/types/tebex'
 import { packagesTranslations, type Lang } from '@/lib/i18n'
 
@@ -32,6 +32,9 @@ export function PackageCard({ pkg, tags, badges, description, lang }: Props) {
   // `isLoading`, ein Klick liess also alle Karten des Rasters gleichzeitig
   // laden und sperrte sie.
   const busy = pendingPackageId === pkg.id
+  // Der Lizenzunterschied ist Schritt 1 des Kaufablaufs und stand bisher
+  // nirgends auf der Karte.
+  const variant = resolveVariant(pkg)
   const [failed, setFailed] = useState(false)
   const { prices } = useSalePricesStore()
 
@@ -68,9 +71,14 @@ export function PackageCard({ pkg, tags, badges, description, lang }: Props) {
         )}
 
         {/* Other Badges — bottom left */}
-        {badges && badges.length > 0 && (
+        {((badges && badges.length > 0) || variant) && (
           <div className="absolute bottom-3 left-3 z-10 flex flex-wrap gap-1.5">
-            {badges.map(b => (
+            {variant && (
+              <Badge variant="outline" className="bg-[var(--color-card)]">
+                {variant === 'source' ? t.variant_source : t.variant_encrypted}
+              </Badge>
+            )}
+            {badges?.map(b => (
               <Badge key={b.label} variant={b.variant as BadgeVariant}>{b.label}</Badge>
             ))}
           </div>

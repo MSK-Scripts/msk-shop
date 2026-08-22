@@ -1291,6 +1291,9 @@ export const packagesTranslations = {
     card_free:      'Free',
     card_sale:      'Sale',
     card_error:     'Could not add this to the cart. Please try again.',
+    variant_encrypted: 'Config files open',
+    variant_source:    'About 90% open',
+    variant_note:      'Every script comes in two releases. Encrypted leaves only config.lua, translation.lua and server_discordlog.lua open. Source leaves about 90 percent of the code open and encrypts only the core functions.',
   },
   de: {
     heading:        'Alle Pakete',
@@ -1317,6 +1320,9 @@ export const packagesTranslations = {
     card_free:      'Kostenlos',
     card_sale:      'Aktion',
     card_error:     'Konnte nicht in den Warenkorb gelegt werden. Bitte nochmal versuchen.',
+    variant_encrypted: 'Nur Config offen',
+    variant_source:    'Rund 90 % offen',
+    variant_note:      'Jedes Script gibt es in zwei Fassungen. Encrypted lässt nur config.lua, translation.lua und server_discordlog.lua offen. Source lässt rund 90 Prozent des Codes offen und verschlüsselt nur die Kernfunktionen.',
   },
 } as const;
 

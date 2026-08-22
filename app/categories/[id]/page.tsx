@@ -6,9 +6,9 @@ import { ChevronRight, ArrowLeft } from 'lucide-react'
 import { getCategory, getCategories } from '@/lib/tebex'
 import { PackageCard } from '@/components/packages/PackageCard'
 import { Button } from '@/components/ui/Button'
-import { PACKAGE_BADGES, PACKAGE_TAGS, PACKAGE_DESCRIPTIONS, CATEGORY_SEO } from '@/lib/config'
+import { PACKAGE_BADGES, PACKAGE_TAGS, PACKAGE_DESCRIPTIONS, CATEGORY_SEO, resolveVariant } from '@/lib/config'
 import { sanitizeTebexHtml, pickLanguageBlock } from '@/lib/sanitize'
-import { categoriesTranslations } from '@/lib/i18n'
+import { categoriesTranslations, packagesTranslations } from '@/lib/i18n'
 import { resolveLang } from '@/lib/lang'
 import { LANG_COOKIE_NAME } from '@/lib/lang'
 import { DEFAULT_OG_IMAGE, openGraphFor, plainExcerpt } from '@/lib/seo'
@@ -90,6 +90,9 @@ export default async function CategoryPage({
 
   const lang = resolveLang(cookieStore.get(LANG_COOKIE_NAME)?.value, headerStore.get('accept-language'))
   const t = categoriesTranslations[lang]
+  // Nur auf den beiden Varianten-Kategorien: dort erklaert der Hinweis, dass
+  // es dasselbe Script auch in der anderen Fassung gibt.
+  const showVariantNote = resolveVariant({ category: { id: Number(id) } }) !== null
 
   const packageCount = category.packages?.length ?? 0
   const countLabel = (packageCount === 1 ? t.count_one : t.count_many)
@@ -136,6 +139,12 @@ export default async function CategoryPage({
           />
         )}
         <p className="mt-3 text-sm text-[var(--color-muted-foreground)]">{countLabel}</p>
+
+        {showVariantNote && (
+          <p className="mt-4 max-w-3xl rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)] px-4 py-3 text-xs leading-relaxed text-[var(--color-muted-foreground)]">
+            {packagesTranslations[lang].variant_note}
+          </p>
+        )}
       </header>
 
       {category.packages && category.packages.length > 0 ? (
