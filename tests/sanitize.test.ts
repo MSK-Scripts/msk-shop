@@ -73,6 +73,22 @@ describe('pickLanguageBlock', () => {
     expect(pickLanguageBlock(plain, 'en')).toBe(plain)
   })
 
+  it('bleibt bei einem Text schnell, der die Randbereinigung sabotiert', () => {
+    // CodeQL js/redos, Alert 69: die Randbereinigung trug `\s*` auf beiden
+    // Seiten ihrer Wiederholung. Derselbe Leerraum konnte damit zur einen oder
+    // zur nächsten Wiederholung gehören, und wenn der Text am Ende doch nicht
+    // passt, probiert die Maschine alle Aufteilungen durch. Mit 26
+    // Wiederholungen brauchte das gemessene 25,7 Sekunden.
+    //
+    // Der Test misst bewusst keine Zeit, sondern verlässt sich auf das
+    // Zeitlimit: mit der alten Fassung läuft er nicht durch.
+    const boese = '<p><strong>[GER]</strong></p><a>' + ' <a>'.repeat(26) + '!'
+    const t0 = Date.now()
+    const out = pickLanguageBlock(boese + '<p><strong>[ENG]</strong></p><p>x</p>', 'de')
+    expect(Date.now() - t0).toBeLessThan(1000)
+    expect(out.endsWith('!')).toBe(true)
+  })
+
   it('lässt den Text unangetastet, wenn nur ein Marker da ist', () => {
     const half = '<p><strong>[GER]</strong></p><p>Nur deutsch</p>'
     expect(pickLanguageBlock(half, 'en')).toBe(half)

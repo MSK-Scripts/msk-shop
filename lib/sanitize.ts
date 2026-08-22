@@ -123,8 +123,14 @@ export function pickLanguageBlock(html: string, lang: 'en' | 'de'): string {
   const slice  = other > wanted ? html.slice(start, other) : html.slice(start)
 
   return slice
-    .replace(/^(?:\s*<\/[a-z][^>]*>\s*)+/i, '')
-    .replace(/(?:\s*<[a-z][^>]*>\s*)+$/i, '')
+    // Die Leerzeichen sitzen bewusst nur auf **einer** Seite der Gruppe. Mit
+    // `\s*` an beiden Enden kann derselbe Leerraum vom Ende der einen und vom
+    // Anfang der nächsten Wiederholung beansprucht werden, und bei einem
+    // Eingabetext, der am Schluss doch nicht passt, probiert die Maschine alle
+    // Aufteilungen durch. Gemessen mit `'<a>' + ' <a>'.repeat(26) + '!'`:
+    // 25,7 Sekunden vorher, 0 ms danach (CodeQL js/redos, Alert 69).
+    .replace(/^\s*(?:<\/[a-z][^>]*>\s*)+/i, '')
+    .replace(/(?:\s*<[a-z][^>]*>)+\s*$/i, '')
     .trim()
 }
 
