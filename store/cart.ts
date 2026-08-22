@@ -13,12 +13,17 @@ interface CartStore {
   giftRecipients: Record<number, { username: string; discordId?: string }>
   isOpen: boolean
   isLoading: boolean
+  /** Paket, das gerade hinzugefuegt wird. `isLoading` bleibt global fuer
+   *  Warenkorb-Aktionen; im Kartenraster wuerde ein globales Flag alle
+   *  Karten gleichzeitig sperren. */
+  pendingPackageId: number | null
   setIdent: (ident: string) => void
   setBasket: (basket: TebexBasket) => void
   clearBasket: () => void
   openCart: () => void
   closeCart: () => void
   setLoading: (loading: boolean) => void
+  setPendingPackage: (packageId: number | null) => void
   setSubtotal: (s: number) => void
   setGiftRecipient: (packageId: number, username: string, discordId?: string) => void
   clearGiftRecipients: () => void
@@ -34,6 +39,7 @@ export const useCartStore = create<CartStore>()(
       giftRecipients: {},
       isOpen: false,
       isLoading: false,
+      pendingPackageId: null,
       setIdent: (ident) => set({ ident }),
       setBasket: (basket) => set({ basket, username: basket.username ?? null }),
       clearBasket: () => {
@@ -44,6 +50,7 @@ export const useCartStore = create<CartStore>()(
       openCart: () => set({ isOpen: true }),
       closeCart: () => set({ isOpen: false }),
       setLoading: (isLoading) => set({ isLoading }),
+      setPendingPackage: (pendingPackageId) => set({ pendingPackageId }),
       setSubtotal: (subtotal) => set({ subtotal }),
       setGiftRecipient: (packageId, username, discordId) => set(state => ({
         giftRecipients: { ...state.giftRecipients, [packageId]: { username, discordId } }

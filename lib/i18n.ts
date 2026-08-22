@@ -1290,6 +1290,7 @@ export const packagesTranslations = {
     card_details:   'Details',
     card_free:      'Free',
     card_sale:      'Sale',
+    card_error:     'Could not add this to the cart. Please try again.',
   },
   de: {
     heading:        'Alle Pakete',
@@ -1315,6 +1316,7 @@ export const packagesTranslations = {
     card_details:   'Details',
     card_free:      'Kostenlos',
     card_sale:      'Aktion',
+    card_error:     'Konnte nicht in den Warenkorb gelegt werden. Bitte nochmal versuchen.',
   },
 } as const;
 

@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ShoppingCart, Loader2, LogIn } from 'lucide-react'
@@ -25,8 +26,13 @@ interface Props {
 }
 
 export function PackageCard({ pkg, tags, badges, description, lang }: Props) {
-  const { addPackage, isLoading, username } = useCart()
+  const { addPackage, pendingPackageId, username } = useCart()
   const t = packagesTranslations[lang]
+  // Nur diese Karte darf reagieren. Vorher hing der Spinner am globalen
+  // `isLoading`, ein Klick liess also alle Karten des Rasters gleichzeitig
+  // laden und sperrte sie.
+  const busy = pendingPackageId === pkg.id
+  const [failed, setFailed] = useState(false)
   const { prices } = useSalePricesStore()
 
   const { original, price, isFree, hasDiscount, discountPct } =
@@ -107,11 +113,15 @@ export function PackageCard({ pkg, tags, badges, description, lang }: Props) {
 
           <div className="flex gap-2">
             <Button
-              size="sm"
-              onClick={() => addPackage(pkg.id, pkg.type)}
-              disabled={isLoading}
+              size="md"
+              className="tap-target"
+              onClick={async () => {
+                setFailed(false)
+                setFailed(!(await addPackage(pkg.id, pkg.type)))
+              }}
+              disabled={busy}
             >
-              {isLoading
+              {busy
                 ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
                 : isFree ? (
                     <>{t.card_download}</>
@@ -127,13 +137,21 @@ export function PackageCard({ pkg, tags, badges, description, lang }: Props) {
                     </>
                   )}
             </Button>
-            <Button asChild size="sm" variant="outline">
+            <Button asChild size="md" variant="outline" className="tap-target">
               <Link href={`/packages/${pkg.id}`} prefetch={true}>
                 {t.card_details}
               </Link>
             </Button>
           </div>
         </div>
+
+        {/* Vorher endete jeder Fehlschlag in `console.error` und die Karte sah
+            aus, als sei nichts passiert. */}
+        {failed && (
+          <p role="alert" className="mt-2 text-xs text-[var(--color-danger)]">
+            {t.card_error}
+          </p>
+        )}
       </CardContent>
     </Card>
   )

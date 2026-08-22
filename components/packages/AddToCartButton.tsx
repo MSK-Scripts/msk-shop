@@ -24,6 +24,11 @@ export function AddToCartButton({ pkg }: { pkg: TebexPackage }) {
   const [giftDiscordId, setGiftDiscordId] = useState('')
   const [giftError, setGiftError] = useState('')
   const [giftLoading, setGiftLoading] = useState(false)
+  // Bis zum 22.08.2026 verschwand ein fehlgeschlagenes Hinzufuegen still in
+  // `console.error`. Der Text ist hier noch englisch wie der Rest dieser
+  // Komponente; die Detailseite bekommt ihre Uebersetzung in einem eigenen
+  // Durchgang.
+  const [addFailed, setAddFailed] = useState(false)
 
   const isFree = (pkg.base_price ?? 0) === 0
   const canGift = !pkg.disable_gifting && !isFree
@@ -38,13 +43,14 @@ export function AddToCartButton({ pkg }: { pkg: TebexPackage }) {
     setHasDiscordId(readStoredDiscordId())
   }
 
-  function handleAddToCart() {
+  async function handleAddToCart() {
+    setAddFailed(false)
     if (needsLogin) {
-      addPackage(pkg.id, pkg.type)
+      await addPackage(pkg.id, pkg.type)
       return
     }
     if (hasDiscordId) {
-      addPackage(pkg.id, pkg.type)
+      setAddFailed(!(await addPackage(pkg.id, pkg.type)))
     } else {
       setDiscordId('')
       setDiscordError('')
@@ -64,7 +70,7 @@ export function AddToCartButton({ pkg }: { pkg: TebexPackage }) {
     setShowDiscordModal(false)
     // Remember the ID so neither this page nor the package cards ask again
     localStorage.setItem('discordId', id)
-    await addPackage(pkg.id, pkg.type, { discord_id: id })
+    setAddFailed(!(await addPackage(pkg.id, pkg.type, { discord_id: id })))
     setHasDiscordId(true)
     setDiscordLoading(false)
   }
@@ -95,6 +101,12 @@ export function AddToCartButton({ pkg }: { pkg: TebexPackage }) {
             : needsLogin ? <><LogIn className="h-4 w-4" />Login to Purchase</>
             : <><ShoppingCart className="h-4 w-4" />Add to Cart</>}
         </Button>
+
+        {addFailed && (
+          <p role="alert" className="text-center text-xs text-[var(--color-danger)]">
+            Could not add this to the cart. Please try again.
+          </p>
+        )}
 
         {needsLogin && !isFree && (
           <p className="text-center text-xs text-[var(--color-muted-foreground)]">

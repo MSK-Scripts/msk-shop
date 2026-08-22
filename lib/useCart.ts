@@ -8,7 +8,7 @@ import {
 } from '@/lib/tebex'
 
 export function useCart() {
-  const { ident, basket, username, isLoading, setIdent, setBasket, setLoading, openCart, setSubtotal } = useCartStore()
+  const { ident, basket, username, isLoading, pendingPackageId, setIdent, setBasket, setLoading, setPendingPackage, openCart, setSubtotal } = useCartStore()
   const { subtotal, giftRecipients, setGiftRecipient } = useCartStore()
 
   const getBaseUrl = () => typeof window !== 'undefined'
@@ -109,12 +109,25 @@ export function useCart() {
     }
   }, [setBasket, setIdent, setLoading, openCart, triggerDiscordAuth, setSubtotal])
 
-  const addPackage = useCallback(async (packageId: number, packageType: string = 'single', variableData?: Record<string, string>) => {
+  /**
+   * Legt ein Paket in den Warenkorb.
+   *
+   * Gibt `true` zurueck, wenn es geklappt hat, sonst `false`. Bis zum
+   * 22.08.2026 endete jeder Fehlschlag in einem `console.error` und die
+   * Oberflaeche zeigte nichts: der Spinner hoerte auf, kein Warenkorb ging auf,
+   * keine Meldung erschien. Genau auf diesem Pfad ist am 18.08. schon einmal
+   * ein Tebex-422 unbemerkt verschwunden.
+   *
+   * Ein Weiterleiten zur Anmeldung zaehlt als Erfolg: die Seite navigiert
+   * gleich weg, eine Fehlermeldung waere dort falsch.
+   */
+  const addPackage = useCallback(async (packageId: number, packageType: string = 'single', variableData?: Record<string, string>): Promise<boolean> => {
     if (!username) {
       await loginAndAdd(packageId, packageType)
-      return
+      return true
     }
     setLoading(true)
+    setPendingPackage(packageId)
     try {
       const id = await ensureBasket()
       const currentBasket = await getBasket(id)
@@ -122,7 +135,7 @@ export function useCart() {
         // Stored login state is stale (expired/completed basket) — Tebex would
         // reject the add with 422. Re-auth and resume instead of failing silently.
         await loginAndAdd(packageId, packageType)
-        return
+        return true
       }
       const usernameId = currentBasket.username_id ? String(currentBasket.username_id) : null
       const storedDiscordId = typeof window !== 'undefined' ? localStorage.getItem('discordId') : null
@@ -136,9 +149,15 @@ export function useCart() {
       // Update subtotal only if no coupon active
       if (!b.coupons?.length) setSubtotal(b.total_price)
       openCart()
-    } catch (e) { console.error('Add to cart error:', e) }
-    finally { setLoading(false) }
-  }, [username, loginAndAdd, ensureBasket, setBasket, setLoading, openCart, setSubtotal])
+      return true
+    } catch (e) {
+      console.error('Add to cart error:', e)
+      return false
+    } finally {
+      setLoading(false)
+      setPendingPackage(null)
+    }
+  }, [username, loginAndAdd, ensureBasket, setBasket, setLoading, setPendingPackage, openCart, setSubtotal])
 
   const giftPackage = useCallback(async (packageId: number, packageType: string = 'single', giftUsername: string, recipientDiscordId?: string): Promise<boolean> => {
     if (!username) { await loginAndAdd(packageId, packageType); return false }
@@ -234,7 +253,7 @@ export function useCart() {
   const checkoutUrl = !Array.isArray(links) && links ? (links as { checkout?: string }).checkout ?? null : null
 
   return {
-    basket, ident, username, isLoading,
+    basket, ident, username, isLoading, pendingPackageId,
     itemCount: basket?.packages?.length ?? 0,
     subtotal,
     giftRecipients,
