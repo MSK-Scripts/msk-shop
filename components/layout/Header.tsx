@@ -69,33 +69,33 @@ interface NavItem {
  * „Home" entfällt, das Logo führt bereits dorthin.
  */
 const NAV_ITEMS: NavItem[] = [
-  { label: 'Packages', href: '/packages', withCategories: true },
+  { label: "Packages", href: "/packages", withCategories: true },
   {
-    label: 'Bots',
-    href: '/ticketbot',
+    label: "Bots",
+    href: "/ticketbot",
     children: [
       // verify/dashboard sind session-abhängig + können redirect() liefern →
       // nicht prefetchen (sonst stale Redirect aus dem Router-Cache).
-      { label: 'Overview',   href: '/ticketbot',           section: 'Ticket Bot' },
-      { label: 'Verify',     href: '/ticketbot/verify',    prefetch: false },
-      { label: 'Dashboard',  href: '/ticketbot/dashboard', prefetch: false },
-      { label: 'Statistics', href: '/ticketbot/stats' },
-      { label: 'Overview',   href: '/giveaway',            section: 'Giveaway Bot' },
-      { label: 'Dashboard',  href: '/giveaway/dashboard',  prefetch: false },
-      { label: 'Statistics', href: '/giveaway/stats' },
+      { label: "Overview", href: "/ticketbot", section: "Ticket Bot" },
+      { label: "Verify", href: "/ticketbot/verify", prefetch: false },
+      { label: "Dashboard", href: "/ticketbot/dashboard", prefetch: false },
+      { label: "Statistics", href: "/ticketbot/stats" },
+      { label: "Overview", href: "/giveaway", section: "Giveaway Bot" },
+      { label: "Dashboard", href: "/giveaway/dashboard", prefetch: false },
+      { label: "Statistics", href: "/giveaway/stats" },
     ],
   },
   {
-    label: 'Resources',
-    href: '/resources',
+    label: "Resources",
+    href: "/resources",
     children: [
-      { label: 'Documentation',  href: 'https://docu.msk-scripts.de' },
-      { label: 'Resource Stats', href: '/resources' },
-      { label: 'GitHub',         href: 'https://github.com/MSK-Scripts' },
+      { label: "Documentation", href: "https://docu.msk-scripts.de" },
+      { label: "Resource Stats", href: "/resources" },
+      { label: "GitHub", href: "https://github.com/MSK-Scripts" },
     ],
   },
-  { label: 'Support', href: 'https://discord.gg/5hHSBRHvJE' },
-]
+  { label: "Support", href: "https://discord.msk-scripts.de/" },
+];
 
 function HeaderInner() {
   const [mobileOpen, setMobileOpen] = useState(false)
