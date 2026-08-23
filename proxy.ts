@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-import { LANG_HEADER, PATH_HEADER, splitLangPath } from '@/lib/lang'
+import { DEFAULT_LANG, LANG_HEADER, PATH_HEADER, istEinmaligeAdresse, splitLangPath } from '@/lib/lang'
 
 // Diese Datei hieß bis Next 16 `middleware.ts`. Next 16 hat die Konvention in
 // `proxy.ts` umbenannt (die alte warnt beim Build und entfällt später), die
@@ -211,7 +211,16 @@ export function proxy(request: NextRequest) {
   //
   // Der sprachlose Pfad ist ausserdem die Basis für Canonical, hreflang und
   // den Sprachumschalter, der zur Gegenstück-URL navigiert.
-  const { lang, path } = splitLangPath(pathname)
+  //
+  // Ein Präfix vor einer Adresse, die es nur einmal gibt, ist keine
+  // Übersetzung, sondern ein zweiter Name für dieselbe Datei. Solche Anfragen
+  // werden nicht umgeschrieben und laufen damit ins 404, das ihnen zusteht:
+  // `/de/sitemap.xml` lieferte sonst dieselben 17 774 Bytes wie die Wurzel.
+  const roh = splitLangPath(pathname)
+  const { lang, path } = istEinmaligeAdresse(roh.path)
+    ? { lang: DEFAULT_LANG, path: pathname }
+    : roh
+
   requestHeaders.set(LANG_HEADER, lang)
   requestHeaders.set(PATH_HEADER, path)
 

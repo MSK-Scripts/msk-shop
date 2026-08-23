@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { alternatePaths, isLang, langFromHeader, localePath, splitLangPath } from '@/lib/lang'
+import { alternatePaths, isLang, istEinmaligeAdresse, langFromHeader, localePath, splitLangPath } from '@/lib/lang'
 
 /**
  * Die Sprache steckt seit dem 22.08.2026 im Pfad. Vorher prüfte diese Datei
@@ -73,5 +73,46 @@ describe('isLang', () => {
     expect(isLang('en')).toBe(true)
     expect(isLang('es')).toBe(false)
     expect(isLang(42)).toBe(false)
+  })
+})
+
+describe('istEinmaligeAdresse', () => {
+  /**
+   * Der Rewrite beantwortete sonst jede Adresse ein zweites Mal unter `/de/`.
+   * Live gemessen am 23.08.2026: `/de/sitemap.xml` lieferte byteidentisch
+   * dieselben 17 774 Bytes wie `/sitemap.xml`, dasselbe galt für robots.txt,
+   * das XSL, jede API-Route, Favicon, Logo und die `_next`-Assets.
+   */
+  it('erkennt die Dateien, die es pro Site nur einmal gibt', () => {
+    for (const p of ['/robots.txt', '/sitemap.xml', '/sitemap.xsl', '/favicon.ico', '/logo.png']) {
+      expect(istEinmaligeAdresse(p), p).toBe(true)
+    }
+  })
+
+  it('erkennt ganze Zweige samt ihrer Unterpfade', () => {
+    for (const p of ['/api', '/api/', '/api/resource-stats', '/_next/static/chunks/x.js',
+                     '/auth/discord', '/botproxy', '/botproxy/irgendwas']) {
+      expect(istEinmaligeAdresse(p), p).toBe(true)
+    }
+  })
+
+  it('lässt normale Seiten in Ruhe', () => {
+    for (const p of ['/', '/packages', '/packages/7569109', '/resources', '/ticketbot/stats',
+                     '/terms/privacy']) {
+      expect(istEinmaligeAdresse(p), p).toBe(false)
+    }
+  })
+
+  it('prüft das ganze Segment, nicht den Wortanfang', () => {
+    // Ein künftiges `/apifoo` oder `/authentisch` ist eine normale Seite.
+    expect(istEinmaligeAdresse('/apifoo')).toBe(false)
+    expect(istEinmaligeAdresse('/authentisch')).toBe(false)
+    expect(istEinmaligeAdresse('/sitemap.xml.bak')).toBe(false)
+  })
+
+  it('greift genau auf dem Pfad, den splitLangPath aus einer /de-Adresse macht', () => {
+    // So sieht der Proxy die Anfrage: erst zerlegen, dann fragen.
+    expect(istEinmaligeAdresse(splitLangPath('/de/sitemap.xml').path)).toBe(true)
+    expect(istEinmaligeAdresse(splitLangPath('/de/packages').path)).toBe(false)
   })
 })
