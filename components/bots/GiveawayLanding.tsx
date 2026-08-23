@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import {
   Gift, Sparkles, RefreshCw, Globe, Palette, Layers,
   Shield, Users, PauseCircle, ScrollText, ClipboardList, Star,
@@ -110,14 +109,19 @@ export function GiveawayLanding({ lang }: { lang: Lang }) {
           </div>
 
           <p className="mt-6 text-sm">
-            <Link
+            {/* Bewusst `<a>`: das ist ein Sprachwechsel, und beide Adressen
+                zeigen nach dem Rewrite auf denselben Routenbaum. Der
+                Client-Router sähe keinen Segmentwechsel und liesse den Text
+                stehen. Ausserdem darf `LocaleLink` hier nicht greifen, es
+                würde die Gegenstück-Adresse ein zweites Mal präfixieren. */}
+            <a
               href={t.altHref}
               hrefLang={lang === 'en' ? 'de' : 'en'}
               className="inline-flex items-center gap-1.5 text-[var(--color-muted-foreground)] underline-offset-4 transition-colors hover:text-[var(--color-foreground)] hover:underline"
             >
               <Languages className="h-3.5 w-3.5" />
               {t.altLabel}
-            </Link>
+            </a>
           </p>
         </div>
       </section>

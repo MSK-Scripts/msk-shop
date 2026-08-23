@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { Languages } from 'lucide-react'
-import Link from 'next/link'
 import { useLang } from './LangProvider'
 import { Button } from '@/components/ui/Button'
 import { layoutTranslations } from '@/lib/i18n'
@@ -63,10 +62,19 @@ export function LanguageDropdown() {
           className="absolute right-0 top-full z-[60] mt-1 min-w-[10rem] overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] p-1 shadow-xl"
         >
           {languages.map(l => (
-            // Ein echter Link, kein Knopf: der Sprachwechsel ist seit dem
-            // 22.08.2026 eine Navigation zur Gegenstueck-URL. Damit greifen
-            // Mittelklick, "in neuem Tab oeffnen" und der Zurueck-Knopf.
-            <Link
+            // Ein echter Link, kein Knopf: der Sprachwechsel ist eine
+            // Navigation zur Gegenstueck-URL. Damit greifen Mittelklick,
+            // "in neuem Tab oeffnen" und der Zurueck-Knopf.
+            //
+            // Bewusst `<a>` statt `next/link`: beide Adressen zeigen nach dem
+            // Rewrite auf denselben Routenbaum (`/de/packages` wird intern zu
+            // `/packages`). Der Client-Router sieht deshalb keinen
+            // Segmentwechsel und rendert weder Seite noch Layout neu — die
+            // Adresse wechselte, der Text blieb englisch. Ein Dokument-Request
+            // laesst den Server alles neu rendern, inklusive Titel und
+            // `<html lang>`. Das kostet einmal Ladezeit an einer Stelle, die
+            // man hoechstens einmal pro Besuch benutzt.
+            <a
               key={l.code}
               href={hrefFor(l.code)}
               role="menuitem"
@@ -83,7 +91,7 @@ export function LanguageDropdown() {
             >
               <span>{l.label}</span>
               <span className="font-mono text-xs uppercase">{l.code}</span>
-            </Link>
+            </a>
           ))}
         </div>
       )}

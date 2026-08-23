@@ -134,10 +134,40 @@ export function proxy(request: NextRequest) {
     }
   }
 
+  // Vorgeholte Anfragen bekommen keinen Nonce: er gehört zu genau dem
+  // Dokument, das ihn ausgeliefert hat, und eine Payload, die der Browser für
+  // später weghängt, landet später in einem anderen.
+  //
+  // Was hier NICHT erkennbar ist, und das ist der Grund für den Fehler vom
+  // 23.08.2026: Next entfernt seine eigenen Routing-Header (`RSC`,
+  // `next-router-prefetch`) **bevor** der Proxy den Request sieht. Nachgemessen
+  // sieht er nur accept, host, user-agent und die x-forwarded-*. Der einzige
+  // Ort, an dem sich Nexts Prefetch abfangen liess, war deshalb der Matcher —
+  // und genau der Ausschluss dort hat den Sprach-Rewrite mit ausgeschaltet.
+  // `/de/<pfad>` existiert ohne Rewrite als Route gar nicht, jeder <Link> auf
+  // eine deutsche Adresse holte sich also einen 404 in den Router-Cache, und
+  // der Klick darauf lieferte einen leeren Baum: die Adresse wechselte, der
+  // Inhalt blieb englisch.
+  //
+  // Nexts eigene Prefetches tragen seither einen Nonce, und das ist hier
+  // unschädlich, nachgemessen statt angenommen: `script-src` hat
+  // `'strict-dynamic'`, damit zählt bei nachträglich eingehängten Scripts die
+  // Herkunft und nicht der Nonce. Und `style-src` hätte kein
+  // `'strict-dynamic'`, aber das ausgelieferte Dokument enthält **null**
+  // inline `<style>`-Tags: die Schriften kommen über @fontsource-variable als
+  // normales Stylesheet, `next/font` benutzt das Projekt nicht.
+  //
+  // Die Header der Browser-Ebene sind dagegen sichtbar und werden genutzt.
+  const isPrefetch = request.headers.get('purpose') === 'prefetch'
+    || request.headers.get('sec-purpose')?.includes('prefetch') === true
+
   // Web-Crypto-API ist im Edge-Runtime verfügbar (Buffer nicht)
-  const nonceBytes = new Uint8Array(16)
-  crypto.getRandomValues(nonceBytes)
-  const nonce = btoa(String.fromCharCode(...nonceBytes))
+  let nonce = ''
+  if (!isPrefetch) {
+    const nonceBytes = new Uint8Array(16)
+    crypto.getRandomValues(nonceBytes)
+    nonce = btoa(String.fromCharCode(...nonceBytes))
+  }
 
   const csp = [
     // 'none' = deny-by-default. Jede genutzte Resource-Kategorie muss explizit
@@ -169,8 +199,10 @@ export function proxy(request: NextRequest) {
   // Nonce über Request-Header an Next.js durchreichen → Next.js setzt ihn
   // automatisch auf seine internen Hydration-Scripts.
   const requestHeaders = new Headers(request.headers)
-  requestHeaders.set('x-nonce', nonce)
-  requestHeaders.set('Content-Security-Policy', csp)
+  if (nonce) {
+    requestHeaders.set('x-nonce', nonce)
+    requestHeaders.set('Content-Security-Policy', csp)
+  }
 
   // Sprache steckt im Pfad: Englisch auf der Wurzel, Deutsch unter /de/.
   // `/de/pakete` wird intern auf `/pakete` umgeschrieben und die Sprache in
@@ -191,7 +223,9 @@ export function proxy(request: NextRequest) {
       )
 
   // Response-Header — diese werden tatsächlich an den Browser geliefert.
-  response.headers.set('Content-Security-Policy', csp)
+  // Eine Prefetch-Antwort ist kein Dokument, sie trägt deshalb keine CSP:
+  // durchgesetzt wird immer die des Dokuments, in dem die Payload landet.
+  if (nonce) response.headers.set('Content-Security-Policy', csp)
   response.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload')
   response.headers.set('X-Content-Type-Options', 'nosniff')
   response.headers.set('X-Frame-Options', 'SAMEORIGIN')
@@ -206,7 +240,9 @@ export function proxy(request: NextRequest) {
 
 // Der Proxy läuft auf allen Routen außer statischen Assets — diese liefert
 // Next.js bzw. Apache direkt aus und brauchen die Header-Pipeline nicht.
-// Prefetch-Requests werden ausgeschlossen, damit der Nonce nicht gecacht wird.
+// Nexts Router-Prefetches laufen bewusst MIT durch, sonst greift der
+// Sprach-Rewrite für sie nicht und `/de/<pfad>` prefetcht einen 404.
+// Begründung und Messung stehen oben in `proxy()` beim Nonce.
 //
 // `api/transcript/upload` ist BEWUSST ausgenommen: läuft der Proxy auf einer
 // Route, puffert Next.js 15 den Request-Body (Default 10 MB) und schneidet ihn
@@ -218,10 +254,6 @@ export const config = {
   matcher: [
     {
       source: '/((?!_next/static|_next/image|favicon.ico|logo.png|robots.txt|sitemap.xml|sitemap.xsl|api/transcript/upload).*)',
-      missing: [
-        { type: 'header', key: 'next-router-prefetch' },
-        { type: 'header', key: 'purpose', value: 'prefetch' },
-      ],
     },
   ],
 }
