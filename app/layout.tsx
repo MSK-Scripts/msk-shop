@@ -24,8 +24,10 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)',  color: '#0d1117' },
+    // Muss --color-background aus app/globals.css entsprechen, sonst zeigt die
+    // Browserleiste am Telefon einen anderen Ton als die Seite darunter.
+    { media: '(prefers-color-scheme: light)', color: '#f3f3f4' },
+    { media: '(prefers-color-scheme: dark)',  color: '#161a20' },
   ],
   colorScheme: 'light dark',
 }

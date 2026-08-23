@@ -43,7 +43,7 @@ function logLineClass(line: string): string {
 function StatusDot({ status }: { status: BotStatus | null }) {
   if (!status) return <span className="w-2 h-2 rounded-full bg-border inline-block" />
   const colors: Record<BotStatus, string> = {
-    online:    'bg-accent',
+    online:    'bg-primary',
     stopped:   'bg-danger',
     stopping:  'bg-[var(--color-warning)]',
     launching: 'bg-[var(--color-warning)] animate-pulse',
@@ -58,7 +58,7 @@ function StatusDot({ status }: { status: BotStatus | null }) {
 
 function Banner({ msg, onClose }: { msg: Msg; onClose?: () => void }) {
   const styles = {
-    success: 'bg-accent/10 border-accent/30 text-accent',
+    success: 'bg-primary/10 border-primary/30 text-primary',
     error:   'bg-danger/10 border-danger/30 text-danger',
     info:    'bg-[var(--color-warning)]/10 border-[var(--color-warning)]/30 text-[var(--color-warning)]',
   }
@@ -296,7 +296,7 @@ export default function BotConfigEditor({ lang, guildId }: { lang: Lang; guildId
       {/* ── Bot Control Card ──────────────────────────────────────────────── */}
       <div className="bg-surface border border-borderlt rounded-xl p-6">
         <div className="flex items-center gap-2 mb-1">
-          <Terminal size={18} className="text-accent" />
+          <Terminal size={18} className="text-primary" />
           <h2 className="text-foreground font-bold text-base">{t.bot_control_title}</h2>
         </div>
         <p className="text-muted-foreground text-sm mb-5">{t.bot_control_desc}</p>
@@ -412,11 +412,11 @@ export default function BotConfigEditor({ lang, guildId }: { lang: Lang; guildId
       <div className="bg-surface border border-borderlt rounded-xl p-6">
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center gap-2">
-            <Activity size={18} className="text-accent" />
+            <Activity size={18} className="text-primary" />
             <h2 className="text-foreground font-bold text-base">{t.bot_live_logs_title}</h2>
             {liveStatus === 'connected' && (
-              <span className="flex items-center gap-1.5 text-xs font-semibold text-accent">
-                <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse inline-block" />
+              <span className="flex items-center gap-1.5 text-xs font-semibold text-primary">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse inline-block" />
                 {t.bot_live_connected}
               </span>
             )}

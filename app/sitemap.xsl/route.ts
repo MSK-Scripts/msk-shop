@@ -29,32 +29,32 @@ const XSL = `<?xml version="1.0" encoding="UTF-8"?>
           :root { color-scheme: dark; }
           body {
             margin: 0; padding: 2rem 1.25rem;
-            background: #0d1117; color: #e6edf3;
+            background: #161a20; color: #e6edf3;
             font-family: ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
             font-size: 14px; line-height: 1.5;
           }
           .wrap { max-width: 1100px; margin: 0 auto; }
           h1 { font-size: 1.5rem; margin: 0 0 .25rem; }
           p.meta { margin: 0 0 1.75rem; color: #8b949e; }
-          p.meta strong { color: #5eb131; }
-          .scroll { overflow-x: auto; border: 1px solid #30363d; border-radius: 10px; }
+          p.meta strong { color: #60b02f; }
+          .scroll { overflow-x: auto; border: 1px solid #393f47; border-radius: 10px; }
           table { border-collapse: collapse; width: 100%; min-width: 640px; }
-          th, td { text-align: left; padding: .6rem .85rem; border-bottom: 1px solid #21262d; }
+          th, td { text-align: left; padding: .6rem .85rem; border-bottom: 1px solid #2b3037; }
           th {
-            position: sticky; top: 0; background: #161b22; color: #8b949e;
+            position: sticky; top: 0; background: #1f242c; color: #8b949e;
             font-weight: 600; font-size: .75rem; letter-spacing: .04em; text-transform: uppercase;
           }
           tr:last-child td { border-bottom: 0; }
-          tr:hover td { background: #161b22; }
-          td.num { color: #6e7681; width: 3rem; font-variant-numeric: tabular-nums; }
-          a { color: #5eb131; text-decoration: none; }
+          tr:hover td { background: #1f242c; }
+          td.num { color: #8b949e; width: 3rem; font-variant-numeric: tabular-nums; }
+          a { color: #60b02f; text-decoration: none; }
           a:hover { text-decoration: underline; }
           td.date, td.langs {
             font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
             font-size: .8rem; color: #8b949e; white-space: nowrap;
           }
-          .none { color: #484f58; }
-          footer { margin-top: 1.5rem; color: #6e7681; font-size: .8rem; }
+          .none { color: #7c848d; }
+          footer { margin-top: 1.5rem; color: #8b949e; font-size: .8rem; }
         </style>
       </head>
       <body>

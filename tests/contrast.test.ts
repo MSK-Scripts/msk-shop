@@ -68,6 +68,10 @@ describe.each([
     ['Label auf Primärfüllung',        t['primary-foreground'],  t.primary,    4.5],
     ['Primärgrün als Text',            t.primary,                t.background, 4.5],
     ['Primärgrün als Text auf Fläche', t.primary,                t.muted,      4.5],
+    // Links in Tebex-Beschreibungen und Rechtstexten stehen auf einer Karte,
+    // nicht auf dem Seitengrund. Seit die Karte im hellen Theme nicht mehr
+    // weiß ist, ist das ein eigenes Paar und keine Wiederholung.
+    ['Primärgrün als Text auf Karte',  t.primary,                t.card,       4.5],
     ['Label auf Erfolgsfüllung',       t['success-foreground'],  t.success,    4.5],
     ['Label auf Warnfüllung',          t['warning-foreground'],  t.warning,    4.5],
     ['Label auf Gefahrfüllung',        t['danger-foreground'],   t.danger,     4.5],
@@ -147,6 +151,6 @@ describe('Rechnung selbst', () => {
   })
 
   it('ist symmetrisch', () => {
-    expect(contrast('#3a7d1c', '#ffffff')).toBeCloseTo(contrast('#ffffff', '#3a7d1c'), 10)
+    expect(contrast('#27762e', '#ffffff')).toBeCloseTo(contrast('#ffffff', '#27762e'), 10)
   })
 })

@@ -2,23 +2,25 @@
 name: MSK Scripts Shop
 description: A one-person FiveM script shop that shows its work instead of advertising it.
 colors:
-  workshop-green: "#3a7d1c"
-  workshop-green-dark: "#5eb131"
-  signal-green: "#5eb131"
-  signal-green-dark: "#79e84a"
-  workbench-charcoal: "#0d1117"
+  workshop-green: "#27762e"
+  workshop-green-dark: "#60b02f"
+  signal-green: "#60b02f"
+  signal-green-dark: "#82e649"
+  workbench-charcoal: "#161a20"
   paper-white: "#ffffff"
+  paper-grey: "#f3f3f4"
+  card-light: "#fafafb"
   ink: "#0a0a0a"
   ink-inverted: "#e6edf3"
-  panel-light: "#f4f4f5"
-  panel-dark: "#161b22"
-  hairline-light: "#e4e4e7"
-  hairline-dark: "#30363d"
-  quiet-light: "#6b6b74"
+  panel-light: "#e8e8e9"
+  panel-dark: "#1f242c"
+  hairline-light: "#d6d6d9"
+  hairline-dark: "#393f47"
+  quiet-light: "#66666f"
   quiet-dark: "#8b949e"
-  danger: "#dc2626"
-  success: "#157f3b"
-  warning: "#a45709"
+  danger: "#c81e1e"
+  success: "#27762e"
+  warning: "#9f5300"
   info: "#0369a1"
   discord-blurple: "#5865F2"
 typography:
@@ -90,7 +92,7 @@ components:
     rounded: "{rounded.md}"
     size: "2.5rem"
   card:
-    backgroundColor: "{colors.paper-white}"
+    backgroundColor: "{colors.card-light}"
     textColor: "{colors.ink}"
     rounded: "{rounded.xl}"
     padding: "{spacing.card}"
@@ -142,36 +144,50 @@ those shops is deciding whether one developer will still be here in a year.
 
 Two greens on a near-neutral ground, and nothing else competing for attention.
 
+Every green in the system is a colour the logo actually contains. See
+**The Logo Ramp Rule** below for how a role picks its value.
+
 ### Primary
-- **Workshop Green** (`#3a7d1c` light, `#5eb131` dark): every element the visitor
+- **Workshop Green** (`#27762e` light, `#60b02f` dark): every element the visitor
   can act on. Primary buttons, active navigation, focus rings, links inside
-  running text, the rule in front of a section label. It carries two jobs at once,
-  as a fill under white text and as text on the page ground, which is why the
-  light value is this deep: at `#4ea426` it measured 3.15:1 and failed both.
+  running text, the rule in front of a section label, and any small green status
+  indicator. It carries two jobs at once, as a fill under white text (5.65:1) and
+  as text on the page ground (5.09:1), on the panel (4.61:1) and on a card
+  (5.42:1). Both values are literal pixel colours from `public/logo.png`.
 
 ### Secondary
-- **Signal Green** (`#5eb131` light, `#79e84a` dark): fills only, never text. The
-  brighter historical MSK green, used for tinted surfaces such as the 12 % badge
-  wash and the icon plates. It is too light to carry a label in either theme.
+- **Signal Green** (`#60b02f` light, `#82e649` dark): fills only, never text and
+  never a small indicator. The light value is the brightest saturated pixel in the
+  logo; the dark value sits above the logo's own lightness range and therefore
+  keeps its brightest hue with the chroma trend continued. At 2.54:1 on a light
+  card it fails both the 4.5:1 for text and the 3:1 for non-text, so a green dot
+  is Workshop Green, not this. It currently has no consumer in the codebase.
 
 ### Neutral
-- **Workbench Charcoal** (`#0d1117`): the dark ground. GitHub-dark adjacent on
-  purpose, because the audience already reads code on that background.
-- **Paper White** (`#ffffff`): the light ground and the card surface in light mode.
+- **Workbench Charcoal** (`#161a20`): the dark ground. GitHub-dark adjacent on
+  purpose, because the audience already reads code on that background, but one
+  step off the floor: at `#0d1117` the theme read as black rather than as a dark
+  surface. `#0d1117` survives as the log console only.
+- **Paper Grey** (`#f3f3f4`) and **Card** (`#fafafb`): the light ground and the
+  card above it. **Paper White** (`#ffffff`) survives only as the label colour on
+  a filled button, not as a surface. The ground was pure white until 23.08.2026, which left nothing
+  for a card to be lighter than.
 - **Ink** (`#0a0a0a` light) / **Inverted Ink** (`#e6edf3` dark): primary text.
-- **Panel** (`#f4f4f5` light, `#161b22` dark): raised surfaces, inputs, card
+- **Panel** (`#e8e8e9` light, `#1f242c` dark): raised surfaces, inputs, card
   interiors in dark mode.
-- **Hairline** (`#e4e4e7` light, `#30363d` dark): every border and divider. This
+- **Hairline** (`#d6d6d9` light, `#393f47` dark): every border and divider. This
   is the system's main separation device, doing the work a shadow would do
   elsewhere.
-- **Quiet** (`#6b6b74` light, `#8b949e` dark): secondary text, captions, helper
-  copy. The light value is deliberately not `#71717a`, which measured 4.40:1 on
-  the panel surface.
+- **Quiet** (`#66666f` light, `#8b949e` dark): secondary text, captions, helper
+  copy. The light value follows the panel down: on `#e8e8e9` the previous
+  `#6b6b74` measured 4.25:1.
 
 ### Functional
-- **Danger** (`#dc2626` light, `#f87171` dark), **Success** (`#157f3b` / `#4ade80`),
-  **Warning** (`#a45709` / `#f59e0b`), **Info** (`#0369a1` / `#38bdf8`): status
-  only. Their foreground colour flips per theme, because a functional colour dark
+- **Danger** (`#c81e1e` light, `#f87171` dark), **Success** (`#27762e` / `#7ada44`),
+  **Warning** (`#9f5300` / `#f59e0b`), **Info** (`#0369a1` / `#38bdf8`): status
+  only. Success sits on the logo ramp like every other green, which makes its
+  light value identical to Workshop Green; it is rendered nowhere today, and if
+  it ever is, it needs its own step. Their foreground colour flips per theme, because a functional colour dark
   enough to carry white in light mode is too dark to sit on charcoal.
 - **Discord Blurple** (`#5865F2`): only for Discord actions. It exists twice in
   the tokens, as a fill and as a text colour (`#7d86f5` in dark), because one
@@ -180,9 +196,18 @@ Two greens on a near-neutral ground, and nothing else competing for attention.
 ### Named Rules
 
 **The Two Greens Rule.** Workshop Green acts, Signal Green fills. If a green is
-carrying text, it is Workshop Green. If it is a background wash, an icon plate, or
-a badge tint, it is Signal Green. Swapping them breaks contrast in one theme or
-the other, every time.
+carrying text or is a small indicator, it is Workshop Green. If it is a background
+wash, an icon plate, or a badge tint, it is Signal Green. Swapping them breaks
+contrast in one theme or the other, every time.
+
+**The Logo Ramp Rule.** `public/logo.png` is a gradient, not a flat mark, and in
+it hue and chroma are functions of lightness: H 150.1° / C 0.076 at L 0.31, and
+H 136.4° / C 0.179 at L 0.69. A green "from the logo" is therefore a ramp, not a
+value. To add one, take the lightness the role needs to pass its contrast pair,
+read the hue and chroma the logo carries at that lightness, then snap to the
+nearest colour that actually occurs in the file. Outside the logo's lightness
+range, hold the end hue and continue the chroma trend; extrapolating the hue
+instead turns the colour towards 130° and into a lime the logo never contains.
 
 **The Measured Contrast Rule.** Colour pairs are computed, not eyeballed.
 `tests/contrast.test.ts` reads the tokens straight out of `app/globals.css` and

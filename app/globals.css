@@ -17,42 +17,80 @@
   /* Farben — Light-Mode (Default)
      Die Werte hier sind auf WCAG AA gerechnet, nicht nach Augenmaß gewählt.
      `tests/contrast.test.ts` liest sie aus dieser Datei und rechnet jedes Paar
-     nach, eine Änderung ohne Gegenrechnung fällt dort auf. */
-  --color-background:         #ffffff;
+     nach, eine Änderung ohne Gegenrechnung fällt dort auf.
+
+     Die Neutralen liegen seit dem 23.08.2026 eine Stufe tiefer: der Grund war
+     reines Weiß und damit heller als jede Fläche darauf, es gab also nichts,
+     wovon sich eine Karte hätte abheben können. Jetzt trägt die Seite einen
+     Ton (L 0,964), die Karte sitzt mit L 0,985 darüber. Verschoben wurde
+     ausschließlich die Helligkeit, Farbton und Buntheit der Zink-Achse
+     bleiben, damit der Charakter des Themes derselbe ist. */
+  --color-background:         #f3f3f4;
   --color-foreground:         #0a0a0a;
-  --color-muted:              #f4f4f5;
-  /* 4,80:1 auf --color-muted. Der Vorgänger #71717a lag dort bei 4,40:1. */
-  --color-muted-foreground:   #6b6b74;
-  --color-border:             #e4e4e7;
-  --color-input:              #e4e4e7;
-  --color-ring:               #3a7d1c;
-  --color-card:               #ffffff;
+  --color-muted:              #e8e8e9;
+  /* 4,64:1 auf --color-muted, 5,13:1 auf dem Grund. Musste mit den Flächen
+     mitwandern: auf dem tieferen --color-muted lag der Vorgänger #6b6b74 nur
+     noch bei 4,25:1. */
+  --color-muted-foreground:   #66666f;
+  --color-border:             #d6d6d9;
+  --color-input:              #d6d6d9;
+  --color-ring:               #27762e;
+  --color-card:               #fafafb;
   --color-card-foreground:    #0a0a0a;
 
-  /* Brand: MSK-Grün
-     Trägt beides: Füllung mit weißem Label und grüne Textfarbe. Beide Rollen
-     brauchen 4,5:1, deshalb 5,15:1 statt der 3,15:1 des Vorgängers #4ea426. */
-  --color-primary:            #3a7d1c;
+  /* Brand: MSK-Grün — beide Werte sind echte Pixelfarben aus `public/logo.png`
+
+     Das Logo ist ein Verlauf, kein Flächenlogo, und Farbton wie Buntheit
+     hängen darin an der Helligkeit: bei L 0,31 misst es H 150,1° / C 0,076,
+     bei L 0,69 dann H 136,4° / C 0,179. Ein Grün „aus dem Logo" ist deshalb
+     nicht ein Wert, sondern eine Rampe. Jedes Grün hier bekommt die
+     Helligkeit, die seine Rolle für AA braucht, und dazu Farbton und Buntheit,
+     die das Logo bei genau dieser Helligkeit trägt. Anschließend wird auf die
+     nächstgelegene tatsächlich im Logo vorkommende Pixelfarbe geschnappt.
+
+     --color-primary  #27762e  kommt 1693-mal im Logo vor
+     --color-accent   #60b02f  kommt 1361-mal vor, das hellste gesättigte Grün
+
+     primary trägt beide Rollen: Füllung mit weißem Label (5,65:1) und grüne
+     Textfarbe (5,09:1 auf dem Grund, 4,61:1 auf --color-muted, 5,42:1 auf der
+     Karte). Der Vorgänger #3a7d1c lag auf dem tieferen --color-muted bei
+     4,14:1 und damit unter AA. */
+  --color-primary:            #27762e;
   --color-primary-foreground: #ffffff;
-  --color-accent:             #5eb131;   /* klassisches MSK-Grün, nur als Fläche */
+  /* Fläche, nicht Text: als Textfarbe misst dieses Grün auf der Karte 2,54:1,
+     und als kleiner Statuspunkt verfehlt es dort die 3:1 für Nicht-Text. Genau
+     das stand bis zum 23.08.2026 im BotConfigEditor. Wer eine grüne Schrift
+     oder einen grünen Punkt braucht, nimmt --color-primary.
+     Damit hat --color-accent derzeit keinen Konsumenten mehr; das Token bleibt,
+     weil DESIGN.md die zweite Grünstufe führt, gerendert wird es nicht. */
+  --color-accent:             #60b02f;
   --color-accent-foreground:  #0a0a0a;
-  --color-secondary:          #f4f4f5;
+  --color-secondary:          #e8e8e9;
   --color-secondary-foreground: #18181b;
 
-  /* Funktional — jeweils so tief, dass weißer Text auf der Füllung AA erreicht */
-  --color-success:            #157f3b;   /* vorher #16a34a, 3,30:1 */
+  /* Funktional — jeweils so tief, dass weißer Text auf der Füllung AA erreicht.
+     Zwei mussten mit --color-muted nachziehen: auf der tieferen Kachel fiel
+     warning auf 4,35:1 und primary auf 4,14:1. */
+  /* --color-success ist deckungsgleich mit --color-primary, und das ist kein Versehen: die Rampe
+     des Logos hat bei einer Helligkeit genau ein Grün, und beide Rollen
+     brauchen dieselbe. Der Vorgänger #157f3b lag mit H 149,6° zwar auf der
+     Logo-Achse, aber an einer Helligkeit, an der das Logo 144,6° trägt.
+     Sichtbar ändert das nichts, `--color-success` wird derzeit nirgends
+     gerendert. Bekommt es je eine Aufgabe, braucht es eine eigene Stufe. */
+  --color-success:            #27762e;
   --color-success-foreground: #ffffff;
-  --color-warning:            #a45709;   /* vorher #f59e0b, 2,15:1 */
+  --color-warning:            #9f5300;   /* auf dem tieferen --color-muted lag
+                                            der Vorgänger #a45709 bei 4,35:1 */
   --color-warning-foreground: #ffffff;
-  --color-danger:             #c81e1e;   /* vorher #dc2626, 4,39:1 auf der Kachel */
+  --color-danger:             #c81e1e;   /* 4,66:1 auf der Kachel */
   --color-danger-foreground:  #ffffff;
-  --color-info:               #0369a1;   /* vorher #0284c7, 4,10:1 */
+  --color-info:               #0369a1;   /* 5,20:1 auf der Kachel */
   --color-info-foreground:    #ffffff;
   /* Zwei Tokens, weil die Marke zwei Rollen trägt: als Fläche muss sie dunkel
      genug für weiße Beschriftung sein, als Textfarbe hell genug für den dunklen
      Grund. Ein einziger Wert kann beides nicht erfüllen. */
   --color-discord:            #5865F2;   /* Fläche, Weiß darauf 4,61:1 */
-  --color-discord-text:       #5865F2;   /* Text, im Dark-Mode überschrieben */
+  --color-discord-text:       #525dea;   /* Text, im Dark-Mode überschrieben */
 
   /* Ökosystem-Badges (ESX, QBCore, Lua, …)
      DESIGN.md lässt diese Fremdfarben ausdrücklich zu, weil ein Käufer nach
@@ -78,7 +116,9 @@
 
   /* Live-Log-Konsole des gehosteten Bots. Die Fläche ist in **beiden** Themes
      dunkel, wie bei einem Terminal, und die Zeilenfarben sind gegen genau diese
-     Fläche gewählt. Vorher stand die Konsole auf `--color-background`, im
+     Fläche gewählt. Sie ist der einzige verbliebene Ort für #0d1117, seit der
+     dunkle Grund eine Stufe höher liegt — die Konsole hebt sich damit jetzt
+     auch im Dark-Mode vom Grund ab, statt mit ihm zu verschmelzen. Vorher stand die Konsole auf `--color-background`, im
      hellen Theme also auf Weiß, und dort misst die normale Zeile 1,48:1: das
      gesamte Log war unlesbar. Auf der dunklen Fläche liegen alle sieben
      zwischen 6,8:1 und 12,8:1. */
@@ -87,18 +127,18 @@
   --color-log-dim:        #a1a1aa;
   --color-log-error:      #f87171;
   --color-log-warn:       #facc15;
-  --color-log-ok:         #4ade80;
+  --color-log-ok:         #7ada44;
   --color-log-info:       #38bdf8;
 
-  --color-badge-esx:      #ab4e00;
-  --color-badge-qb:       #8b48c5;
-  --color-badge-lua:      #1469c1;
-  --color-badge-js:       #906000;
-  --color-badge-ts:       #276cac;
-  --color-badge-py:       #006eac;
-  --color-badge-discord:  #585cd0;
-  --color-badge-fivem:    #b44600;
-  --color-badge-sale:     #ce0004;
+  --color-badge-esx:      #a84b00;
+  --color-badge-qb:       #8845c2;
+  --color-badge-lua:      #0f66be;
+  --color-badge-js:       #8d5d00;
+  --color-badge-ts:       #246aa9;
+  --color-badge-py:       #006ba9;
+  --color-badge-discord:  #5559cd;
+  --color-badge-fivem:    #b04200;
+  --color-badge-sale:     #c90000;
 
   /* Radien */
   --radius-sm: 0.25rem;
@@ -119,42 +159,54 @@
 
 /* ============================================================================
    Dark-Mode-Tokens — GitHub-Dark inspiriert + MSK-Grün
+   ============================================================================
+   Die Flächen liegen seit dem 23.08.2026 eine Stufe höher (Grund L 0,176 →
+   0,216, Karte 0,220 → 0,259, Rahmen 0,330 → 0,365). Verschoben wurde nur die
+   Helligkeit; Farbton und Buntheit der GitHub-Dark-Achse bleiben, damit das
+   Theme sich nicht anders anfühlt, sondern nur weniger schwarz.
    ============================================================================ */
 @layer base {
   .dark {
-    --color-background:         #0d1117;
+    --color-background:         #161a20;
     --color-foreground:         #e6edf3;
-    --color-muted:              #161b22;
+    --color-muted:              #1f242c;
     --color-muted-foreground:   #8b949e;
-    --color-border:             #30363d;
-    --color-input:              #30363d;
-    --color-ring:               #5eb131;
-    --color-card:               #161b22;
+    --color-border:             #393f47;
+    --color-input:              #393f47;
+    --color-ring:               #60b02f;
+    --color-card:               #1f242c;
     --color-card-foreground:    #e6edf3;
 
-    --color-primary:            #5eb131;
-    /* Dunkler Text auf hellem Grün: 6,79:1. Weiß darauf wären 2,69:1 gewesen,
-       das MSK-Grün ist im Dark-Mode zu hell, um Weiß zu tragen. */
-    --color-primary-foreground: #0d1117;
-    --color-accent:             #79e84a;
-    --color-accent-foreground:  #0d1117;
-    --color-secondary:          #21262d;
+    /* Dieselbe Logo-Pixelfarbe wie --color-accent im Light-Theme: das hellste
+       gesättigte Grün des Logos, hier als Textfarbe (6,44:1 auf dem Grund,
+       5,75:1 auf der Karte). */
+    --color-primary:            #60b02f;
+    /* Dunkler Text auf hellem Grün: 6,44:1. Weiß darauf wären 2,71:1, das
+       MSK-Grün ist im Dark-Mode zu hell, um Weiß zu tragen. Der Wert ist der
+       neue Grund, nicht mehr #0d1117 — das ist jetzt nur noch die Konsole. */
+    --color-primary-foreground: #161a20;
+    /* Heller als das Logo selbst wird (L 0,833 gegen dessen Maximum 0,688),
+       deshalb keine Pixelfarbe, sondern dessen hellster Farbton mit
+       fortgeschriebener Buntheit. Nur Fläche, dunkles Label darauf: 11,11:1. */
+    --color-accent:             #82e649;
+    --color-accent-foreground:  #161a20;
+    --color-secondary:          #2b3037;
     --color-secondary-foreground: #e6edf3;
 
     /* Im Dark-Mode sind die Funktionsfarben hell. Ihre Beschriftung muss
        deshalb dunkel sein, sonst erben sie das weiße Label aus dem Light-Block
        und landen bei 2,1 bis 2,8:1. */
     --color-danger:             #f87171;
-    --color-danger-foreground:  #0d1117;
-    --color-success:            #4ade80;
-    --color-success-foreground: #0d1117;
+    --color-danger-foreground:  #161a20;
+    --color-success:            #7ada44;
+    --color-success-foreground: #161a20;
     --color-info:               #38bdf8;
-    --color-info-foreground:    #0d1117;
+    --color-info-foreground:    #161a20;
     /* Muss hier stehen, sonst erbt Dark das für Weiß abgedunkelte Light-Orange
        und wird auf dem dunklen Grund unlesbar. */
     --color-warning:            #f59e0b;
-    --color-warning-foreground: #0d1117;
-    /* 5,68:1 auf dem dunklen Grund. Die Flächenfarbe bleibt unverändert. */
+    --color-warning-foreground: #161a20;
+    /* 5,49:1 auf dem aufgehellten Grund. Die Flächenfarbe bleibt unverändert. */
     --color-discord-text:       #7d86f5;
 
     /* Auf dem dunklen Grund tragen die Markenfarben selbst. Einzige Ausnahme
@@ -165,11 +217,11 @@
     --color-badge-qb:       #c07eff;
     --color-badge-lua:      #54a2ff;
     --color-badge-js:       #fac800;
-    --color-badge-ts:       #5b9fe3;
+    --color-badge-ts:       #5ca0e4;
     --color-badge-py:       #00bcfe;
-    --color-badge-discord:  #7d87ff;
+    --color-badge-discord:  #8691ff;
     --color-badge-fivem:    #ff8b1a;
-    --color-badge-sale:     #ff4b4c;
+    --color-badge-sale:     #ff6663;
 
     --shadow-card:       0 1px 2px 0 rgb(0 0 0 / 0.4);
     --shadow-card-hover: 0 12px 32px -8px rgb(0 0 0 / 0.6);
