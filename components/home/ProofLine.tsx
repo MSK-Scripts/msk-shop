@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 import { homeTranslations, type Lang } from '@/lib/i18n'
 import { formatReversalRate, type ShopStats } from '@/lib/shopStats'
 import type { HeadlineStat } from '@/lib/fivestats'

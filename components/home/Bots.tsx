@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 import { MessageSquare, Gift } from 'lucide-react'
 import { homeTranslations, type Lang } from '@/lib/i18n'
 

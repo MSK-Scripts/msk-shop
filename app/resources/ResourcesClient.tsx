@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
+import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 import { Server, TrendingUp, TrendingDown, Minus, ArrowUpRight, Hash } from 'lucide-react'
 import { resourceStatsTranslations, type Lang } from '@/lib/i18n'
 import { useLang } from '@/components/i18n/LangProvider'

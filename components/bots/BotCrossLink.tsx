@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 import { Gift, Ticket } from 'lucide-react'
 
 import type { Lang } from '@/lib/i18n'
@@ -12,15 +12,14 @@ import type { Lang } from '@/lib/i18n'
  * Navigation.
  *
  * Der Link bleibt in derselben Sprachfassung: von `/de/ticketbot` geht es auf
- * `/de/giveaway`, nicht auf die englische Seite.
+ * `/de/giveaway`, nicht auf die englische Seite. Das Präfix setzt `LocaleLink`,
+ * hier steht der nackte Pfad.
  */
 export function BotCrossLink({ lang, current }: { lang: Lang; current: 'ticketbot' | 'giveaway' }) {
   const toGiveaway = current === 'ticketbot'
   const de = lang === 'de'
 
-  const href = toGiveaway
-    ? (de ? '/de/giveaway' : '/giveaway')
-    : (de ? '/de/ticketbot' : '/ticketbot')
+  const href = toGiveaway ? '/giveaway' : '/ticketbot'
 
   const label = toGiveaway ? 'Discord Giveaway Bot' : 'Discord Ticket Bot'
   const lead  = de ? 'Ebenfalls von MSK Scripts:' : 'Also from MSK Scripts:'

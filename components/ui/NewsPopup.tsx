@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
+import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 import { X, Copy, Check } from 'lucide-react'
 import { NEWS_POPUP } from '@/lib/config'
 import { Button } from '@/components/ui/Button'

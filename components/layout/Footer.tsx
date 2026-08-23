@@ -48,13 +48,12 @@ export function Footer() {
     { label: t.footer_resource_stats, href: '/resources' },
   ]
   // Eigene Spalte für die beiden Bot-Landingpages. Sie hingen vorher an genau
-  // einer internen Quelle, dem „Bots"-Menü im Header. Die Sprachfassung folgt
-  // dem msk_lang-Cookie, damit ein deutscher Besucher auf der deutschen URL
-  // landet und nicht erst umgeleitet werden muss.
-  const botPrefix = lang === 'de' ? '/de' : ''
+  // einer internen Quelle, dem „Bots"-Menü im Header. Das Sprachpräfix setzt
+  // `LocaleLink` selbst, hier steht deshalb der nackte Pfad — ein eigenes
+  // Präfix ergab hier `/de/de/ticketbot`.
   const botLinks = [
-    { label: 'Discord Ticket Bot',   href: `${botPrefix}/ticketbot` },
-    { label: 'Discord Giveaway Bot', href: `${botPrefix}/giveaway` },
+    { label: 'Discord Ticket Bot',   href: '/ticketbot' },
+    { label: 'Discord Giveaway Bot', href: '/giveaway' },
   ]
   // Support-Spalte: die Kanäle, über die Kunden vor und nach dem Kauf Hilfe
   // bekommen. Die E-Mail ist dieselbe, die § 4 der AGB für Rückerstattungen

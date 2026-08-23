@@ -105,7 +105,7 @@ function HeaderInner() {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
   const [searchOpen, setSearchOpen] = useState(false)
 
-  const { lang } = useLang()
+  const { lang, path: langlosPath } = useLang()
   const t = layoutTranslations[lang]
   // Nav-Labels übersetzen; Marken-/Produktnamen (Ticket Bot, Giveaway Bot,
   // Dashboard) bleiben bewusst unverändert (kein Mapping-Eintrag → Fallback).
@@ -227,8 +227,11 @@ function HeaderInner() {
     finally { setLoginLoading(false) }
   }
 
+  // Gegen den Pfad OHNE Sprachpräfix vergleichen, nicht gegen die Adresse.
+  // `/de/packages`.startsWith('/packages') ist falsch, deshalb war auf jeder
+  // deutschen Seite kein einziger Navigationspunkt hervorgehoben.
   const isActive = (href: string) =>
-    href === '/' ? pathname === '/' : pathname.startsWith(href)
+    href === '/' ? langlosPath === '/' : langlosPath.startsWith(href)
 
   const hasCategories = categories.length > 0
 
@@ -243,15 +246,6 @@ function HeaderInner() {
   // laufen über next/link inkl. Prefetch.
   const isNavItemExternal = (item: NavItem) =>
     item.external ?? /^https?:\/\//i.test(item.href)
-
-  // Die beiden Bot-Landingpages gibt es zweisprachig unter eigenen URLs
-  // (/ticketbot und /de/ticketbot). Auf Deutsch soll die Navigation auf die
-  // deutsche Fassung zeigen. Bewusst nur diese beiden exakten Pfade: die
-  // Unterseiten (verify, dashboard, stats) sind cookie-übersetzt und haben
-  // keine /de/-Variante.
-  const LOCALISED_PATHS = new Set(['/ticketbot', '/giveaway'])
-  const navHref = (href: string): string =>
-    lang === 'de' && LOCALISED_PATHS.has(href) ? `/de${href}` : href
 
   const renderNavItem = (item: NavItem) =>
     isNavItemExternal(item) ? (
@@ -268,9 +262,9 @@ function HeaderInner() {
     ) : (
       <Link
         key={item.href}
-        href={navHref(item.href)}
+        href={item.href}
         prefetch
-        className={navLinkClasses(isActive(navHref(item.href)))}
+        className={navLinkClasses(isActive(item.href))}
       >
         {navLabel(item.label)}
       </Link>
@@ -289,7 +283,7 @@ function HeaderInner() {
     const external = isNavItemExternal(child)
     const classes = cn(
       'flex items-center gap-2.5 rounded-md px-3 py-2 text-sm outline-none transition-colors',
-      !external && isActive(navHref(child.href))
+      !external && isActive(child.href)
         ? 'bg-[var(--color-muted)] text-[var(--color-foreground)]'
         : 'text-[var(--color-muted-foreground)] hover:bg-[var(--color-muted)] hover:text-[var(--color-foreground)]',
     )
@@ -315,7 +309,7 @@ function HeaderInner() {
     ) : (
       <Link
         key={child.href}
-        href={navHref(child.href)}
+        href={child.href}
         prefetch={child.prefetch ?? true}
         role="menuitem"
         onClick={onNavigate}
