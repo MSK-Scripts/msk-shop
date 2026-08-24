@@ -25,11 +25,12 @@ export function LegalContent({ htmlEn, htmlDe, breadcrumbKey, href }: Props) {
 
   return (
     <div className="container-page py-10 md:py-14">
-      {/* Kein `mx-auto`: der Lesedeckel sitzt an den Textelementen selbst
-          (`.legal-content`, 34rem). Zentrierte man den Wrapper zusaetzlich,
-          begaenne der Text bei 1920 px erst nach rund 576 px, waehrend Logo,
-          Navigation und jede andere Seite an der Containerkante anfangen. */}
-      <div className="max-w-3xl">
+      {/* Kein eigener Deckel und kein `mx-auto`: der Lesedeckel sitzt an den
+          Textelementen selbst (`.legal-content`, 82rem). Ein zentrierter
+          768-px-Wrapper liess den Text bei 1920 px erst nach rund 576 px
+          beginnen, waehrend Logo, Navigation und jede andere Seite an der
+          Containerkante anfangen. */}
+      <div>
         {/* Breadcrumb */}
         <nav aria-label="Breadcrumb" className="mb-8 flex items-center gap-1.5 text-xs text-[var(--color-muted-foreground)]">
           <Link href="/" className="transition-colors hover:text-[var(--color-foreground)]">{home}</Link>

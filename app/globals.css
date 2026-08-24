@@ -541,21 +541,35 @@
        Nebensachen. Auf diesen drei Seiten ist der Fließtext die Hauptsache,
        und es ist der längste Text der Website. Kontrast 5,28:1 auf 19:1. */
     color: var(--color-foreground);
-    line-height: 1.7;
+    /* Grösser und luftiger als der Rest der Seite, gemessen an musiker15.de
+       (18 px, Zeilenhöhe 1,75). Das ist die Gegenrechnung zur langen Zeile
+       darunter: eine breite Spalte trägt nur mit genug Schriftgrösse und
+       Durchschuss. */
+    font-size: 1.125rem;
+    line-height: 1.75;
   }
-  /* Zeilenlänge nur für den laufenden Text, nicht für die Tabellen. Gemessen
-     bei 1440 px mit der echten Schrift der Seite: vorher 768 px Spaltenbreite
-     und damit 98 Zeichen pro Zeile. DESIGN.md nennt für Rechtstexte
-     `container-prose`, das sind jetzt 34rem und rund 70 Zeichen.
-     Der Deckel sitzt an den Textelementen, damit die sieben Tabellen weiter die
-     volle Spaltenbreite behalten und nicht auch am Desktop scrollen müssen. */
+  /* Zeilenlänge.
+
+     Stand bis zum 24.08.2026: 34rem, also 64 Zeichen. Das ist die klassische
+     Leseempfehlung und sah in einem 1920er Container trotzdem falsch aus, weil
+     ein 544 px schmales Band in einer 1900 px breiten Seite wie vergessen wirkt.
+
+     Referenz ist jetzt `musiker15.de/impressum`, ausgemessen bei demselben
+     Viewport von 1920: dort ist der Fliesstext **1312 px** breit und trägt
+     **136 Zeichen** pro Zeile, bei 18 px Schrift und Zeilenhöhe 1,75. Der
+     Deckel hier bildet genau das ab (82rem = 1312 px).
+
+     Der Deckel sitzt weiter an den Textelementen, nicht am Artikel, damit die
+     sieben Tabellen der Datenschutzerklärung die volle Spaltenbreite behalten
+     und nicht auch am Desktop scrollen müssen. */
   .legal-content > p,
   .legal-content > ul,
   .legal-content > ol,
   .legal-content > h1,
   .legal-content > h2,
-  .legal-content > h3 {
-    max-width: 34rem;
+  .legal-content > h3,
+  .legal-content > .table-wrap {
+    max-width: 82rem;
   }
   .legal-content h1 {
     font-size: 1.875rem;

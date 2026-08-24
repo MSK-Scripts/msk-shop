@@ -240,8 +240,10 @@ pairing, plain lettering on the sign and stencilled type on the parts bin.
   headings.
 - **Title** (700, 1.125rem, 1.25): card and panel headings.
 - **Body** (400, 0.875rem base, 1.625): running copy, in Quiet for anything
-  secondary. Prose columns cap at 34rem through `container-prose`, which is
-  about 70 characters in Inter.
+  secondary.
+- **Legal body** (400, 1.125rem, 1.75): the three legal pages only. Larger and
+  airier than the rest of the site because the column is wide; see The Long
+  Measure Rule.
 - **Label** (600, 0.6875rem, 0.15em, uppercase, mono): section labels, table
   headers, key fragments, counts.
 
@@ -264,12 +266,12 @@ footer. On any route and at any width, those three share an edge.
 
 - **`container-page`** (120rem / 1920 px): the shell. Header, all page content,
   footer.
-- **`container-prose`** (34rem): an inner cap for running text, applied to the
-  text elements themselves rather than the shell. Deliberately not in `ch`. A
-  `ch` is the width of the digit zero, 10 px in Inter, while the average letter
-  measures 7.8 px, so the obvious-looking `65ch` produces 84 characters per line
-  rather than 65. Measured on /terms at 1440 px with the page's own font: 34rem
-  gives 74.
+- **`container-prose`** (34rem): an inner cap for running text where a narrow
+  column is wanted. Deliberately not in `ch`. A `ch` is the width of the digit
+  zero, 10 px in Inter, while the average letter measures 7.8 px, so the
+  obvious-looking `65ch` produces 84 characters per line rather than 65.
+- The **legal pages** do not use it. They cap their text elements at 82rem
+  instead; see The Long Measure Rule.
 
 Until 24 August 2026 there were four shells (`container-prose`, `container-app`
 at 1440, `container-page`, `container-wide` at 2560) picked by what the visitor
@@ -315,6 +317,17 @@ which is what happened between 22 and 24 August 2026. The KPI grid on both
 statistics pages carries its own floor instead: `minmax(min(100%, 300px), 1fr)`
 settles at five columns inside the 1920 px shell, so the 14 tiles fall as 5 + 5 + 4.
 At 260 px they fell as 6 + 6 + 2, with two orphans in the last row.
+
+**The Long Measure Rule.** The three legal pages run a deliberately wide column,
+82rem at 1.125rem with a line height of 1.75. That is roughly 136 characters, far
+past the classic 45 to 75, and it is a considered exception rather than an
+oversight. Those pages carry no images, no cards and no sidebar, so a 34rem
+ribbon inside a 1920 px shell reads as forgotten rather than as focused. The
+geometry is taken from `musiker15.de/impressum`, measured at the same 1920 px
+viewport: 1312 px of text, 136 characters, 18 px, line height 1.75. A long line
+only works with that much size and leading, so the three values move together or
+not at all. The cap sits on the text elements and on the table wrappers, so
+prose and tables share one right edge.
 
 **The Reachable Control Rule.** Interactive controls carry a 44 px hit area. Where
 a control must stay visually small, `tap-target` extends the hit area through a
