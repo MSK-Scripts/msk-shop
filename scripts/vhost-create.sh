@@ -45,10 +45,17 @@ fi
 
 TRANSCRIPT_DIR="/var/www/html/transcripts/$GUILD_ID"
 VHOST_FILE="/etc/apache2/sites-available/$DOMAIN.conf"
-# ACME http-01 webroot. MUST be /var/www/html — that is where this server's default
-# vhost (000-default) and the forms wildcard vhost (ServerAlias *) already serve
-# /.well-known/acme-challenge/ from. Any other path means the wildcard catch-all
-# answers the challenge from /var/www/html, 404s, and the certificate never issues.
+# ACME http-01 webroot. MUST be /var/www/html — that is the server's convention:
+# 000-default.conf grants /.well-known/acme-challenge/ from there, and both vhosts
+# this script writes point their DocumentRoot at it for that path. Any other value
+# means certbot drops the token somewhere nobody serves, and issuance fails with a
+# 404 on the challenge URL.
+#
+# Until 24.08.2026 a wildcard vhost (ServerAlias * in msk-forms-acme.conf) also
+# served the challenge from here, which is what the earlier version of this comment
+# described. That vhost is gone. Nothing outside this file backs the challenge up
+# any more, so the exception in both vhosts below is load-bearing, not belt and
+# braces.
 WEBROOT="/var/www/html"
 
 # ── Rollback trap ─────────────────────────────────────────────────────────────
@@ -85,9 +92,13 @@ mkdir -p "$WEBROOT/.well-known/acme-challenge"
 # ── Step 1: Temporary HTTP-only VHost for certbot challenge ───────────────────
 # Exact-ServerName vhost so the domain resolves predictably during provisioning.
 # Serves ONLY the ACME challenge from the shared web root (same convention as
-# 000-default) and denies everything else. Even if the forms wildcard vhost
-# (ServerAlias *) handles the request instead, it serves the challenge from the
-# same /var/www/html — so issuance works either way.
+# 000-default) and denies everything else.
+#
+# This block used to have a fallback: a wildcard vhost (ServerAlias *) would have
+# caught the request otherwise and served the challenge from the same web root.
+# That vhost was removed on 24.08.2026. Without it, a domain that has no exact
+# vhost lands on 000-default.conf, which denies everything except the ACME path —
+# so issuance still works, but only because this vhost is written first.
 
 cat > "$VHOST_FILE" << APACHE
 <VirtualHost *:80>
