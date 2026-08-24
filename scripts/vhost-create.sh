@@ -133,11 +133,31 @@ if [[ ! -f "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" ]]; then
 fi
 
 # ── Step 3: Replace with full HTTPS VHost ─────────────────────────────────────
+#
+# The :80 block keeps the ACME exception from Step 1. Without it certbot can
+# issue the certificate but never renew it: `certbot --webroot` writes the token
+# into $WEBROOT, Let's Encrypt follows the redirect to :443, and that vhost's
+# DocumentRoot is the guild's transcript directory, not the web root. The
+# challenge 403s and the renewal fails.
+#
+# Until 24.08.2026 renewal worked by accident. The forms wildcard vhost
+# (ServerAlias * in msk-forms-acme.conf) sorts before the generated files in
+# sites-enabled, matched first, skipped the ACME path and served it from
+# $WEBROOT — so the block below never ran at all. Removing that catch-all broke
+# renewal for every custom domain at once, which is why the exception now lives
+# where it belongs. Same shape as bot-dashboard.msk-scripts.de.conf.
 
 cat > "$VHOST_FILE" << APACHE
 <VirtualHost *:80>
     ServerName $DOMAIN
+    DocumentRoot $WEBROOT
+
+    <Location /.well-known/acme-challenge/>
+        Require all granted
+    </Location>
+
     RewriteEngine On
+    RewriteCond %{REQUEST_URI} !^/\.well-known/acme-challenge/
     RewriteRule ^(.*)$ https://$DOMAIN\$1 [R=301,L]
 </VirtualHost>
 
