@@ -91,6 +91,33 @@ export const PAGE_SEO: Record<string, Record<Lang, PageSeo>> = {
     en: { title: 'Privacy Policy',        description: 'How MSK Scripts handles personal data, in line with the GDPR.' },
     de: { title: 'Datenschutzerklärung',  description: 'Wie MSK Scripts mit personenbezogenen Daten umgeht, nach den Vorgaben der DSGVO.' },
   },
+
+  // Kaufpfad. Diese fünf tragen `robots: noindex` und stehen zusätzlich in der
+  // robots.txt, die Beschreibung wird also nie in einem Suchergebnis landen.
+  // Der Titel ist trotzdem nötig: bis zum 23.08.2026 hiessen alle fünf
+  // "MSK Scripts – Website & Shop", weil sie gar keine Metadaten hatten und den
+  // Vorgabewert aus dem Root-Layout erbten. Wer beim Kaufen einen zweiten Tab
+  // öffnet, fand den Warenkorb in der Leiste nicht wieder.
+  '/cart': {
+    en: { title: 'Cart',        description: 'The packages you have selected, before checkout at Tebex.' },
+    de: { title: 'Warenkorb',   description: 'Die ausgewählten Pakete, vor der Bezahlung bei Tebex.' },
+  },
+  '/checkout': {
+    en: { title: 'Order status',  description: 'Status of your order after returning from Tebex.' },
+    de: { title: 'Bestellstatus', description: 'Status deiner Bestellung nach der Rückkehr von Tebex.' },
+  },
+  '/login': {
+    en: { title: 'Sign in',   description: 'Sign in with your CFX.re account to buy MSK Scripts resources.' },
+    de: { title: 'Anmelden',  description: 'Mit dem CFX.re-Konto anmelden, um Ressourcen von MSK Scripts zu kaufen.' },
+  },
+  '/account': {
+    en: { title: 'Account',     description: 'Your CFX.re account and linked Discord ID.' },
+    de: { title: 'Mein Konto',  description: 'Dein CFX.re-Konto und die verknüpfte Discord-ID.' },
+  },
+  '/auth/discord': {
+    en: { title: 'Linking Discord',      description: 'Linking your Discord account for role assignment after purchase.' },
+    de: { title: 'Discord verknüpfen',   description: 'Discord-Konto verknüpfen für die Rollenvergabe nach dem Kauf.' },
+  },
 }
 
 /** Kurzgriff für eine Seite. Der Pfad ist der sprachlose. */

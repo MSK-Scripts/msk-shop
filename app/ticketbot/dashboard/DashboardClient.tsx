@@ -69,7 +69,7 @@ function StatusBadge({ status, t }: { status: Guild['domain_status']; t: { activ
 const TIER_COLORS: Record<Tier, string> = {
   basic:        'text-[var(--color-muted-foreground)] bg-[var(--color-muted)] border-[var(--color-border)]',
   premium:      'text-[var(--color-primary)] bg-[var(--color-primary)]/10 border-[var(--color-primary)]/30',
-  premium_plus: 'text-[#9d65fe] bg-[#9d65fe]/10 border-[#9d65fe]/30',
+  premium_plus: 'text-[var(--color-tier-plus)] bg-[var(--color-tier-plus)]/10 border-[var(--color-tier-plus)]/30',
 }
 
 export default function DashboardClient({ guilds, serverIp }: Props) {
@@ -91,7 +91,7 @@ export default function DashboardClient({ guilds, serverIp }: Props) {
   }
 
   return (
-    <div className="container-app py-10 md:py-14">
+    <div className="container-page py-10 md:py-14">
       <div>
 
         {/* Header */}

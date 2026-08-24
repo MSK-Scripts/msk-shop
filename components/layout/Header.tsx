@@ -442,7 +442,10 @@ function HeaderInner() {
   return (
     <>
       <header className="sticky top-0 z-50 border-b border-[var(--color-border)] bg-[color-mix(in_oklab,var(--color-background)_85%,transparent)] backdrop-blur-md">
-        <div className="flex h-16 w-full items-center gap-3 px-4 md:px-6 lg:px-8">
+        {/* container-page, damit Kopfzeile, Inhalt und Fusszeile auf derselben
+            Kante sitzen. Vorher w-full mit eigenem Padding, dadurch lief die
+            Kopfzeile als einziges Element der Seite bis an den Bildschirmrand. */}
+        <div className="container-page flex h-16 items-center gap-3">
 
           {/* Logo */}
           <Link

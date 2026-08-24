@@ -46,6 +46,8 @@ CLAUDE.md
 PRODUCT.md
 Stripe_Umstruktuierung.md
 Customer-Create-Bot.md
+DESIGN_AUDIT.md
+DESIGN_PLAN.md
 
 # Lokale Entwicklungs-Datenbank (Docker). Bleibt lokal: die Compose-Datei liest
 # Zugangsdaten aus .env.local, und der Seed enthält erfundene Guilds und

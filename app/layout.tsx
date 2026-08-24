@@ -35,7 +35,12 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
   title: {
-    default: "MSK Scripts – Website & Shop",
+    // Reine Notbremse. Seit dem 23.08.2026 setzt jede Seite ihren eigenen
+    // Titel, auch die fünf des Kaufpfads. Vorher stand hier der blosse
+    // Markenname, den der SEO-Durchgang vom 22.08. auf der Startseite
+    // abgeschafft hatte, weil er nichts aussagt; die Seiten ohne eigene
+    // Metadaten erbten ihn und hiessen live alle gleich.
+    default: "FiveM Scripts, Tools & Discord Bots | MSK Scripts",
     // Unterseiten setzen nur ihren eigenen Namen und bekommen das Suffix von
     // hier. Wer bewusst einen komplett eigenen Titel will (Landingpages),
     // nutzt `title: { absolute: '…' }`.
@@ -65,7 +70,7 @@ export const metadata: Metadata = {
     siteName: "MSK Scripts",
     locale: "en_US",
     alternateLocale: ["de_DE"],
-    title: "MSK Scripts – Website & Shop",
+    title: "FiveM Scripts, Tools & Discord Bots | MSK Scripts",
     description:
       "High quality FiveM resources, Tools & Discord bots for your server",
     images: [
@@ -79,7 +84,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "MSK Scripts – Website & Shop",
+    title: "FiveM Scripts, Tools & Discord Bots | MSK Scripts",
     description:
       "High quality FiveM resources, Tools & Discord bots for your server",
     images: ["/msk-scripts-server-banner.webp"],

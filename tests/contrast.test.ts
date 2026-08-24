@@ -123,6 +123,17 @@ describe.each([
    * dem Text ähnlicher als die Karte, der Kontrast also niedriger. Wer nur
    * gegen die Karte rechnet, misst sich zu gut.
    */
+  /**
+   * Tier-Badge Premium+ im Ticketbot-Dashboard. Eigener Fall, weil es mit 10 %
+   * getönt wird und nicht mit 12 % wie die Ökosystem-Badges. Es war bis zum
+   * 23.08.2026 die letzte Farbe ausserhalb des Tokenblocks und lag deshalb
+   * ungesehen in beiden Themes unter AA.
+   */
+  it('Tier-Badge Premium+ ist auf seiner eigenen Fläche lesbar', () => {
+    expect(t['tier-plus'], 'Token --color-tier-plus fehlt').toBeTruthy()
+    expect(contrast(t['tier-plus'], mix(t['tier-plus'], t.card, 0.1))).toBeGreaterThanOrEqual(4.5)
+  })
+
   const badges = ['esx', 'qb', 'lua', 'js', 'ts', 'py', 'discord', 'fivem', 'sale'] as const
 
   it.each(badges)('Badge %s ist auf seiner eigenen Fläche lesbar', (name) => {

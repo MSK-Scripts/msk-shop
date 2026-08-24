@@ -215,7 +215,7 @@ export default function ResourcesClient({ stats: initialStats }: { stats: Resour
   const paid = stats.resources.filter(r => r.tier === 'paid').sort(byPopularity)
 
   return (
-    <div className="container-wide py-10 md:py-14">
+    <div className="container-page py-10 md:py-14">
       <div>
 
         {/* Header */}

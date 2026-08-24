@@ -154,7 +154,7 @@ export default function StatsClient({
   const statusTotal = statusItems.reduce((s, i) => s + (stats.status[i.key] ?? 0), 0)
 
   return (
-    <div className="container-app py-10 md:py-14">
+    <div className="container-page py-10 md:py-14">
       <div>
 
         {/* Header */}
@@ -193,7 +193,7 @@ export default function StatsClient({
             zwischen H1 und den 14 Kacheln. */}
         <section aria-labelledby="figures-heading">
           <h2 id="figures-heading" className="sr-only">{t.region_figures}</h2>
-          <div className="mb-4 grid grid-cols-[repeat(auto-fill,minmax(min(100%,260px),1fr))] gap-4">
+          <div className="mb-4 grid grid-cols-[repeat(auto-fill,minmax(min(100%,300px),1fr))] gap-4">
             {cards.map(c => <StatCard key={c.label} {...c} />)}
           </div>
         </section>

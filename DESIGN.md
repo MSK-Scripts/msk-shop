@@ -23,6 +23,7 @@ colors:
   warning: "#9f5300"
   info: "#0369a1"
   discord-blurple: "#5865F2"
+  tier-plus: "#8044dc"
 typography:
   display:
     fontFamily: "Inter Variable, ui-sans-serif, system-ui, sans-serif"
@@ -189,6 +190,12 @@ Every green in the system is a colour the logo actually contains. See
   light value identical to Workshop Green; it is rendered nowhere today, and if
   it ever is, it needs its own step. Their foreground colour flips per theme, because a functional colour dark
   enough to carry white in light mode is too dark to sit on charcoal.
+- **Tier Plus** (`#8044dc` light, `#b27cff` dark): the Premium+ badge in the
+  ticket bot dashboard, and nothing else. It lived as a hardcoded `#9d65fe` in
+  the component until 23 August 2026 and was therefore the one colour in the app
+  the contrast test could not see; measured on its own 10 % wash it was 3.15:1 in
+  light and 3.78:1 in dark. Hue and chroma are unchanged, only the lightness
+  moved until both themes cleared 4.6:1.
 - **Discord Blurple** (`#5865F2`): only for Discord actions. It exists twice in
   the tokens, as a fill and as a text colour (`#7d86f5` in dark), because one
   value cannot serve both at 4.5:1.
@@ -252,23 +259,30 @@ doubt, drop it. The heading carries the section on its own.
 
 ## Layout
 
-Content sits in one of four containers, chosen by what the visitor is doing
-rather than by page type. This is the distinction the system got wrong until
-22 August 2026, when statistics pages and dashboards were still using the catalog
-container and ran to 2560 px.
+Every page sits in **one** shell, `container-page`, and so do the header and the
+footer. On any route and at any width, those three share an edge.
 
-- **`container-prose`** (34rem): running text. Legal pages, long-form copy.
-  Deliberately not in `ch`. A `ch` is the width of the digit zero, 10 px in
-  Inter, while the average letter measures 7.8 px, so the obvious-looking
-  `65ch` produces 84 characters per line rather than 65. Measured on
-  /terms at 1440 px with the page's own font: 34rem gives 74.
-- **`container-app`** (90rem / 1440 px): work surfaces. Both dashboards, both
-  statistics pages, the admin cockpit. Someone here is reading rows and numbers,
-  and a figure parked 2000 px from the page edge is slower to find, not faster.
-- **`container-page`** (120rem / 1920 px): ordinary pages.
-- **`container-wide`** (160rem / 2560 px): card grids only, currently `/packages`,
-  `/categories/[id]` and `/resources`. These are the only layouts that genuinely
-  gain from another column.
+- **`container-page`** (120rem / 1920 px): the shell. Header, all page content,
+  footer.
+- **`container-prose`** (34rem): an inner cap for running text, applied to the
+  text elements themselves rather than the shell. Deliberately not in `ch`. A
+  `ch` is the width of the digit zero, 10 px in Inter, while the average letter
+  measures 7.8 px, so the obvious-looking `65ch` produces 84 characters per line
+  rather than 65. Measured on /terms at 1440 px with the page's own font: 34rem
+  gives 74.
+
+Until 23 August 2026 there were four shells (`container-prose`, `container-app`
+at 1440, `container-page`, `container-wide` at 2560) picked by what the visitor
+was doing, and the header used none of them and ran edge to edge. The intent was
+right and the result was not: above 1920 px the content jumped by up to 640 px
+between routes, and the header never lined up with anything. The density concern
+that produced `container-app` is real, but it belongs to the dense component, not
+to the page. See The Working-Surface Cap Rule.
+
+`container-page` carries `width: 100%` and that is load-bearing, not tidiness: as
+a flex child, `margin-inline: auto` otherwise shrinks the element to its content
+width and centres that. The home page hero is `flex flex-col`, and its section sat
+17 px inset while the proof line below it sat 700 px inset.
 
 Horizontal padding steps 1rem, 2rem at 768 px, 3rem at 1536 px. Section rhythm is
 `2.5rem` vertical, `3.5rem` from the medium breakpoint.
@@ -293,10 +307,14 @@ sideways across the three most common laptop widths.
 
 ### Named Rules
 
-**The Working-Surface Cap Rule.** If the visitor is working rather than browsing,
-the content is capped at `container-app`. Dashboards, settings, statistics and
-admin never run to the full viewport. A 1920 px wide form field is not more usable
-than a 1000 px one, only harder to read.
+**The Working-Surface Cap Rule.** Dense content is capped on the component, never
+on the page shell. A figure parked 2000 px from the page edge is slower to find,
+not faster, and a 1920 px form field is not more usable than a 1000 px one. But
+capping the whole page to fix one grid gives the site a different width per route,
+which is what happened between 22 and 23 August 2026. The KPI grid on both
+statistics pages carries its own floor instead: `minmax(min(100%, 300px), 1fr)`
+settles at five columns inside the 1920 px shell, so the 14 tiles fall as 5 + 5 + 4.
+At 260 px they fell as 6 + 6 + 2, with two orphans in the last row.
 
 **The Reachable Control Rule.** Interactive controls carry a 44 px hit area. Where
 a control must stay visually small, `tap-target` extends the hit area through a
@@ -392,8 +410,8 @@ Rule above.
 ## Do's and Don'ts
 
 ### Do:
-- **Do** pick the container from what the visitor is doing. `container-app` for
-  work surfaces, `container-wide` only for card grids.
+- **Do** put every page in `container-page`, header and footer included. If a
+  layout inside it is too dense, cap that layout, not the page.
 - **Do** separate with the hairline token and tonal steps. The border is the
   system's depth device.
 - **Do** give every interactive control a 44 px hit area, through `tap-target`

@@ -198,10 +198,10 @@ export default function DashboardClient({ guildId, owner }: { guildId: string; o
       {/* Bewusst gedeckelt: der Inhalt ist eine Einstellungsmaske plus
           Giveaway-Liste. Ein 1920 px breites Formularfeld ist nicht
           benutzbarer als ein 1000 px breites, nur schwerer zu lesen.
-          Seit 22.08.2026 `container-app` statt eines eigenen max-w-6xl,
+          Seit 22.08.2026 `container-page` statt eines eigenen max-w-6xl,
           damit dieses Dashboard und das Ticketbot-Dashboard gleich breit
           sind. Vorher standen sie auf 1152 gegen 2560 px. */}
-      <main className="container-app w-full py-10">
+      <main className="container-page w-full py-10">
         <div className="mb-6 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--color-primary)]/15 text-[var(--color-primary)]">

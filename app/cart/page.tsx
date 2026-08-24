@@ -222,6 +222,12 @@ export default function CartPage() {
                 </Button>
               )}
 
+              {/* Der Knopf verlaesst die Domain. Wer das erst auf der fremden
+                  Seite merkt, bricht ab, deshalb steht es vorher da. */}
+              <p className="mt-2 text-center text-xs text-[var(--color-muted-foreground)]">
+                {t.checkout_note}
+              </p>
+
               <Button asChild variant="ghost" size="sm" className="mt-2 w-full">
                 <Link href="/packages">
                   <ArrowLeft className="h-3.5 w-3.5" />

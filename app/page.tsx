@@ -15,9 +15,9 @@ import { loadHeadlineStat } from '@/lib/fivestats'
 import { loadReleases } from '@/lib/releases'
 import { loadShopStats } from '@/lib/shopStats'
 
-// Der Titel des Root-Layouts ist reiner Markenname ("MSK Scripts – Website &
-// Shop"). Die Startseite sammelt aber Impressionen auf generische Anfragen
-// nach FiveM-Scripts, deshalb hat sie einen eigenen. Beide Fassungen stehen in
+// Die Startseite sammelt Impressionen auf generische Anfragen nach
+// FiveM-Scripts, deshalb trägt sie den Titel selbst statt über das
+// '%s | MSK Scripts'-Template zu laufen. Beide Fassungen stehen in
 // lib/pageSeo.ts, seit es die Seite zweimal gibt.
 export async function generateMetadata(): Promise<Metadata> {
   const { lang } = await getRequestLang()

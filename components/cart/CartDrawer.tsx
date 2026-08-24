@@ -268,6 +268,10 @@ export function CartDrawer() {
                 {t.loading_checkout}
               </Button>
             )}
+
+            <p className="mt-2 text-xs text-[var(--color-muted-foreground)]">
+              {t.checkout_note}
+            </p>
           </div>
         )}
       </aside>

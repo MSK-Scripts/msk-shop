@@ -34,7 +34,7 @@ export default async function PackagesPage() {
     .replace('{n}', packages.length.toLocaleString(lang === 'de' ? 'de-DE' : 'en-US'))
 
   return (
-    <div className="container-wide py-10 md:py-12">
+    <div className="container-page py-10 md:py-12">
       <header className="mb-7">
         <h1 className="text-3xl font-bold tracking-tight md:text-4xl">{t.heading}</h1>
         <p className="mt-2 text-sm text-[var(--color-muted-foreground)]">

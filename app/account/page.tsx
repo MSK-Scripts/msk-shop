@@ -4,6 +4,23 @@ import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { getRequestLang } from '@/lib/serverLang'
 import { cartTranslations } from '@/lib/i18n'
+import type { Metadata } from 'next'
+import { pageSeo } from '@/lib/pageSeo'
+
+/**
+ * Eigener Titel statt des Vorgabewerts aus dem Root-Layout. Kein `alternates`:
+ * die Seite ist noindex, ein Canonical oder hreflang darauf wäre ein Signal
+ * für etwas, das gar nicht in den Index soll.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const { lang } = await getRequestLang()
+  const seo = pageSeo('/account', lang)
+  return {
+    title:       seo.title,
+    description: seo.description,
+    robots:      { index: false, follow: false },
+  }
+}
 
 export default async function AccountPage() {
   const { lang } = await getRequestLang()

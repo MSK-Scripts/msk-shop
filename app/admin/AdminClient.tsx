@@ -60,7 +60,7 @@ export default function AdminClient({ member }: { member: AdminTeamMember }) {
   }
 
   return (
-    <div className="container-app py-10 md:py-14">
+    <div className="container-page py-10 md:py-14">
       <div>
         {/* Header */}
         <div className="flex flex-wrap items-center justify-between gap-4">

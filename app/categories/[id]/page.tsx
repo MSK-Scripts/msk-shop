@@ -95,10 +95,10 @@ export default async function CategoryPage({
     .replace('{n}', packageCount.toLocaleString(lang === 'de' ? 'de-DE' : 'en-US'))
 
   return (
-    // `container-wide` wie `/packages`: beide Routen sind reine Kartenraster,
+    // `container-page` wie `/packages`: beide Routen sind reine Kartenraster,
     // und DESIGN.md nennt den breiten Container genau dafuer. Beim
     // Container-Aufraeumen am 22.08. war diese Seite uebersehen worden.
-    <div className="container-wide py-10 md:py-14">
+    <div className="container-page py-10 md:py-14">
       {/* Muss mit der sichtbaren Breadcrumb darunter übereinstimmen. */}
       <JsonLd
         data={breadcrumbJsonLd([
