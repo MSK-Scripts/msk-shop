@@ -1,5 +1,7 @@
 # Imprint
 
+*Last updated: August 2026*
+
 ## Information pursuant to § 5 DDG
 
 **Moritz Kohm**

@@ -1,5 +1,7 @@
 # Impressum
 
+*Stand: August 2026*
+
 ## Angaben gemäß § 5 DDG
 
 **Moritz Kohm**

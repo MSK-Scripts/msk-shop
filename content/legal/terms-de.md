@@ -1,6 +1,6 @@
 # Nutzungsbedingungen
 
-*Stand: Juli 2026*
+*Stand: August 2026*
 
 ## 1. Geltungsbereich
 
@@ -34,8 +34,9 @@ Der Lizenzgeber (MSK Scripts) behält alle Rechte an der Software, einschließli
 **Nicht gestattet ist:**
 - Die gleichzeitige Nutzung auf mehr als einem FiveM-Server
 - Weiterverkauf, Weitergabe, Unterlizenzierung oder öffentliche Verbreitung der Ressource
-- Reverse Engineering, Dekompilierung oder Umgehung des Asset Escrow-Systems
-- Das Teilen oder Veröffentlichen von Source-Code-Versionen (-S) einer Ressource
+- Die Umgehung des Asset Escrow-Systems
+- Reverse Engineering oder Dekompilierung der Ressource, soweit dies nicht durch zwingendes Recht gestattet ist (insbesondere §§ 69d Abs. 2, 69d Abs. 3 und 69e UrhG, die vertraglich nicht abbedungen werden können)
+- Das Teilen oder Veröffentlichen der Source-Fassung einer Ressource
 
 ---
 
@@ -44,6 +45,8 @@ Der Lizenzgeber (MSK Scripts) behält alle Rechte an der Software, einschließli
 Da es sich um digitale Produkte handelt, besteht nach der Lieferung kein Widerrufsrecht, sofern Sie beim Checkout ausdrücklich zugestimmt haben, dass die Lieferung vor Ablauf der Widerrufsfrist beginnt.
 
 Bei technischen Problemen, die auf unsere Seite zurückzuführen sind, bieten wir Support und können im Einzelfall Erstattungen gewähren. Kontakt: [info@msk-scripts.de](mailto:info@msk-scripts.de)
+
+Dieser Abschnitt betrifft **Shop-Käufe**. Für die kostenpflichtigen Premium- und Premium+-Abos gilt ein gesetzliches Widerrufsrecht, siehe Abschnitt 7.9.
 
 ---
 
@@ -85,7 +88,7 @@ Sie können Ihr Abonnement jederzeit über die Schaltfläche **„Abo verwalten"
 - Ihr Tier wird zum Ende des laufenden Abrechnungszeitraums auf **Basic** downgegradet (oder sofort, wenn Sie während der Testphase kündigen, es erfolgt keine Abbuchung)
 - Bestehende Transkripte bleiben bis zu ihrem individuellen Ablaufdatum abrufbar
 - Eigene Domains werden zum Zeitpunkt des Downgrades deaktiviert
-- Keine anteiligen Erstattungen für nicht genutzte Abo-Zeit
+- Keine anteiligen Erstattungen für nicht genutzte Abo-Zeit. Ihr gesetzliches Widerrufsrecht nach Abschnitt 7.9 bleibt davon **unberührt**
 
 ### 7.4 API Key
 
@@ -128,6 +131,44 @@ Premium- und Premium+-Nutzer können eine eigene Domain für die Transkript-Ausl
 Wir bemühen uns um eine hohe Verfügbarkeit des Transcript Service, bieten jedoch keine garantierte Betriebszeit oder SLA. Geplante Wartungsarbeiten oder unvorhergesehene Ausfälle können den Dienst vorübergehend unterbrechen.
 
 Ist der Dienst zum Zeitpunkt eines Transkript-Uploads nicht erreichbar, sendet der Bot das Transkript als Dateianhang per DM.
+
+---
+
+### 7.9 Widerrufsrecht (Verbraucher)
+
+**Entwurf, anwaltlich noch nicht geprüft.** Dieser Abschnitt folgt der gesetzlichen Muster-Widerrufsbelehrung (Anlage 1 zu Art. 246a § 1 Abs. 2 Satz 2 EGBGB), angepasst an eine digitale Dienstleistung. Bitte prüfen lassen, bevor Sie sich darauf verlassen.
+
+Dieses Widerrufsrecht gilt für die **kostenpflichtigen Premium- und Premium+-Abos**, bei denen MSK Scripts Ihr Vertragspartner ist (Stripe wickelt lediglich die Zahlung ab). Es gilt nicht für Shop-Käufe, dort ist Tebex Limited Merchant of Record und stellt eigene Widerrufsbedingungen bereit.
+
+**Widerrufsrecht**
+
+Sie haben das Recht, binnen vierzehn Tagen ohne Angabe von Gründen diesen Vertrag zu widerrufen. Die Widerrufsfrist beträgt vierzehn Tage ab dem Tag des Vertragsabschlusses.
+
+Um Ihr Widerrufsrecht auszuüben, müssen Sie uns
+
+**Moritz Kohm**, c/o Impressumservice Dein-Impressum, Stettiner Str. 41, 35410 Hungen, Deutschland, [info@msk-scripts.de](mailto:info@msk-scripts.de)
+
+mittels einer eindeutigen Erklärung (zum Beispiel ein mit der Post versandter Brief oder eine E-Mail) über Ihren Entschluss, diesen Vertrag zu widerrufen, informieren. Sie können dafür das untenstehende Muster-Widerrufsformular verwenden, das jedoch nicht vorgeschrieben ist. Zur Wahrung der Widerrufsfrist reicht es aus, dass Sie die Mitteilung über die Ausübung des Widerrufsrechts vor Ablauf der Widerrufsfrist absenden.
+
+**Folgen des Widerrufs**
+
+Wenn Sie diesen Vertrag widerrufen, haben wir Ihnen alle Zahlungen, die wir von Ihnen erhalten haben, unverzüglich und spätestens binnen vierzehn Tagen ab dem Tag zurückzuzahlen, an dem die Mitteilung über Ihren Widerruf dieses Vertrags bei uns eingegangen ist. Für diese Rückzahlung verwenden wir dasselbe Zahlungsmittel, das Sie bei der ursprünglichen Transaktion eingesetzt haben, es sei denn, mit Ihnen wurde ausdrücklich etwas anderes vereinbart; in keinem Fall werden Ihnen wegen dieser Rückzahlung Entgelte berechnet.
+
+Haben Sie verlangt, dass die Dienstleistung während der Widerrufsfrist beginnen soll, so haben Sie uns einen angemessenen Betrag zu zahlen, der dem Anteil der bis zum Widerruf bereits erbrachten Dienstleistungen im Vergleich zum Gesamtumfang der im Vertrag vorgesehenen Dienstleistungen entspricht. Während der kostenlosen Testphase erfolgt keine Zahlung, ein solcher Betrag fällt dort also nicht an.
+
+**Muster-Widerrufsformular**
+
+(Wenn Sie den Vertrag widerrufen wollen, füllen Sie bitte dieses Formular aus und senden Sie es zurück.)
+
+- An Moritz Kohm, c/o Impressumservice Dein-Impressum, Stettiner Str. 41, 35410 Hungen, Deutschland, info@msk-scripts.de:
+- Hiermit widerrufe(n) ich/wir den von mir/uns abgeschlossenen Vertrag über die Erbringung der folgenden Dienstleistung: MSK Ticket Bot Transcript Service (Premium / Premium+)
+- Bestellt am
+- Name des/der Verbraucher(s)
+- Anschrift des/der Verbraucher(s)
+- Unterschrift des/der Verbraucher(s) (nur bei Mitteilung auf Papier)
+- Datum
+
+Nichtzutreffendes bitte streichen.
 
 ---
 
@@ -210,9 +251,11 @@ Der Giveaway Bot wird kostenlos und **ohne garantierte Verfügbarkeit oder SLA**
 
 ## 10. Haftungsbeschränkung
 
-MSK Scripts übernimmt keine Haftung für Schäden, die durch die Nutzung unserer Produkte oder Dienste entstehen, es sei denn, diese sind auf grobe Fahrlässigkeit oder Vorsatz zurückzuführen.
+Für Schäden aus der Verletzung des Lebens, des Körpers oder der Gesundheit, für Vorsatz und grobe Fahrlässigkeit sowie nach dem Produkthaftungsgesetz haften wir unbeschränkt.
 
-Insbesondere übernehmen wir keine Haftung für:
+Bei einfacher Fahrlässigkeit haften wir nur bei der Verletzung einer wesentlichen Vertragspflicht, also einer Pflicht, deren Erfüllung die ordnungsgemäße Durchführung des Vertrages überhaupt erst ermöglicht und auf deren Einhaltung Sie regelmäßig vertrauen dürfen. In diesem Fall ist die Haftung auf den vertragstypischen, vorhersehbaren Schaden begrenzt.
+
+Eine weitergehende Haftung ist ausgeschlossen. Innerhalb dieser Grenzen übernehmen wir insbesondere keine Haftung für:
 - Änderungen an der FiveM-Plattform oder CFX.re, die die Funktionsfähigkeit gekaufter Ressourcen beeinträchtigen
 - Vorübergehende Nichtverfügbarkeit des Transcript Service
 - Verlust von Transkriptdaten nach Ablauf der Speicherfrist
@@ -229,12 +272,18 @@ Support für Shop-Produkte und den Transcript Service wird über unseren Discord
 
 ## 12. Änderungen der Nutzungsbedingungen
 
-Wir behalten uns das Recht vor, diese Nutzungsbedingungen jederzeit zu aktualisieren. Änderungen werden auf dieser Seite mit aktualisiertem Datum veröffentlicht. Die fortgesetzte Nutzung unserer Dienste nach Veröffentlichung der Änderungen gilt als Zustimmung zu den aktualisierten Bedingungen.
+Wir können diese Nutzungsbedingungen ändern, wenn dafür ein triftiger Grund besteht, etwa eine Änderung der Rechtslage, der Rechtsprechung oder der hier beschriebenen Dienste, und die Änderung das Vertragsgefüge nicht zu Ihren Lasten verschiebt.
 
-Bei wesentlichen Änderungen der Abo-Bedingungen für den Transcript Service werden wir betroffene Nutzer nach Möglichkeit vorab informieren.
+**Bei kostenpflichtigen Abos** informieren wir Sie mindestens 30 Tage vor Wirksamwerden in Textform über die Änderung und weisen dabei auf die Frist, Ihr Widerspruchsrecht und die Folgen eines ausbleibenden Widerspruchs hin. Widersprechen Sie innerhalb dieser Frist, können wir das Abo zum Ende des laufenden Abrechnungszeitraums kündigen. Widersprechen Sie nicht, wird die Änderung wirksam.
+
+**Bei unentgeltlichen Diensten** (Basic-Stufe und Giveaway Bot) werden Änderungen mit ihrer Veröffentlichung auf dieser Seite und aktualisiertem Datum wirksam.
 
 ---
 
 ## 13. Anwendbares Recht
 
-Diese Nutzungsbedingungen unterliegen dem Recht der **Bundesrepublik Deutschland**. Gerichtsstand für alle Streitigkeiten aus oder im Zusammenhang mit diesen Nutzungsbedingungen ist, soweit gesetzlich zulässig, der Sitz des Lizenzgebers.
+Diese Nutzungsbedingungen unterliegen dem Recht der **Bundesrepublik Deutschland** unter Ausschluss des UN-Kaufrechts.
+
+Haben Sie als Verbraucher Ihren gewöhnlichen Aufenthalt in einem anderen EU-Mitgliedstaat, entzieht Ihnen diese Rechtswahl **nicht** den Schutz derjenigen Vorschriften Ihres Aufenthaltsstaates, von denen nicht durch Vereinbarung abgewichen werden kann (Art. 6 Abs. 2 Rom-I-VO).
+
+Sind Sie Kaufmann, juristische Person des öffentlichen Rechts oder öffentlich-rechtliches Sondervermögen, ist ausschließlicher Gerichtsstand der Sitz des Lizenzgebers. **Für Verbraucher gelten die gesetzlichen Gerichtsstände**; ein Verbraucher kann nur an seinem eigenen Wohnsitzgericht verklagt werden.

@@ -1,6 +1,6 @@
 # Terms & Conditions
 
-*Last updated: July 2026*
+*Last updated: August 2026*
 
 ## 1. Scope
 
@@ -34,8 +34,9 @@ The licensor (MSK Scripts) retains all rights to the software, including all int
 **You may not:**
 - Use the resource on more than one FiveM server simultaneously
 - Resell, redistribute, sublicense, or publicly share the resource
-- Reverse engineer, decompile, or attempt to circumvent the Asset Escrow system
-- Share or publish source code versions (-S) of any resource
+- Attempt to circumvent the Asset Escrow system
+- Reverse engineer or decompile the resource, except where mandatory law allows it (in particular §§ 69d(2), 69d(3) and 69e UrhG, which cannot be excluded by contract)
+- Share or publish the Source version of any resource
 
 ---
 
@@ -44,6 +45,8 @@ The licensor (MSK Scripts) retains all rights to the software, including all int
 As these are digital products, the statutory right of withdrawal does not apply once the product has been delivered, provided you explicitly agreed at checkout that delivery begins before the withdrawal period expires.
 
 In the event of technical issues attributable to our side, we offer support and may provide refunds on a case-by-case basis. Contact us at: [info@msk-scripts.de](mailto:info@msk-scripts.de)
+
+This section covers **shop purchases**. For the paid Premium and Premium+ subscriptions a statutory right of withdrawal applies, see section 7.9.
 
 ---
 
@@ -85,7 +88,7 @@ You may cancel your subscription at any time via the **"Manage subscription"** b
 - Your tier is downgraded to **Basic** at the end of the current billing period (or immediately if you cancel during the free trial, no charge is made)
 - Existing transcripts remain accessible until their individual expiry date
 - Custom domains are deactivated at the time of downgrade
-- No partial refunds are provided for unused subscription time
+- No partial refunds are provided for unused subscription time. This does **not** affect your statutory right of withdrawal under section 7.9
 
 ### 7.4 API Key
 
@@ -128,6 +131,44 @@ Premium and Premium+ users may configure a custom domain for transcript delivery
 We strive to maintain high availability of the Transcript Service but do not provide a guaranteed uptime or SLA. Scheduled maintenance or unforeseen outages may temporarily interrupt the service.
 
 If the service is unavailable at the time a transcript is uploaded by the bot, the bot will fall back to sending the transcript as a file attachment via DM.
+
+---
+
+### 7.9 Right of Withdrawal (consumers)
+
+**Draft, not yet reviewed by a lawyer.** This section follows the statutory model instruction (Annex 1 to Art. 246a § 1(2) sentence 2 EGBGB), adapted for a digital service. Please have it checked before you rely on it.
+
+This right of withdrawal applies to the **paid Premium and Premium+ subscriptions**, for which MSK Scripts is your contractual partner (Stripe only processes the payment). It does not apply to shop purchases, where Tebex Limited is the merchant of record and provides its own withdrawal terms.
+
+**Right of withdrawal**
+
+You have the right to withdraw from this contract within fourteen days without giving any reason. The withdrawal period is fourteen days from the day of the conclusion of the contract.
+
+To exercise your right of withdrawal you must inform us
+
+**Moritz Kohm**, c/o Impressumservice Dein-Impressum, Stettiner Str. 41, 35410 Hungen, Germany, [info@msk-scripts.de](mailto:info@msk-scripts.de)
+
+of your decision to withdraw from this contract by a clear statement (for example a letter sent by post or an email). You may use the model withdrawal form below, but it is not obligatory. To meet the withdrawal deadline it is sufficient for you to send your communication concerning your exercise of the right of withdrawal before the withdrawal period has expired.
+
+**Effects of withdrawal**
+
+If you withdraw from this contract, we shall reimburse to you all payments received from you without undue delay and in any event not later than fourteen days from the day on which we are informed about your decision to withdraw. We will carry out such reimbursement using the same means of payment as you used for the initial transaction, unless you have expressly agreed otherwise; in any event you will not incur any fees as a result of such reimbursement.
+
+If you requested that the service begin during the withdrawal period, you shall pay us an amount which is in proportion to what has been provided until you have communicated your withdrawal, in comparison with the full coverage of the contract. During the free trial no payment is made, so no such amount arises.
+
+**Model withdrawal form**
+
+(Complete and return this form only if you wish to withdraw from the contract.)
+
+- To Moritz Kohm, c/o Impressumservice Dein-Impressum, Stettiner Str. 41, 35410 Hungen, Germany, info@msk-scripts.de:
+- I/We hereby give notice that I/We withdraw from my/our contract for the provision of the following service: MSK Ticket Bot Transcript Service (Premium / Premium+)
+- Ordered on
+- Name of consumer(s)
+- Address of consumer(s)
+- Signature of consumer(s) (only if this form is notified on paper)
+- Date
+
+Please delete whichever does not apply.
 
 ---
 
@@ -210,9 +251,11 @@ The Giveaway Bot is provided free of charge and **without any guaranteed uptime 
 
 ## 10. Limitation of Liability
 
-MSK Scripts accepts no liability for damages arising from the use of our products or services, unless caused by gross negligence or willful misconduct.
+We are liable without limitation for damages arising from injury to life, body or health, for intent and gross negligence, and under the German Product Liability Act.
 
-In particular, we accept no liability for:
+For slight negligence we are liable only where we breach a material contractual obligation, meaning an obligation whose fulfilment makes the proper performance of the contract possible in the first place and on whose observance you may regularly rely. In that case liability is limited to the damage that is foreseeable and typical for this kind of contract.
+
+Any further liability is excluded. Within these limits we accept no liability in particular for:
 - Changes to the FiveM platform or CFX.re affecting the functionality of purchased resources
 - Temporary unavailability of the Transcript Service
 - Loss of transcript data beyond the stated retention period
@@ -229,12 +272,18 @@ Support for shop products and the Transcript Service is provided via our Discord
 
 ## 12. Changes to Terms
 
-We reserve the right to update these Terms & Conditions at any time. Changes will be published on this page with an updated date. Continued use of our services after changes are published constitutes acceptance of the updated terms.
+We may amend these Terms where there is a valid reason, for example a change in the law, in case law, or in the services described here, and where the amendment does not shift the balance of the contract to your disadvantage.
 
-For material changes to the Transcript Service subscription terms, we will make reasonable efforts to notify affected users in advance.
+**For paid subscriptions** we will notify you of any amendment in text form at least 30 days before it takes effect, and the notification will state the deadline, your right to object and the consequences of not objecting. If you object within that period, we may terminate the subscription at the end of the current billing period. If you do not object, the amendment takes effect.
+
+**For services provided free of charge** (the Basic tier and the Giveaway Bot), amendments take effect when they are published on this page with an updated date.
 
 ---
 
 ## 13. Governing Law
 
-These Terms are governed by the laws of the **Federal Republic of Germany**. To the extent permitted by law, the exclusive place of jurisdiction for all disputes arising from or in connection with these Terms is the licensor's place of business.
+These Terms are governed by the laws of the **Federal Republic of Germany**, excluding the UN Convention on Contracts for the International Sale of Goods.
+
+If you are a consumer with your habitual residence in another EU member state, this choice of law does **not** deprive you of the protection afforded by those provisions of the law of your country of residence that cannot be derogated from by agreement (Art. 6(2) Rome I Regulation).
+
+If you are a merchant, a legal person under public law or a special fund under public law, the exclusive place of jurisdiction is the licensor's place of business. **For consumers the statutory places of jurisdiction apply**; a consumer can only be sued at the court of their own domicile.
