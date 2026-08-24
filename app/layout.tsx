@@ -35,7 +35,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
   title: {
-    // Reine Notbremse. Seit dem 23.08.2026 setzt jede Seite ihren eigenen
+    // Reine Notbremse. Seit dem 24.08.2026 setzt jede Seite ihren eigenen
     // Titel, auch die fünf des Kaufpfads. Vorher stand hier der blosse
     // Markenname, den der SEO-Durchgang vom 22.08. auf der Startseite
     // abgeschafft hatte, weil er nichts aussagt; die Seiten ohne eigene

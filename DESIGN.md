@@ -192,7 +192,7 @@ Every green in the system is a colour the logo actually contains. See
   enough to carry white in light mode is too dark to sit on charcoal.
 - **Tier Plus** (`#8044dc` light, `#b27cff` dark): the Premium+ badge in the
   ticket bot dashboard, and nothing else. It lived as a hardcoded `#9d65fe` in
-  the component until 23 August 2026 and was therefore the one colour in the app
+  the component until 24 August 2026 and was therefore the one colour in the app
   the contrast test could not see; measured on its own 10 % wash it was 3.15:1 in
   light and 3.78:1 in dark. Hue and chroma are unchanged, only the lightness
   moved until both themes cleared 4.6:1.
@@ -271,7 +271,7 @@ footer. On any route and at any width, those three share an edge.
   rather than 65. Measured on /terms at 1440 px with the page's own font: 34rem
   gives 74.
 
-Until 23 August 2026 there were four shells (`container-prose`, `container-app`
+Until 24 August 2026 there were four shells (`container-prose`, `container-app`
 at 1440, `container-page`, `container-wide` at 2560) picked by what the visitor
 was doing, and the header used none of them and ran edge to edge. The intent was
 right and the result was not: above 1920 px the content jumped by up to 640 px
@@ -311,7 +311,7 @@ sideways across the three most common laptop widths.
 on the page shell. A figure parked 2000 px from the page edge is slower to find,
 not faster, and a 1920 px form field is not more usable than a 1000 px one. But
 capping the whole page to fix one grid gives the site a different width per route,
-which is what happened between 22 and 23 August 2026. The KPI grid on both
+which is what happened between 22 and 24 August 2026. The KPI grid on both
 statistics pages carries its own floor instead: `minmax(min(100%, 300px), 1fr)`
 settles at five columns inside the 1920 px shell, so the 14 tiles fall as 5 + 5 + 4.
 At 260 px they fell as 6 + 6 + 2, with two orphans in the last row.

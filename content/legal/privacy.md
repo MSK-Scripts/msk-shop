@@ -1,6 +1,6 @@
 # Privacy Policy
 
-*Last updated: July 2026*
+*Last updated: August 2026*
 
 ## Privacy at a Glance
 
@@ -202,28 +202,28 @@ These cookies are **httpOnly**, **Secure** and **SameSite=Lax**, exactly like th
 
 **Legal basis:** Art. 6(1)(b) GDPR, technically necessary to provide the dashboard.
 
-### Local Storage (Shop: Basket)
+### Local Storage (Shop: Basket and Discord ID)
 
-The browser's **localStorage** is used to store the basket identifier. This data does not leave your browser and is not transmitted to our servers.
+The browser's **localStorage** holds two entries. Neither is a cookie, neither is read by our server, and both survive closing the browser until you log out:
 
-**Legal basis:** Art. 6(1)(b) GDPR, technically required for the basket.
-
-### Session Storage (Shop: Authentication)
-
-**sessionStorage** is used to temporarily store FiveM and Discord authentication status during the Tebex checkout flow. The data is automatically deleted when the browser tab is closed.
-
-### Language Preference Cookie
-
-On the pages **/terms** (legal texts), **/stats**, **/giveaway/stats**, **/giveaway/g/…** (public results), **/verify**, and **/dashboard**, a technically necessary cookie is set to remember your chosen display language (German or English) across pages:
-
-| Cookie name | Purpose | Duration |
+| Key | Content | Duration |
 |---|---|---|
-| `msk_lang` | Stores the selected display language (`en` or `de`) | 1 year |
+| `msk-cart` | Basket identifier, your CFX.re username, the basket contents and, for gift purchases, the recipient's username and Discord ID | until logout |
+| `discordId` | Your Discord ID, so you are not asked for it again on every purchase | until logout |
 
-On your first visit, the language is detected automatically from your browser's `Accept-Language` header. As soon as you switch the language manually, your choice is stored in this cookie. The cookie is `SameSite=Lax` and is transmitted exclusively over HTTPS (`Secure`). It is **not httpOnly**, so the selection can be toggled directly in the browser without an additional server round-trip.
+Logging out clears the basket and deletes both entries. You can also remove them at any time through your browser settings.
 
-**Legal basis:** Art. 6(1)(f) GDPR, legitimate interest in providing a consistent language presentation (technically necessary preference cookie, no tracking function).
+**Note on gift purchases:** if you buy a package as a gift, the recipient's username and Discord ID are stored in your own browser so the order can be assigned. Please only enter this data if the recipient agrees.
 
+**Legal basis:** Art. 6(1)(b) GDPR, technically required for the basket and for assigning the purchase.
+
+### Session Storage (Shop: purchase in progress)
+
+**sessionStorage** temporarily remembers which package you were about to buy and where to return to, while you are being sent through the CFX.re or Discord login (`discordReturnPath`, `wantDiscordAuth`, `pendingBasketIdent`, `pendingPackageId`, `pendingPackageType`). This data is automatically deleted when the browser tab is closed.
+
+### Language (no cookie)
+
+The display language is part of the address: the English pages sit at the root, the German ones under `/de/`. **No cookie is set for this.** Until 22 August 2026 a `msk_lang` cookie was used for the language choice; it no longer exists and is no longer set.
 ### Abuse Prevention (Rate Limiting)
 
 To protect the publicly reachable endpoints (the giveaway results pages `/giveaway/g/…` and the dashboard login `/api/giveaway/auth`) from automated abuse, the server **temporarily** processes your IP address **in memory** to count requests within a short time window. This IP-based counter is **not written to any database**, is **not** used for profiling or tracking, and is discarded automatically after the window elapses. (Separately, the web server keeps standard access logs as described under "Technical log data".)
@@ -403,12 +403,12 @@ The data is fetched **server-side only**. Our server queries fivestats.io for st
 | Data | Storage period |
 |---|---|
 | Server access logs | 14 days |
-| Basket (localStorage) | Until deletion by the user or expiry |
-| Shop FiveM/Discord auth (sessionStorage) | Until the browser tab is closed |
+| Basket, CFX.re username, gift recipients (localStorage `msk-cart`) | Until logout or deletion by the user |
+| Your Discord ID (localStorage `discordId`) | Until logout or deletion by the user |
+| Purchase in progress (sessionStorage) | Until the browser tab is closed |
 | OAuth state cookie | 10 minutes |
 | Verify session cookie | 1 hour |
 | Dashboard session cookie | 30 days |
-| Language preference cookie (`msk_lang`) | 1 year (or until cleared by the user) |
 | Ticket Bot account data (guild_id, api_key, discord_user_id, tier, Stripe IDs) | Until deletion request |
 | Rate limiting data | 1 hour (rolling window) |
 | Transcript HTML files | 30 days (Basic) / 180 days (Premium) / 365 days (Premium+) |

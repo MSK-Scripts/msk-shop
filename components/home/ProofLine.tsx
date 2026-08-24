@@ -63,7 +63,7 @@ export function ProofLine({
   return (
     // `relative`, weil die Zeile im Hero steht und dessen absolut positionierter
     // Verlauf sonst darüber gemalt würde.
-    <dl className="container-page relative flex flex-wrap items-baseline gap-x-9 gap-y-3 border-t border-[var(--color-border)] py-6 text-sm text-[var(--color-muted-foreground)]">
+    <dl className="container-page relative flex flex-wrap items-baseline justify-center gap-x-9 gap-y-3 border-t border-[var(--color-border)] py-6 text-sm text-[var(--color-muted-foreground)]">
       {entries.map(e => (
         <div key={e.label} className="flex items-baseline gap-1.5">
           <dt className="sr-only">{e.label}</dt>

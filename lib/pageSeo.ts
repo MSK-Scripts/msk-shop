@@ -94,7 +94,7 @@ export const PAGE_SEO: Record<string, Record<Lang, PageSeo>> = {
 
   // Kaufpfad. Diese fünf tragen `robots: noindex` und stehen zusätzlich in der
   // robots.txt, die Beschreibung wird also nie in einem Suchergebnis landen.
-  // Der Titel ist trotzdem nötig: bis zum 23.08.2026 hiessen alle fünf
+  // Der Titel ist trotzdem nötig: bis zum 24.08.2026 hiessen alle fünf
   // "MSK Scripts – Website & Shop", weil sie gar keine Metadaten hatten und den
   // Vorgabewert aus dem Root-Layout erbten. Wer beim Kaufen einen zweiten Tab
   // öffnet, fand den Warenkorb in der Leiste nicht wieder.

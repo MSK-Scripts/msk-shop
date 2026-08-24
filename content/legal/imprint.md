@@ -15,7 +15,7 @@ Email: [info@msk-scripts.de](mailto:info@msk-scripts.de)
 DE364543992
 
 **Notice pursuant to § 19 UStG:**
-In accordance with § 19 UStG, no VAT is charged or shown (small business regulation).
+Turnover is exempt from VAT under § 19 UStG (small business regulation); no VAT is shown.
 
 ---
 

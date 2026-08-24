@@ -1,6 +1,6 @@
 # Datenschutzerklärung
 
-*Stand: Juli 2026*
+*Stand: August 2026*
 
 ## Datenschutz auf einen Blick
 
@@ -202,28 +202,28 @@ Diese Cookies sind **httpOnly**, **Secure** und **SameSite=Lax**, genau wie die 
 
 **Rechtsgrundlage:** Art. 6 Abs. 1 lit. b DSGVO, technisch notwendig zur Bereitstellung des Dashboards.
 
-### Lokaler Speicher (Shop: Warenkorb)
+### Lokaler Speicher (Shop: Warenkorb und Discord-ID)
 
-Der **localStorage** des Browsers wird zur Speicherung der Warenkorb-Kennung verwendet. Diese Daten verlassen Ihren Browser nicht und werden nicht an unsere Server übertragen.
+Der **localStorage** des Browsers enthält zwei Einträge. Keiner davon ist ein Cookie, keiner wird von unserem Server gelesen, und beide überdauern das Schließen des Browsers, bis Sie sich abmelden:
 
-**Rechtsgrundlage:** Art. 6 Abs. 1 lit. b DSGVO, technisch erforderlich für den Warenkorb.
-
-### Session-Speicher (Shop: Authentifizierung)
-
-Der **sessionStorage** wird zur vorübergehenden Speicherung des FiveM- und Discord-Authentifizierungsstatus während des Tebex-Checkout-Ablaufs verwendet. Die Daten werden beim Schließen des Browser-Tabs automatisch gelöscht.
-
-### Sprachpräferenz-Cookie
-
-Auf den Seiten **/terms** (Rechtstexte), **/stats**, **/giveaway/stats**, **/giveaway/g/…** (öffentliche Ergebnisse), **/verify** und **/dashboard** wird ein technisch notwendiges Cookie gesetzt, um Ihre gewählte Anzeigesprache (Deutsch oder Englisch) seitenübergreifend zu speichern:
-
-| Cookie-Name | Zweck | Dauer |
+| Schlüssel | Inhalt | Dauer |
 |---|---|---|
-| `msk_lang` | Speichert die gewählte Anzeigesprache (`en` oder `de`) | 1 Jahr |
+| `msk-cart` | Warenkorb-Kennung, Ihr CFX.re-Benutzername, der Inhalt des Warenkorbs und bei Geschenkkäufen Benutzername und Discord-ID der beschenkten Person | bis zur Abmeldung |
+| `discordId` | Ihre Discord-ID, damit sie nicht bei jedem Kauf erneut abgefragt wird | bis zur Abmeldung |
 
-Beim ersten Besuch wird die Sprache anhand des `Accept-Language`-Headers Ihres Browsers automatisch erkannt. Sobald Sie die Sprache manuell umschalten, wird Ihre Auswahl in diesem Cookie gespeichert. Das Cookie ist `SameSite=Lax` und wird ausschließlich über HTTPS übertragen (`Secure`). Es ist **nicht httpOnly**, damit die Auswahl direkt im Browser ohne zusätzlichen Server-Roundtrip umgeschaltet werden kann.
+Beim Abmelden wird der Warenkorb geleert und beide Einträge werden gelöscht. Sie können sie außerdem jederzeit über die Einstellungen Ihres Browsers entfernen.
 
-**Rechtsgrundlage:** Art. 6 Abs. 1 lit. f DSGVO, berechtigtes Interesse an einer konsistenten Sprachdarstellung (technisch notwendiges Präferenz-Cookie, keine Tracking-Funktion).
+**Hinweis zu Geschenkkäufen:** Wenn Sie ein Paket verschenken, werden Benutzername und Discord-ID der beschenkten Person in Ihrem eigenen Browser gespeichert, damit die Bestellung zugeordnet werden kann. Bitte geben Sie diese Daten nur mit deren Einverständnis ein.
 
+**Rechtsgrundlage:** Art. 6 Abs. 1 lit. b DSGVO, technisch erforderlich für den Warenkorb und die Zuordnung des Kaufs.
+
+### Session-Speicher (Shop: laufender Kauf)
+
+Der **sessionStorage** merkt sich vorübergehend, welches Paket Sie kaufen wollten und wohin Sie zurückkehren, während Sie durch die Anmeldung bei CFX.re oder Discord geschickt werden (`discordReturnPath`, `wantDiscordAuth`, `pendingBasketIdent`, `pendingPackageId`, `pendingPackageType`). Diese Daten werden beim Schließen des Browser-Tabs automatisch gelöscht.
+
+### Sprache (kein Cookie)
+
+Die Anzeigesprache steckt in der Adresse: die englischen Seiten liegen auf der Wurzel, die deutschen unter `/de/`. **Dafür wird kein Cookie gesetzt.** Bis zum 22. August 2026 wurde die Sprachwahl in einem Cookie `msk_lang` gespeichert; das gibt es nicht mehr und es wird nicht mehr gesetzt.
 ### Missbrauchsschutz (Rate-Limiting)
 
 Zum Schutz der öffentlich erreichbaren Endpunkte (der Giveaway-Ergebnisseiten `/giveaway/g/…` und des Dashboard-Logins `/api/giveaway/auth`) vor automatisiertem Missbrauch verarbeitet der Server **vorübergehend** Ihre IP-Adresse **im Arbeitsspeicher**, um Anfragen innerhalb eines kurzen Zeitfensters zu zählen. Dieser IP-basierte Zähler wird **in keiner Datenbank gespeichert**, **nicht** zur Profilbildung oder zum Tracking verwendet und nach Ablauf des Zeitfensters automatisch verworfen. (Davon unabhängig führt der Webserver Standard-Zugriffsprotokolle, siehe „Technische Protokolldaten".)
@@ -403,12 +403,12 @@ Der Abruf erfolgt ausschließlich **server-seitig**. Unser Server fragt bei five
 | Daten | Speicherdauer |
 |---|---|
 | Server-Zugriffsprotokolle | 14 Tage |
-| Warenkorb (localStorage) | Bis zur Löschung durch den Nutzer oder Ablauf |
-| Shop FiveM/Discord-Auth (sessionStorage) | Bis zum Schließen des Browser-Tabs |
+| Warenkorb, CFX.re-Benutzername, Beschenkte (localStorage `msk-cart`) | Bis zur Abmeldung oder Löschung durch den Nutzer |
+| Ihre Discord-ID (localStorage `discordId`) | Bis zur Abmeldung oder Löschung durch den Nutzer |
+| Laufender Kauf (sessionStorage) | Bis zum Schließen des Browser-Tabs |
 | OAuth-State-Cookie | 10 Minuten |
 | Verify-Session-Cookie | 1 Stunde |
 | Dashboard-Session-Cookie | 30 Tage |
-| Sprachpräferenz-Cookie (`msk_lang`) | 1 Jahr (oder bis zur Löschung durch den Nutzer) |
 | Ticket Bot Kontodaten (guild_id, api_key, discord_user_id, tier, Stripe-IDs) | Bis zur Löschanfrage |
 | Rate-Limiting-Daten | 1 Stunde (gleitendes Fenster) |
 | Transkript-HTML-Dateien | 30 Tage (Basic) / 180 Tage (Premium) / 365 Tage (Premium+) |

@@ -114,7 +114,7 @@
      2,45:1 als Text auf der Kachel. */
   --color-chart-rose:     #be123c;
 
-  /* Tier-Badge Premium+ im Ticketbot-Dashboard. Stand bis zum 23.08.2026 als
+  /* Tier-Badge Premium+ im Ticketbot-Dashboard. Stand bis zum 24.08.2026 als
      hartverdrahtetes #9d65fe in der Komponente und war damit die einzige Farbe
      der Anwendung, die `tests/contrast.test.ts` nicht sehen konnte: der Test
      liest nur `--color-*` aus dieser Datei. Gemessen lag sie als Text auf ihrer
@@ -306,7 +306,7 @@
    und ändern sich dadurch überhaupt nicht. Breiter wird nur, was vorher schon
    die volle Containerbreite gefüllt hat: Raster, Tabellen, Dashboards.
 
-   Seit dem 23.08.2026 ist das die **einzige** Shell der Seite. Kopfzeile,
+   Seit dem 24.08.2026 ist das die **einzige** Shell der Seite. Kopfzeile,
    Inhalt und Fusszeile sitzen dadurch auf jeder Route auf derselben Kante. */
 @utility container-page {
   /* `width: 100%` ist nicht kosmetisch, sondern trägt die ganze Regel: als Kind
@@ -327,7 +327,7 @@
   .container-page { padding-inline: 3rem; }
 }
 
-/* Es gab bis zum 23.08.2026 zwei weitere Stufen: `container-wide` (160rem) für
+/* Es gab bis zum 24.08.2026 zwei weitere Stufen: `container-wide` (160rem) für
    Kartenraster und `container-app` (90rem) für Arbeitsflächen. Damit hatte die
    Seite drei verschiedene Breiten plus eine randlose Kopfzeile, und je nach
    Route sprang der Inhalt. Alles läuft jetzt über `container-page`. Wer wieder
