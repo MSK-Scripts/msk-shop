@@ -15,7 +15,7 @@ export interface GiveawayStats {
   templates:       number;                  // GiveawayTemplate rows
   avgEntries:      number;                  // entries / giveaways, rounded
   maxEntries:      number;                  // most entries on a single giveaway
-  langs:           Record<string, number>;  // en / de / fr / es
+  langs:           Record<string, number>;  // en / de / fr / es / hu / pl / pt
   status:          Record<string, number>;  // ACTIVE / PAUSED / ENDED / CANCELLED
 }
 
@@ -32,7 +32,7 @@ export const EMPTY_GIVEAWAY_STATS: GiveawayStats = {
   templates:       0,
   avgEntries:      0,
   maxEntries:      0,
-  langs:           { en: 0, de: 0, fr: 0, es: 0 },
+  langs:           { en: 0, de: 0, fr: 0, es: 0, hu: 0, pl: 0, pt: 0 },
   status:          { ACTIVE: 0, PAUSED: 0, ENDED: 0, CANCELLED: 0 },
 };
 

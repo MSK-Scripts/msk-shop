@@ -90,6 +90,9 @@ describe.each([
     ['Diagrammfarbe Bernstein auf Kachel', t.warning,               t.muted,      4.5],
     ['Diagrammfarbe Blau auf Kachel',      t.info,                  t.muted,      4.5],
     ['Diagrammfarbe Rosé auf Kachel',      t['chart-rose'],         t.muted,      4.5],
+    ['Diagrammfarbe Violett auf Kachel',  t['chart-violet'],       t.muted,      4.5],
+    ['Diagrammfarbe Petrol auf Kachel',   t['chart-teal'],         t.muted,      4.5],
+    ['Diagrammfarbe Magenta auf Kachel',  t['chart-fuchsia'],      t.muted,      4.5],
     ['Gefahrfarbe als Text auf Kachel',    t.danger,                t.muted,      4.5],
     ['Gefahrfarbe als Text auf Karte',     t.danger,                t.card,       4.5],
     // Live-Log-Konsole des gehosteten Bots. Ihre Fläche ist in beiden Themes

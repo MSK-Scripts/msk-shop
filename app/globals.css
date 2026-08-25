@@ -114,6 +114,15 @@
      2,45:1 als Text auf der Kachel. */
   --color-chart-rose:     #be123c;
 
+  /* Stufen fuenf bis sieben, dazugekommen mit Ungarisch, Polnisch und
+     Portugiesisch in der Sprachaufteilung der Giveaway-Statistik. Gleiches
+     Verfahren wie bei `chart-rose`: Farbton und Buntheit gewaehlt, dann die
+     Helligkeit gewandert, bis der Text auf seiner eigenen Kachel 4,6:1
+     erreicht. */
+  --color-chart-violet:   #932cdd;
+  --color-chart-teal:     #09716e;
+  --color-chart-fuchsia:  #af1dab;
+
   /* Tier-Badge Premium+ im Ticketbot-Dashboard. Stand bis zum 24.08.2026 als
      hartverdrahtetes #9d65fe in der Komponente und war damit die einzige Farbe
      der Anwendung, die `tests/contrast.test.ts` nicht sehen konnte: der Test
@@ -222,6 +231,9 @@
     /* Auf dem dunklen Grund tragen die Markenfarben selbst. Einzige Ausnahme
        ist `sale`: #fb2c36 kam dort auf 4,13:1 und musste aufgehellt werden. */
     --color-chart-rose:     #fb7185;
+    --color-chart-violet:   #b56ee7;
+    --color-chart-teal:     #0d9c97;
+    --color-chart-fuchsia:  #e24bdd;
     --color-tier-plus:      #b27cff;
 
     --color-badge-esx:      #F7941D;

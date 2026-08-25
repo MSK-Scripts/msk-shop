@@ -1183,7 +1183,7 @@ function SettingsTab({ settings, roles, channels, onSaved, setError }: {
       <div className="grid grid-cols-2 gap-4">
         <Field label={t.s_language}>
           <select value={form.lang} onChange={(e) => upd({ lang: e.target.value })} className={selectCls}>
-            {['en', 'de', 'fr', 'es'].map((l) => <option key={l} value={l}>{l.toUpperCase()}</option>)}
+            {['en', 'de', 'fr', 'es', 'hu', 'pl', 'pt'].map((l) => <option key={l} value={l}>{l.toUpperCase()}</option>)}
           </select>
         </Field>
         <Field label={t.s_color}><Input value={form.embedColor} onChange={(e) => upd({ embedColor: e.target.value })} placeholder="#00e676" /></Field>

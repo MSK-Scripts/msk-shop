@@ -142,6 +142,9 @@ export default function StatsClient({
     { key: 'de', label: 'DE', bg: 'bg-[var(--color-warning)]',    text: 'text-[var(--color-warning)]' },
     { key: 'fr', label: 'FR', bg: 'bg-[var(--color-info)]',       text: 'text-[var(--color-info)]' },
     { key: 'es', label: 'ES', bg: 'bg-[var(--color-chart-rose)]', text: 'text-[var(--color-chart-rose)]' },
+    { key: 'hu', label: 'HU', bg: 'bg-[var(--color-chart-violet)]',  text: 'text-[var(--color-chart-violet)]' },
+    { key: 'pl', label: 'PL', bg: 'bg-[var(--color-chart-teal)]',    text: 'text-[var(--color-chart-teal)]' },
+    { key: 'pt', label: 'PT', bg: 'bg-[var(--color-chart-fuchsia)]', text: 'text-[var(--color-chart-fuchsia)]' },
   ]
   const langTotal = langItems.reduce((s, i) => s + (stats.langs[i.key] ?? 0), 0)
 
