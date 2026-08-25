@@ -18,6 +18,12 @@ export function ImageCard({ image, priority = false }: { image: ImageRecord; pri
   return (
     <Link
       href={`/images/${image.category}/${image.name}`}
+      // Kein Prefetch. Ein Raster zeigt 60 Kacheln, und Next holt fuer jeden
+      // sichtbaren Link die Zielseite vor: 60 server-gerenderte Detailseiten
+      // mit je zwei Datenbankabfragen, von denen der Besucher hoechstens eine
+      // anklickt. Am 25.08.2026 hat genau das die eigene Rate-Limit-Regel
+      // ausgeloest und Moritz beim normalen Bloettern ein 429 beschert.
+      prefetch={false}
       className="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)] rounded-xl"
     >
       <Card hoverLift className="h-full overflow-hidden p-3">

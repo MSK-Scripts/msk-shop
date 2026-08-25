@@ -32,8 +32,18 @@ const RATE_RULES: RateRule[] = [
   // Gedeckelt wird also genau der teure Teil: wer den Bestand durchpaginieren
   // will, braucht pro Seite eine Datenbankabfrage. 120 pro Minute trifft im
   // Normalbetrieb niemanden, eine Suche löst höchstens eine Anfrage aus.
-  { prefix: '/api/images',        limit: 120, windowMs: 60_000 },
-  { prefix: '/images',            limit: 120, windowMs: 60_000 },
+  // Die 120 auf `/images` waren zu eng und haben am 25.08.2026 einen normalen
+  // Besucher ausgesperrt: das Raster zeigt 60 Kacheln, und Next holte fuer
+  // jede sichtbare die Detailseite vor. Zwei Seitenaufrufe rissen das Limit,
+  // ohne dass jemand etwas Ungewoehnliches getan haette.
+  //
+  // Behoben ist die Ursache (die Kacheln prefetchen nicht mehr, siehe
+  // components/images/ImageCard.tsx). Die Zahl hier steigt trotzdem, weil ein
+  // Limit, das beim bestimmungsgemaessen Blaettern greift, kein Schutz ist,
+  // sondern ein Defekt. 600 reicht immer noch, um einen Scraper zu bremsen,
+  // der den Bestand seitenweise durchgeht.
+  { prefix: '/api/images',        limit: 300, windowMs: 60_000 },
+  { prefix: '/images',            limit: 600, windowMs: 60_000 },
 ]
 
 // Explizites Body-Limit (Content-Length) für Giveaway-POST/-Mutationsrouten.
