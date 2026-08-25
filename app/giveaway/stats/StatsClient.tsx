@@ -85,7 +85,11 @@ function Breakdown({
         <div className="mb-4 h-3 rounded-full bg-[var(--color-muted)]" />
       )}
 
-      <div className={cn('grid gap-3', items.length === 4 ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-3')}>
+      {/* Vier Spalten unabhängig von der Anzahl. Die Regel hing bis zum
+          25.08.2026 an `items.length === 4` und fiel bei jeder anderen Zahl auf
+          drei Spalten zurück. Mit der siebten Sprache stand PT allein in einer
+          dritten Reihe, und die Karte war fast doppelt so hoch wie die daneben. */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {items.map(({ key, label: itemLabel, text }) => (
           <div key={key} className="flex flex-col gap-1 rounded-lg bg-[var(--color-muted)] px-3 py-2.5">
             <span className={cn('font-mono text-[0.625rem] font-bold uppercase tracking-widest', text)}>
