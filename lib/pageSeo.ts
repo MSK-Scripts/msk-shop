@@ -118,6 +118,20 @@ export const PAGE_SEO: Record<string, Record<Lang, PageSeo>> = {
     en: { title: 'Linking Discord',      description: 'Linking your Discord account for role assignment after purchase.' },
     de: { title: 'Discord verknüpfen',   description: 'Discord-Konto verknüpfen für die Rollenvergabe nach dem Kauf.' },
   },
+
+  // Die Galerie ist die einzige Seite hier, die auf Suchbegriffe zielt, die
+  // nichts mit der Marke zu tun haben ("fivem vehicle images transparent").
+  // Deshalb steht das Gesuchte im Titel und nicht der Bereichsname.
+  '/images': {
+    en: {
+      title:       'FiveM & GTA V Image Gallery',
+      description: 'Free transparent images of GTA V vehicles, weapons, items, props and peds for FiveM scripts. Served from our own CDN, ready to use by spawn name.',
+    },
+    de: {
+      title:       'FiveM- und GTA-V-Bildergalerie',
+      description: 'Kostenlose freigestellte Bilder von GTA-V-Fahrzeugen, Waffen, Items, Props und Peds für FiveM-Scripts. Über eigenes CDN, direkt über den Spawnnamen nutzbar.',
+    },
+  },
 }
 
 /** Kurzgriff für eine Seite. Der Pfad ist der sprachlose. */

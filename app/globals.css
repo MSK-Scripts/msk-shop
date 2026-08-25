@@ -783,3 +783,25 @@
   --color-accenthov: var(--color-accent);
   --color-dim:       var(--color-muted-foreground);
 }
+
+/* ============================================================================
+   Bildergalerie: Schachbrett hinter freigestellten Bildern
+   ----------------------------------------------------------------------------
+   Alle Bilder im CDN sind transparent. Ohne eine erkennbare Flaeche dahinter
+   sieht ein weisses Fahrzeug im hellen Theme aus wie ein Ladefehler und ein
+   schwarzes im dunklen genauso. Das Muster macht sichtbar, dass da nichts ist.
+
+   Bewusst sehr kontrastarm: es soll das Bild tragen, nicht mit ihm um
+   Aufmerksamkeit streiten. Die Kacheln sind aus den vorhandenen Tokens
+   gemischt, damit sie beiden Themes folgen, statt zwei feste Grautoene zu
+   setzen.
+   ============================================================================ */
+.checker-bg {
+  --checker: color-mix(in oklab, var(--color-muted-foreground) 9%, transparent);
+  background-color: var(--color-muted);
+  background-image:
+    linear-gradient(45deg,  var(--checker) 25%, transparent 25%, transparent 75%, var(--checker) 75%),
+    linear-gradient(45deg,  var(--checker) 25%, transparent 25%, transparent 75%, var(--checker) 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 8px 8px;
+}

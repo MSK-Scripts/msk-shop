@@ -48,6 +48,7 @@ Stripe_Umstruktuierung.md
 Customer-Create-Bot.md
 DESIGN_AUDIT.md
 DESIGN_PLAN.md
+IMAGE_CDN_PLAN.md
 
 # Lokale Entwicklungs-Datenbank (Docker). Bleibt lokal: die Compose-Datei liest
 # Zugangsdaten aus .env.local, und der Seed enthält erfundene Guilds und
@@ -75,3 +76,4 @@ database/seed.dev.sql
 # Apache server configs — server-specific, must not be committed
 msk-shop.conf
 msk-shop_ssl.conf
+cdn-msk-scripts.conf

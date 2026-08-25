@@ -46,6 +46,7 @@ export function Footer() {
   const shopLinks = [
     { label: t.footer_all_packages, href: '/packages' },
     { label: t.footer_resource_stats, href: '/resources' },
+    { label: t.footer_image_gallery, href: '/images' },
   ]
   // Eigene Spalte für die beiden Bot-Landingpages. Sie hingen vorher an genau
   // einer internen Quelle, dem „Bots"-Menü im Header. Das Sprachpräfix setzt

@@ -24,8 +24,16 @@ interface RateRule { prefix: string; limit: number; windowMs: number }
 // auf; ein IP-Limit würde ihn bei vielen gleichzeitig endenden Giveaways selbst
 // aussperren — Schutz dort übernimmt der Bearer-Secret + das Body-Limit).
 const RATE_RULES: RateRule[] = [
-  { prefix: '/api/giveaway/auth', limit: 10, windowMs: 5 * 60_000 }, // OAuth-Spam bremsen
-  { prefix: '/giveaway/g/',       limit: 60, windowMs: 60_000 },     // öffentliche Ergebnis-Seiten
+  { prefix: '/api/giveaway/auth', limit: 10,  windowMs: 5 * 60_000 }, // OAuth-Spam bremsen
+  { prefix: '/giveaway/g/',       limit: 60,  windowMs: 60_000 },     // öffentliche Ergebnis-Seiten
+  // Bildergalerie: das Blättern wird gedeckelt, die Bilder selbst nicht. Die
+  // liegen auf cdn.msk-scripts.de und laufen gar nicht durch diesen Prozess —
+  // sie müssen offen bleiben, sonst kann ein FiveM-NUI sie nicht laden.
+  // Gedeckelt wird also genau der teure Teil: wer den Bestand durchpaginieren
+  // will, braucht pro Seite eine Datenbankabfrage. 120 pro Minute trifft im
+  // Normalbetrieb niemanden, eine Suche löst höchstens eine Anfrage aus.
+  { prefix: '/api/images',        limit: 120, windowMs: 60_000 },
+  { prefix: '/images',            limit: 120, windowMs: 60_000 },
 ]
 
 // Explizites Body-Limit (Content-Length) für Giveaway-POST/-Mutationsrouten.

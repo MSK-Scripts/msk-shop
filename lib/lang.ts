@@ -67,6 +67,7 @@ export function istEinmaligeAdresse(path: string): boolean {
 const EINMALIG_EXAKT = new Set([
   '/robots.txt',
   '/sitemap.xml',
+  '/sitemap-images.xml',
   '/sitemap.xsl',
   '/favicon.ico',
   '/logo.png',

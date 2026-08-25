@@ -50,7 +50,10 @@ export default function robots(): MetadataRoute.Robots {
         disallow,
       },
     ],
-    sitemap: `${siteUrl()}/sitemap.xml`,
+    // Zwei Dateien, weil die Bilder-Sitemap einen eigenen Namespace trägt und
+    // in die Tausende geht. Beide müssen hier stehen, sonst findet ein Crawler
+    // die zweite nur über die Search Console.
+    sitemap: [`${siteUrl()}/sitemap.xml`, `${siteUrl()}/sitemap-images.xml`],
     host:    siteUrl(),
   }
 }

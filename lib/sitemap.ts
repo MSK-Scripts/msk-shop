@@ -1,4 +1,5 @@
 import { getCategories, getPackages } from '@/lib/tebex'
+import { listCategories } from '@/lib/images'
 import { absoluteUrl } from '@/lib/siteUrl'
 import { alternatePaths } from '@/lib/lang'
 
@@ -44,6 +45,7 @@ const STATIC_ROUTES = [
   '/',
   '/packages',
   '/resources',
+  '/images',
   '/ticketbot',
   '/giveaway',
   '/ticketbot/stats',
@@ -123,7 +125,23 @@ export async function buildSitemapEntries(): Promise<SitemapEntry[]> {
     bothLanguages(`/categories/${cat.id}`, newest((cat.packages ?? []).map(pkg => parseTimestamp(pkg.updated_at)))),
   )
 
-  return [...staticEntries, ...packageEntries, ...categoryEntries]
+  // Galerie: Uebersicht und Kategorieseiten gehoeren hierher, die einzelnen
+  // Bilder NICHT. Davon gibt es tausende, und eine Sitemap darf 50.000 URLs
+  // fassen — sie stehen deshalb in `/sitemap-images.xml`, das ausserdem den
+  // image-Namespace mitbringt, den Google fuer Bildersuche auswertet.
+  //
+  // Fail-soft wie bei Tebex: ohne Datenbank (CI-Build) bleibt die Sitemap
+  // gueltig, statt den Build zu kippen.
+  const imageCategories = await listCategories('en').catch(err => {
+    console.warn('[sitemap] Bildkategorien nicht verfuegbar:', err)
+    return []
+  })
+
+  const imageCategoryEntries: SitemapEntry[] = imageCategories
+    .filter(c => c.count > 0)
+    .flatMap(c => bothLanguages(`/images/${c.slug}`))
+
+  return [...staticEntries, ...packageEntries, ...categoryEntries, ...imageCategoryEntries]
 }
 
 /**

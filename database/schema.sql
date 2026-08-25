@@ -199,3 +199,73 @@ CREATE TABLE IF NOT EXISTS msk_shop_stats (
     first_payment_at    DATETIME     NULL,
     updated_at          TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+-- ---------------------------------------------------------------------------
+-- Bildergalerie / CDN  (cdn.msk-scripts.de + /images)
+--
+-- Die Dateien selbst liegen im Dateisystem unter CDN_ROOT_PATH und werden von
+-- einem eigenen Apache-vhost ausgeliefert. Hier stehen nur die Metadaten:
+-- was es gibt, wie es heisst, woher es kommt und ob es oeffentlich ist.
+--
+-- Befuellt wird ausschliesslich von scripts/image-ingest.js. Die Web-App liest
+-- diese Tabellen, sie schreibt keine Dateien.
+--
+-- Migration auf einer bestehenden DB: diese beiden CREATE TABLE genuegen.
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS msk_image_categories (
+    slug           VARCHAR(32)  NOT NULL PRIMARY KEY,   -- items, vehicles, weapons, props, peds, brand
+    name_en        VARCHAR(64)  NOT NULL,
+    name_de        VARCHAR(64)  NOT NULL,
+    description_en VARCHAR(255) NULL,
+    description_de VARCHAR(255) NULL,
+    icon           VARCHAR(32)  NULL,                   -- lucide-react Icon-Name
+    sort_order     SMALLINT     NOT NULL DEFAULT 0,
+    is_public      TINYINT(1)   NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS msk_images (
+    id            BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    category      VARCHAR(32)  NOT NULL,
+    -- Dateiname ohne Endung. Bei Fahrzeugen und Peds der Spawnname, bei Items
+    -- der Itemname, bei Waffen der Waffenname ohne WEAPON_-Praefix. Genau so,
+    -- wie ein Script ihn kennt, damit die URL ohne Nachschlagen baubar ist.
+    name          VARCHAR(128) NOT NULL,
+    label         VARCHAR(160) NULL,       -- Anzeigename, z. B. "Pegassi Zentorno"
+    ext           VARCHAR(8)   NOT NULL DEFAULT 'png',
+    width         SMALLINT UNSIGNED NOT NULL,
+    height        SMALLINT UNSIGNED NOT NULL,
+    bytes         INT UNSIGNED NOT NULL,
+    sha256        CHAR(64)     NOT NULL,   -- Dedupe und Aenderungserkennung
+    -- Cachebuster. Der vhost liefert mit max-age=1 Jahr + immutable aus, eine
+    -- ersetzte Datei braucht daher eine neue URL: ?v=<version>, ab version > 1.
+    version       SMALLINT UNSIGNED NOT NULL DEFAULT 1,
+    tags          VARCHAR(255) NULL,       -- kommasepariert, klein
+    source        VARCHAR(120) NULL,       -- "msk_garage", "greenscreener", Pack-Name
+    license_note  VARCHAR(255) NULL,       -- Lizenz des Packs, bei Fremdquellen Pflicht
+    status        ENUM('published','pending','hidden') NOT NULL DEFAULT 'published',
+    submitted_by  VARCHAR(32)  NULL,       -- Discord-User-ID bei Community-Uploads
+    downloads     INT UNSIGNED NOT NULL DEFAULT 0,
+    created_at    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    -- Eindeutig pro Kategorie, nicht global: "police" gibt es als Fahrzeug
+    -- UND als Ped. Genau deshalb steht die Kategorie im Pfad.
+    UNIQUE KEY uniq_cat_name (category, name),
+    KEY idx_category_status (category, status, name),
+    KEY idx_sha (sha256),
+    -- Volltext statt LIKE '%...%': die Suche ist die meistgenutzte Funktion
+    -- der Seite, und ein beidseitiges LIKE kann keinen Index nutzen.
+    FULLTEXT KEY ft_search (name, label, tags)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT IGNORE INTO msk_image_categories (slug, name_en, name_de, icon, sort_order) VALUES
+    ('vehicles', 'Vehicles', 'Fahrzeuge', 'Car',      10),
+    ('items',    'Items',    'Items',     'Package',  20),
+    ('weapons',  'Weapons',  'Waffen',    'Crosshair',30),
+    ('props',    'Props',    'Props',     'Box',      40),
+    ('peds',     'Peds',     'Peds',      'User',     50),
+    ('brand',    'Brand',    'Marke',     'Sparkles', 60);
+
+-- Die Kategorie "brand" haelt eigene Assets (Script-Banner, Logos) und ist
+-- bewusst nicht oeffentlich in der Galerie sichtbar.
+UPDATE msk_image_categories SET is_public = 0 WHERE slug = 'brand';

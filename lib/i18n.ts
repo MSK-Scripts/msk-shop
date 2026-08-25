@@ -1583,6 +1583,7 @@ export const layoutTranslations = {
     nav_verify:        'Verify',
     nav_dashboard:     'Dashboard',
     nav_statistics:    'Statistics',
+    nav_images:          'Image Gallery',
     nav_resources:     'Resource Stats',
     nav_documentation: 'Documentation',
     nav_categories:    'Categories',
@@ -1609,6 +1610,7 @@ export const layoutTranslations = {
     footer_col_legal:  'Legal',
     footer_all_packages: 'All Packages',
     footer_resource_stats: 'Resource Stats',
+    footer_image_gallery: 'Image Gallery',
     footer_documentation: 'Documentation',
     footer_discord:    'Discord',
     footer_email:      'Email us',
@@ -1637,6 +1639,7 @@ export const layoutTranslations = {
     nav_verify:        'Verifizieren',
     nav_dashboard:     'Dashboard',
     nav_statistics:    'Statistiken',
+    nav_images:        'Bildergalerie',
     nav_resources:     'Resourcen-Stats',
     nav_documentation: 'Dokumentation',
     nav_categories:    'Kategorien',
@@ -1663,6 +1666,7 @@ export const layoutTranslations = {
     footer_col_legal:  'Rechtliches',
     footer_all_packages: 'Alle Pakete',
     footer_resource_stats: 'Resourcen-Stats',
+    footer_image_gallery: 'Bildergalerie',
     footer_documentation: 'Dokumentation',
     footer_discord:    'Discord',
     footer_email:      'E-Mail schreiben',
@@ -1679,3 +1683,105 @@ export const layoutTranslations = {
     legal_terms:       'AGB',
   },
 } as const;
+
+// ---------------------------------------------------------------------------
+// Bildergalerie (/images)
+//
+// Produktnamen und Begriffe der Szene bleiben unuebersetzt: ein deutscher
+// Serverbetreiber sucht nach "props" und "peds", nicht nach "Requisiten" und
+// "Fussgaengern". Uebersetzt wird, was drumherum steht.
+// ---------------------------------------------------------------------------
+export const imagesTranslations = {
+  en: {
+    eyebrow:          'Asset Library',
+    title:            'FiveM & GTA V Image Gallery',
+    subtitle:         'Transparent images of vehicles, weapons, items, props and peds, ready to drop into your scripts. Served from our own CDN, free to use.',
+    categories_title: 'Categories',
+    categories_intro: 'Browse the collections. Every image is a transparent PNG with a WebP version for the web.',
+    count_images:     'images',
+    count_one:        '1 image',
+    count_many:       '{count} images',
+    empty_category:   'Nothing here yet',
+    empty_hint:       'This collection is still being filled.',
+
+    search_label:       'Search',
+    search_placeholder: 'Search by name, e.g. zentorno',
+    results:            '{shown} of {total}',
+    no_results:         'No image matches',
+    no_results_hint:    'Try a shorter term. Names follow the spawn name, so "zent" finds "zentorno".',
+    clear_search:       'Clear search',
+
+    filters_title:  'Filters',
+    gallery_title:  'Images',
+    page_prev:      'Previous',
+    page_next:      'Next',
+    page_of:        'Page {page} of {pages}',
+
+    copy_url:      'Copy URL',
+    copied:        'Copied',
+    copy_failed:   'Could not copy, please select the URL manually',
+    download:      'Download PNG',
+    open_original: 'Open original',
+    back_to:       'Back to {category}',
+    detail_prev:   'Previous image',
+    detail_next:   'Next image',
+
+    meta_dimensions: 'Dimensions',
+    meta_size:       'File size',
+    meta_formats:    'Formats',
+    meta_name:       'Name',
+    meta_category:   'Category',
+
+    usage_title: 'How to use it',
+    usage_body:  'Use the URL directly in your NUI, your website or your script. The files are cached for a year, so they only download once per client.',
+
+    legal_title: 'About these images',
+    legal_body:  'The depicted assets are game content by Rockstar Games and Take-Two Interactive. MSK Scripts claims no rights to them and provides the images for non-commercial use in the FiveM community. If you hold rights to any image here and want it removed, write to info@msk-scripts.de and it will be taken down.',
+  },
+  de: {
+    eyebrow:          'Asset-Bibliothek',
+    title:            'FiveM- und GTA-V-Bildergalerie',
+    subtitle:         'Freigestellte Bilder von Fahrzeugen, Waffen, Items, Props und Peds, fertig für deine Scripts. Ausgeliefert über unser eigenes CDN, kostenlos nutzbar.',
+    categories_title: 'Kategorien',
+    categories_intro: 'Stöber durch die Sammlungen. Jedes Bild ist ein transparentes PNG, dazu gibt es eine WebP-Fassung fürs Web.',
+    count_images:     'Bilder',
+    count_one:        '1 Bild',
+    count_many:       '{count} Bilder',
+    empty_category:   'Noch nichts da',
+    empty_hint:       'Diese Sammlung wird gerade gefüllt.',
+
+    search_label:       'Suche',
+    search_placeholder: 'Nach Namen suchen, z. B. zentorno',
+    results:            '{shown} von {total}',
+    no_results:         'Kein Bild passt dazu',
+    no_results_hint:    'Versuch es mit einem kürzeren Begriff. Die Namen folgen dem Spawnnamen, "zent" findet also "zentorno".',
+    clear_search:       'Suche zurücksetzen',
+
+    filters_title:  'Filter',
+    gallery_title:  'Bilder',
+    page_prev:      'Zurück',
+    page_next:      'Weiter',
+    page_of:        'Seite {page} von {pages}',
+
+    copy_url:      'URL kopieren',
+    copied:        'Kopiert',
+    copy_failed:   'Kopieren nicht möglich, bitte die URL von Hand markieren',
+    download:      'PNG herunterladen',
+    open_original: 'Original öffnen',
+    back_to:       'Zurück zu {category}',
+    detail_prev:   'Vorheriges Bild',
+    detail_next:   'Nächstes Bild',
+
+    meta_dimensions: 'Maße',
+    meta_size:       'Dateigröße',
+    meta_formats:    'Formate',
+    meta_name:       'Name',
+    meta_category:   'Kategorie',
+
+    usage_title: 'So benutzt du es',
+    usage_body:  'Die URL lässt sich direkt in der NUI, auf einer Website oder im Script verwenden. Die Dateien werden ein Jahr lang zwischengespeichert, jeder Client lädt sie also nur einmal.',
+
+    legal_title: 'Zu diesen Bildern',
+    legal_body:  'Die abgebildeten Inhalte sind Spielinhalte von Rockstar Games und Take-Two Interactive. MSK Scripts beansprucht daran keine Rechte und stellt die Bilder für die nicht-kommerzielle Nutzung in der FiveM-Community bereit. Wer Rechte an einem Bild hält und dessen Entfernung wünscht, schreibt an info@msk-scripts.de, dann wird es entfernt.',
+  },
+} as const

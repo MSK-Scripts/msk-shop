@@ -91,6 +91,7 @@ const NAV_ITEMS: NavItem[] = [
     children: [
       { label: "Documentation", href: "https://docu.msk-scripts.de" },
       { label: "Resource Stats", href: "/resources" },
+      { label: "Image Gallery", href: "/images" },
       { label: "GitHub", href: "https://github.com/MSK-Scripts" },
     ],
   },
@@ -120,6 +121,7 @@ function HeaderInner() {
     'Dashboard':      t.nav_dashboard,
     'Statistics':     t.nav_statistics,
     'Resource Stats': t.nav_resources,
+    'Image Gallery':  t.nav_images,
     'Documentation':  t.nav_documentation,
   } as Record<string, string>)[label] ?? label
 
