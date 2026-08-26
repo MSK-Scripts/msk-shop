@@ -50,6 +50,22 @@ const RULES = {
   minEdge:         32,     // alles darunter ist kein brauchbares Asset
 }
 
+// Ausnahmen je Kategorie. Die Regeln oben existieren, damit Spiel-Assets im
+// Raster einheitlich aussehen: gleicher Rand, vergleichbare Groesse, ein Deckel
+// gegen Ausreisser. `brand` taucht in keinem Raster auf (die Kategorie steht auf
+// is_public = 0), dort richten sie nur Schaden an. Gemessen am 26.08.2026 waere
+// aus einem 1920 x 1080 grossen Banner ein 1024 x 609 grosses mit transparentem
+// Rahmen geworden, und der Trim haette den Quicksale-Bannern erst 162 px
+// abgeschnitten.
+const CATEGORY_RULES = {
+  brand: { trim: false, paddingPercent: 0, originalMaxEdge: 1920 },
+}
+
+/** Regeln fuer eine Kategorie: Standard, ueberschrieben von der Ausnahme. */
+function rulesFor(category) {
+  return { trim: true, ...RULES, ...(CATEGORY_RULES[category] || {}) }
+}
+
 const SOURCE_EXT = new Set(['.png', '.jpg', '.jpeg', '.webp'])
 
 // ---------------------------------------------------------------------------
@@ -118,17 +134,19 @@ async function walk(dir, out = []) {
  * Der Rand wird aus der getrimmten Groesse berechnet, nicht aus der originalen,
  * sonst wandert er mit dem Leerraum mit, den wir gerade entfernt haben.
  */
-async function trimAndPad(inputBuffer) {
+async function trimAndPad(inputBuffer, regeln = rulesFor(null)) {
   let working = inputBuffer
-  try {
-    working = await sharp(inputBuffer).trim({ threshold: 0 }).toBuffer()
-  } catch {
-    // Ein Bild ohne beschneidbaren Rand (oder ein komplett leeres) laesst sharp
-    // werfen. Dann bleibt das Original stehen, das ist kein Fehlerfall.
+  if (regeln.trim) {
+    try {
+      working = await sharp(inputBuffer).trim({ threshold: 0 }).toBuffer()
+    } catch {
+      // Ein Bild ohne beschneidbaren Rand (oder ein komplett leeres) laesst sharp
+      // werfen. Dann bleibt das Original stehen, das ist kein Fehlerfall.
+    }
   }
 
   const meta = await sharp(working).metadata()
-  const pad  = Math.round(Math.max(meta.width, meta.height) * RULES.paddingPercent)
+  const pad  = Math.round(Math.max(meta.width, meta.height) * regeln.paddingPercent)
   if (pad < 1) return working
 
   return sharp(working)
@@ -139,10 +157,10 @@ async function trimAndPad(inputBuffer) {
     .toBuffer()
 }
 
-async function buildVariants(padded) {
+async function buildVariants(padded, regeln = rulesFor(null)) {
   const original = await sharp(padded)
     .resize({
-      width: RULES.originalMaxEdge, height: RULES.originalMaxEdge,
+      width: regeln.originalMaxEdge, height: regeln.originalMaxEdge,
       fit: 'inside', withoutEnlargement: true,
     })
     // effort: 10 ist hier kein Feinschliff, sondern der Unterschied zwischen
@@ -185,6 +203,7 @@ async function main() {
   const limit       = flags.limit ? Number(flags.limit) : Infinity
   const sourceNote  = typeof flags.source  === 'string' ? flags.source  : null
   const licenseNote = typeof flags.license === 'string' ? flags.license : null
+  const regeln      = rulesFor(category)
 
   const cdnRoot = process.env.CDN_ROOT_PATH || '/var/www/cdn.msk-scripts.de'
   const targetDir = path.join(cdnRoot, category)
@@ -294,8 +313,8 @@ async function main() {
 
     let variants
     try {
-      const padded = await trimAndPad(await fs.readFile(file))
-      variants = await buildVariants(padded)
+      const padded = await trimAndPad(await fs.readFile(file), regeln)
+      variants = await buildVariants(padded, regeln)
     } catch (err) {
       rejected.push([file, `Verarbeitung fehlgeschlagen: ${err.message}`])
       stats.rejected++
