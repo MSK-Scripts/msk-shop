@@ -256,6 +256,19 @@
 
   html {
     scroll-behavior: smooth;
+    /* Die Kopfzeile klebt mit 65 px (h-16 plus Rahmen) und z-index 50. Ohne
+       diese Zeile kann ein Element, zu dem der Browser selbst scrollt, darunter
+       liegen — WCAG 2.2 SC 2.4.11 (Focus Not Obscured).
+
+       Im Audit vom 24.08.2026 wurde kein Verstoss beobachtet, der Nachweis war
+       aber unvollstaendig: `element.focus()` scrollt anders als eine echte
+       Tabulatorfolge. Das hier ist die Absicherung, nicht die Behebung eines
+       bekannten Fehlers.
+
+       `:target` traegt weiter unten schon `scroll-margin-top: 5rem`. Das gilt
+       nur fuer Ankersprünge; diese Zeile deckt zusaetzlich das Scrollen beim
+       Fokuswechsel ab. */
+    scroll-padding-top: 4.5rem;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
   }
@@ -418,16 +431,33 @@
   animation: var(--animate-pulse-dot);
 }
 
-/* Skip-Link */
+/* Skip-Link (WCAG 2.4.1, Level A).
+
+   Diese Regel stand hier lange **ohne einen einzigen Konsumenten**: das
+   Design-Audit vom 24.08.2026 meldete "kein Skip-Link", weil es in `app/` und
+   `components/` nach dem Markup gesucht hat und nicht im CSS. Die Darstellung
+   war also da, es fehlte das `<a>`. Seit dem 26.08.2026 rendert
+   `app/layout.tsx` es als erstes Kind des Body.
+
+   Versteckt wird per `transform`, nicht per `sr-only`: der Link soll
+   vorlesbar bleiben, er ist ja gerade fuer die da, die ihn brauchen.
+
+   `position: fixed`, damit er auch auf einer bereits gescrollten Seite oben
+   erscheint; mit `absolute` sass er am Dokumentanfang und blieb unsichtbar.
+   `z-index: 100` liegt ueber der klebenden Kopfzeile (`z-50`). */
 .skip-link {
-  position: absolute;
-  left: 0;
-  top: 0;
+  position: fixed;
+  left: 1rem;
+  top: 1rem;
   padding: 0.5rem 1rem;
-  background: var(--color-background);
+  border-radius: var(--radius-sm);
+  background: var(--color-card);
   color: var(--color-foreground);
   border: 1px solid var(--color-border);
-  transform: translateY(-200%);
+  box-shadow: var(--shadow-card-hover);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transform: translateY(-300%);
   transition: transform 0.2s;
   z-index: 100;
 }

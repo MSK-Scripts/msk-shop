@@ -16,6 +16,7 @@ import { NewsPopup } from '@/components/ui/NewsPopup'
 import { ThemeProvider } from '@/components/theme/ThemeProvider'
 import { LangProvider } from '@/components/i18n/LangProvider'
 import { LANG_HEADER, PATH_HEADER, langFromHeader } from '@/lib/lang'
+import { layoutTranslations } from '@/lib/i18n'
 import { siteUrl } from '@/lib/siteUrl'
 import { JsonLd } from '@/components/JsonLd'
 import { organizationJsonLd } from '@/lib/jsonLd'
@@ -104,10 +105,24 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // Gegenstück-URL zu navigieren.
   const lang = langFromHeader(hdrs.get(LANG_HEADER))
   const path = hdrs.get(PATH_HEADER) || '/'
+  const t = layoutTranslations[lang]
 
   return (
     <html lang={lang} suppressHydrationWarning>
       <body className="flex min-h-screen flex-col bg-[var(--color-background)] text-[var(--color-foreground)] antialiased">
+        {/*
+          Sprungmarke, WCAG 2.4.1 (Level A). Bewusst hier und nicht im Header:
+          der liegt hinter einer <Suspense>-Grenze (HeaderInner nutzt
+          useSearchParams), waere also im gestreamten Markup zeitweise nicht da
+          — und eine Sprungmarke, die erst spaeter erscheint, ist keine.
+          Server-gerendert, damit sie ohne JavaScript funktioniert.
+
+          Die Darstellung steckt komplett in `.skip-link` (app/globals.css) und
+          nicht in Utility-Klassen. Warum, steht dort.
+        */}
+        <a href="#main" className="skip-link">
+          {t.skip_to_content}
+        </a>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
@@ -121,7 +136,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <CartDrawer />
             <SalePriceFetcher />
             <NewsPopup />
-            <main className="flex-1">{children}</main>
+            <main id="main" tabIndex={-1} className="flex-1">{children}</main>
             <Footer />
           </LangProvider>
         </ThemeProvider>
