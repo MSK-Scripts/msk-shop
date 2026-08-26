@@ -14,6 +14,12 @@
  *
  * Bestehende Labels werden NICHT ueberschrieben, ausser mit --force. Von Hand
  * gepflegte Werte sind mehr wert als ein automatischer Import.
+ *
+ * Der Schutz gilt aber dem einzelnen Feld, nicht der ganzen Zeile. Bis zum
+ * 26.08.2026 sprang die Schleife bei vorhandenem Label komplett weiter, damit
+ * liessen sich an einem benannten Bild nie Tags nachtragen. Aufgefallen an den
+ * 83 Items: alle hatten ein Label, 40 hatten kein Tag, und der Import meldete
+ * sie als "schon gepflegt". Label und Tags werden deshalb getrennt geprueft.
  */
 
 'use strict'
@@ -47,23 +53,32 @@ async function main() {
   )
   const known = new Map(have.map(r => [r.name, r]))
 
-  let gesetzt = 0, uebersprungen = 0, ohneBild = 0, unveraendert = 0
+  let gesetzt = 0, nurTags = 0, uebersprungen = 0, ohneBild = 0, unveraendert = 0
 
   for (const e of entries) {
     const name = String(e.name || '').toLowerCase()
     const row  = known.get(name)
     if (!row) { ohneBild++; continue }
 
-    if (row.label && !force) { uebersprungen++; continue }
-    if (row.label === e.label && row.tags === e.tags) { unveraendert++; continue }
+    // Je Feld entscheiden: ein vorhandener Wert bleibt stehen, ein leerer wird
+    // gefuellt. --force setzt beide neu.
+    const labelNeu = (force || !row.label) ? (e.label || null) : row.label
+    const tagsNeu  = (force || !row.tags)  ? (e.tags  || null) : row.tags
+
+    if (labelNeu === row.label && tagsNeu === row.tags) {
+      if (row.label && e.label && row.label !== e.label) uebersprungen++
+      else unveraendert++
+      continue
+    }
 
     if (!dryRun) {
       await db.execute(
         'UPDATE msk_images SET label = ?, tags = ? WHERE category = ? AND name = ?',
-        [e.label || null, e.tags || null, category, name],
+        [labelNeu, tagsNeu, category, name],
       )
     }
-    gesetzt++
+    if (labelNeu !== row.label) gesetzt++
+    else nurTags++
   }
 
   await db.end()
@@ -71,8 +86,9 @@ async function main() {
   console.log(`Kategorie:            ${category}`)
   console.log(`Eintraege in der Datei: ${entries.length}`)
   console.log(`Bilder in der DB:       ${known.size}`)
-  console.log(`gesetzt:                ${gesetzt}${dryRun ? ' (DRY-RUN, nichts geschrieben)' : ''}`)
-  console.log(`schon gepflegt:         ${uebersprungen}  (mit --force ueberschreiben)`)
+  console.log(`Label gesetzt:          ${gesetzt}${dryRun ? ' (DRY-RUN, nichts geschrieben)' : ''}`)
+  console.log(`nur Tags ergaenzt:      ${nurTags}`)
+  console.log(`Label behalten:         ${uebersprungen}  (abweichend, mit --force ueberschreiben)`)
   console.log(`unveraendert:           ${unveraendert}`)
   console.log(`ohne Bild im Bestand:   ${ohneBild}`)
 }
