@@ -1,6 +1,11 @@
 import type { Metadata } from 'next'
 
+import { ImagePlus } from 'lucide-react'
+
 import { CategoryCard } from '@/components/images/CategoryCard'
+import { Card } from '@/components/ui/Card'
+import { Button } from '@/components/ui/Button'
+import { LocaleLink } from '@/components/i18n/LocaleLink'
 import { alternatesFor } from '@/lib/seo'
 import { pageSeo } from '@/lib/pageSeo'
 import { getRequestLang } from '@/lib/serverLang'
@@ -73,6 +78,26 @@ export default async function ImagesPage() {
             />
           ))}
         </div>
+      </section>
+
+      {/* Der Weg zum Mitmachen steht ueber dem Rechtehinweis und nicht darunter:
+          wer bis hierher gescrollt hat, sucht etwas, das es noch nicht gibt. */}
+      <section aria-labelledby="contribute-heading" className="mt-14">
+        <Card className="flex flex-wrap items-center justify-between gap-4 p-6">
+          <div className="max-w-xl">
+            <h2 id="contribute-heading" className="text-lg font-bold tracking-tight">
+              {t.contribute_title}
+            </h2>
+            <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">
+              {t.contribute_body}
+            </p>
+          </div>
+          <Button asChild variant="outline">
+            <LocaleLink href="/images/upload">
+              <ImagePlus className="h-4 w-4" /> {t.contribute_cta}
+            </LocaleLink>
+          </Button>
+        </Card>
       </section>
 
       {/* Der Hinweis auf die Herkunft der Assets steht bewusst auf der Seite

@@ -55,7 +55,21 @@ The responsible party is the natural or legal person who, alone or jointly with 
 ### Data Protection Officer
 There is no statutory obligation for our company to appoint a data protection officer. For questions regarding data protection, please contact us directly using the contact details listed under "Notice Regarding the Responsible Party".
 
-### Storage Period
+### Image Gallery: Community Submissions
+
+The image gallery at **www.msk-scripts.de/images** can be filled by anyone. To submit an image you sign in with Discord (scope `identify` only, so we receive your Discord user ID and your display name, nothing else, and we do not see your servers).
+
+**What we store per submission:** your Discord user ID and the display name at the time of signing in, the category and name you chose, the optional display name, tags and note, the original file name as you sent it, the technical properties of the image (dimensions, size, checksum), the confirmation that you declared the rights along with its timestamp, and, after review, who decided and how, including the reason for a rejection.
+
+**What happens to the file:** it is re-encoded on arrival and stored under a random identifier in a directory that is not publicly accessible. Nobody can reach it through a URL. If the submission is approved, the finished image is published in the gallery and the quarantined file is deleted. If it is rejected, the file is deleted as well and only the record of the decision remains.
+
+**Legal basis:** Art. 6(1)(b) GDPR (carrying out the submission you requested) and Art. 6(1)(f) GDPR (legitimate interest in an attributable submission, so that questions about rights or quality can be followed up and repeated abuse can be recognised).
+
+The record of a submission is kept as long as the image is published, so that we can respond to a takedown request. Records of rejected submissions are kept for one year. You may request erasure at any time; if the image is already published, this includes its removal.
+
+---
+
+## Storage Period
 Unless a more specific storage period has been mentioned, your personal data will remain with us until the purpose of the data processing no longer applies.
 
 ### Revocation of Your Consent to Data Processing
@@ -418,6 +432,9 @@ The data is fetched **server-side only**. Our server queries fivestats.io for st
 | Hosted bot log output | Not persistently stored (live buffer only) |
 | Giveaway Bot: per-server settings | Deleted immediately when the bot is removed from the server; otherwise until changed or erasure request |
 | Giveaway Bot: giveaway, entry and winner records (Discord user IDs) | Deleted immediately when the bot is removed from the server, or on erasure request; participant entries removed on leave |
+| Image submission: Discord user ID, display name, form data, decision | While the image is published; rejected submissions 1 year |
+| Image submission: quarantined file | Until the review decision |
+| Image upload session cookie | 7 days |
 
 ---
 

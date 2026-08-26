@@ -266,6 +266,84 @@ INSERT IGNORE INTO msk_image_categories (slug, name_en, name_de, icon, sort_orde
     ('peds',     'Peds',     'Peds',      'User',     50),
     ('brand',    'Brand',    'Marke',     'Sparkles', 60);
 
--- Die Kategorie "brand" haelt eigene Assets (Script-Banner, Logos) und ist
--- bewusst nicht oeffentlich in der Galerie sichtbar.
-UPDATE msk_image_categories SET is_public = 0 WHERE slug = 'brand';
+-- Die Kategorie "brand" haelt eigene Assets (Script-Banner, Logos).
+--
+-- Hier stand bis zum 26.08.2026 ein UPDATE, das sie auf is_public = 0 setzte.
+-- Das entsprach dem Stand vor dem Einspielen: die 20 Banner lagen als Dateien
+-- im CDN, ohne Datenbankzeile, und waren ueber die Galerie nicht erreichbar.
+-- Seit dem Ingest gibt es die Zeilen, und die Kategorie ist oeffentlich. Ein
+-- UPDATE, das eine frische Installation auf einen ueberholten Stand zurueck-
+-- zieht, ist schlimmer als keins, deshalb ist es weg statt umgedreht.
+
+-- ---------------------------------------------------------------------------
+-- Community-Uploads (Moderationsschlange)
+-- ---------------------------------------------------------------------------
+--
+-- Eine eigene Tabelle und NICHT msk_images mit status = 'pending'. Der Grund
+-- ist inhaltlich, nicht kosmetisch: eine Zeile in msk_images beschreibt eine
+-- Datei, die im CDN liegt. Ein eingereichtes Bild liegt in der Quarantaene
+-- ausserhalb des DocumentRoot, hat noch keine Derivate, und seine Masse
+-- aendern sich bei der Freigabe noch (trimmen, Rand, Skalieren). Eine Zeile,
+-- die vorlaeufige Zahlen als Bestand ausgibt, waere eine Luege ueber das CDN
+-- -- und genau solche Abweichungen soll image-sync-check.js melden koennen,
+-- ohne dass jede Schlangenzeile als Befund auftaucht.
+--
+-- Ausserdem darf ein Name in der Schlange doppelt vorkommen (zwei Leute
+-- reichen dasselbe Prop ein), waehrend msk_images ein UNIQUE (category, name)
+-- traegt. Das waere ein Constraint-Fehler statt einer Moderationsentscheidung.
+--
+-- Bei der Freigabe entsteht daraus eine ganz normale Zeile in msk_images mit
+-- source = 'community' und submitted_by = der Discord-User-Id des Einreichenden.
+
+ALTER TABLE msk_image_categories
+    ADD COLUMN allows_upload TINYINT(1) NOT NULL DEFAULT 0;
+
+UPDATE msk_image_categories SET allows_upload = 1 WHERE slug <> 'brand';
+
+CREATE TABLE IF NOT EXISTS msk_image_uploads (
+    id               CHAR(36)     NOT NULL PRIMARY KEY,   -- UUID, zugleich der Dateiname in der Quarantaene
+    category         VARCHAR(32)  NOT NULL,
+    -- Der gewuenschte Spawn-/Itemname, bereits normalisiert (klein, [a-z0-9_-]).
+    -- Der Dateiname des Einreichenden wird NIE zu einem Pfad, er steht nur zur
+    -- Ansicht in original_filename.
+    name             VARCHAR(128) NOT NULL,
+    label            VARCHAR(160) NULL,
+    tags             VARCHAR(255) NULL,
+    original_filename VARCHAR(255) NULL,
+    width            SMALLINT UNSIGNED NOT NULL,
+    height           SMALLINT UNSIGNED NOT NULL,
+    bytes            INT UNSIGNED NOT NULL,
+    sha256           CHAR(64)     NOT NULL,
+    submitted_by     VARCHAR(32)  NOT NULL,   -- Discord-User-Id
+    submitted_name   VARCHAR(64)  NULL,       -- Discord-Anzeigename zum Zeitpunkt der Einreichung
+    note             VARCHAR(500) NULL,       -- Freitext des Einreichenden
+    -- Rechteerklaerung. Ohne sie gibt es keinen Upload, und sie wird mit
+    -- Zeitpunkt festgehalten, weil genau darauf eine Entfernungsanfrage zielt.
+    license_declared TINYINT(1)   NOT NULL DEFAULT 0,
+    status           ENUM('pending','approved','rejected') NOT NULL DEFAULT 'pending',
+    reject_reason    VARCHAR(255) NULL,
+    reviewed_by      VARCHAR(32)  NULL,       -- Discord-User-Id des Moderierenden
+    reviewed_at      TIMESTAMP    NULL,
+    created_at       TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    KEY idx_status_created (status, created_at),
+    KEY idx_submitter (submitted_by, created_at),
+    -- Zwei offene Einreichungen fuer denselben Namen sind nutzlose Arbeit fuer
+    -- den Moderierenden. Ein Teilindex geht in MariaDB nicht, deshalb prueft
+    -- die Route das zusaetzlich; der Index macht die Pruefung billig.
+    KEY idx_cat_name_status (category, name, status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Migration einer bestehenden Datenbank (die CREATE-Anweisung oben genuegt fuer
+-- eine frische):
+--
+--   ALTER TABLE msk_image_categories
+--       ADD COLUMN allows_upload TINYINT(1) NOT NULL DEFAULT 0;
+--   UPDATE msk_image_categories SET allows_upload = 1 WHERE slug <> 'brand';
+--
+-- Dazu auf dem Server das Quarantaene-Verzeichnis anlegen, ausserhalb jedes
+-- DocumentRoot und nur fuer den App-User lesbar:
+--
+--   mkdir -p /var/lib/msk-image-uploads
+--   chown musiker15:musiker15 /var/lib/msk-image-uploads
+--   chmod 700 /var/lib/msk-image-uploads

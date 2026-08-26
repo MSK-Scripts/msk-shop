@@ -122,6 +122,16 @@ export const PAGE_SEO: Record<string, Record<Lang, PageSeo>> = {
   // Die Galerie ist die einzige Seite hier, die auf Suchbegriffe zielt, die
   // nichts mit der Marke zu tun haben ("fivem vehicle images transparent").
   // Deshalb steht das Gesuchte im Titel und nicht der Bereichsname.
+  '/images/upload': {
+    en: {
+      title:       'Submit an Image',
+      description: 'Send us a transparent GTA V or FiveM asset image for the gallery. Reviewed by hand, credited to you, free for everyone to use.',
+    },
+    de: {
+      title:       'Bild einreichen',
+      description: 'Schick uns ein freigestelltes GTA-V- oder FiveM-Asset für die Galerie. Wird von Hand geprüft und ist danach für alle kostenlos nutzbar.',
+    },
+  },
   '/images': {
     en: {
       title:       'FiveM & GTA V Image Gallery',

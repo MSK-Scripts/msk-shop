@@ -28,7 +28,7 @@ interface AdminResource<T> {
  * cannot overwrite the newer one. The images tab relies on this to filter and
  * paginate server-side without a single setState inside an effect.
  */
-export function useAdminResource<T>(url: string, key: string, failMessage: string): AdminResource<T> {
+export function useJsonResource<T>(url: string, key: string, failMessage: string): AdminResource<T> {
   const [data, setData]   = useState<T | null>(null)
   const [error, setError] = useState<string | null>(null)
 
@@ -64,3 +64,13 @@ export function useAdminResource<T>(url: string, key: string, failMessage: strin
 
   return { data, error, reload }
 }
+
+/**
+ * Der historische Name, unter dem die Admin-Tabs den Hook kennen.
+ *
+ * Die Bild-Einreichungsseite nutzt dieselbe Mechanik, ist aber oeffentlich, und
+ * ein Hook namens `useAdminResource` auf einer oeffentlichen Seite laesst den
+ * naechsten Leser nach einer Rechtepruefung suchen, die es hier nie gab. Der
+ * Alias kostet eine Zeile und spart diese Suche.
+ */
+export const useAdminResource = useJsonResource

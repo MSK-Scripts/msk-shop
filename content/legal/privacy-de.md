@@ -55,7 +55,21 @@ Verantwortliche Stelle ist die natürliche oder juristische Person, die allein o
 ### Datenschutzbeauftragter
 Für unser Unternehmen besteht keine gesetzliche Pflicht zur Bestellung eines Datenschutzbeauftragten. Bei Fragen zum Datenschutz wenden Sie sich bitte direkt an die unter „Hinweis zur verantwortlichen Stelle" genannten Kontaktdaten.
 
-### Speicherdauer
+### Bildergalerie: Community-Einreichungen
+
+Die Bildergalerie unter **www.msk-scripts.de/images** kann von jedem mitgefüllt werden. Für eine Einreichung melden Sie sich mit Discord an (ausschließlich Scope `identify`, wir erhalten also Ihre Discord-Benutzer-ID und Ihren Anzeigenamen, sonst nichts, und wir sehen Ihre Server nicht).
+
+**Was wir je Einreichung speichern:** Ihre Discord-Benutzer-ID und den Anzeigenamen zum Zeitpunkt der Anmeldung, die von Ihnen gewählte Kategorie und den Namen, den optionalen Anzeigenamen, Tags und Hinweistext, den ursprünglichen Dateinamen so wie Sie ihn geschickt haben, die technischen Eigenschaften des Bildes (Maße, Größe, Prüfsumme), die Bestätigung Ihrer Rechteerklärung samt Zeitpunkt sowie nach der Prüfung, wer wie entschieden hat, einschließlich des Grundes bei einer Ablehnung.
+
+**Was mit der Datei passiert:** Sie wird beim Eingang neu kodiert und unter einer zufälligen Kennung in einem Verzeichnis abgelegt, das nicht öffentlich erreichbar ist. Über eine URL kommt niemand daran. Wird die Einreichung freigegeben, erscheint das fertige Bild in der Galerie und die Datei aus der Quarantäne wird gelöscht. Wird sie abgelehnt, wird die Datei ebenfalls gelöscht und es bleibt nur der Vermerk über die Entscheidung.
+
+**Rechtsgrundlage:** Art. 6 Abs. 1 lit. b DSGVO (Durchführung der von Ihnen gewünschten Einreichung) und Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einer zuordenbaren Einreichung, damit Rückfragen zu Rechten oder Qualität möglich sind und wiederholter Missbrauch erkennbar wird).
+
+Der Vermerk zu einer Einreichung bleibt bestehen, solange das Bild veröffentlicht ist, damit wir auf eine Entfernungsanfrage reagieren können. Vermerke zu abgelehnten Einreichungen werden ein Jahr aufbewahrt. Sie können jederzeit Löschung verlangen; ist das Bild bereits veröffentlicht, schließt das dessen Entfernung ein.
+
+---
+
+## Speicherdauer
 Soweit keine speziellere Speicherdauer genannt wurde, verbleiben Ihre personenbezogenen Daten bei uns, bis der Zweck für die Datenverarbeitung entfällt.
 
 ### Widerruf Ihrer Einwilligung zur Datenverarbeitung
@@ -418,6 +432,9 @@ Der Abruf erfolgt ausschließlich **server-seitig**. Unser Server fragt bei five
 | Hosted Bot Log-Ausgabe | Nicht dauerhaft gespeichert (nur Live-Puffer) |
 | Giveaway Bot: Server-Einstellungen | Werden beim Entfernen des Bots vom Server umgehend gelöscht; andernfalls bis zur Änderung oder Löschanfrage |
 | Giveaway Bot: Giveaway-, Teilnahme- und Gewinner-Datensätze (Discord-Nutzer-IDs) | Werden beim Entfernen des Bots vom Server umgehend gelöscht oder auf Löschanfrage; Teilnahmen werden bei Austritt entfernt |
+| Bild-Einreichung: Discord-Benutzer-ID, Anzeigename, Formulardaten, Entscheidung | Solange das Bild veröffentlicht ist; abgelehnte Einreichungen 1 Jahr |
+| Bild-Einreichung: Datei in der Quarantäne | Bis zur Entscheidung über die Prüfung |
+| Cookie der Bild-Upload-Sitzung | 7 Tage |
 
 ---
 

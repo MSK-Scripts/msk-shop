@@ -1734,6 +1734,10 @@ export const imagesTranslations = {
     meta_name:       'Name',
     meta_category:   'Category',
 
+    contribute_title: 'Missing something?',
+    contribute_body:  'Send in an image and it joins the gallery after a quick review. Props and items have the biggest gaps.',
+    contribute_cta:   'Submit an image',
+
     usage_title: 'How to use it',
     usage_body:  'Use the URL directly in your NUI, your website or your script. The files are cached for a year, so they only download once per client.',
 
@@ -1780,6 +1784,10 @@ export const imagesTranslations = {
     meta_name:       'Name',
     meta_category:   'Kategorie',
 
+    contribute_title: 'Fehlt dir etwas?',
+    contribute_body:  'Reich ein Bild ein, nach einer kurzen Prüfung landet es in der Galerie. Bei Props und Items sind die Lücken am größten.',
+    contribute_cta:   'Bild einreichen',
+
     usage_title: 'So benutzt du es',
     usage_body:  'Die URL lässt sich direkt in der NUI, auf einer Website oder im Script verwenden. Die Dateien werden ein Jahr lang zwischengespeichert, jeder Client lädt sie also nur einmal.',
 
@@ -1787,3 +1795,156 @@ export const imagesTranslations = {
     legal_body:  'Die abgebildeten Inhalte sind Spielinhalte von Rockstar Games und Take-Two Interactive. MSK Scripts beansprucht daran keine Rechte und stellt die Bilder für die nicht-kommerzielle Nutzung in der FiveM-Community bereit. Wer Rechte an einem Bild hält und dessen Entfernung wünscht, schreibt an info@msk-scripts.de, dann wird es entfernt.',
   },
 } as const
+/**
+ * Community-Uploads: die Einreichungsseite und ihre Fehlermeldungen.
+ *
+ * Die `err_*`-Schluessel heissen genau wie die Rueckgabewerte von
+ * `SubmitFailure` in lib/imageUploads.ts. Die Route antwortet mit dem
+ * maschinenlesbaren Grund, nicht mit einem fertigen Satz, damit ein deutscher
+ * Einreichender keinen englischen Serverstring vorgesetzt bekommt.
+ */
+export const imageUploadTranslations = {
+  en: {
+    eyebrow:  'Contribute',
+    title:    'Submit an image',
+    subtitle: 'Missing a prop, an item or a vehicle? Send it in. Every submission is reviewed by hand before it appears in the gallery.',
+
+    signin_title:  'Sign in with Discord',
+    signin_body:   'A submission needs a name attached to it, so we can come back to you about rights or quality. Only your Discord id and display name are stored, nothing else.',
+    signin_button: 'Sign in with Discord',
+    signed_in_as:  'Signed in as {name}',
+    sign_out:      'Sign out',
+
+    rules_title: 'What we can use',
+    rules_items: [
+      'A transparent background. PNG is best, WebP works, JPEG only if there is nothing else.',
+      'The object alone, centred, no HUD, no crosshair, no watermark.',
+      'At least 64 pixels on each side, at most 4096, and under 8 MB.',
+      'Only images you made yourself or are allowed to pass on.',
+    ],
+    rules_note: 'Trimming, the border and the three sizes are done for you. Send the raw shot.',
+
+    form_category:   'Category',
+    form_name:       'Spawn or item name',
+    form_name_hint:  'Exactly as a script knows it. Becomes the file name, so it is lowercased and spaces become underscores.',
+    form_label:      'Display name (optional)',
+    form_label_hint: 'What a person would search for, e.g. "Pegassi Zentorno".',
+    form_tags:       'Tags (optional)',
+    form_tags_hint:  'Comma separated, e.g. sports, dlc.',
+    form_note:       'Note for the reviewer (optional)',
+    form_note_hint:  'Anything that helps, e.g. where the object comes from.',
+    form_file:       'Image file',
+    form_file_hint:  'PNG, WebP or JPEG, up to 8 MB.',
+
+    license_label: 'I made this image myself or I am allowed to pass it on, and MSK Scripts may publish it in the gallery.',
+    license_hint:  'The depicted game content stays the property of Rockstar Games and Take-Two Interactive. This declaration is about your own work on the image.',
+
+    submit:     'Submit for review',
+    submitting: 'Sending…',
+
+    success_title: 'Thanks, it is in the queue',
+    success_body:  'Someone will look at it. You can follow the status further down on this page.',
+    another:       'Submit another',
+
+    limit_line: '{used} of {perDay} submissions used today',
+
+    mine_title:  'Your submissions',
+    mine_empty:  'Nothing yet.',
+    status_pending:  'Awaiting review',
+    status_approved: 'Published',
+    status_rejected: 'Rejected',
+    reason_label:    'Reason',
+    view_in_gallery: 'View in the gallery',
+
+    err_generic:            'Something went wrong. Please try again.',
+    err_not_signed_in:      'Your session expired. Please sign in again.',
+    err_forbidden:          'That request was blocked. Reload the page and try again.',
+    err_category_unknown:   'That category does not accept submissions.',
+    err_name_invalid:       'That name cannot be used. Letters, digits, underscore and hyphen only.',
+    err_name_taken:         'The gallery already has an image with that name in this category.',
+    err_name_queued:        'Someone already submitted that name and it is still awaiting review.',
+    err_file_missing:       'Please choose a file.',
+    err_file_too_large:     'That file is larger than 8 MB.',
+    err_file_unreadable:    'That file could not be read as an image.',
+    err_format_unsupported: 'Only PNG, WebP and JPEG are accepted.',
+    err_too_small:          'The image must be at least 64 pixels on each side.',
+    err_too_large:          'The image must be at most 4096 pixels on each side.',
+    err_license_required:   'Please confirm the rights declaration.',
+    err_rate_limited:       'You have reached today’s limit. Try again tomorrow.',
+    err_invalid_state:      'The sign-in could not be completed. Please try again.',
+    err_discord_token_failed: 'Discord did not answer. Please try again.',
+    err_discord_user_failed:  'Your Discord profile could not be read. Please try again.',
+  },
+  de: {
+    eyebrow:  'Mitmachen',
+    title:    'Bild einreichen',
+    subtitle: 'Dir fehlt ein Prop, ein Item oder ein Fahrzeug? Schick es ein. Jede Einreichung wird von Hand geprüft, bevor sie in der Galerie auftaucht.',
+
+    signin_title:  'Mit Discord anmelden',
+    signin_body:   'Eine Einreichung braucht einen Namen dahinter, damit wir bei Fragen zu Rechten oder Qualität zurückkommen können. Gespeichert werden nur deine Discord-Id und dein Anzeigename, sonst nichts.',
+    signin_button: 'Mit Discord anmelden',
+    signed_in_as:  'Angemeldet als {name}',
+    sign_out:      'Abmelden',
+
+    rules_title: 'Was wir brauchen können',
+    rules_items: [
+      'Freigestellter Hintergrund. PNG ist am besten, WebP geht auch, JPEG nur wenn es nichts anderes gibt.',
+      'Nur das Objekt, mittig, ohne HUD, ohne Fadenkreuz, ohne Wasserzeichen.',
+      'Mindestens 64 Pixel je Kante, höchstens 4096, und unter 8 MB.',
+      'Nur Bilder, die du selbst gemacht hast oder weitergeben darfst.',
+    ],
+    rules_note: 'Freistellen, Rand und die drei Größen machen wir. Schick die rohe Aufnahme.',
+
+    form_category:   'Kategorie',
+    form_name:       'Spawn- oder Itemname',
+    form_name_hint:  'Genau so, wie ein Script ihn kennt. Er wird zum Dateinamen, deshalb klein und Leerzeichen werden zu Unterstrichen.',
+    form_label:      'Anzeigename (optional)',
+    form_label_hint: 'Wonach ein Mensch suchen würde, z. B. "Pegassi Zentorno".',
+    form_tags:       'Tags (optional)',
+    form_tags_hint:  'Mit Komma getrennt, z. B. sports, dlc.',
+    form_note:       'Hinweis für die Prüfung (optional)',
+    form_note_hint:  'Alles, was hilft, z. B. woher das Objekt stammt.',
+    form_file:       'Bilddatei',
+    form_file_hint:  'PNG, WebP oder JPEG, bis 8 MB.',
+
+    license_label: 'Ich habe dieses Bild selbst erstellt oder darf es weitergeben, und MSK Scripts darf es in der Galerie veröffentlichen.',
+    license_hint:  'Die abgebildeten Spielinhalte bleiben Eigentum von Rockstar Games und Take-Two Interactive. Diese Erklärung betrifft deine eigene Arbeit am Bild.',
+
+    submit:     'Zur Prüfung einreichen',
+    submitting: 'Wird gesendet…',
+
+    success_title: 'Danke, es liegt in der Schlange',
+    success_body:  'Jemand schaut es sich an. Den Stand siehst du weiter unten auf dieser Seite.',
+    another:       'Noch eins einreichen',
+
+    limit_line: '{used} von {perDay} Einreichungen heute genutzt',
+
+    mine_title:  'Deine Einreichungen',
+    mine_empty:  'Noch nichts da.',
+    status_pending:  'Wird geprüft',
+    status_approved: 'Veröffentlicht',
+    status_rejected: 'Abgelehnt',
+    reason_label:    'Grund',
+    view_in_gallery: 'In der Galerie ansehen',
+
+    err_generic:            'Da ist etwas schiefgegangen. Bitte noch einmal versuchen.',
+    err_not_signed_in:      'Deine Sitzung ist abgelaufen. Bitte melde dich neu an.',
+    err_forbidden:          'Die Anfrage wurde blockiert. Lade die Seite neu und versuch es erneut.',
+    err_category_unknown:   'Diese Kategorie nimmt keine Einreichungen an.',
+    err_name_invalid:       'Dieser Name geht nicht. Nur Buchstaben, Ziffern, Unterstrich und Bindestrich.',
+    err_name_taken:         'In dieser Kategorie gibt es schon ein Bild mit diesem Namen.',
+    err_name_queued:        'Diesen Namen hat schon jemand eingereicht, die Prüfung läuft noch.',
+    err_file_missing:       'Bitte wähle eine Datei aus.',
+    err_file_too_large:     'Die Datei ist größer als 8 MB.',
+    err_file_unreadable:    'Die Datei ließ sich nicht als Bild lesen.',
+    err_format_unsupported: 'Erlaubt sind nur PNG, WebP und JPEG.',
+    err_too_small:          'Das Bild muss mindestens 64 Pixel je Kante haben.',
+    err_too_large:          'Das Bild darf höchstens 4096 Pixel je Kante haben.',
+    err_license_required:   'Bitte bestätige die Rechteerklärung.',
+    err_rate_limited:       'Du hast das Tageslimit erreicht. Versuch es morgen wieder.',
+    err_invalid_state:      'Die Anmeldung ließ sich nicht abschließen. Bitte noch einmal versuchen.',
+    err_discord_token_failed: 'Discord hat nicht geantwortet. Bitte noch einmal versuchen.',
+    err_discord_user_failed:  'Dein Discord-Profil ließ sich nicht lesen. Bitte noch einmal versuchen.',
+  },
+} as const
+

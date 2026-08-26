@@ -42,13 +42,35 @@ const RATE_RULES: RateRule[] = [
   // Limit, das beim bestimmungsgemaessen Blaettern greift, kein Schutz ist,
   // sondern ein Defekt. 600 reicht immer noch, um einen Scraper zu bremsen,
   // der den Bestand seitenweise durchgeht.
+  //
+  // Die beiden Upload-Regeln stehen VOR '/api/images', weil `find` den ersten
+  // passenden Präfix nimmt und '/api/images/upload' sonst unter den 300 des
+  // Blätterns liefe. Ein Upload kostet eine sharp-Dekodierung fremder Bytes,
+  // das ist die teuerste Anfrage der ganzen Anwendung und gehört enger
+  // gedeckelt als eine Datenbankabfrage. Das eigentliche Limit pro Person ist
+  // ohnehin ein anderes (UPLOADS_PER_DAY in lib/imageUploads.ts) — dieses hier
+  // bremst nur den, der es ohne Sitzung mit Masse versucht.
+  { prefix: '/api/images/upload/auth', limit: 10,  windowMs: 5 * 60_000 },
+  { prefix: '/api/images/upload',      limit: 20,  windowMs: 60_000 },
   { prefix: '/api/images',        limit: 300, windowMs: 60_000 },
   { prefix: '/images',            limit: 600, windowMs: 60_000 },
 ]
 
-// Explizites Body-Limit (Content-Length) für Giveaway-POST/-Mutationsrouten.
-const MAX_BODY_BYTES = 64 * 1024
-const BODY_LIMIT_PREFIXES = ['/api/giveaway/', '/api/giveaway-result/']
+// Explizite Body-Limits (Content-Length) je Routenpräfix.
+//
+// Bis zum 26.08.2026 war das eine Liste mit einer gemeinsamen Obergrenze von
+// 64 KB. Der Bild-Upload braucht mehr, und ihm die 64 KB zu geben hätte
+// bedeutet, entweder alle Grenzen anzuheben oder ihn ganz auszunehmen. Beides
+// wäre schlechter als eine Zahl pro Präfix: die Giveaway-Routen bleiben so
+// eng wie bisher, und der Upload hat genau die Grenze, die
+// lib/imageUploads.ts ein zweites Mal prüft.
+//
+// Die Längste zuerst, aus demselben Grund wie oben bei den Rate-Regeln.
+const BODY_LIMITS: Array<{ prefix: string; maxBytes: number }> = [
+  { prefix: '/api/images/upload',    maxBytes: 8 * 1024 * 1024 },
+  { prefix: '/api/giveaway/',        maxBytes: 64 * 1024 },
+  { prefix: '/api/giveaway-result/', maxBytes: 64 * 1024 },
+]
 
 interface Bucket { count: number; reset: number }
 const buckets = new Map<string, Bucket>()
@@ -126,10 +148,10 @@ export function proxy(request: NextRequest) {
   sweep(now)
 
   // ── Body-Limit: übergroße Mutations-Requests früh abweisen ──────────────────
-  if (request.method !== 'GET' && request.method !== 'HEAD' &&
-      BODY_LIMIT_PREFIXES.some((p) => pathname.startsWith(p))) {
-    const len = Number(request.headers.get('content-length') ?? '0')
-    if (Number.isFinite(len) && len > MAX_BODY_BYTES) {
+  if (request.method !== 'GET' && request.method !== 'HEAD') {
+    const limit = BODY_LIMITS.find((b) => pathname.startsWith(b.prefix))
+    const len   = Number(request.headers.get('content-length') ?? '0')
+    if (limit && Number.isFinite(len) && len > limit.maxBytes) {
       return new NextResponse('Payload Too Large', {
         status: 413,
         headers: { 'Content-Type': 'text/plain' },
