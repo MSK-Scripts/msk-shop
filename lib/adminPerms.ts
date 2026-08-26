@@ -2,9 +2,26 @@
  * Admin dashboard permission model. Pure types + logic, NO database access
  * (so it can be imported anywhere, including the client for label rendering).
  *
- * The set of permissions mirrors what the Tebex Plugin API can actually do —
- * see docs/TEBEX_API_REFERENCE.md. Anything not listed here is not exposed by
- * any Tebex API and stays in the Creator Panel.
+ * The permissions cover three separate systems, not one:
+ *
+ *   payments.* / coupons.* / giftcards.* / bans.* / packages.edit
+ *       mirror what the Tebex Plugin API can actually do — see
+ *       docs/TEBEX_API_REFERENCE.md. Anything not listed there is not exposed
+ *       by any Tebex API and stays in the Creator Panel.
+ *   api_key.*
+ *       the ticket bot guild registry in our own database.
+ *   images.*
+ *       the image CDN inventory (msk_images), also our own database.
+ *
+ * Until the image tab existed this header claimed the whole list mirrored
+ * Tebex. It no longer does, and a comment that describes a smaller world than
+ * the code is worse than no comment.
+ *
+ * `images.moderate` gates the one decision that is not ours to make casually:
+ * resolving a `pending` row, i.e. what a community upload arrives as. The
+ * queue is empty until the upload module lands (phase 4, point 20 of
+ * docs/IMAGE_CDN_PLAN.md), but the state exists in the schema today and the
+ * dashboard resolves it today — so the permission is wired, not reserved.
  */
 
 export const ADMIN_PERMISSIONS = [
@@ -17,6 +34,9 @@ export const ADMIN_PERMISSIONS = [
   'packages.edit',
   'api_key.view',
   'api_key.change',
+  'images.view',
+  'images.manage',
+  'images.moderate',
   'team.manage',
 ] as const;
 
@@ -33,6 +53,9 @@ export const PERMISSION_LABELS: Record<AdminPermission, { label: string; descrip
   'packages.edit':    { label: 'Edit packages',   description: 'Change package name, price and visibility' },
   'api_key.view':     { label: 'View API keys',   description: 'See ticket bot API keys, guilds, tiers and custom domains' },
   'api_key.change':   { label: 'Change API key tier', description: 'Change the tier of a ticket bot API key' },
+  'images.view':      { label: 'View images',    description: 'See the image CDN inventory and its health figures' },
+  'images.manage':    { label: 'Manage images',  description: 'Edit label and tags, publish or hide an image' },
+  'images.moderate':  { label: 'Moderate uploads', description: 'Approve or reject images awaiting review (community uploads)' },
   'team.manage':      { label: 'Manage team',     description: 'Add/remove team members and set permissions' },
 };
 

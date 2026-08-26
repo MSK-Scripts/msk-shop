@@ -20,6 +20,7 @@ import GiftCardsTab from './GiftCardsTab'
 import BansTab from './BansTab'
 import PackagesTab from './PackagesTab'
 import ApiKeysTab from './ApiKeysTab'
+import ImagesTab from './ImagesTab'
 import TeamTab from './TeamTab'
 import AuditTab from './AuditTab'
 
@@ -38,6 +39,7 @@ const ALL_TABS: TabDef[] = [
   { id: 'bans',      label: 'Bans',       perm: 'bans.manage' },
   { id: 'packages',  label: 'Packages',   perm: 'packages.edit' },
   { id: 'apikeys',   label: 'API keys',   perm: ['api_key.view', 'api_key.change'] },
+  { id: 'images',    label: 'Images',     perm: ['images.view', 'images.manage', 'images.moderate'] },
   { id: 'team',      label: 'Team',       perm: 'team.manage' },
   { id: 'audit',     label: 'Audit log',  perm: 'team.manage' },
 ]
@@ -141,6 +143,12 @@ export default function AdminClient({ member }: { member: AdminTeamMember }) {
           {active === 'bans'      && <BansTab />}
           {active === 'packages'  && <PackagesTab />}
           {active === 'apikeys'   && <ApiKeysTab canChange={memberHasPermission(member, 'api_key.change')} />}
+          {active === 'images'    && (
+            <ImagesTab
+              canManage={memberHasPermission(member, 'images.manage')}
+              canModerate={memberHasPermission(member, 'images.moderate')}
+            />
+          )}
           {active === 'team'      && <TeamTab selfId={member.discordUserId} />}
           {active === 'audit'     && <AuditTab />}
         </div>

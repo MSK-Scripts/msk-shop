@@ -107,16 +107,45 @@ function toRecord(row: ImageRow): ImageRecord {
  * Ziffern, Unterstrich und Bindestrich stehen; jedes Wort bekommt ein `*`
  * angehaengt, damit "zent" auch "zentorno" findet.
  *
+ * Der Bindestrich ist dabei der Sonderfall, und er war bis zum 26.08.2026 ein
+ * Defekt: er muss **innerhalb** eines Wortes stehen bleiben (`low-rider` ist
+ * ein echter Tag), **am Anfang** ist er aber genau der Ausschlussoperator, den
+ * der Absatz darueber ausschliessen wollte. "pistol -50" lieferte deshalb
+ * Treffer ohne "50" statt Treffer mit beidem. Fuehrende Bindestriche fallen
+ * jetzt weg; alle anderen Operatorzeichen erledigt bereits die Zeichenklasse.
+ *
  * MariaDB indiziert per Default erst ab drei Zeichen (ft_min_word_len). Ein
  * kuerzerer Begriff faellt deshalb auf LIKE zurueck, siehe listImages().
  */
 function booleanTerms(q: string): string {
   return q
     .split(/\s+/)
-    .map(w => w.replace(/[^\p{L}\p{N}_-]/gu, ''))
+    .map(w => w.replace(/[^\p{L}\p{N}_-]/gu, '').replace(/^-+/, ''))
     .filter(Boolean)
     .map(w => `${w}*`)
     .join(' ')
+}
+
+/**
+ * Die WHERE-Bedingung fuer einen Suchbegriff, oder `null` bei leerer Eingabe.
+ *
+ * Steht hier und nicht in der aufrufenden Funktion, weil der Admin-Bereich
+ * dieselbe Suche braucht: er ist die Stelle, an der Label und Tags gepflegt
+ * werden, und wer dort etwas anderes findet als der Besucher, pflegt am
+ * Problem vorbei. Beide Aufrufer muessen die Tabelle als `i` aliasen.
+ */
+export function searchClause(q: string): { sql: string; params: string[] } | null {
+  const term = q.trim()
+  if (!term) return null
+
+  const terms = booleanTerms(term)
+  // Unterhalb der Volltext-Mindestlaenge liefert MATCH nichts, obwohl es
+  // Treffer gaebe. Kurze Begriffe wie "gt" oder "50" sind bei Spawnnamen
+  // aber genau der Normalfall, deshalb dort LIKE mit Praefix.
+  if (terms && term.length >= 3) {
+    return { sql: 'MATCH(i.name, i.label, i.tags) AGAINST (? IN BOOLEAN MODE)', params: [terms] }
+  }
+  return { sql: '(i.name LIKE ? OR i.label LIKE ?)', params: [`%${term}%`, `%${term}%`] }
 }
 
 /** Kategorien mit Anzahl der veroeffentlichten Bilder. */
@@ -180,19 +209,10 @@ export async function listImages(opts: ListOptions): Promise<ImageListResult> {
     params.push(opts.tag.toLowerCase())
   }
 
-  const q = (opts.q || '').trim()
-  if (q) {
-    const terms = booleanTerms(q)
-    // Unterhalb der Volltext-Mindestlaenge liefert MATCH nichts, obwohl es
-    // Treffer gaebe. Kurze Begriffe wie "gt" oder "50" sind bei Spawnnamen
-    // aber genau der Normalfall, deshalb dort LIKE mit Praefix.
-    if (terms && q.length >= 3) {
-      where.push('MATCH(i.name, i.label, i.tags) AGAINST (? IN BOOLEAN MODE)')
-      params.push(terms)
-    } else {
-      where.push('(i.name LIKE ? OR i.label LIKE ?)')
-      params.push(`%${q}%`, `%${q}%`)
-    }
+  const search = searchClause(opts.q || '')
+  if (search) {
+    where.push(search.sql)
+    params.push(...search.params)
   }
 
   const whereSql = `WHERE ${where.join(' AND ')}`

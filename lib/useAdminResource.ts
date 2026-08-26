@@ -22,8 +22,11 @@ interface AdminResource<T> {
  * react-hooks/set-state-in-effect warns about. A previous error is therefore
  * cleared once the next response is in, not at the moment a reload starts.
  *
- * All three arguments are expected to be constants — they go straight into the
- * effect dependencies.
+ * `key` and `failMessage` are expected to be constants. `url` may change: it
+ * goes into the effect dependencies, so a new url refetches, and the `alive`
+ * guard makes that race-safe — a response that arrives after the url moved on
+ * cannot overwrite the newer one. The images tab relies on this to filter and
+ * paginate server-side without a single setState inside an effect.
  */
 export function useAdminResource<T>(url: string, key: string, failMessage: string): AdminResource<T> {
   const [data, setData]   = useState<T | null>(null)
