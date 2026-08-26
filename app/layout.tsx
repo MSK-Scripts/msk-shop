@@ -108,7 +108,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const t = layoutTranslations[lang]
 
   return (
-    <html lang={lang} suppressHydrationWarning>
+    // `data-scroll-behavior="smooth"` ist keine Deko, sondern eine Anforderung
+    // von Next: sein Router schaltet `scroll-behavior: smooth` waehrend eines
+    // Routenwechsels nur ab, wenn dieses Attribut gesetzt ist
+    // (disable-smooth-scroll.js prueft `htmlElement.dataset.scrollBehavior`).
+    // Ohne das animiert der Browser Nexts `scrollTop = 0` ueber eine halbe
+    // Sekunde, und das sieht aus, als scrolle die Seite beim Seitenwechsel von
+    // selbst. Fuer Ankerspruenge bleibt das weiche Scrollen erhalten.
+    <html lang={lang} data-scroll-behavior="smooth" suppressHydrationWarning>
       <body className="flex min-h-screen flex-col bg-[var(--color-background)] text-[var(--color-foreground)] antialiased">
         {/*
           Sprungmarke, WCAG 2.4.1 (Level A). Bewusst hier und nicht im Header:
