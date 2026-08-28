@@ -148,9 +148,9 @@ The obligation under § 3.8 to leave copyright and license notices untouched exi
 
 This license covers the Author's own work only. It does not extend to:
 
-- **(a) Declared dependencies.** The packages listed in `package.json` and `package-lock.json` are not part of the Project and stay subject to their own licenses (mostly MIT, Apache-2.0 or ISC). Their terms, including any attribution obligations, apply unchanged.
+- **(a) Declared dependencies.** The packages listed in `package.json` and the accompanying lockfile are not part of the Project and stay subject to their own licenses (mostly MIT, Apache-2.0 or ISC). Their terms, including any attribution obligations, apply unchanged.
 - **(b) Media served from the CDN.** The images delivered through `cdn.msk-scripts.de` are not part of this repository. Where they originate from third parties, their origin and licensing situation is recorded per image in the `source` and `license_note` fields of the database. This license grants no rights in them.
-- **(c) Game-related content.** Names, models, textures and other assets originating from third-party games or their communities stay with their respective rights holders. The Author claims no rights in them.
+- **(c) Third-party content.** Editorial texts, documentation, names, models, textures and other material originating from third parties, their projects or their communities stay with their respective rights holders. This covers content republished with permission as well as content under a license of its own. The Author claims no rights in it, and where such content carries its own copyright notice or license, that notice governs it.
 
 Where the Author's own work and Third-Party Components sit side by side, this license applies to the former only.
 

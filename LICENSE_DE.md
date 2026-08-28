@@ -148,9 +148,9 @@ Die Pflicht aus § 3.8, Urheberrechts- und Lizenzhinweise unangetastet zu lassen
 
 Diese Lizenz erfasst ausschließlich die eigenen Werke des Urhebers. Nicht erfasst sind:
 
-- **(a) Deklarierte Abhängigkeiten.** Die in `package.json` und `package-lock.json` aufgeführten Pakete sind nicht Bestandteil des Projekts und unterliegen weiterhin ihren eigenen Lizenzen (überwiegend MIT, Apache-2.0 oder ISC). Deren Bedingungen einschließlich etwaiger Attributionspflichten gelten unverändert.
+- **(a) Deklarierte Abhängigkeiten.** Die in `package.json` und der zugehörigen Lockdatei aufgeführten Pakete sind nicht Bestandteil des Projekts und unterliegen weiterhin ihren eigenen Lizenzen (überwiegend MIT, Apache-2.0 oder ISC). Deren Bedingungen einschließlich etwaiger Attributionspflichten gelten unverändert.
 - **(b) Über das CDN ausgelieferte Medien.** Die über `cdn.msk-scripts.de` ausgelieferten Bilder sind nicht Bestandteil dieses Repositorys. Soweit sie von Dritten stammen, sind Herkunft und Lizenzlage je Bild in den Feldern `source` und `license_note` der Datenbank hinterlegt. Diese Lizenz gewährt daran keine Rechte.
-- **(c) Spielbezogene Inhalte.** Namen, Modelle, Texturen und sonstige Assets, die aus Spielen Dritter oder deren Communities stammen, verbleiben bei den jeweiligen Rechteinhabern. Der Urheber beansprucht daran keine Rechte.
+- **(c) Inhalte Dritter.** Redaktionelle Texte, Dokumentation, Namen, Modelle, Texturen und sonstiges Material, das von Dritten, deren Projekten oder deren Communities stammt, verbleibt bei den jeweiligen Rechteinhabern. Das gilt für mit Erlaubnis übernommene Inhalte ebenso wie für Inhalte unter einer eigenen Lizenz. Der Urheber beansprucht daran keine Rechte; trägt ein solcher Inhalt einen eigenen Urheberrechtshinweis oder eine eigene Lizenz, geht diese vor.
 
 Wo eigene Werke des Urhebers und Drittbestandteile nebeneinanderstehen, gilt diese Lizenz nur für erstere.
 
