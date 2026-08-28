@@ -23,6 +23,9 @@
 - [ ] No secrets or credentials are committed
 - [ ] Docs updated if behavior, env vars, routes or the DB schema changed
 - [ ] Tests added/updated for security-, billing- or parsing-critical logic
+- [ ] Any third-party code included here is marked, with its license named below
+- [ ] I have read [Rights in your contribution](../CONTRIBUTING.md#rights-in-your-contribution)
+      and agree to § 9 of the [license](../LICENSE.md)
 
 ## Related issues
 

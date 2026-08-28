@@ -536,6 +536,38 @@ A couple of theme-specific styles also live in `globals.css`:
 
 ---
 
+## License
+
+**This is not an open-source project.** The source is readable, not free to use.
+
+It runs under the **MSK Source Available License (MSK-SAL) v1.1**:
+[English](LICENSE.md) · [Deutsch](LICENSE_DE.md). The German version is the
+binding one (§ 12.4).
+
+What that means in practice:
+
+| | |
+|---|---|
+| ✅ **Allowed** | Reading the code, running it locally for private study, opening issues, submitting pull requests, security research along [SECURITY.md](SECURITY.md) |
+| ❌ **Not allowed** | Copying or reusing the code, derivative works, hosting it publicly, any commercial use, redistribution, recreating the design of the protected components |
+| ⚖️ **Untouched** | The statutory rights under § 69d and § 69e UrhG, which no contract can take away (§ 5 of the license) |
+
+Two things the license does **not** cover: the npm dependencies, which keep their
+own licenses, and the media served from `cdn.msk-scripts.de`, whose origin is
+recorded per image in the database (§ 8).
+
+Names and logos are not licensed either. A copyright license is not a trademark
+license (§ 7).
+
+**Contributing?** Read [Rights in your contribution](CONTRIBUTING.md#rights-in-your-contribution)
+first. Opening a pull request grants MSK Scripts an exclusive right of use in it,
+while your copyright and your right to attribution stay with you.
+
+For commercial licenses, collaborations or white-label requests, write to
+`info@msk-scripts.de` with the subject `MSK License Request`.
+
+---
+
 ## Links
 
 - [msk-scripts.de](https://www.msk-scripts.de)
