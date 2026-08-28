@@ -39,6 +39,22 @@ function tierBadgeClass(tier: Tier): string {
   }
 }
 
+/**
+ * Registrierungsdatum fuer die Tabelle.
+ *
+ * Nur der Tag in der Zelle, die volle Zeit haengt im `title`. Die Uhrzeit
+ * braucht man im Supportfall, aber sie in jeder Zeile mitzudrucken macht die
+ * Spalte doppelt so breit als die Information wert ist.
+ *
+ * Ein unlesbarer Wert wird durchgereicht statt zu "Invalid Date" zu werden:
+ * die Rohform sagt wenigstens, was in der Datenbank steht.
+ */
+function formatRegistered(iso: string): { day: string; full: string } {
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return { day: iso, full: iso }
+  return { day: d.toLocaleDateString('en-GB'), full: d.toLocaleString('en-GB') }
+}
+
 function maskKey(key: string): string {
   if (key.length <= 12) return '••••'
   return `${key.slice(0, 8)}…${key.slice(-4)}`
@@ -111,7 +127,8 @@ export default function ApiKeysTab({ canChange }: { canChange: boolean }) {
   return (
     <div className="space-y-4">
       <p className="text-sm text-[var(--color-muted-foreground)]">
-        Every registered ticket bot API key with its guild, tier and custom domain.
+        Every registered ticket bot API key with its guild, tier and custom domain,
+        newest registration first.
         {canChange
           ? ' Changing a tier is a manual override. Stripe billing and the daily cleanup still apply.'
           : ' You can view API keys but not change them.'}
@@ -160,6 +177,7 @@ export default function ApiKeysTab({ canChange }: { canChange: boolean }) {
                       <th className="px-4 py-3 font-medium">API key</th>
                       <th className="px-4 py-3 font-medium">Tier</th>
                       <th className="px-4 py-3 font-medium">Custom domain</th>
+                      <th className="px-4 py-3 font-medium">Registered</th>
                       {canChange && <th className="px-4 py-3 font-medium" />}
                     </tr>
                   </thead>
@@ -219,6 +237,12 @@ export default function ApiKeysTab({ canChange }: { canChange: boolean }) {
                               {k.domainStatus === 'pending_dns' ? 'Pending DNS' : '—'}
                             </span>
                           )}
+                        </td>
+                        <td
+                          className="whitespace-nowrap px-4 py-3 text-[var(--color-muted-foreground)]"
+                          title={formatRegistered(k.createdAt).full}
+                        >
+                          {formatRegistered(k.createdAt).day}
                         </td>
                         {canChange && (
                           <td className="px-4 py-3 text-right">
