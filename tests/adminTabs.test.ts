@@ -1,13 +1,12 @@
 import { describe, it, expect } from 'vitest'
 import { ALL_TABS, visibleTabs, resolveTab, tabHref } from '@/lib/adminTabs'
-import type { AdminTeamMember } from '@/lib/adminPerms'
+import type { AdminPermission, AdminTeamMember } from '@/lib/adminPerms'
 
 const owner: AdminTeamMember = {
-  discordUserId: '1', displayName: 'owner', isOwner: true, permissions: [],
+  discordUserId: '1', displayName: 'owner', isOwner: true, permissions: [], active: true,
 }
-const member = (...permissions: string[]): AdminTeamMember => ({
-  discordUserId: '2', displayName: 'member', isOwner: false,
-  permissions: permissions as AdminTeamMember['permissions'],
+const member = (...permissions: AdminPermission[]): AdminTeamMember => ({
+  discordUserId: '2', displayName: 'member', isOwner: false, permissions, active: true,
 })
 
 describe('visibleTabs', () => {
