@@ -1,6 +1,5 @@
-import { NextResponse } from 'next/server'
-
 import { getImage } from '@/lib/images'
+import { publicJson, corsPreflight } from '@/lib/publicApi'
 
 /**
  * Einzelnes Bild, oeffentlich.
@@ -22,10 +21,10 @@ export async function GET(
 
   const image = await getImage(category, name.toLowerCase())
   if (!image) {
-    return NextResponse.json({ error: 'not found' }, { status: 404 })
+    return publicJson({ error: 'not found' }, 404)
   }
 
-  return NextResponse.json(image, {
-    headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=3600' },
-  })
+  return publicJson(image)
 }
+
+export const OPTIONS = corsPreflight

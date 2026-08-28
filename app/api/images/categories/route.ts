@@ -1,7 +1,8 @@
-import { NextResponse, type NextRequest } from 'next/server'
+import { type NextRequest } from 'next/server'
 
 import { listCategories } from '@/lib/images'
 import { isLang, DEFAULT_LANG } from '@/lib/lang'
+import { publicJson, corsPreflight } from '@/lib/publicApi'
 
 /**
  * Kategorien mit Anzahl, oeffentlich.
@@ -21,7 +22,7 @@ export async function GET(request: NextRequest) {
 
   const categories = await listCategories(lang)
 
-  return NextResponse.json(categories, {
-    headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=3600' },
-  })
+  return publicJson(categories)
 }
+
+export const OPTIONS = corsPreflight

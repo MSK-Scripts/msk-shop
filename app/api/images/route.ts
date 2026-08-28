@@ -1,6 +1,7 @@
-import { NextResponse, type NextRequest } from 'next/server'
+import { type NextRequest } from 'next/server'
 
 import { listImages, categoryExists, DEFAULT_PER_PAGE } from '@/lib/images'
+import { publicJson, corsPreflight } from '@/lib/publicApi'
 
 /**
  * Bildliste, oeffentlich.
@@ -23,7 +24,7 @@ export async function GET(request: NextRequest) {
 
   const category = sp.get('category')?.trim() || undefined
   if (category && !(await categoryExists(category))) {
-    return NextResponse.json({ error: 'unknown category' }, { status: 404 })
+    return publicJson({ error: 'unknown category' }, 404)
   }
 
   const result = await listImages({
@@ -34,7 +35,7 @@ export async function GET(request: NextRequest) {
     per:  Number(sp.get('per')  ?? DEFAULT_PER_PAGE),
   })
 
-  return NextResponse.json(result, {
-    headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=3600' },
-  })
+  return publicJson(result)
 }
+
+export const OPTIONS = corsPreflight
