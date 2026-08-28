@@ -174,6 +174,25 @@ export default function ImagesTab({ canManage, canModerate }: Props) {
 
   const queue = figures?.uploadQueue ?? 0
 
+  /**
+   * Der `pending`-Chip erscheint nur, wenn es etwas zu finden gibt.
+   *
+   * Kein Codepfad schreibt heute `msk_images.status = 'pending'`: der Ingest
+   * laesst die Spalte auf ihrem Default `published`, und die Upload-Freigabe
+   * setzt den Wert ausdruecklich. Der Zustand ist also nur ueber ein UPDATE
+   * von Hand erreichbar. Der Chip bleibt trotzdem, denn eine solche Zeile
+   * waere in der Galerie unsichtbar (dort gilt `status = 'published'`) und
+   * ohne ihn im Admin nicht auffindbar: er ist der Ausweg aus dem Zustand,
+   * nicht seine Anzeige.
+   *
+   * Der aktive Filter bleibt sichtbar, auch wenn die Zahl auf 0 faellt. Ein
+   * Filter, der wirkt und den man nicht sieht, ist schlimmer als ein Chip zu
+   * viel.
+   */
+  const visibleFilters = FILTERS.filter(
+    f => f.id !== 'pending' || (totals?.pending ?? 0) > 0 || filter === 'pending',
+  )
+
   const pages = list ? Math.max(1, Math.ceil(list.total / list.per)) : 1
 
   const applySearch = (e: React.FormEvent) => {
@@ -294,7 +313,6 @@ export default function ImagesTab({ canManage, canModerate }: Props) {
                 <tr className="border-b border-[var(--color-border)] text-left text-[var(--color-muted-foreground)]">
                   <th className="px-4 py-2.5 font-medium">Category</th>
                   <th className="px-4 py-2.5 font-medium">Published</th>
-                  <th className="px-4 py-2.5 font-medium">Pending</th>
                   <th className="px-4 py-2.5 font-medium">Hidden</th>
                   <th className="px-4 py-2.5 font-medium">No label</th>
                   <th className="px-4 py-2.5 font-medium">No tags</th>
@@ -317,7 +335,6 @@ export default function ImagesTab({ canManage, canModerate }: Props) {
                       )}
                     </td>
                     <td className="px-4 py-2.5">{s.published.toLocaleString('en-US')}</td>
-                    <td className={cn('px-4 py-2.5', s.pending > 0 && 'font-semibold text-[var(--color-warning)]')}>{s.pending}</td>
                     <td className="px-4 py-2.5">{s.hidden}</td>
                     <td className="px-4 py-2.5">{s.noLabel.toLocaleString('en-US')}</td>
                     <td className="px-4 py-2.5">{s.noTags.toLocaleString('en-US')}</td>
@@ -365,7 +382,7 @@ export default function ImagesTab({ canManage, canModerate }: Props) {
         </select>
 
         <div className="flex flex-wrap gap-1">
-          {FILTERS.map(f => (
+          {visibleFilters.map(f => (
             <button
               key={f.id}
               onClick={() => pickFilter(f.id)}

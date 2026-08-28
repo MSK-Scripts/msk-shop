@@ -72,6 +72,15 @@ function failureResponse(reason: string): NextResponse {
       // have taken the name meanwhile. Approving anyway would overwrite a
       // maintained image.
       return NextResponse.json({ error: 'That name now exists in the inventory. Reject this one.' }, { status: 409 })
+    case 'write_failed':
+      // Not the submitter's problem and not a bad request: the app user cannot
+      // write into CDN_ROOT_PATH. Naming that here is the difference between a
+      // one-line fix and reading the server journal, which is exactly what the
+      // first occurrence cost.
+      return NextResponse.json(
+        { error: 'Could not write the image into the CDN directory. The app user needs write access to CDN_ROOT_PATH.' },
+        { status: 500 },
+      )
     case 'file_gone':
       return NextResponse.json({ error: 'The quarantined file is gone. Ask for a new submission.' }, { status: 410 })
     default:

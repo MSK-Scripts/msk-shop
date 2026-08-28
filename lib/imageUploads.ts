@@ -342,7 +342,7 @@ export async function readQuarantine(id: string): Promise<Buffer | null> {
 
 // ── Entscheiden ──────────────────────────────────────────────────────────────
 
-export type DecisionFailure = 'not_found' | 'not_pending' | 'file_gone' | 'name_taken'
+export type DecisionFailure = 'not_found' | 'not_pending' | 'file_gone' | 'name_taken' | 'write_failed'
 
 export type DecisionResult =
   | { ok: true }
@@ -376,7 +376,20 @@ export async function approveUpload(id: string, reviewerId: string): Promise<Dec
   if (!source) return { ok: false, reason: 'file_gone' }
 
   const variants = await buildVariants(await trimAndPad(source))
-  await writeVariants(upload.category, upload.name, variants)
+
+  // Das Schreiben ist der einzige Schritt, der an der Umgebung scheitern kann
+  // statt an den Daten: das Zielverzeichnis gehoert dem Ingest, nicht der
+  // Anwendung. Ein durchgereichter EACCES kam als blankes
+  // "Internal server error" an, und der Grund stand nur im journal des
+  // Servers. Als eigener Fehlerfall sagt die Oberflaeche, wonach zu suchen
+  // ist. Die Datenbankzeile bleibt bewusst ungeschrieben: eine Kachel ohne
+  // Datei liefert in der Galerie 404, umgekehrt kennt niemand die Adresse.
+  try {
+    await writeVariants(upload.category, upload.name, variants)
+  } catch (e) {
+    console.error('[image-upload] writing to the CDN failed:', e)
+    return { ok: false, reason: 'write_failed' }
+  }
 
   const sha = createHash('sha256').update(variants.original).digest('hex')
 
