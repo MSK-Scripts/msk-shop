@@ -101,6 +101,11 @@ function normaliseName(raw) {
     .replace(/ä/gi, 'ae').replace(/ö/gi, 'oe').replace(/ü/gi, 'ue').replace(/ß/g, 'ss')
     .normalize('NFD').replace(/[̀-ͯ]/g, '')  // restliche Akzente weg
     .toLowerCase()
+    // Plus ausschreiben, bevor die Zeile darunter es zu einem Unterstrich macht
+    // und der Schnitt am Wortende ihn entfernt: sonst werden `coiloversS+` und
+    // `coiloversS` derselbe Name und eines der Bilder faellt still weg.
+    // Spiegel von normaliseName in lib/imagePipeline.ts.
+    .replace(/\+/g, '_plus')
     .replace(/[^a-z0-9_-]+/g, '_')
     .replace(/_{2,}/g, '_')
     .replace(/^_+|_+$/g, '')

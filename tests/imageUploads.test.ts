@@ -231,6 +231,32 @@ describe('normaliseName', () => {
   it('returns an empty string when nothing usable is left', () => {
     expect(normaliseName('!!!')).toBe('')
   })
+
+  /**
+   * Tuning parts come in grades where the plus is the whole difference:
+   * `engineS+` against `engineS`. Left to the generic rule the plus becomes an
+   * underscore and the trailing trim removes it, so both names collapse into
+   * one. `UNIQUE (category, name)` then admits a single row and the other
+   * picture is gone without a word, which is the worst way for an ingest to
+   * lose something. Found on the ox_inventory set, 2216 files, four of them
+   * affected.
+   */
+  it('spells out a plus instead of letting it collapse the name', () => {
+    expect(normaliseName('engineS+')).toBe('engines_plus')
+    expect(normaliseName('coiloversS+')).toBe('coiloverss_plus')
+  })
+
+  it('keeps the graded pair apart', () => {
+    expect(normaliseName('engineS+')).not.toBe(normaliseName('engineS'))
+    expect(normaliseName('coiloversS+')).not.toBe(normaliseName('coiloversS'))
+  })
+
+  it('leaves names without a plus exactly as they were', () => {
+    // The rule must not become a second way to rewrite ordinary names.
+    for (const name of ['weapon_appistol', 'water_bottle2', 'prop_bench-01', 'grosse_kiste_01']) {
+      expect(normaliseName(name)).toBe(name)
+    }
+  })
 })
 
 describe('the pipeline rules mirror the ingest script', () => {

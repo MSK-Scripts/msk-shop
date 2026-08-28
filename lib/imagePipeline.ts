@@ -47,6 +47,12 @@ export function normaliseName(raw: string): string {
     .replace(/ä/gi, 'ae').replace(/ö/gi, 'oe').replace(/ü/gi, 'ue').replace(/ß/g, 'ss')
     .normalize('NFD').replace(/[̀-ͯ]/g, '')
     .toLowerCase()
+    // Das Plus ausschreiben, BEVOR die Sonderzeichenregel darunter es zu einem
+    // Unterstrich macht und der Schnitt am Wortende ihn wieder wegnimmt. Ohne
+    // diese Zeile fallen `coiloversS+` und `coiloversS` beide auf
+    // `coiloverss`, und weil `UNIQUE (category, name)` nur eine Zeile zulaesst,
+    // waere eines der beiden Bilder still verschwunden statt aufzufallen.
+    .replace(/\+/g, '_plus')
     .replace(/[^a-z0-9_-]+/g, '_')
     .replace(/_{2,}/g, '_')
     .replace(/^_+|_+$/g, '')
