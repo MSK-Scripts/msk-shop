@@ -27,6 +27,44 @@
 const fs    = require('node:fs/promises')
 const mysql = require('mysql2/promise')
 
+/**
+ * Tags auf die Form bringen, die die Spalte erwartet.
+ *
+ * `msk_images.tags` ist eine kommaseparierte Liste, die `FIND_IN_SET` liest.
+ * Bis zum 28.08.2026 ging der Wert aus der JSON-Datei ungeprueft in die
+ * Spalte. Wer dort das naheliegende `tags: ["food"]` schrieb, bekam den String
+ * `["food"]` gespeichert: kein Fehler, keine Warnung, und die Tag-Suche fand
+ * ab da nichts mehr. Aufgefallen an 2066 Zeilen aus dem ox_inventory-Satz,
+ * deren Suche still null Treffer lieferte, obwohl die Spalte gefuellt aussah.
+ *
+ * Ein Array ist die natuerlichere Form fuer Tags, also wird es angenommen und
+ * umgewandelt statt abgelehnt. Alles, was weder Array noch String ist, bricht
+ * den Lauf ab, denn ein stiller Fehlschreiber in einer Spalte, die eine Suche
+ * speist, ist schlimmer als ein lauter Abbruch.
+ *
+ * Spiegel von normalizeTags in lib/adminImages.ts: kleingeschrieben, ohne
+ * Leerraum um die Kommas, ohne Dubletten, auf die Spaltenbreite begrenzt.
+ */
+function toTagList(value, name) {
+  if (value === undefined || value === null || value === '') return null
+
+  let parts
+  if (Array.isArray(value))            parts = value
+  else if (typeof value === 'string')  parts = value.split(',')
+  else throw new Error(`tags fuer "${name}" ist weder Array noch String: ${JSON.stringify(value)}`)
+
+  const seen = new Set()
+  for (const part of parts) {
+    const tag = String(part).trim().toLowerCase()
+    // Ein Komma im Tag waere ein zweiter Tag: das Trennzeichen der Spalte kann
+    // nicht Teil eines Wertes sein.
+    if (tag.includes(',')) throw new Error(`Tag mit Komma fuer "${name}": ${tag}`)
+    if (tag) seen.add(tag)
+  }
+  const joined = [...seen].join(',')
+  return joined ? joined.slice(0, 255) : null
+}
+
 async function main() {
   const args     = process.argv.slice(2)
   const dryRun   = args.includes('--dry-run')
@@ -63,7 +101,7 @@ async function main() {
     // Je Feld entscheiden: ein vorhandener Wert bleibt stehen, ein leerer wird
     // gefuellt. --force setzt beide neu.
     const labelNeu = (force || !row.label) ? (e.label || null) : row.label
-    const tagsNeu  = (force || !row.tags)  ? (e.tags  || null) : row.tags
+    const tagsNeu  = (force || !row.tags)  ? toTagList(e.tags, name) : row.tags
 
     if (labelNeu === row.label && tagsNeu === row.tags) {
       if (row.label && e.label && row.label !== e.label) uebersprungen++
