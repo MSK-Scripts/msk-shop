@@ -7,9 +7,9 @@ import {
   ADMIN_PERMISSIONS,
   PERMISSION_LABELS,
   memberHasPermission,
-  type AdminPermission,
   type AdminTeamMember,
 } from '@/lib/adminPerms'
+import { visibleTabs, resolveTab, tabHref } from '@/lib/adminTabs'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { cn } from '@/lib/utils'
@@ -25,33 +25,30 @@ import UploadsTab from './UploadsTab'
 import TeamTab from './TeamTab'
 import AuditTab from './AuditTab'
 
-interface TabDef {
-  id:    string
-  label: string
-  perm?: AdminPermission | AdminPermission[]   // tab is hidden unless the member has this permission (array = any of)
-}
+export default function AdminClient({ member, initialTab }: { member: AdminTeamMember; initialTab?: string }) {
+  const tabs = visibleTabs(member)
 
-const ALL_TABS: TabDef[] = [
-  { id: 'overview',  label: 'Overview' },
-  { id: 'payments',  label: 'Payments',   perm: 'payments.view' },
-  { id: 'lookup',    label: 'Lookup',     perm: 'payments.view' },
-  { id: 'coupons',   label: 'Coupons',    perm: 'coupons.manage' },
-  { id: 'giftcards', label: 'Gift cards', perm: 'giftcards.manage' },
-  { id: 'bans',      label: 'Bans',       perm: 'bans.manage' },
-  { id: 'packages',  label: 'Packages',   perm: 'packages.edit' },
-  { id: 'apikeys',   label: 'API keys',   perm: ['api_key.view', 'api_key.change'] },
-  { id: 'images',    label: 'Images',     perm: ['images.view', 'images.manage', 'images.moderate'] },
-  { id: 'uploads',   label: 'Uploads',    perm: ['images.view', 'images.manage', 'images.moderate'] },
-  { id: 'team',      label: 'Team',       perm: 'team.manage' },
-  { id: 'audit',     label: 'Audit log',  perm: 'team.manage' },
-]
-
-export default function AdminClient({ member }: { member: AdminTeamMember }) {
-  const tabs = ALL_TABS.filter(t =>
-    !t.perm || (Array.isArray(t.perm) ? t.perm : [t.perm]).some(p => memberHasPermission(member, p)),
-  )
-  const [active, setActive] = useState(tabs[0].id)
+  // Der Server hat `?tab=` bereits gelesen und reicht ihn als Prop herein, es
+  // gibt hier also nichts aus `window` zu holen und keinen Unterschied
+  // zwischen Server-Render und Hydration.
+  const [active, setActive] = useState(() => resolveTab(tabs, initialTab))
   const router = useRouter()
+
+  /**
+   * Reiter wechseln und die Adresszeile mitziehen, damit F5 nicht auf
+   * "Overview" zurueckfaellt.
+   *
+   * `history.replaceState` statt `router.replace`: die Seite ist
+   * `force-dynamic`, eine echte Navigation wuerde also Sitzungspruefung und
+   * Datenbankabfrage ausloesen und jeden Reiter neu aufbauen, nur um eine
+   * Zeichenkette in der Adresszeile zu aendern. Und `replace` statt `push`,
+   * weil sonst zehn Reiterwechsel zehn Eintraege im Verlauf hinterlassen und
+   * der Zurueck-Knopf nicht mehr aus dem Dashboard herausfuehrt.
+   */
+  const selectTab = (id: string) => {
+    setActive(id)
+    window.history.replaceState(null, '', tabHref(tabs, id))
+  }
 
   const handleLogout = async () => {
     try {
@@ -89,7 +86,7 @@ export default function AdminClient({ member }: { member: AdminTeamMember }) {
           {tabs.map(tab => (
             <button
               key={tab.id}
-              onClick={() => setActive(tab.id)}
+              onClick={() => selectTab(tab.id)}
               className={cn(
                 'border-b-2 px-4 py-2.5 text-sm font-medium transition-colors',
                 active === tab.id

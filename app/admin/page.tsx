@@ -24,19 +24,24 @@ const ERROR_MESSAGES: Record<string, string> = {
 export default async function AdminPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; tab?: string }>;
 }) {
   const cookieStore = await cookies();
   const token       = cookieStore.get(ADMIN_SESSION_COOKIE)?.value;
   const session     = token ? parseAdminSession(token) : null;
   const member      = session?.discordUserId ? await loadAdminMember(session.discordUserId) : null;
 
+  // `tab` wird hier server-seitig gelesen und nicht im Client aus `window`.
+  // Sonst renderte der Server "Overview" und der Client nach einem Reload
+  // etwas anderes, und genau das ist ein Hydration-Unterschied. Geprueft wird
+  // der Wunsch trotzdem erst drueben gegen die Rechte des Mitglieds.
+  const { error, tab } = await searchParams;
+
   if (member) {
-    return <AdminClient member={member} />;
+    return <AdminClient member={member} initialTab={tab} />;
   }
 
   // Login gate
-  const { error } = await searchParams;
   const message   = error ? ERROR_MESSAGES[error] ?? 'Login failed. Please try again.' : null;
 
   return (
