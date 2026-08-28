@@ -50,6 +50,19 @@ interface CategoryStat {
   noTags:    number
 }
 
+/**
+ * Was `/api/admin/images/stats` liefert.
+ *
+ * `uploadQueue` steht bewusst neben den Kategoriezahlen und nicht darin: eine
+ * Einreichung liegt in `msk_image_uploads`, hat also weder eine Kategorie-Zeile
+ * in `msk_images` noch Derivate im CDN. Sie unter `pending` einer Kategorie zu
+ * mischen haette den Eindruck erweckt, die Datei sei schon da.
+ */
+interface Figures {
+  categories:  CategoryStat[]
+  uploadQueue: number
+}
+
 interface SyncCategory {
   category:          string
   rows:              number
@@ -72,7 +85,11 @@ interface SyncReport {
 
 const FILTERS = [
   { id: 'all',      label: 'All' },
-  { id: 'pending',  label: 'Awaiting review' },
+  // Absichtlich nicht "Awaiting review": dieser Filter zeigt Zeilen aus
+  // `msk_images` mit `status = 'pending'`, nicht die Einreichungen aus dem
+  // Uploads-Tab. Zwei Zahlen mit demselben Namen waren genau der Grund, warum
+  // die leere Kachel oben niemandem auffiel.
+  { id: 'pending',  label: 'Pending rows' },
   { id: 'no_label', label: 'Missing label' },
   { id: 'no_tags',  label: 'Missing tags' },
   { id: 'hidden',   label: 'Hidden' },
@@ -123,9 +140,10 @@ export default function ImagesTab({ canManage, canModerate }: Props) {
   const { data: list, error, reload } = useAdminResource<ImageList>(
     listUrl, 'result', 'Failed to load images.',
   )
-  const { data: stats, error: statsError, reload: reloadStats } = useAdminResource<CategoryStat[]>(
-    '/api/admin/images/stats', 'stats', 'Failed to load image figures.',
+  const { data: figures, error: statsError, reload: reloadStats } = useAdminResource<Figures>(
+    '/api/admin/images/stats', 'figures', 'Failed to load image figures.',
   )
+  const stats = figures?.categories ?? null
 
   // Inline editor, one row at a time. Keyed by "category/name" because a name
   // alone is not unique — `police` exists as a vehicle and as a ped, which is
@@ -153,6 +171,8 @@ export default function ImagesTab({ canManage, canModerate }: Props) {
       { total: 0, pending: 0, hidden: 0, noLabel: 0, noTags: 0 },
     )
   }, [stats])
+
+  const queue = figures?.uploadQueue ?? 0
 
   const pages = list ? Math.max(1, Math.ceil(list.total / list.per)) : 1
 
@@ -237,12 +257,21 @@ export default function ImagesTab({ canManage, canModerate }: Props) {
             <div className="mt-1 text-2xl font-bold">{totals.total.toLocaleString('en-US')}</div>
             <div className="mt-1 text-xs text-[var(--color-muted-foreground)]">{stats.length} categories</div>
           </Card>
-          <Card className={cn('p-4', totals.pending > 0 && 'border-[var(--color-warning)]/40')}>
+          {/*
+            Zaehlt die Moderationsschlange aus `msk_image_uploads`, nicht die
+            `pending`-Zeilen der Tabelle darunter. Das war der Fehler: die
+            Kachel versprach "community uploads" und las eine Spalte, die eine
+            Einreichung nie erreicht.
+          */}
+          <Card className={cn('p-4', queue > 0 && 'border-[var(--color-warning)]/40')}>
             <div className="text-xs font-medium uppercase tracking-wide text-[var(--color-muted-foreground)]">Awaiting review</div>
-            <div className={cn('mt-1 text-2xl font-bold', totals.pending > 0 && 'text-[var(--color-warning)]')}>
-              {totals.pending.toLocaleString('en-US')}
+            <div className={cn('mt-1 text-2xl font-bold', queue > 0 && 'text-[var(--color-warning)]')}>
+              {queue.toLocaleString('en-US')}
             </div>
-            <div className="mt-1 text-xs text-[var(--color-muted-foreground)]">Community uploads</div>
+            <div className="mt-1 text-xs text-[var(--color-muted-foreground)]">
+              {queue > 0 ? 'Community uploads — in the Uploads tab' : 'Community uploads'}
+              {totals.pending > 0 && ` · ${totals.pending} pending row${totals.pending === 1 ? '' : 's'} here`}
+            </div>
           </Card>
           <Card className="p-4">
             <div className="text-xs font-medium uppercase tracking-wide text-[var(--color-muted-foreground)]">Missing label</div>

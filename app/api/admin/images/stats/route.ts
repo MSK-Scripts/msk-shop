@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { adminRoute }   from '@/lib/adminApi'
 import { adminImageStats } from '@/lib/adminImages'
+import { countPendingUploads } from '@/lib/imageUploads'
 
 // Session-/cookie-dependent → never cache.
 export const dynamic = 'force-dynamic'
@@ -15,8 +16,23 @@ export const dynamic = 'force-dynamic'
  *
  * Non-public categories are included (`brand` is `is_public = 0`): they are
  * served from the CDN like every other image and belong in the inventory.
+ *
+ * `uploadQueue` comes from a different table on purpose. A community
+ * submission lives in `msk_image_uploads` and never touches `msk_images`
+ * until it is approved, so the per-category `pending` count above can never
+ * see it. The tile that says "community uploads" was reading that count and
+ * therefore sat at 0 while a submission was in fact waiting in the Uploads
+ * tab — the one number on this screen that must not be wrong, because nobody
+ * goes looking for a queue a counter says is empty.
  */
 export const GET = adminRoute(['images.view', 'images.manage', 'images.moderate'], async () => {
-  const stats = await adminImageStats()
-  return NextResponse.json({ stats }, { headers: { 'Cache-Control': 'no-store' } })
+  const [categories, uploadQueue] = await Promise.all([
+    adminImageStats(),
+    countPendingUploads(),
+  ])
+
+  return NextResponse.json(
+    { figures: { categories, uploadQueue } },
+    { headers: { 'Cache-Control': 'no-store' } },
+  )
 })

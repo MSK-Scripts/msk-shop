@@ -242,6 +242,12 @@ export interface AdminImageCategoryStat {
  * `LEFT JOIN`, damit auch eine leere Kategorie in der Liste bleibt: `props`
  * steht seit Monaten auf 0 und soll sichtbar bleiben, sonst wirkt der
  * Rueckstand wie erledigt.
+ *
+ * Genau dieser LEFT JOIN ist aber die Falle in den beiden Mangel-Zaehlern.
+ * Ohne Join-Partner liefert die Zeile `i.label = NULL`, und `NULL IS NULL`
+ * ist wahr: `props` meldete damit 1 Bild ohne Label, obwohl es dort gar kein
+ * Bild gibt. Der Gesamtwert stand deshalb auf 13 statt 12. Der Guard
+ * `i.id IS NOT NULL` unterscheidet "Zeile ohne Label" von "keine Zeile".
  */
 export async function adminImageStats(): Promise<AdminImageCategoryStat[]> {
   const rows = await query<{
@@ -254,8 +260,8 @@ export async function adminImageStats(): Promise<AdminImageCategoryStat[]> {
             SUM(i.status = 'published')                  AS published,
             SUM(i.status = 'pending')                    AS pending,
             SUM(i.status = 'hidden')                     AS hidden,
-            SUM(i.label IS NULL OR i.label = '')         AS no_label,
-            SUM(i.tags IS NULL OR i.tags = '')           AS no_tags
+            SUM(i.id IS NOT NULL AND (i.label IS NULL OR i.label = '')) AS no_label,
+            SUM(i.id IS NOT NULL AND (i.tags  IS NULL OR i.tags  = '')) AS no_tags
        FROM msk_image_categories c
        LEFT JOIN msk_images i ON i.category = c.slug
       GROUP BY c.slug, c.name_en, c.is_public, c.sort_order
