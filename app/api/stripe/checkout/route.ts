@@ -37,7 +37,7 @@ export async function POST(req: Request): Promise<NextResponse> {
   const { discordUserId, guild } = auth;
 
   // Only the two paid tiers are purchasable
-  if (tier !== 'premium' && tier !== 'premium_plus') {
+  if (tier !== 'premium' && tier !== 'premium_plus' && tier !== 'business') {
     return NextResponse.json({ error: 'Invalid tier.' }, { status: 400 });
   }
 

@@ -45,7 +45,7 @@ const DASHBOARD_ICONS = [LayoutDashboard, Terminal, Users, UserCheck] as const
 
 const HOSTED_ICONS = [ServerCog, RefreshCw, FileText, LayoutDashboard] as const
 
-const TIER_KEYS: Tier[] = ['basic', 'premium', 'premium_plus']
+const TIER_KEYS: Tier[] = ['basic', 'premium', 'premium_plus', 'business']
 
 const mb = (bytes: number) => `${Math.round(bytes / (1024 * 1024))} MB`
 
@@ -65,6 +65,7 @@ export function TicketBotLanding({ lang }: { lang: Lang }) {
         ok: c.attachments,
       },
       { label: t.tierFeatureDomain, ok: c.customDomain },
+      { label: t.tierFeatureBranding, ok: c.removeBranding },
       { label: t.tierFeatureStorage.replace('{days}', String(c.storageDays)), ok: true },
       { label: t.tierFeatureUploads.replace('{n}', String(c.uploadsPerHour)), ok: true },
       { label: t.tierFeatureHosted, ok: hosted },
@@ -364,7 +365,9 @@ export function TicketBotLanding({ lang }: { lang: Lang }) {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        {/* Vier Stufen: bei md zwei nebeneinander, erst ab xl alle vier. Vier
+            Karten in einer md-Reihe werden zu schmal fuer die Feature-Listen. */}
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
           {t.tierCards.map((card: TicketBotTierCard, i) => {
             const key = TIER_KEYS[i]
             const accent = i === 1

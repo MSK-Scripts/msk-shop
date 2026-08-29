@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils'
 import { useAdminResource } from '@/lib/useAdminResource'
 import { ErrorCard } from '@/app/admin/ErrorCard'
 
-type Tier = 'basic' | 'premium' | 'premium_plus'
+type Tier = 'basic' | 'premium' | 'premium_plus' | 'business'
 
 interface ApiKey {
   guildId:      string
@@ -28,12 +28,14 @@ const TIER_LABELS: Record<Tier, string> = {
   basic:        'Basic',
   premium:      'Premium',
   premium_plus: 'Premium+',
+  business:     'Business',
 }
-const TIER_ORDER: Tier[] = ['basic', 'premium', 'premium_plus']
+const TIER_ORDER: Tier[] = ['basic', 'premium', 'premium_plus', 'business']
 
 function tierBadgeClass(tier: Tier): string {
   switch (tier) {
     case 'premium_plus': return 'border-[var(--color-primary)]/30 bg-[var(--color-primary)]/10 text-[var(--color-primary)]'
+    case 'business':     return 'border-[var(--color-tier-business)]/30 bg-[var(--color-tier-business)]/10 text-[var(--color-tier-business)]'
     case 'premium':      return 'border-[var(--color-info)]/30 bg-[var(--color-info)]/10 text-[var(--color-info)]'
     default:             return 'border-[var(--color-border)] bg-[var(--color-muted)] text-[var(--color-muted-foreground)]'
   }

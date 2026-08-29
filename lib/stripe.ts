@@ -34,6 +34,7 @@ export function priceIdForTier(tier: Tier): string | null {
   switch (tier) {
     case 'premium':      return process.env.STRIPE_PRICE_PREMIUM      ?? null;
     case 'premium_plus': return process.env.STRIPE_PRICE_PREMIUM_PLUS ?? null;
+    case 'business':     return process.env.STRIPE_PRICE_BUSINESS     ?? null;
     default:             return null;
   }
 }
@@ -47,6 +48,7 @@ export function resolveTierFromPrice(priceId: string | null | undefined): Tier {
   if (!priceId) return 'basic';
   if (priceId === process.env.STRIPE_PRICE_PREMIUM)      return 'premium';
   if (priceId === process.env.STRIPE_PRICE_PREMIUM_PLUS) return 'premium_plus';
+  if (priceId === process.env.STRIPE_PRICE_BUSINESS)     return 'business';
   return 'basic';
 }
 

@@ -369,6 +369,7 @@ export const dashboardTranslations = {
     tier_basic:       'Basic (Free)',
     tier_premium:     'Premium',
     tier_premium_plus:'Premium+',
+    tier_business:    'Business',
 
     // Bot Config Editor
     bot_config_title:       'Bot Configuration',
@@ -483,8 +484,10 @@ export const dashboardTranslations = {
     sub_manage_loading:   'Opening…',
     sub_upgrade_premium:  'Upgrade to Premium',
     sub_upgrade_plus:     'Upgrade to Premium+',
+    sub_upgrade_business: 'Upgrade to Business',
     sub_get_premium:      'Get Premium',
     sub_get_plus:         'Get Premium+',
+    sub_get_business:     'Get Business',
     sub_trial_hint:       '14 days free, no card required. Cancel anytime.',
     sub_trial_active:     'Your free trial runs until {date}. Add a payment method to keep Premium, otherwise the subscription ends automatically on that day.',
     sub_trial_active_nodate:
@@ -525,6 +528,7 @@ export const dashboardTranslations = {
     tier_basic:       'Basic (Kostenlos)',
     tier_premium:     'Premium',
     tier_premium_plus:'Premium+',
+    tier_business:    'Business',
 
     // Bot Config Editor
     bot_config_title:       'Bot Konfiguration',
@@ -639,8 +643,10 @@ export const dashboardTranslations = {
     sub_manage_loading:   'Öffne…',
     sub_upgrade_premium:  'Auf Premium upgraden',
     sub_upgrade_plus:     'Auf Premium+ upgraden',
+    sub_upgrade_business: 'Auf Business upgraden',
     sub_get_premium:      'Premium holen',
     sub_get_plus:         'Premium+ holen',
+    sub_get_business:     'Business holen',
     sub_trial_hint:       '14 Tage gratis, ohne Kreditkarte. Jederzeit kündbar.',
     sub_trial_active:     'Deine Testphase läuft bis zum {date}. Hinterlege ein Zahlungsmittel, um Premium zu behalten, sonst endet das Abo an diesem Tag automatisch.',
     sub_trial_active_nodate:

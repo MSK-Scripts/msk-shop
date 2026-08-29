@@ -54,10 +54,10 @@ export async function GET() {
       queryOne<MaxRow>('SELECT MAX(file_size_bytes) AS max_bytes FROM ticketbot_transcripts'),
     ])
 
-    const tierMap: Record<string, number> = { basic: 0, premium: 0, premium_plus: 0 }
+    const tierMap: Record<string, number> = { basic: 0, premium: 0, premium_plus: 0, business: 0 }
     for (const row of tierRows) tierMap[row.tier] = Number(row.count)
 
-    const subscriptionTierMap: Record<string, number> = { basic: 0, premium: 0, premium_plus: 0 }
+    const subscriptionTierMap: Record<string, number> = { basic: 0, premium: 0, premium_plus: 0, business: 0 }
     for (const row of subscriptionTierRows) subscriptionTierMap[row.tier] = Number(row.count)
 
     return NextResponse.json({
@@ -67,6 +67,7 @@ export async function GET() {
         basic:             tierMap.basic,
         premium:           tierMap.premium,
         premium_plus:      tierMap.premium_plus,
+        business:          tierMap.business,
       },
       avgTranscriptBytes:  avgTranscript?.avg_bytes ? Math.round(Number(avgTranscript.avg_bytes)) : 0,
       attachments:         Number(attachments?.total ?? 0),
@@ -76,6 +77,7 @@ export async function GET() {
         basic:             subscriptionTierMap.basic,
         premium:           subscriptionTierMap.premium,
         premium_plus:      subscriptionTierMap.premium_plus,
+        business:          subscriptionTierMap.business,
       },
       customDomains:              Number(customDomains?.total ?? 0),
       hostedBots:                 Number(hostedBots?.total ?? 0),

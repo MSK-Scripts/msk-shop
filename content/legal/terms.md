@@ -68,11 +68,14 @@ Packages with Discord integration require a valid Discord ID. You must be a memb
 
 The MSK Ticket Bot Transcript Service allows users who self-host the MSK Ticket Bot to upload ticket transcripts to our servers and retrieve them via a public link. The service is provided in three tiers:
 
-| Tier | Price | Storage | Max Transcript | Attachments | Custom Domain |
-|---|---|---|---|---|---|
-| **Basic** | Free | 30 days | 10 MB | No | No |
-| **Premium** | €3.99/month | 180 days | 100 MB | Yes (150 MB/ticket) | Yes |
-| **Premium+** | €6.99/month | 365 days | 250 MB | Yes (500 MB/ticket) | Yes |
+| Tier | Price | Storage | Max Transcript | Attachments | Custom Domain | Remove branding |
+|---|---|---|---|---|---|---|
+| **Basic** | Free | 30 days | 10 MB | No | No | No |
+| **Premium** | €3.99/month | 180 days | 50 MB | Yes (100 MB/ticket) | Yes | Yes |
+| **Premium+** | €6.99/month | 365 days | 100 MB | Yes (200 MB/ticket) | Yes | Yes |
+| **Business** | €9.99/month | 10 years | 200 MB | Yes (500 MB/ticket) | Yes | Yes |
+
+**Remove branding:** The MSK Ticket Bot is licensed under AGPL-3.0 with an additional term under section 7(b) requiring that the notice identifying MSK Scripts stays visible to the people using the bot. For servers with an active Premium or Premium+ subscription we waive that term, so the notice may be removed there. The waiver is tied to the subscription and ends with it.
 
 ### 7.2 Subscription and Payment
 

@@ -85,6 +85,46 @@ const TICKETBOT: BotDefinition = {
   },
 }
 
+const TICKETBOT_COMPARE: BotDefinition = {
+  paths: { en: '/ticketbot/compare', de: '/de/ticketbot/compare' },
+  image: '/discord_ticketbot_banner.webp',
+  appName: 'MSK Discord Ticket Bot',
+  codeRepository: 'https://github.com/MSK-Scripts/discord_ticketbot',
+  seo: {
+    en: {
+      title: 'Self-Hosted Discord Ticket Bots Compared | MSK Scripts',
+      description:
+        'Which self-hosted Discord ticket bot to use: MSK Ticket Bot, Discord Tickets, Sayrix Ticket-Bot '
+        + 'and the hosted Ticket Tool side by side, with the cases where our own bot is the wrong choice.',
+      ogTitle: 'Which Self-Hosted Discord Ticket Bot Should You Use?',
+      ogDescription:
+        'Three open-source ticket bots and one hosted service compared: hosting, licence, database, '
+        + 'transcripts, dashboard, and what each one costs.',
+      twitterDescription:
+        'MSK Ticket Bot, Discord Tickets, Sayrix Ticket-Bot and Ticket Tool compared, including the '
+        + 'cases against our own bot.',
+      appDescription:
+        'Comparison of self-hosted Discord ticket bots, with an FAQ on hosting, data storage and pricing.',
+    },
+    de: {
+      title: 'Discord Ticket Bots zum Selbsthosten im Vergleich | MSK Scripts',
+      description:
+        'Welchen Discord Ticket Bot zum Selbsthosten nehmen: MSK Ticket Bot, Discord Tickets, Sayrix '
+        + 'Ticket-Bot und das gehostete Ticket Tool nebeneinander, samt der Fälle, in denen unser '
+        + 'eigener Bot die falsche Wahl ist.',
+      ogTitle: 'Welchen Discord Ticket Bot zum Selbsthosten soll man nehmen?',
+      ogDescription:
+        'Drei Open-Source-Ticket-Bots und ein gehosteter Dienst im Vergleich: Betrieb, Lizenz, '
+        + 'Datenbank, Transkripte, Dashboard und was jeweils Geld kostet.',
+      twitterDescription:
+        'MSK Ticket Bot, Discord Tickets, Sayrix Ticket-Bot und Ticket Tool im Vergleich, inklusive '
+        + 'der Argumente gegen den eigenen Bot.',
+      appDescription:
+        'Vergleich von Discord Ticket Bots zum Selbsthosten, mit FAQ zu Betrieb, Datenhaltung und Preisen.',
+    },
+  },
+}
+
 const GIVEAWAY: BotDefinition = {
   paths: { en: '/giveaway', de: '/de/giveaway' },
   image: '/msk-giveaway-bot-banner.webp',
@@ -175,6 +215,7 @@ function appJsonLdFor(bot: BotDefinition, lang: Lang): JsonLdObject {
 }
 
 export const ticketBotMetadata = (lang: Lang) => metadataFor(TICKETBOT, lang)
+export const ticketBotCompareMetadata = (lang: Lang) => metadataFor(TICKETBOT_COMPARE, lang)
 export const giveawayMetadata  = (lang: Lang) => metadataFor(GIVEAWAY, lang)
 
 export const ticketBotAppJsonLd = (lang: Lang) => appJsonLdFor(TICKETBOT, lang)
@@ -182,6 +223,7 @@ export const giveawayAppJsonLd  = (lang: Lang) => appJsonLdFor(GIVEAWAY, lang)
 
 /** Alle vier Landingpage-Pfade, für die Sitemap. */
 export const BOT_LANDING_PATHS = {
-  ticketbot: TICKETBOT.paths,
-  giveaway:  GIVEAWAY.paths,
+  ticketbot:        TICKETBOT.paths,
+  ticketbotCompare: TICKETBOT_COMPARE.paths,
+  giveaway:         GIVEAWAY.paths,
 } as const

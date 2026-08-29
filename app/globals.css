@@ -133,6 +133,11 @@
      4,6:1 gewandert. */
   --color-tier-plus:      #8044dc;
 
+  /* Tier-Badge Business. Bernstein, damit es sich von premium (gruen) und
+     premium_plus (violett) auf einen Blick unterscheidet. Wie tier-plus gegen
+     die eigene 10-%-Flaeche gemessen: 4,87:1 hell, 5,77:1 dunkel. */
+  --color-tier-business:  #7d6200;
+
   /* Live-Log-Konsole des gehosteten Bots. Die Fläche ist in **beiden** Themes
      dunkel, wie bei einem Terminal, und die Zeilenfarben sind gegen genau diese
      Fläche gewählt. Sie ist der einzige verbliebene Ort für #0d1117, seit der
@@ -235,6 +240,7 @@
     --color-chart-teal:     #0d9c97;
     --color-chart-fuchsia:  #e24bdd;
     --color-tier-plus:      #b27cff;
+    --color-tier-business:  #d9a400;
 
     --color-badge-esx:      #F7941D;
     --color-badge-qb:       #c07eff;

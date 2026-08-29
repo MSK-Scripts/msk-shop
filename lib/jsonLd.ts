@@ -143,6 +143,38 @@ export function breadcrumbJsonLd(crumbs: Crumb[]): JsonLdObject {
   }
 }
 
+export interface FaqEntry {
+  question: string
+  answer:   string
+}
+
+/**
+ * FAQ-Auszeichnung einer Seite.
+ *
+ * **Pflicht:** Jede Frage und jede Antwort muss auf der Seite auch sichtbar
+ * stehen. Google verlangt das ausdrücklich, und ein Markup mit Antworten, die
+ * im gerenderten HTML fehlen, ist ein Richtlinienverstoß, kein Trick.
+ *
+ * Das Rich-Result für FAQ zeigt Google seit 2023 nur noch für wenige
+ * Regierungs- und Gesundheitsseiten. Der Nutzen liegt heute woanders: die
+ * Auszeichnung macht ein Frage-Antwort-Paar sauber extrahierbar, und genau in
+ * dieser Form werden Antworten von Sprachmodellen zitiert.
+ */
+export function faqPageJsonLd(entries: FaqEntry[]): JsonLdObject {
+  return {
+    '@context': SCHEMA,
+    '@type':    'FAQPage',
+    mainEntity: entries.map(entry => ({
+      '@type': 'Question',
+      name:    entry.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text:    entry.answer,
+      },
+    })),
+  }
+}
+
 /**
  * Ein Tebex-Paket als Product + Offer.
  *

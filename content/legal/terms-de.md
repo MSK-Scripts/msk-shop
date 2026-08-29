@@ -68,11 +68,14 @@ Pakete mit Discord-Integration erfordern eine gültige Discord-ID. Sie müssen M
 
 Der MSK Ticket Bot Transcript Service ermöglicht Nutzern, die den MSK Ticket Bot selbst betreiben, Ticket-Transkripte auf unsere Server hochzuladen und über einen öffentlichen Link abzurufen. Der Dienst wird in drei Stufen angeboten:
 
-| Tier | Preis | Speicherdauer | Max. Transkript | Anhänge | Eigene Domain |
-|---|---|---|---|---|---|
-| **Basic** | Kostenlos | 30 Tage | 10 MB | Nein | Nein |
-| **Premium** | 3,99 €/Monat | 180 Tage | 100 MB | Ja (150 MB/Ticket) | Ja |
-| **Premium+** | 6,99 €/Monat | 365 Tage | 250 MB | Ja (500 MB/Ticket) | Ja |
+| Tier | Preis | Speicherdauer | Max. Transkript | Anhänge | Eigene Domain | Branding entfernen |
+|---|---|---|---|---|---|---|
+| **Basic** | Kostenlos | 30 Tage | 10 MB | Nein | Nein | Nein |
+| **Premium** | 3,99 €/Monat | 180 Tage | 50 MB | Ja (100 MB/Ticket) | Ja | Ja |
+| **Premium+** | 6,99 €/Monat | 365 Tage | 100 MB | Ja (200 MB/Ticket) | Ja | Ja |
+| **Business** | 9,99 €/Monat | 10 Jahre | 200 MB | Ja (500 MB/Ticket) | Ja | Ja |
+
+**Branding entfernen:** Der MSK Ticket Bot steht unter der AGPL-3.0 mit einer Zusatzbedingung nach Abschnitt 7(b), die verlangt, dass der Hinweis auf MSK Scripts für die Nutzer des Bots sichtbar bleibt. Für Server mit aktivem Premium- oder Premium+-Abo verzichten wir auf diese Bedingung, der Hinweis darf dort also entfernt werden. Der Verzicht ist an das Abo gebunden und endet mit ihm.
 
 ### 7.2 Abonnement und Zahlung
 

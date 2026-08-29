@@ -135,6 +135,8 @@ describe.each([
   it('Tier-Badge Premium+ ist auf seiner eigenen Fläche lesbar', () => {
     expect(t['tier-plus'], 'Token --color-tier-plus fehlt').toBeTruthy()
     expect(contrast(t['tier-plus'], mix(t['tier-plus'], t.card, 0.1))).toBeGreaterThanOrEqual(4.5)
+    expect(t['tier-business'], 'Token --color-tier-business fehlt').toBeTruthy()
+    expect(contrast(t['tier-business'], mix(t['tier-business'], t.card, 0.1))).toBeGreaterThanOrEqual(4.5)
   })
 
   const badges = ['esx', 'qb', 'lua', 'js', 'ts', 'py', 'discord', 'fivem', 'sale'] as const

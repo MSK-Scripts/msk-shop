@@ -89,6 +89,7 @@ export interface TicketBotCopy {
   tierFeatureAttachments:  string
   tierFeatureNoAttachments: string
   tierFeatureDomain:       string
+  tierFeatureBranding:     string
   tierFeatureStorage:      string
   tierFeatureUploads:      string
   tierFeatureHosted:       string
@@ -215,12 +216,14 @@ const en: TicketBotCopy = {
     { name: 'Basic',    price: 'Free',  priceSub: 'forever', badge: null,           cta: 'Get API Key' },
     { name: 'Premium',  price: '€3.99', priceSub: '/ month', badge: 'Most popular', cta: 'Start free trial' },
     { name: 'Premium+', price: '€6.99', priceSub: '/ month', badge: null,           cta: 'Start free trial' },
+    { name: 'Business', price: '€9.99', priceSub: '/ month', badge: null,           cta: 'Start free trial' },
   ],
   tierFeatureHosting:       'Transcript hosting & links',
   tierFeatureTranscript:    'Up to {size} per transcript',
   tierFeatureAttachments:   'Attachments up to {size} per ticket',
   tierFeatureNoAttachments: 'File attachments',
   tierFeatureDomain:        'Custom domain',
+  tierFeatureBranding:      'Remove the MSK branding',
   tierFeatureStorage:       '{days} days storage',
   tierFeatureUploads:       '{n} uploads / hour',
   tierFeatureHosted:        'Hosted bot management',
@@ -351,12 +354,14 @@ const de: TicketBotCopy = {
     { name: 'Basic',    price: 'Kostenlos', priceSub: 'dauerhaft', badge: null,               cta: 'API-Key holen' },
     { name: 'Premium',  price: '3,99 €',    priceSub: '/ Monat',   badge: 'Am beliebtesten',  cta: 'Kostenlos testen' },
     { name: 'Premium+', price: '6,99 €',    priceSub: '/ Monat',   badge: null,               cta: 'Kostenlos testen' },
+    { name: 'Business', price: '9,99 €',    priceSub: '/ Monat',   badge: null,               cta: 'Kostenlos testen' },
   ],
   tierFeatureHosting:       'Transkript-Hosting & Links',
   tierFeatureTranscript:    'Bis zu {size} pro Transkript',
   tierFeatureAttachments:   'Anhänge bis {size} pro Ticket',
   tierFeatureNoAttachments: 'Datei-Anhänge',
   tierFeatureDomain:        'Eigene Domain',
+  tierFeatureBranding:      'MSK-Branding entfernen',
   tierFeatureStorage:       '{days} Tage Speicherdauer',
   tierFeatureUploads:       '{n} Uploads / Stunde',
   tierFeatureHosted:        'Verwaltung des gehosteten Bots',

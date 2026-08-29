@@ -68,10 +68,28 @@ function StatusBadge({ status, t }: { status: Guild['domain_status']; t: { activ
   return null
 }
 
+/** Aufsteigende Reihenfolge der Stufen. Steuert, was als Upgrade angeboten wird. */
+const TIER_ORDER: Tier[] = ['basic', 'premium', 'premium_plus', 'business']
+
+type PaidTier = Exclude<Tier, 'basic'>
+
+const GET_LABEL: Record<PaidTier, 'sub_get_premium' | 'sub_get_plus' | 'sub_get_business'> = {
+  premium:      'sub_get_premium',
+  premium_plus: 'sub_get_plus',
+  business:     'sub_get_business',
+}
+
+const UPGRADE_LABEL: Record<PaidTier, 'sub_upgrade_premium' | 'sub_upgrade_plus' | 'sub_upgrade_business'> = {
+  premium:      'sub_upgrade_premium',
+  premium_plus: 'sub_upgrade_plus',
+  business:     'sub_upgrade_business',
+}
+
 const TIER_COLORS: Record<Tier, string> = {
   basic:        'text-[var(--color-muted-foreground)] bg-[var(--color-muted)] border-[var(--color-border)]',
   premium:      'text-[var(--color-primary)] bg-[var(--color-primary)]/10 border-[var(--color-primary)]/30',
   premium_plus: 'text-[var(--color-tier-plus)] bg-[var(--color-tier-plus)]/10 border-[var(--color-tier-plus)]/30',
+  business:     'text-[var(--color-tier-business)] bg-[var(--color-tier-business)]/10 border-[var(--color-tier-business)]/30',
 }
 
 export default function DashboardClient({ guilds, serverIp }: Props) {
@@ -164,7 +182,9 @@ function GuildPanel({
     ...(guild.is_hosted ? [{ key: 'hosting' as const, label: t.tab_hosting, icon: Server }] : []),
   ]
 
-  const hasPremium = guild.tier === 'premium' || guild.tier === 'premium_plus'
+  const hasPremium = guild.tier !== 'basic'
+  // Alles oberhalb der aktuellen Stufe ist ein moegliches Upgrade.
+  const upgradeTargets = TIER_ORDER.slice(TIER_ORDER.indexOf(guild.tier) + 1) as PaidTier[]
 
   // While a trial runs, expires_at carries its end. Derived during render, not
   // in state: an invalid/absent date must fall back to the wording without a
@@ -184,12 +204,12 @@ function GuildPanel({
   const [copied, setCopied] = useState(false)
 
   // Subscription (Stripe)
-  const [billingLoading, setBillingLoading] = useState<null | 'premium' | 'premium_plus' | 'manage'>(null)
+  const [billingLoading, setBillingLoading] = useState<null | PaidTier | 'manage'>(null)
   const [billingError, setBillingError] = useState<string | null>(null)
 
   const showMsg = (type: 'success' | 'error' | 'info', text: string) => setMessage({ type, text })
 
-  const handleCheckout = async (tier: 'premium' | 'premium_plus') => {
+  const handleCheckout = async (tier: PaidTier) => {
     setBillingLoading(tier)
     setBillingError(null)
     try {
@@ -305,32 +325,24 @@ function GuildPanel({
             {t[`tier_${guild.tier}` as 'tier_basic' | 'tier_premium' | 'tier_premium_plus']}
           </div>
 
-          {/* Subscription controls */}
-          {guild.tier === 'basic' && (
-            <>
-              <Button size="sm" onClick={() => handleCheckout('premium')} disabled={billingLoading !== null}>
-                {billingLoading === 'premium' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CreditCard className="h-3.5 w-3.5" />}
-                {t.sub_get_premium}
-              </Button>
-              <Button size="sm" variant="outline" onClick={() => handleCheckout('premium_plus')} disabled={billingLoading !== null}>
-                {billingLoading === 'premium_plus' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CreditCard className="h-3.5 w-3.5" />}
-                {t.sub_get_plus}
-              </Button>
-            </>
-          )}
-          {guild.tier === 'premium' && (
-            <>
-              <Button size="sm" onClick={() => handleCheckout('premium_plus')} disabled={billingLoading !== null}>
-                {billingLoading === 'premium_plus' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CreditCard className="h-3.5 w-3.5" />}
-                {t.sub_upgrade_plus}
-              </Button>
-              <Button size="sm" variant="outline" onClick={handleManage} disabled={billingLoading !== null}>
-                {billingLoading === 'manage' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CreditCard className="h-3.5 w-3.5" />}
-                {billingLoading === 'manage' ? t.sub_manage_loading : t.sub_manage}
-              </Button>
-            </>
-          )}
-          {guild.tier === 'premium_plus' && (
+          {/* Subscription controls. Derived from the tier order rather than one
+              branch per tier: with four tiers the branches multiply, and every
+              new tier would need its own combination again. */}
+          {upgradeTargets.map((target, i) => (
+            <Button
+              key={target}
+              size="sm"
+              variant={i === 0 ? 'primary' : 'outline'}
+              onClick={() => handleCheckout(target)}
+              disabled={billingLoading !== null}
+            >
+              {billingLoading === target
+                ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                : <CreditCard className="h-3.5 w-3.5" />}
+              {guild.tier === 'basic' ? t[GET_LABEL[target]] : t[UPGRADE_LABEL[target]]}
+            </Button>
+          ))}
+          {guild.tier !== 'basic' && (
             <Button size="sm" variant="outline" onClick={handleManage} disabled={billingLoading !== null}>
               {billingLoading === 'manage' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CreditCard className="h-3.5 w-3.5" />}
               {billingLoading === 'manage' ? t.sub_manage_loading : t.sub_manage}

@@ -1,6 +1,6 @@
 import { NextResponse }  from 'next/server';
 import { queryOne }       from '@/lib/db';
-import type { Tier }      from '@/lib/tiers';
+import { TIER_CONFIG, type Tier } from '@/lib/tiers';
 
 interface GuildRow { tier: Tier; active: number; }
 
@@ -22,5 +22,24 @@ export async function GET(req: Request): Promise<NextResponse> {
     return NextResponse.json({ error: 'Invalid API key.' }, { status: 403 });
   }
 
-  return NextResponse.json({ valid: true, tier: guild.tier });
+  // The bot gets the limits of its tier along with the tier itself. Without
+  // them it would have to keep its own copy of the numbers, which is exactly
+  // how a bot ends up uploading 100 MB of attachments for a tier that allows
+  // 500, or uploading any at all for a tier that allows none. The limits live
+  // in lib/tiers.ts and nowhere else.
+  const cfg = TIER_CONFIG[guild.tier];
+
+  return NextResponse.json({
+    valid: true,
+    tier:  guild.tier,
+    limits: {
+      transcriptMaxBytes: cfg.transcriptMaxBytes,
+      attachmentMaxBytes: cfg.attachmentMaxBytes,
+      storageDays:        cfg.storageDays,
+      uploadsPerHour:     cfg.uploadsPerHour,
+      attachments:        cfg.attachments,
+      customDomain:       cfg.customDomain,
+      removeBranding:     cfg.removeBranding,
+    },
+  });
 }

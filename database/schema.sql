@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS ticketbot_guilds (
     id                     INT AUTO_INCREMENT PRIMARY KEY,
     guild_id               VARCHAR(20)  UNIQUE NOT NULL,
     api_key                VARCHAR(64)  UNIQUE NOT NULL,
-    tier                   ENUM('basic', 'premium', 'premium_plus') NOT NULL DEFAULT 'basic',
+    tier                   ENUM('basic', 'premium', 'premium_plus', 'business') NOT NULL DEFAULT 'basic',
     discord_user_id        VARCHAR(20),
     -- Human-readable Discord server name, captured at verify time for dashboard
     -- display (falls back to guild_id in the UI when null).
@@ -49,6 +49,9 @@ CREATE TABLE IF NOT EXISTS ticketbot_guilds (
 -- ALTER TABLE ticketbot_guilds ADD COLUMN guild_name             VARCHAR(120) NULL;
 -- ALTER TABLE ticketbot_guilds ADD COLUMN stripe_status          VARCHAR(24)  NULL;
 -- ALTER TABLE ticketbot_guilds ADD COLUMN trial_reminder_sent_at DATETIME     NULL;
+-- Business tier (2026-08-29). MODIFY rewrites the ENUM in place and keeps every
+-- existing value; the new member is appended at the end:
+--   ALTER TABLE ticketbot_guilds MODIFY tier ENUM('basic','premium','premium_plus','business') NOT NULL DEFAULT 'basic';
 -- Stripe migration (GitHub Sponsors fully removed — no active sponsors existed):
 --   ALTER TABLE ticketbot_guilds DROP COLUMN github_username;
 --   DROP TABLE IF EXISTS ticketbot_sponsors;

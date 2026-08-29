@@ -48,6 +48,7 @@ const STATIC_ROUTES = [
   '/images',
   '/images/upload',
   '/ticketbot',
+  '/ticketbot/compare',
   '/giveaway',
   '/ticketbot/stats',
   '/giveaway/stats',
