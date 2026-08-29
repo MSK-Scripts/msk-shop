@@ -220,7 +220,10 @@ function GuildPanel({
       })
       const data = await res.json()
       if (!res.ok || !data.url) { setBillingError(data.error ?? t.sub_err); return }
-      window.location.href = data.url
+      // assign() statt der Zuweisung an window.location.href: react-hooks/immutability
+      // wertet die Zuweisung als Aenderung einer ausserhalb der Komponente
+      // definierten Variable. Der Aufruf macht dasselbe, inklusive History-Eintrag.
+      window.location.assign(data.url)
     } catch { setBillingError(t.sub_err) }
     finally   { setBillingLoading(null) }
   }
@@ -236,7 +239,10 @@ function GuildPanel({
       })
       const data = await res.json()
       if (!res.ok || !data.url) { setBillingError(data.error ?? t.sub_err); return }
-      window.location.href = data.url
+      // assign() statt der Zuweisung an window.location.href: react-hooks/immutability
+      // wertet die Zuweisung als Aenderung einer ausserhalb der Komponente
+      // definierten Variable. Der Aufruf macht dasselbe, inklusive History-Eintrag.
+      window.location.assign(data.url)
     } catch { setBillingError(t.sub_err) }
     finally   { setBillingLoading(null) }
   }
