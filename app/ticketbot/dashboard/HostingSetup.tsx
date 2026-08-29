@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { AlertCircle, Archive, ExternalLink, Info, Loader2, RotateCcw, Server, Trash2 } from 'lucide-react'
+import { AlertCircle, Archive, ChevronDown, ExternalLink, Info, Loader2, RotateCcw, Server, Trash2 } from 'lucide-react'
 import { dashboardTranslations } from '@/lib/i18n'
 import { useLang }               from '@/components/i18n/LangProvider'
 import { useJsonResource }       from '@/lib/useAdminResource'
@@ -178,6 +178,12 @@ function SetupCard({
   // While this is true the form stays hidden: the question comes first.
   const undecided = !!archive && archiveChoice === null
 
+  // Once installed the form is collapsed. It is the repair layer, not the thing
+  // you came for, and leaving it open made the card read as an unfinished setup.
+  // A failed run opens it, because then it IS the thing you came for.
+  const [openedByUser, setOpenedByUser] = useState<boolean | null>(null)
+  const showForm = hosted ? (openedByUser ?? failed) : true
+
   const mark = (k: string) => setTouched(prev => (prev[k] ? prev : { ...prev, [k]: true }))
 
   // Derived during render, never copied into state.
@@ -228,9 +234,20 @@ function SetupCard({
     <>
       <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
         <h2 className="mb-1 flex items-center gap-2 text-base font-semibold">
-          <Server className="h-4 w-4" /> {t.host_title}
+          <Server className="h-4 w-4" /> {hosted ? t.host_edit_title : t.host_title}
         </h2>
-        <p className="mb-4 text-sm text-[var(--color-muted-foreground)]">{t.host_intro}</p>
+        <p className="mb-4 text-sm text-[var(--color-muted-foreground)]">
+          {hosted ? t.host_edit_desc : t.host_intro}
+        </p>
+
+        {hosted && !failed && (
+          <button onClick={() => setOpenedByUser(!showForm)}
+                  aria-expanded={showForm}
+                  className="tap-target flex items-center gap-1.5 text-sm font-medium text-[var(--color-primary)]">
+            <ChevronDown className={`h-4 w-4 transition-transform ${showForm ? 'rotate-180' : ''}`} />
+            {showForm ? t.host_edit_hide : t.host_edit_show}
+          </button>
+        )}
 
         {undecided && archive && (
           <ArchiveChoice archive={archive} t={t} busy={busy}
@@ -271,7 +288,9 @@ function SetupCard({
           </div>
         )}
 
-        <div className="space-y-4">
+        {showForm && (
+        <>
+        <div className="mt-4 space-y-4">
           <Field label={t.host_token} hint={t.host_token_hint} type="password" required={!hosted}
                  value={token} onChange={setToken}
                  placeholder={hosted && env?.tokenSet ? t.host_secret_set : undefined} />
@@ -305,17 +324,23 @@ function SetupCard({
             {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Server className="h-4 w-4" />}
             {busy ? t.host_activating : hosted ? t.host_save_restart : t.host_activate}
           </Button>
-          <a href="https://discord.com/developers/applications" target="_blank" rel="noopener noreferrer">
-            <Button variant="ghost" className="tap-target">
-              <ExternalLink className="h-4 w-4" /> {t.botdash_redirect_open}
-            </Button>
-          </a>
+          {/* Only while setting up. Once installed the portal link already sits
+              in the address card above, next to the redirect URI it belongs to. */}
+          {!hosted && (
+            <a href="https://discord.com/developers/applications" target="_blank" rel="noopener noreferrer">
+              <Button variant="ghost" className="tap-target">
+                <ExternalLink className="h-4 w-4" /> {t.botdash_redirect_open}
+              </Button>
+            </a>
+          )}
           {!complete && !hosted && (
             <span className="text-xs text-[var(--color-muted-foreground)]">{t.host_required}</span>
           )}
         </div>
 
         {error && <p role="alert" className="mt-3 text-sm text-[var(--color-danger)]">{error}</p>}
+        </>
+        )}
       </div>
 
       {hosted && <RemoveCard guildId={guildId} t={t} onDone={onDone} />}

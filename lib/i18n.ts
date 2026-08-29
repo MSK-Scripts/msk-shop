@@ -522,6 +522,12 @@ export const dashboardTranslations = {
     host_err_rate_limited:          'Too many attempts. Please wait a few minutes.',
     host_err_generic:               'The setup failed. Please try again.',
     // Choice shown when an archived installation of this guild still exists.
+    // Same form, different job once the bot is installed: not onboarding any
+    // more but the out-of-band repair layer for when the bot will not start.
+    host_edit_title:      'Credentials and settings',
+    host_edit_desc:       'Only needed if something changed or the bot stopped starting. The bot has its own dashboard for everything else, but a bot that will not start is exactly the one whose dashboard you cannot reach.',
+    host_edit_show:       'Change credentials',
+    host_edit_hide:       'Close',
     host_archive_title:   'There is still an earlier installation',
     host_archive_desc:    'You removed hosting for this server on {date}. The installation is still here, including your ticket history. What should happen to it?',
     host_archive_restore: 'Bring the old installation back',
@@ -752,6 +758,10 @@ export const dashboardTranslations = {
     host_err_in_progress:           'Für diesen Server läuft bereits eine Einrichtung.',
     host_err_rate_limited:          'Zu viele Versuche. Bitte ein paar Minuten warten.',
     host_err_generic:               'Die Einrichtung ist fehlgeschlagen. Bitte erneut versuchen.',
+    host_edit_title:      'Zugangsdaten und Einstellungen',
+    host_edit_desc:       'Nur nötig, wenn sich etwas geändert hat oder der Bot nicht mehr startet. Für alles andere hat der Bot sein eigenes Dashboard, aber genau das ist unerreichbar, solange er nicht läuft.',
+    host_edit_show:       'Zugangsdaten ändern',
+    host_edit_hide:       'Schließen',
     host_archive_title:   'Es gibt noch eine frühere Installation',
     host_archive_desc:    'Du hast das Hosting für diesen Server am {date} entfernt. Die Installation liegt noch hier, samt deiner Ticket-Historie. Was soll damit passieren?',
     host_archive_restore: 'Alte Installation zurückholen',
