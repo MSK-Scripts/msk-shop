@@ -44,8 +44,6 @@ export const PACKAGE_BADGES: Record<number, Badge[]> = {
   5732588: [{ label: 'ESX', variant: 'esx' }, { label: 'Lua', variant: 'lua' }], // MSK Garage - S
   5159927: [{ label: 'ESX', variant: 'esx' }, { label: 'QBCore', variant: 'qb' }, { label: 'Lua', variant: 'lua' }], // MSK Handcuffs - E
   5301828: [{ label: 'ESX', variant: 'esx' }, { label: 'QBCore', variant: 'qb' }, { label: 'Lua', variant: 'lua' }], // MSK Handcuffs - S
-  6372773: [{ label: 'ESX', variant: 'esx' }, { label: 'Lua', variant: 'lua' }], // MSK Storage - E
-  6372865: [{ label: 'ESX', variant: 'esx' }, { label: 'Lua', variant: 'lua' }], // MSK Storage - S
   6446936: [{ label: 'ESX', variant: 'esx' }, { label: 'QBCore', variant: 'qb' }, { label: 'Lua', variant: 'lua' }], // MSK VehicleKeys - E
   6446947: [{ label: 'ESX', variant: 'esx' }, { label: 'QBCore', variant: 'qb' }, { label: 'Lua', variant: 'lua' }], // MSK VehicleKeys - S
   7569109: [{ label: 'Subscription', variant: 'standalone' }, { label: 'Lua', variant: 'lua' }], // Subscription - Encrypted Version
@@ -62,8 +60,6 @@ export const PACKAGE_DESCRIPTIONS: Record<number, string> = {
   5732588: 'A complete, server-authoritative garage and impound system for ESX with a modern React UI and a security-first backend.', // MSK Garage - S
   5159927: 'Realistic handcuffs with animations, props, drag, headbag, tape and ankle tracker.', // MSK Handcuffs - E
   5301828: 'Realistic handcuffs with animations, props, drag, headbag, tape and ankle tracker.', // MSK Handcuffs - S
-  6372773: 'Flexible storage system with support for ox_inventory and Chezza Inventory.', // MSK Storage - E
-  6372865: 'Flexible storage system with support for ox_inventory and Chezza Inventory.', // MSK Storage - S
   6446936: 'Unique vehicle key items with lock/unlock, key menu, job vehicles and much more.', // MSK VehicleKeys - E
   6446947: 'Unique vehicle key items with lock/unlock, key menu, job vehicles and much more.', // MSK VehicleKeys - S
   7569109: 'This subscription is intended purely as a trial model. The goal is to let you test all scripts thoroughly within one month before deciding on the final purchase of individual resources. It does not replace a permanent license purchase.', // Subscription - Encrypted Version
@@ -152,26 +148,6 @@ export const PACKAGE_SEO: Record<number, SearchSnippets> = {
     de: {
       title:       'MSK Handcuffs (Source), FiveM Handcuff Script',
       description: 'Realistische FiveM-Handschellen für ESX und QBCore: Animationen, Props, Ziehen, Kopfsack, Klebeband und Fußfessel. Source, nur der Kern verschlüsselt.',
-    },
-  },
-  6372773: { // MSK Storage - Encrypted
-    en: {
-      title:       'MSK Storage (Encrypted), FiveM Storage Script',
-      description: 'Flexible FiveM storage system for ESX with ox_inventory and Chezza Inventory support. Encrypted release, config and locale files stay open.',
-    },
-    de: {
-      title:       'MSK Storage (Encrypted), FiveM Storage Script',
-      description: 'Flexibles FiveM-Lagersystem für ESX, mit Unterstützung für ox_inventory und Chezza Inventory. Encrypted-Fassung, Config- und Sprachdateien bleiben offen.',
-    },
-  },
-  6372865: { // MSK Storage - Source
-    en: {
-      title:       'MSK Storage (Source), FiveM Storage Script',
-      description: 'Flexible FiveM storage system for ESX with ox_inventory and Chezza Inventory support. Source release, only the core functions stay encrypted.',
-    },
-    de: {
-      title:       'MSK Storage (Source), FiveM Storage Script',
-      description: 'Flexibles FiveM-Lagersystem für ESX, mit Unterstützung für ox_inventory und Chezza Inventory. Source-Fassung, nur die Kernfunktionen verschlüsselt.',
     },
   },
   6446936: { // MSK VehicleKeys - Encrypted
@@ -292,8 +268,6 @@ export const PACKAGE_TAGS: Record<number, string[]> = {
   5732588: ['oxmysql','msk_core', 'AdvancedParking', 'MSK VehicleKeys', 'Jaksam Vehicle Keys'], // MSK Garage - S
   5159927: ['msk_core', 'pma-voice', 'saltychat'], // MSK Handcuffs - E
   5301828: ['msk_core', 'pma-voice', 'saltychat'], // MSK Handcuffs - S
-  6372773: ['msk_core', 'ox_inventory', 'Chezza Inventory'], // MSK Storage - E
-  6372865: ['msk_core', 'ox_inventory', 'Chezza Inventory'], // MSK Storage - S
   6446936: ['oxmysql', 'msk_core', 'ox_inventory', 'msk_enginetoggle'], // MSK VehicleKeys - E
   6446947: ['oxmysql', 'msk_core', 'ox_inventory', 'msk_enginetoggle'], // MSK VehicleKeys - S
   // Die beiden Abo-Pakete stehen bewusst ohne Eintrag. `Subscription` ist keine
