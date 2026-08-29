@@ -122,7 +122,10 @@ export default function HostingSetup({ guildId }: { guildId: string }) {
   }, [running, reload])
 
   return (
-    <div className="mb-4 space-y-4">
+    // Only the gap between this component's OWN two cards. The distance to the
+    // cards above comes from the tab container, so nothing here has to know
+    // what is rendered next to it.
+    <div className="space-y-4">
       {loadError && <p role="alert" className="text-sm text-[var(--color-danger)]">{loadError}</p>}
 
       {running

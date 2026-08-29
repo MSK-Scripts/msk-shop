@@ -598,14 +598,19 @@ function GuildPanel({
 
       {/* Bot Config Editor — nur für hosted customers */}
       {tab === 'hosting' && (
-        <>
+        // The gap lives here, not on the individual cards. Each of these
+        // components used to carry its own margin, and they disagreed: the
+        // editor spaces its cards with an inner gap and no bottom margin, the
+        // setup card had a bottom margin and no top one, so the two sat flush
+        // against each other while everything else was evenly spaced.
+        <div className="flex flex-col gap-4">
           {!!guild.is_hosted && guild.bot_port != null && <BotDashboardAddress guild={guild} t={t} />}
           {!!guild.is_hosted && <BotConfigEditor lang={lang} guildId={guildId} />}
           {/* Last on purpose: for a running bot this is the .env form and the
               remove button, neither of which is what you came for. For a guild
               without hosting it is the only thing on the tab. */}
           <HostingSetup guildId={guildId} />
-        </>
+        </div>
       )}
     </>
   )
@@ -684,7 +689,7 @@ function BotDashboardAddress({ guild, t }: { guild: Guild; t: T }) {
   }
 
   return (
-    <div className="mb-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
+    <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
       <h2 className="mb-1 text-base font-semibold">{t.botdash_addr_title}</h2>
       <p className="mb-4 text-sm text-[var(--color-muted-foreground)]">
         {url ? t.botdash_addr_desc : t.botdash_addr_none}
