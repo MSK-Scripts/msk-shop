@@ -75,6 +75,21 @@ export function isManagedHost(host: string): boolean {
   return /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/.test(label)
 }
 
+/**
+ * True for any name inside the zone we own, at any depth, including the apex.
+ *
+ * Broader than `isManagedHost` on purpose. That one answers "may we create this
+ * record", which requires a single label under the zone. This one answers "does
+ * this belong to us", and is the guard that stops a customer from entering
+ * `www.msk-scripts.de` as their own custom domain: we would then ask certbot for
+ * a certificate we cannot get and Apache for a vhost shadowing the real site, so
+ * the damage would land on the main site rather than on them.
+ */
+export function isInOwnZone(domain: string): boolean {
+  const d = (domain || '').trim().toLowerCase().replace(/\.$/, '')
+  return d === DNS_ZONE || d.endsWith(`.${DNS_ZONE}`)
+}
+
 async function call<T>(path: string, init: RequestInit = {}): Promise<T> {
   const key = ionosApiKey()
   if (!key) throw new IonosDnsError('IONOS DNS API is not configured')

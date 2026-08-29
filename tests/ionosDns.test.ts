@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import {
   isManagedHost, ionosApiKey, serverAddresses, zoneId, recordsForHost,
-  createHostRecords, deleteHostRecords, resetZoneCache, IonosDnsError,
+  createHostRecords, deleteHostRecords, resetZoneCache, IonosDnsError, isInOwnZone,
 } from '@/lib/ionosDns'
 import { generateDashboardHost, isGeneratedHost, dashboardRedirectUri } from '@/lib/dashboardHost'
 
@@ -213,5 +213,26 @@ describe('generateDashboardHost', () => {
   it('builds the redirect URI the Discord portal has to hold', () => {
     expect(dashboardRedirectUri('tickets-aabbccddeeff.msk-scripts.de'))
       .toBe('https://tickets-aabbccddeeff.msk-scripts.de/auth/callback')
+  })
+})
+
+describe('isInOwnZone', () => {
+  // The guard that stops a customer from entering one of OUR names as their own
+  // custom domain. Broader than isManagedHost on purpose: that one asks whether
+  // we may create the record, this one whether the name belongs to us at all.
+  it('claims the apex and every depth beneath it', () => {
+    for (const d of [
+      'msk-scripts.de', 'www.msk-scripts.de', 'cdn.msk-scripts.de',
+      'tickets-aabbccddeeff.msk-scripts.de', 'a.b.msk-scripts.de',
+      'MSK-SCRIPTS.DE', 'www.msk-scripts.de.',
+    ]) {
+      expect(isInOwnZone(d)).toBe(true)
+    }
+  })
+
+  it('leaves a customer domain alone', () => {
+    for (const d of ['tickets.example.com', 'msk-scripts.de.evil.com', 'notmsk-scripts.de', '']) {
+      expect(isInOwnZone(d)).toBe(false)
+    }
   })
 })

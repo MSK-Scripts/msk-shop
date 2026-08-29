@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import {
   Globe, CheckCircle, AlertCircle, Clock, Trash2,
-  ExternalLink, RefreshCw, Loader2, Info, LogOut,
+  ExternalLink, Loader2, Info, LogOut,
   FileText, Server, CreditCard, ChevronDown, type LucideIcon,
 } from 'lucide-react'
 import { dashboardTranslations } from '@/lib/i18n'
@@ -14,11 +14,13 @@ import { TIER_CONFIG, type Tier } from '@/lib/tiers'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import DnsInstructions from './DnsInstructions'
 import { cn } from '@/lib/utils'
 
 const BotConfigEditor = dynamic(() => import('@/components/BotConfigEditor'), { ssr: false })
 const TranscriptsCard = dynamic(() => import('./TranscriptsCard'), { ssr: false })
 const HostingSetup    = dynamic(() => import('./HostingSetup'), { ssr: false })
+const DashboardDomainCard = dynamic(() => import('./DashboardDomainCard'), { ssr: false })
 
 /**
  * Validates a user-supplied domain and returns a safe https:// URL.
@@ -444,6 +446,7 @@ function GuildPanel({
 
       {/* Custom Domain Card */}
       {tab === 'domain' && (
+      <div className="flex flex-col gap-4">
       <Card className="p-6">
         <div className="mb-1 flex flex-wrap items-center gap-2">
           <Globe className="h-4 w-4 text-[var(--color-primary)]" />
@@ -510,46 +513,14 @@ function GuildPanel({
             </div>
 
             {domainStatus === 'pending_dns' && (
-              <div className="mb-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)] p-4">
-                <p className="mb-3 text-sm font-semibold">{t.dns_title}</p>
-                <p className="mb-3 text-xs text-[var(--color-muted-foreground)]">{t.dns_desc}</p>
-                <div className="mb-3 grid grid-cols-1 gap-2 text-xs sm:grid-cols-3">
-                  <div className="rounded border border-[var(--color-border)] bg-[var(--color-card)] p-2">
-                    <div className="mb-1 text-[var(--color-muted-foreground)]">{t.dns_type}</div>
-                    <div className="font-mono font-semibold">A</div>
-                  </div>
-                  <div className="rounded border border-[var(--color-border)] bg-[var(--color-card)] p-2">
-                    <div className="mb-1 text-[var(--color-muted-foreground)]">{t.dns_name}</div>
-                    <div className="font-mono font-semibold">@ or subdomain (www, transcript, etc.)</div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={copyIp}
-                    className="cursor-pointer rounded border border-[var(--color-border)] bg-[var(--color-card)] p-2 text-left transition-colors hover:border-[var(--color-primary)]/50"
-                  >
-                    <div className="mb-1 text-[var(--color-muted-foreground)]">{t.dns_target}</div>
-                    <div className="font-mono font-semibold text-[var(--color-primary)]">
-                      {copied ? `✓ ${t.dash_copied}` : serverIp}
-                    </div>
-                  </button>
-                </div>
-                <p className="mb-3 text-xs text-[var(--color-muted-foreground)]">{t.dns_note}</p>
-                <p className="mb-3 flex items-start gap-1.5 rounded-lg border border-[var(--color-warning)]/30 bg-[var(--color-warning)]/10 px-2.5 py-2 text-xs text-[var(--color-warning)]">
-                  <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                  <span>{t.dns_cloudflare}</span>
-                </p>
-                <Button
-                  onClick={handleValidate}
-                  disabled={validateLoading}
-                  variant="outline"
-                  className="w-full"
-                >
-                  {validateLoading
-                    ? <><Loader2 className="h-3.5 w-3.5 animate-spin" /> {t.dns_checking}</>
-                    : <><RefreshCw className="h-3.5 w-3.5" /> {t.dns_check}</>
-                  }
-                </Button>
-              </div>
+              <DnsInstructions
+                serverIp={serverIp}
+                copied={copied}
+                onCopyIp={copyIp}
+                onValidate={handleValidate}
+                validating={validateLoading}
+                t={t}
+              />
             )}
 
             {domainStatus === 'active' && domain && (
@@ -591,6 +562,20 @@ function GuildPanel({
           </>
         )}
       </Card>
+
+      {/* Second card on the same tab: the customer's own domain in front of the
+          hosted bot's DASHBOARD. Same idea as the card above, different vhost —
+          that one serves transcript files, this one proxies to the bot's port
+          and needs its own certificate. */}
+      <DashboardDomainCard
+        guildId={guildId}
+        isHosted={!!guild.is_hosted && guild.bot_port != null}
+        initialDomain={guild.dashboard_domain}
+        initialStatus={guild.dashboard_domain_status}
+        generatedHost={guild.dashboard_host}
+        serverIp={serverIp}
+      />
+      </div>
       )}
 
       {/* Transcripts overview — für alle eingeloggten Nutzer (nur die eigenen) */}
