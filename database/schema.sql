@@ -29,9 +29,24 @@ CREATE TABLE IF NOT EXISTS ticketbot_guilds (
     -- than once, so this column is the lock: the mail is only sent by whoever
     -- manages to flip it from NULL. Cleared on downgrade.
     trial_reminder_sent_at DATETIME     NULL,
+    -- Custom domain for the TRANSCRIPTS (served straight from the guild's
+    -- transcript directory). Unrelated to the dashboard columns below.
     custom_domain          VARCHAR(255),
     domain_status          ENUM('none', 'pending_dns', 'active') NOT NULL DEFAULT 'none',
     is_hosted              TINYINT(1)   NOT NULL DEFAULT 0,
+    -- Public host of a hosted bot's OWN dashboard.
+    --   dashboard_host   = the subdomain we mint and own,
+    --                      tickets-<12 hex>.msk-scripts.de. Served by the zone's
+    --                      wildcard certificate, so it needs DNS + a vhost but no
+    --                      certbot run. Always set while is_hosted = 1.
+    --   dashboard_domain = the customer's own domain, optional, takes precedence
+    --                      over dashboard_host when active. Needs its own cert.
+    -- Both are kept: dropping back to the generated host after removing a custom
+    -- domain must not require re-minting one (and re-registering the redirect URI
+    -- in Discord).
+    dashboard_host           VARCHAR(255) NULL,
+    dashboard_domain         VARCHAR(255) NULL,
+    dashboard_domain_status  ENUM('none', 'pending_dns', 'active') NOT NULL DEFAULT 'none',
     -- Loopback port the hosted bot's self-hosted dashboard listens on (only set
     -- for is_hosted bots that run dashboard.js). The bot-dashboard reverse proxy
     -- forwards to http://127.0.0.1:<bot_port>. NULL = no proxied dashboard.
@@ -49,6 +64,11 @@ CREATE TABLE IF NOT EXISTS ticketbot_guilds (
 -- ALTER TABLE ticketbot_guilds ADD COLUMN guild_name             VARCHAR(120) NULL;
 -- ALTER TABLE ticketbot_guilds ADD COLUMN stripe_status          VARCHAR(24)  NULL;
 -- ALTER TABLE ticketbot_guilds ADD COLUMN trial_reminder_sent_at DATETIME     NULL;
+-- Self-service bot hosting (2026-08-29):
+--   ALTER TABLE ticketbot_guilds ADD COLUMN dashboard_host          VARCHAR(255) NULL;
+--   ALTER TABLE ticketbot_guilds ADD COLUMN dashboard_domain        VARCHAR(255) NULL;
+--   ALTER TABLE ticketbot_guilds ADD COLUMN dashboard_domain_status
+--     ENUM('none','pending_dns','active') NOT NULL DEFAULT 'none';
 -- Business tier (2026-08-29). MODIFY rewrites the ENUM in place and keeps every
 -- existing value; the new member is appended at the end:
 --   ALTER TABLE ticketbot_guilds MODIFY tier ENUM('basic','premium','premium_plus','business') NOT NULL DEFAULT 'basic';

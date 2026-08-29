@@ -24,6 +24,11 @@ export interface DashboardGuild {
   stripe_customer_id:     string | null;
   stripe_subscription_id: string | null;
   bot_port:               number | null;
+  /** Generated subdomain of the hosted bot's own dashboard. */
+  dashboard_host:          string | null;
+  /** The customer's own domain for that dashboard; wins over dashboard_host. */
+  dashboard_domain:        string | null;
+  dashboard_domain_status: 'none' | 'pending_dns' | 'active';
 }
 
 /** Discord user id from the signed dashboard session cookie, or null. */
@@ -55,7 +60,8 @@ export async function authorizeGuild(guildId: string | null | undefined): Promis
 
   const guild = await queryOne<DashboardGuild>(
     `SELECT guild_id, tier, custom_domain, domain_status, is_hosted, active,
-            stripe_customer_id, stripe_subscription_id, bot_port
+            stripe_customer_id, stripe_subscription_id, bot_port,
+            dashboard_host, dashboard_domain, dashboard_domain_status
        FROM ticketbot_guilds
       WHERE guild_id = ? AND discord_user_id = ?`,
     [id, discordUserId],

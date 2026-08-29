@@ -132,9 +132,27 @@ nach `main` pushen. CI läuft → bei Grün triggert der Deploy automatisch.
     Privilege Escalation. `git`/`deploy.sh` (als root) aktualisieren sie trotzdem.
   - **sudoers anpassen** (`/etc/sudoers.d/msk-vhost`) auf den neuen Pfad:
     ```
-    musiker15 ALL=(root) NOPASSWD: /opt/msk-shop/scripts/vhost-create.sh, /opt/msk-shop/scripts/vhost-delete.sh
+    musiker15 ALL=(root) NOPASSWD: /opt/msk-shop/scripts/vhost-create.sh, /opt/msk-shop/scripts/vhost-delete.sh, /opt/msk-shop/scripts/bot-vhost-create.sh, /opt/msk-shop/scripts/bot-vhost-delete.sh
     ```
     Danach `sudo visudo -c`. Das alte `/opt/msk-scripts/` kann anschließend entfernt werden.
+- **`bot-vhost-create.sh` / `bot-vhost-delete.sh`** veröffentlichen das eigene Dashboard
+  eines gehosteten Bots unter `tickets-<12 Hex>.msk-scripts.de`. Zwei Dinge sind daran
+  anders als bei den Transcript-Domains:
+  - **Kein certbot.** Die Zone trägt bereits ein Wildcard-Zertifikat
+    (`*.msk-scripts.de`, acme.sh + IONOS DNS-01, liegt unter
+    `/etc/apache2/ssl/msk-scripts.de/`). Eine neue Subdomain ist in dem Moment
+    ausgeliefert, in dem ihr vhost existiert. Damit kann die Einrichtung weder am
+    Let's-Encrypt-Kontingent noch an einer langsamen DNS-Propagierung scheitern.
+    `MODE=certbot` gibt es trotzdem, für die eigene Domain des Kunden (Etappe 3).
+  - **Der Name muss eine Ebene unter der Zone liegen.** `*.msk-scripts.de` deckt
+    `a.b.msk-scripts.de` nicht ab. Das Skript lehnt einen tieferen Namen deshalb ab,
+    statt ihn mit einem Zertifikatsfehler auszuliefern, der wie ein Browserproblem
+    aussieht.
+- **IONOS-DNS-API** (`IONOS_API_PREFIX`, `IONOS_API_SECRET` in der `.env.local`): die Zone
+  hat **keinen** Wildcard-DNS-Eintrag, jede Subdomain ist ein eigener A-Record. Der Key
+  gilt für **alle** Zonen des Kontos, deshalb lässt `lib/ionosDns.ts` nur Namen innerhalb
+  von `IONOS_DNS_ZONE` zu. Dieselben Zugangsdaten stehen bereits in
+  `/etc/ionos-ssl/conf.d/msk-scripts.de.conf` (dort für die DNS-01-Challenge).
 - **`cleanup.js`-Cron** auf `/opt/msk-shop/scripts/cleanup.js` zeigen lassen (wird mit jedem
   Deploy aktualisiert) — Env-Load + `NODE_PATH` weiterhin nötig (siehe Datei-Header).
 - **`tebex-stats.js`-Cron** (neu): füllt `msk_shop_stats` mit den gemessenen Verkaufszahlen,

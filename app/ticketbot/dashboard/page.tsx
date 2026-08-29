@@ -26,6 +26,11 @@ export interface DashboardGuild {
   /** Current subscription/trial period end, i.e. the day a running trial expires. */
   expires_at:             string | null;
   bot_port:               number | null;
+  /** Generated subdomain of the hosted bot's own dashboard. */
+  dashboard_host:          string | null;
+  /** The customer's own domain for it; takes precedence when active. */
+  dashboard_domain:        string | null;
+  dashboard_domain_status: 'none' | 'pending_dns' | 'active';
 }
 
 export default async function DashboardPage() {
@@ -40,7 +45,8 @@ export default async function DashboardPage() {
   // Account-scoped: load ALL guilds owned by this Discord user.
   const guilds = await query<DashboardGuild>(
     `SELECT guild_id, guild_name, tier, custom_domain, domain_status, is_hosted,
-            stripe_subscription_id, stripe_status, expires_at, bot_port
+            stripe_subscription_id, stripe_status, expires_at, bot_port,
+            dashboard_host, dashboard_domain, dashboard_domain_status
        FROM ticketbot_guilds
       WHERE discord_user_id = ?
       ORDER BY created_at ASC`,

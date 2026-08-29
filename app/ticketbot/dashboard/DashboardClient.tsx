@@ -45,6 +45,9 @@ interface Guild {
   stripe_status:          string | null
   expires_at:             string | null
   bot_port:               number | null
+  dashboard_host:          string | null
+  dashboard_domain:        string | null
+  dashboard_domain_status: 'none' | 'pending_dns' | 'active'
 }
 
 interface Props {
@@ -590,7 +593,7 @@ function GuildPanel({
       {/* Bot Config Editor — nur für hosted customers */}
       {tab === 'hosting' && !!guild.is_hosted && (
         <>
-          {guild.bot_port != null && <BotDashboardLauncher guildId={guildId} t={t} />}
+          {guild.bot_port != null && <BotDashboardAddress guild={guild} t={t} />}
           <BotConfigEditor lang={lang} guildId={guildId} />
         </>
       )}
@@ -598,38 +601,147 @@ function GuildPanel({
   )
 }
 
-// ── Launcher for the full proxied bot dashboard ──────────────────────────────
-// Asks msk-shop for a short-lived handoff URL (auth is re-checked server-side)
-// and opens it in a new tab. Only rendered when the guild has a bot_port set.
-function BotDashboardLauncher({ guildId, t }: { guildId: string; t: T }) {
-  const [loading, setLoading] = useState(false)
-  const [error, setError]     = useState<string | null>(null)
+// ── Public address of the hosted bot's own dashboard ────────────────────────
+//
+// Two ways in, and they are not interchangeable:
+//
+//   • The bot's OWN host (tickets-….msk-scripts.de, or the customer's domain).
+//     The bot runs its own Discord OAuth there and resolves its own
+//     permissions, so the customer's SUPPORT TEAM can sign in. This is the
+//     address that belongs in their handbook.
+//   • The handoff through msk-scripts.de. Authenticated by msk-shop, which only
+//     ever knows the guild's OWNER — nobody else can use it. Kept as the
+//     recovery path for when the Discord redirect URI is wrong, because that is
+//     precisely when the first route is unusable.
+function BotDashboardAddress({ guild, t }: { guild: Guild; t: T }) {
+  const [host, setHost]         = useState<string | null>(
+    guild.dashboard_domain_status === 'active' && guild.dashboard_domain
+      ? guild.dashboard_domain
+      : guild.dashboard_host,
+  )
+  const [busy, setBusy]         = useState(false)
+  const [error, setError]       = useState<string | null>(null)
+  const [notice, setNotice]     = useState<string | null>(null)
+  const [copied, setCopied]     = useState<string | null>(null)
+  const [launching, setLaunching] = useState(false)
 
-  async function launch() {
-    setLoading(true)
+  const url         = host ? `https://${host}` : null
+  const redirectUri = host ? `https://${host}/auth/callback` : null
+
+  async function copy(value: string, key: string) {
+    try {
+      await navigator.clipboard.writeText(value)
+      setCopied(key)
+      setTimeout(() => setCopied(null), 2000)
+    } catch {
+      // The clipboard API rejects outright in an insecure context. Saying "copy
+      // it by hand" is useful; a checkmark that lies is not.
+      setError(t.botdash_copy_failed)
+    }
+  }
+
+  async function setupAddress() {
+    setBusy(true)
+    setError(null)
+    setNotice(null)
+    try {
+      const res  = await fetch(`/api/bot-hosting/dashboard-host?guildId=${encodeURIComponent(guild.guild_id)}`,
+                               { method: 'POST', cache: 'no-store' })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok || !data?.host) throw new Error(data?.error || 'failed')
+      setHost(data.host)
+      setNotice(data.warning || t.botdash_setup_done)
+    } catch (err) {
+      setError(err instanceof Error && err.message !== 'failed' ? err.message : t.botdash_error)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function launchFallback() {
+    setLaunching(true)
     setError(null)
     try {
-      const res  = await fetch(`/api/bot-dashboard/open?guildId=${encodeURIComponent(guildId)}`, { cache: 'no-store' })
+      const res  = await fetch(`/api/bot-dashboard/open?guildId=${encodeURIComponent(guild.guild_id)}`, { cache: 'no-store' })
       const data = await res.json().catch(() => ({}))
       if (!res.ok || !data?.url) throw new Error(data?.error || 'failed')
       window.open(data.url, '_blank', 'noopener,noreferrer')
     } catch {
       setError(t.botdash_error)
     } finally {
-      setLoading(false)
+      setLaunching(false)
     }
   }
 
   return (
     <div className="mb-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm text-[var(--color-muted-foreground)]">{t.botdash_hint}</p>
-        <Button onClick={launch} disabled={loading} className="shrink-0">
-          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ExternalLink className="h-4 w-4" />}
-          {loading ? t.botdash_opening : t.botdash_open}
+      <h2 className="mb-1 text-base font-semibold">{t.botdash_addr_title}</h2>
+      <p className="mb-4 text-sm text-[var(--color-muted-foreground)]">
+        {url ? t.botdash_addr_desc : t.botdash_addr_none}
+      </p>
+
+      {url ? (
+        <>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <code className="flex-1 truncate rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)] px-3 py-2 font-mono text-sm">
+              {url}
+            </code>
+            <div className="flex gap-2">
+              <Button variant="ghost" className="tap-target shrink-0" onClick={() => copy(url, 'url')}>
+                {copied === 'url' ? t.botdash_copied : t.botdash_copy}
+              </Button>
+              <a href={url} target="_blank" rel="noopener noreferrer" className="shrink-0">
+                <Button className="tap-target">
+                  <ExternalLink className="h-4 w-4" /> {t.botdash_open}
+                </Button>
+              </a>
+            </div>
+          </div>
+
+          {/* The one step we cannot do for them. It is not optional: without the
+              redirect URI the Discord login fails, and the error appears on
+              Discord's side where nothing points back at us. */}
+          <div className="mt-4 rounded-lg border border-[var(--color-warning)]/30 bg-[var(--color-warning)]/10 p-4">
+            <p className="mb-1 flex items-center gap-2 text-sm font-semibold text-[var(--color-warning)]">
+              <Info className="h-4 w-4 shrink-0" /> {t.botdash_redirect_title}
+            </p>
+            <p className="mb-3 text-xs text-[var(--color-muted-foreground)]">{t.botdash_redirect_desc}</p>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              <code className="flex-1 truncate rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2 font-mono text-xs">
+                {redirectUri}
+              </code>
+              <div className="flex gap-2">
+                <Button variant="ghost" className="tap-target shrink-0" onClick={() => copy(redirectUri!, 'redirect')}>
+                  {copied === 'redirect' ? t.botdash_copied : t.botdash_copy}
+                </Button>
+                <a href="https://discord.com/developers/applications" target="_blank" rel="noopener noreferrer" className="shrink-0">
+                  <Button variant="ghost" className="tap-target">
+                    <ExternalLink className="h-4 w-4" /> {t.botdash_redirect_open}
+                  </Button>
+                </a>
+              </div>
+            </div>
+          </div>
+        </>
+      ) : (
+        <Button onClick={setupAddress} disabled={busy} className="tap-target">
+          {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Globe className="h-4 w-4" />}
+          {busy ? t.botdash_setup_busy : t.botdash_setup}
         </Button>
+      )}
+
+      {notice && <p className="mt-3 text-xs text-[var(--color-primary)]">{notice}</p>}
+      {error  && <p role="alert" className="mt-3 text-xs text-[var(--color-danger)]">{error}</p>}
+
+      <div className="mt-4 border-t border-[var(--color-border)] pt-4">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-xs text-[var(--color-muted-foreground)]">{t.botdash_fallback_hint}</p>
+          <Button variant="ghost" onClick={launchFallback} disabled={launching} className="tap-target shrink-0">
+            {launching ? <Loader2 className="h-4 w-4 animate-spin" /> : <ExternalLink className="h-4 w-4" />}
+            {launching ? t.botdash_opening : t.botdash_fallback}
+          </Button>
+        </div>
       </div>
-      {error && <p className="mt-3 text-xs text-[var(--color-danger)]">{error}</p>}
     </div>
   )
 }
