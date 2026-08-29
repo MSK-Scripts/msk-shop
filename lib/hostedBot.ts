@@ -79,14 +79,19 @@ export async function archiveHostedBot(guildId: ScopedGuildId): Promise<void> {
     // Continue — still clear is_hosted even if the rename failed.
   }
 
-  // 4. Mark as no longer hosted and forget the hosts we just removed — leaving
-  // them in the row would make a later re-activation try to "repair" a name
-  // whose DNS records are gone.
+  // 4. Mark as no longer hosted.
+  //
+  // The host NAMES are kept on purpose, even though their DNS records and vhosts
+  // are gone. Re-activating recreates both under the same name, and that is what
+  // makes coming back painless: the customer registered
+  // `https://<host>/auth/callback` in the Discord developer portal by hand, and
+  // a fresh name would silently invalidate it and send them back into a portal
+  // to fix a login that used to work. The custom domain drops to `pending_dns`
+  // rather than `active`, which is the truth — it is remembered, not served.
   await query(
     `UPDATE ticketbot_guilds
         SET is_hosted = 0, bot_port = NULL,
-            dashboard_host = NULL, dashboard_domain = NULL,
-            dashboard_domain_status = 'none'
+            dashboard_domain_status = IF(dashboard_domain IS NULL, 'none', 'pending_dns')
       WHERE guild_id = ?`,
     [guildId],
   );

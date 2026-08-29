@@ -10,7 +10,7 @@ import {
 } from 'lucide-react'
 import { dashboardTranslations } from '@/lib/i18n'
 import { useLang } from '@/components/i18n/LangProvider'
-import type { Tier } from '@/lib/tiers'
+import { TIER_CONFIG, type Tier } from '@/lib/tiers'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -18,6 +18,7 @@ import { cn } from '@/lib/utils'
 
 const BotConfigEditor = dynamic(() => import('@/components/BotConfigEditor'), { ssr: false })
 const TranscriptsCard = dynamic(() => import('./TranscriptsCard'), { ssr: false })
+const HostingSetup    = dynamic(() => import('./HostingSetup'), { ssr: false })
 
 /**
  * Validates a user-supplied domain and returns a safe https:// URL.
@@ -182,7 +183,12 @@ function GuildPanel({
   const tabs: { key: TabKey; label: string; icon: LucideIcon }[] = [
     { key: 'domain',      label: t.tab_domain,      icon: Globe },
     { key: 'transcripts', label: t.tab_transcripts, icon: FileText },
-    ...(guild.is_hosted ? [{ key: 'hosting' as const, label: t.tab_hosting, icon: Server }] : []),
+    // Shown for every paying tier, not only for an already-hosted guild: this is
+    // where hosting is switched ON, so gating it on is_hosted would hide the
+    // only door to it.
+    ...(TIER_CONFIG[guild.tier].botHosting
+      ? [{ key: 'hosting' as const, label: t.tab_hosting, icon: Server }]
+      : []),
   ]
 
   const hasPremium = guild.tier !== 'basic'
@@ -591,10 +597,14 @@ function GuildPanel({
       {tab === 'transcripts' && <TranscriptsCard lang={lang} guildId={guildId} />}
 
       {/* Bot Config Editor — nur für hosted customers */}
-      {tab === 'hosting' && !!guild.is_hosted && (
+      {tab === 'hosting' && (
         <>
-          {guild.bot_port != null && <BotDashboardAddress guild={guild} t={t} />}
-          <BotConfigEditor lang={lang} guildId={guildId} />
+          {!!guild.is_hosted && guild.bot_port != null && <BotDashboardAddress guild={guild} t={t} />}
+          {!!guild.is_hosted && <BotConfigEditor lang={lang} guildId={guildId} />}
+          {/* Last on purpose: for a running bot this is the .env form and the
+              remove button, neither of which is what you came for. For a guild
+              without hosting it is the only thing on the tab. */}
+          <HostingSetup guildId={guildId} />
         </>
       )}
     </>

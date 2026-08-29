@@ -148,6 +148,20 @@ nach `main` pushen. CI läuft → bei Grün triggert der Deploy automatisch.
     `a.b.msk-scripts.de` nicht ab. Das Skript lehnt einen tieferen Namen deshalb ab,
     statt ihn mit einem Zertifikatsfehler auszuliefern, der wie ein Browserproblem
     aussieht.
+- **`bot-provision.js`** installiert einen Kundenbot und startet ihn. Es wird
+  **nicht** per Cron aufgerufen, sondern **abgesetzt** von
+  `POST /api/bot-hosting/provision` gestartet und erbt die Umgebung des
+  App-Prozesses. Drei Dinge dazu:
+  - **Es braucht kein sudo** und läuft als App-User, weil ihm die Bot-Ordner und
+    der PM2-Daemon gehören. Es steht deshalb bewusst nicht in der sudoers-Regel.
+  - **Es läuft absichtlich abgesetzt.** `git clone` plus `npm install` dauern
+    Minuten, und ein Deploy (`systemctl restart msk-shop`) würde einen Job im
+    Next-Prozess mitten im Lauf abwürgen, ohne dass irgendwo stünde, wie weit er
+    gekommen ist. Den Stand hält `ticketbot_hosting_jobs`.
+  - **Es startet `dashboard.js`, nicht `index.js`.** `index.js` ist der reine Bot
+    ohne Webserver: er startet sauber, PM2 meldet `online`, und die
+    Dashboard-Adresse des Kunden antwortet trotzdem für immer mit 503. Genau so
+    stand der erste gehostete Bot am 29.08.2026 auf dem Server.
 - **IONOS-DNS-API** (`IONOS_API_PREFIX`, `IONOS_API_SECRET` in der `.env.local`): die Zone
   hat **keinen** Wildcard-DNS-Eintrag, jede Subdomain ist ein eigener A-Record. Der Key
   gilt für **alle** Zonen des Kontos, deshalb lässt `lib/ionosDns.ts` nur Namen innerhalb

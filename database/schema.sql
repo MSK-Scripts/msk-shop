@@ -88,6 +88,33 @@ CREATE TABLE IF NOT EXISTS ticketbot_customers (
     updated_at         DATETIME     NOT NULL DEFAULT NOW() ON UPDATE NOW()
 );
 
+-- ---------------------------------------------------------------------------
+-- Self-service bot hosting: state of the one provisioning run per guild.
+--
+-- Provisioning is a DETACHED background process (scripts/bot-provision.js), not
+-- work done inside the HTTP request: `git clone` plus `npm install` take
+-- minutes, and a deploy restarting msk-shop mid-run would abort it with nothing
+-- written down. The worker owns this row; the dashboard only polls it.
+--
+-- One row per guild (guild_id is the PK): a second concurrent run for the same
+-- guild would fight over the same directory and PM2 name, so starting one is an
+-- upsert that first refuses while a run is still active.
+--
+-- `log` holds the tail of whatever failed. It is the only thing that lets a
+-- customer see WHY their token was rejected, so it is kept after a failure and
+-- cleared on the next attempt.
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS ticketbot_hosting_jobs (
+    guild_id   VARCHAR(20) NOT NULL PRIMARY KEY,
+    status     ENUM('running', 'failed', 'done') NOT NULL DEFAULT 'running',
+    step       VARCHAR(24) NOT NULL DEFAULT 'queued',
+    error      VARCHAR(500) NULL,
+    log        TEXT         NULL,
+    started_at DATETIME     NOT NULL DEFAULT NOW(),
+    updated_at DATETIME     NOT NULL DEFAULT NOW() ON UPDATE NOW(),
+    FOREIGN KEY (guild_id) REFERENCES ticketbot_guilds(guild_id) ON DELETE CASCADE
+);
+
 -- Transcripts
 -- One transcript per (guild_id, ticket_id): a re-close of the same ticket
 -- REPLACES the transcript in place (stable public URL). The UNIQUE key enforces

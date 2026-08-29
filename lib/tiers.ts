@@ -13,6 +13,14 @@ export interface TierConfig {
   storageDays: number;
   /** Whether custom domains are allowed. */
   customDomain: boolean;
+  /**
+   * Whether the guild may have its bot hosted and managed by us: an own
+   * directory under BOT_CONFIG_BASE_PATH, a PM2 process, and a public host for
+   * the bot's own dashboard. Every paid tier gets it — the limit is server
+   * capacity, not the price, and a Premium customer who cannot host has to run
+   * the bot somewhere themselves, which is the part most of them cannot do.
+   */
+  botHosting: boolean;
   /** Whether downloading attachments in the transcript is allowed. */
   attachments: boolean;
   /**
@@ -34,6 +42,7 @@ export const TIER_CONFIG: Record<Tier, TierConfig> = {
     attachmentMaxBytes: 0, //  not allowed
     storageDays: 30, //  1 month
     customDomain: false,
+    botHosting: false,
     attachments: false,
     removeBranding: false,
     uploadsPerHour: 30,
@@ -43,6 +52,7 @@ export const TIER_CONFIG: Record<Tier, TierConfig> = {
     attachmentMaxBytes: 100 * 1024 * 1024, // 100 MB
     storageDays: 180, // 6 months
     customDomain: true,
+    botHosting: true,
     attachments: true,
     removeBranding: true,
     uploadsPerHour: 60,
@@ -52,6 +62,7 @@ export const TIER_CONFIG: Record<Tier, TierConfig> = {
     attachmentMaxBytes: 200 * 1024 * 1024, // 200 MB
     storageDays: 365, // 1 year
     customDomain: true,
+    botHosting: true,
     attachments: true,
     removeBranding: true,
     uploadsPerHour: 120,
@@ -61,6 +72,7 @@ export const TIER_CONFIG: Record<Tier, TierConfig> = {
     attachmentMaxBytes: 500 * 1024 * 1024, // 500 MB
     storageDays: 3650, // 10 years
     customDomain: true,
+    botHosting: true,
     attachments: true,
     removeBranding: true,
     uploadsPerHour: 300,
