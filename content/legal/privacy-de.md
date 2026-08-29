@@ -268,6 +268,8 @@ Bei der Registrierung unter **www.msk-scripts.de/ticketbot/verify** finden folge
 | `tier` | Abo-Tier (basic/premium/premium_plus) | Bis zur Kontolöschung |
 | `discord_user_id` | Ihre Discord-Nutzer-ID | Bis zur Kontolöschung |
 | `stripe_customer_id` / `stripe_subscription_id` | Stripe-Referenzen für Ihr Abo (keine Zahlungsdaten) | Bis zur Kontolöschung |
+| `stripe_status` | Von Stripe gemeldeter Status Ihres Abos (z. B. Testphase, aktiv) | Bis zur Kontolöschung |
+| `trial_reminder_sent_at` | Zeitpunkt der Erinnerungs-E-Mail zur Testphase, damit sie nur einmal versandt wird | Bis zur Kontolöschung |
 | `custom_domain` | Eigene Domain (falls konfiguriert) | Bis zur Entfernung |
 | `domain_status` | Status der eigenen Domain | Bis zur Kontolöschung |
 
@@ -301,6 +303,18 @@ Ihr Domain-Name kann aufgrund der SSL-Zertifikatsausstellung in öffentlichen **
 Wir betreiben einen Webhook-Endpunkt, der Ereignisse von **Stripe** empfängt, wenn Ihr Abo erstellt, verlängert, geändert oder gekündigt wird. Wir verarbeiten diese Ereignisse, um Ihr Abo-Tier automatisch zu aktivieren, upzugraden oder downzugraden und den Testphasen-Status zu erfassen. Über diesen Webhook erhalten wir keine Karten- oder Zahlungsdaten.
 
 **Verarbeitete Daten:** Stripe-Kunden- und Abo-ID, Abo-Status und -Tier, Periodenende, Ihre Discord-Nutzer-ID und Server-ID (als Metadaten übergeben).
+
+Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO, zur Erbringung des gebuchten Dienstes erforderlich.
+
+### Erinnerungs-E-Mail zur Testphase
+
+Für den Start der kostenlosen Testphase ist kein Zahlungsmittel erforderlich. Weil das Abo dadurch von selbst endet, wenn kein Zahlungsmittel hinterlegt wird, senden wir Ihnen drei Tage vor Ablauf **eine** E-Mail, die Ihnen mitteilt, wann die Testphase endet und dass nichts abgebucht wird.
+
+**Verarbeitete Daten:** die E-Mail-Adresse, die Sie beim Checkout bei Stripe angegeben haben, der Name Ihres Discord-Servers und das Enddatum Ihrer Testphase. Die Adresse rufen wir zum Versandzeitpunkt bei Stripe ab und speichern sie **nicht** in unserer Datenbank; festgehalten wird lediglich der Zeitpunkt, zu dem die E-Mail versandt wurde, damit sie nicht doppelt verschickt wird.
+
+Die E-Mail wird nur versandt, solange kein Zahlungsmittel hinterlegt ist. Sie ist eine vertragsbezogene Mitteilung und keine Werbung; weitere Nachrichten erhalten Sie auf dieser Grundlage nicht.
+
+**Versanddienstleister:** Der Versand erfolgt über den Mailserver von **IONOS SE**, Elgendorfer Straße 57, 56410 Montabaur. IONOS verarbeitet dabei als Auftragsverarbeiter die Empfängeradresse und den Inhalt der Nachricht; die Verarbeitung findet in der Europäischen Union statt. Wir haben mit IONOS einen Vertrag über Auftragsverarbeitung (AVV) geschlossen. Weitere Informationen: [IONOS Datenschutzerklärung](https://www.ionos.de/terms-gtc/datenschutzerklaerung/).
 
 Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO, zur Erbringung des gebuchten Dienstes erforderlich.
 

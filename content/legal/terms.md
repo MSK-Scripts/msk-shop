@@ -80,7 +80,7 @@ Premium and Premium+ subscriptions are billed via **Stripe** (Stripe Payments Eu
 
 Subscription fees are billed monthly. Your tier is activated automatically once the subscription is confirmed and remains active for as long as payment succeeds.
 
-**14-day free trial:** New customers receive a 14-day free trial. If you do not cancel before the trial ends, the subscription automatically converts to a paid monthly plan and the first monthly fee is charged. The trial is available once per customer.
+**14-day free trial:** New customers receive a 14-day free trial. **No payment method is required** to start it. If you do not add a payment method before the trial ends, the subscription ends automatically and your tier returns to Basic; nothing is charged and no cancellation is needed. If you do add a payment method, the subscription converts to a paid monthly plan at the end of the trial and the first monthly fee is charged, unless you cancel before then. The trial is available once per customer.
 
 ### 7.3 Cancellation and Downgrade
 

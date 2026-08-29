@@ -80,7 +80,7 @@ Premium- und Premium+-Abonnements werden über **Stripe** (Stripe Payments Europ
 
 Abo-Gebühren werden monatlich abgerechnet. Ihr Tier wird automatisch aktiviert, sobald das Abonnement bestätigt ist, und bleibt aktiv, solange die Zahlung erfolgreich ist.
 
-**14 Tage kostenlos testen:** Neukunden erhalten eine 14-tägige kostenlose Testphase. Wird vor Ablauf der Testphase nicht gekündigt, wandelt sich das Abonnement automatisch in ein kostenpflichtiges Monatsabo um und die erste Monatsgebühr wird berechnet. Die Testphase ist einmal pro Kunde verfügbar.
+**14 Tage kostenlos testen:** Neukunden erhalten eine 14-tägige kostenlose Testphase. Für den Beginn der Testphase ist **kein Zahlungsmittel erforderlich**. Hinterlegen Sie bis zum Ende der Testphase kein Zahlungsmittel, endet das Abonnement automatisch und Ihr Tier fällt auf Basic zurück; eine Abbuchung erfolgt nicht und es ist keine Kündigung nötig. Hinterlegen Sie ein Zahlungsmittel, wandelt sich das Abonnement zum Ende der Testphase in ein kostenpflichtiges Monatsabo um und die erste Monatsgebühr wird berechnet, sofern Sie vorher nicht kündigen. Die Testphase ist einmal pro Kunde verfügbar.
 
 ### 7.3 Kündigung und Downgrade
 

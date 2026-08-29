@@ -268,6 +268,8 @@ When registering at **www.msk-scripts.de/ticketbot/verify**, the following data 
 | `tier` | Subscription tier (basic/premium/premium_plus) | Until account deletion |
 | `discord_user_id` | Your Discord user ID | Until account deletion |
 | `stripe_customer_id` / `stripe_subscription_id` | Stripe references for your subscription (no payment data) | Until account deletion |
+| `stripe_status` | Status of your subscription as reported by Stripe (e.g. trialing, active) | Until account deletion |
+| `trial_reminder_sent_at` | Timestamp of the trial reminder email, so it is sent only once | Until account deletion |
 | `custom_domain` | Custom domain (if configured) | Until removed |
 | `domain_status` | Custom domain status | Until account deletion |
 
@@ -301,6 +303,18 @@ Your domain name may appear in public **Certificate Transparency logs** as a res
 We operate a webhook endpoint that receives events from **Stripe** when your subscription is created, renewed, changed, or cancelled. We process these events to automatically activate, upgrade, or downgrade your subscription tier and to record the trial status. We receive no card or payment data through this webhook.
 
 **Data processed:** Stripe customer and subscription IDs, subscription status and tier, current period end, your Discord user ID and server ID (passed as metadata).
+
+Legal basis: Art. 6(1)(b) GDPR, necessary to deliver the subscribed service.
+
+### Trial Reminder Email
+
+Starting a free trial does not require a payment method. Because the subscription therefore ends by itself when no payment method is added, we send you **one** email three days before the trial expires, telling you when it ends and that nothing will be charged.
+
+**Data processed:** the email address you entered at Stripe during checkout, your Discord server name and the end date of your trial. We retrieve the address from Stripe at the time of sending and do **not** store it in our database; we only record the point in time at which the email was sent, so that it is not sent twice.
+
+The email is sent only while no payment method is on file. It is a transactional message about your contract, not advertising, and you will not receive any further mail from us on this basis.
+
+**Mail provider:** Delivery runs through the mail server of **IONOS SE**, Elgendorfer Strasse 57, 56410 Montabaur, Germany. Acting as a processor, IONOS handles the recipient address and the content of the message; processing takes place within the European Union. We have concluded a data processing agreement (DPA) with IONOS. Further information: [IONOS Privacy Policy](https://www.ionos.com/terms-gtc/privacy-policy/).
 
 Legal basis: Art. 6(1)(b) GDPR, necessary to deliver the subscribed service.
 
