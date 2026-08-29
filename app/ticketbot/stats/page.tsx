@@ -4,6 +4,7 @@ import { pageSeo } from '@/lib/pageSeo'
 import { getRequestLang } from '@/lib/serverLang'
 import { query, queryOne }    from '@/lib/db'
 import { getIgnoredApiKeys } from '@/lib/statsIgnore'
+import { TIER_CONFIG }       from '@/lib/tiers'
 import StatsClient            from './StatsClient'
 import type { Stats }         from './StatsClient'
 
@@ -25,16 +26,25 @@ interface SumRow   { sum_bytes: number | null }
 interface MaxRow   { max_bytes: number | null }
 interface TierRow  { tier: string; count: number }
 
+/**
+ * Alle Stufen auf 0. Die Abfragen liefern nur Zeilen fuer Stufen, die es
+ * wirklich gibt; ohne diese Vorbelegung fehlt der Schluessel und die Anzeige
+ * rendert `NaN` statt einer 0. Aus `TIER_CONFIG` abgeleitet, damit eine
+ * kuenftige Stufe den Fehler nicht erneut einschleppt.
+ */
+const zeroTiers = (): Record<string, number> =>
+  Object.fromEntries(Object.keys(TIER_CONFIG).map(tier => [tier, 0]))
+
 const EMPTY_STATS: Stats = {
   available:                  false,
   transcripts:                0,
   apiKeys:                    0,
-  tiers:                      { basic: 0, premium: 0, premium_plus: 0 },
+  tiers:                      zeroTiers(),
   avgTranscriptBytes:         0,
   attachments:                0,
   avgAttachmentBytes:         0,
   subscriptions:              0,
-  subscriptionTiers:          { basic: 0, premium: 0, premium_plus: 0 },
+  subscriptionTiers:          zeroTiers(),
   customDomains:              0,
   hostedBots:                 0,
   newGuilds30d:               0,
@@ -88,10 +98,10 @@ async function loadStats(): Promise<Stats> {
       queryOne<MaxRow>('SELECT MAX(file_size_bytes) AS max_bytes FROM ticketbot_transcripts'),
     ])
 
-    const tierMap: Record<string, number> = { basic: 0, premium: 0, premium_plus: 0 }
+    const tierMap = zeroTiers()
     for (const row of tierRows) tierMap[row.tier] = Number(row.count)
 
-    const subscriptionTierMap: Record<string, number> = { basic: 0, premium: 0, premium_plus: 0 }
+    const subscriptionTierMap = zeroTiers()
     for (const row of subscriptionTierRows) subscriptionTierMap[row.tier] = Number(row.count)
 
     return {

@@ -67,6 +67,19 @@ function StatCard({
   )
 }
 
+/**
+ * Spaltenraster nach Anzahl der Stufen. Die Klassennamen stehen ausgeschrieben,
+ * weil Tailwind zusammengesetzte Namen (`grid-cols-${n}`) beim Bauen nicht
+ * findet und wegwirft. Vier Stufen bekommen auf schmalen Displays zwei Spalten,
+ * nebeneinander waeren die Kacheln zu schmal fuer die Prozentzeile.
+ */
+const TIER_GRID: Record<number, string> = {
+  1: 'grid-cols-1',
+  2: 'grid-cols-2',
+  3: 'grid-cols-3',
+  4: 'grid-cols-2 sm:grid-cols-4',
+}
+
 function TierBreakdown({ tiers, total, label, lang, hideBasic = false }: {
   tiers: Record<string, number>
   total: number
@@ -106,7 +119,7 @@ function TierBreakdown({ tiers, total, label, lang, hideBasic = false }: {
         <div className="mb-4 h-3 rounded-full bg-[var(--color-muted)]" />
       )}
 
-      <div className={cn('grid gap-3', items.length === 2 ? 'grid-cols-2' : 'grid-cols-3')}>
+      <div className={cn('grid gap-3', TIER_GRID[items.length] ?? 'grid-cols-3')}>
         {items.map(({ key, tierLabel, text }) => (
           <div key={key} className="flex flex-col gap-1 rounded-lg bg-[var(--color-muted)] px-3 py-2.5">
             <span className={cn('font-mono text-[0.625rem] font-bold uppercase tracking-widest', text)}>
