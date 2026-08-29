@@ -8,7 +8,7 @@ Diese Nutzungsbedingungen gelten für die Nutzung aller MSK Scripts-Dienste unte
 
 - **MSK Scripts Shop**: Kauf digitaler Produkte (FiveM-Ressourcen und Discord-Bots) über Tebex
 - **MSK Ticket Bot Transcript Service**: ein optionaler, abonnementbasierter Hosting-Dienst für Nutzer, die den MSK Ticket Bot selbst betreiben
-- **Hosted Bot Management**: ein optionaler, vollständig verwalteter Hosting-Dienst für den MSK Ticket Bot, der Premium- und Premium+-Kunden auf individuelle Anfrage zur Verfügung steht
+- **Hosted Bot Management**: ein optionaler, vollständig verwalteter Hosting-Dienst für den MSK Ticket Bot, der in den Tarifen Premium, Premium+ und Business enthalten ist und von Ihnen selbst im Dashboard aktiviert wird
 - **MSK Giveaway Bot**: ein kostenloser, als offizielle öffentliche Instanz betriebener Discord-Bot, den Sie zu Ihrem eigenen Discord-Server hinzufügen können, um Giveaways durchzuführen
 
 Mit dem Abschluss eines Kaufs, der Registrierung für einen dieser Dienste oder dem Einladen des Giveaway Bots auf Ihren Discord-Server stimmen Sie diesen Bedingungen zu.
@@ -179,24 +179,28 @@ Nichtzutreffendes bitte streichen.
 
 ### 8.1 Leistungsbeschreibung
 
-Der Hosted Bot Management Service ermöglicht Premium- und Premium+-Kunden, ihren MSK Ticket Bot vollständig auf den Servern von MSK Scripts betreiben zu lassen. Der Dienst ist ausschließlich auf individuelle Anfrage über unseren [Discord-Server](https://discord.gg/5hHSBRHvJE) verfügbar und wird nicht automatisch durch ein Premium- oder Premium+-Abo aktiviert.
+Der Hosted Bot Management Service ermöglicht Premium-, Premium+- und Business-Kunden, ihren MSK Ticket Bot auf den Servern von MSK Scripts betreiben zu lassen. Sie aktivieren den Dienst selbst im Dashboard unter „Bot Hosting"; eine individuelle Absprache ist nicht erforderlich.
 
 Der Dienst umfasst:
 - Hosting des Bot-Prozesses auf MSK Scripts-Servern (verwaltet über PM2)
-- Zugang zu einem webbasierten Management-Panel unter **www.msk-scripts.de/ticketbot/dashboard** zum Bearbeiten von Konfigurationsdateien (`config.jsonc`, `snippets.jsonc`, `.env` sowie der aktiven Sprachdatei `locales/<lang>.json`), zur Bot-Steuerung (Starten / Stoppen / Neustart / Update) sowie zur Anzeige der Live-Log-Ausgabe
+- Eine öffentliche Adresse für das eigene Web-Dashboard Ihres Bots: entweder eine von uns vergebene Subdomain unter `msk-scripts.de` oder eine eigene Domain, die Sie auf unsere Server zeigen lassen. Das TLS-Zertifikat ist in beiden Fällen enthalten
+- Ein Management-Panel unter **www.msk-scripts.de/ticketbot/dashboard** zur Bot-Steuerung (Starten / Stoppen / Neustart / Update), zur Anzeige der Live-Log-Ausgabe und zum Korrigieren der Zugangsdaten in der `.env`-Datei
+- Das eigene Dashboard Ihres Bots (Tickets, Statistiken, Konfiguration und Rechte je Nutzer) läuft unter der oben genannten öffentlichen Adresse und hat einen eigenen Discord-Login, den Sie den Mitgliedern Ihres Teams gewähren
 
 ### 8.2 Zugang zu Konfigurationsdaten und Zugangsdaten
 
-Durch die Nutzung des Hosted Bot Management Service erkennen Sie an und stimmen zu, dass:
+Sie geben Ihren Discord-Bot-Token, Ihre Client ID und Ihr Client Secret bei der Aktivierung im Dashboard an. Durch die Nutzung des Hosted Bot Management Service erkennen Sie an und stimmen zu, dass:
 
-- Ihre Bot-Konfigurationsdateien, einschließlich `config.jsonc`, `snippets.jsonc` und der **`.env`-Datei mit sensiblen Zugangsdaten** (z.B. Discord-Bot-Token und API-Keys), auf den Servern von MSK Scripts in einem für den Dienstbetreiber zugänglichen Verzeichnis gespeichert werden
+- Ihre Bot-Konfigurationsdateien, einschließlich `config.jsonc`, `snippets.jsonc` und der **`.env`-Datei mit sensiblen Zugangsdaten** (Ihr Discord-Bot-Token, Ihr OAuth-Client-Secret und API-Keys), auf den Servern von MSK Scripts in einem für den Dienstbetreiber zugänglichen Verzeichnis gespeichert werden
 - Mitarbeiter von MSK Scripts diese Dateien für Support, Wartung und Sicherheitszwecke einsehen können
 - Sie allein verantwortlich sind für alle in der `.env`-Datei gespeicherten Zugangsdaten und dafür, dass Bot-Token und andere Geheimnisse nicht kompromittiert sind
-- Sie kompromittierte Zugangsdaten (z.B. Discord-Bot-Token) unverzüglich **neu generieren** und uns informieren müssen, damit wir die Konfiguration aktualisieren können
+- Sie kompromittierte Zugangsdaten (z.B. Discord-Bot-Token) unverzüglich **neu generieren** und die neuen Werte im Dashboard eintragen müssen
 
 ### 8.3 Pflichten des Kunden
 
 Sie sind allein verantwortlich für:
+- Das Eintragen der im Dashboard angezeigten Redirect-URL im Discord Developer Portal. Ohne sie kann der Login in das Dashboard Ihres Bots nicht funktionieren, und nur Sie können sie hinterlegen
+- Die Entscheidung, wer aus Ihrem Team sich im Dashboard Ihres Bots anmelden darf und was er dort tun kann
 - Die Einhaltung der **Discord Nutzungsbedingungen** und Community-Richtlinien durch Konfiguration und Betrieb des gehosteten Bots
 - Den vom gehosteten Bot verarbeiteten Inhalt (Nachrichten, Transkripte, Nutzerdaten)
 - Die Information Ihrer Discord-Server-Mitglieder darüber, dass ein Drittanbieter (MSK Scripts) die Bot-Infrastruktur in Ihrem Auftrag betreibt
@@ -215,9 +219,13 @@ Wir behalten uns das Recht vor, den gehosteten Bot bei Verstößen gegen diese B
 
 Wir garantieren keine bestimmte Betriebszeit für den Hosted Bot Management Service. Der Dienst kann für Wartungsarbeiten, Updates oder aus anderen betrieblichen Gründen unterbrochen werden.
 
-Beide Parteien können das Hosting-Arrangement jederzeit mit angemessener Frist beenden. Bei Beendigung:
-- Stellen wir Ihnen Ihre Konfigurationsdateien (`config.jsonc`, `snippets.jsonc`, `.env`) zur Verfügung, damit Sie auf Self-Hosting wechseln können
-- Bot-Daten, Logs und Konfigurationsdateien werden innerhalb von 14 Tagen nach Beendigung von unseren Servern gelöscht
+Sie können den Dienst jederzeit selbst im Dashboard entfernen, und beide Parteien können das Hosting-Arrangement mit angemessener Frist beenden. Bei Entfernung oder Beendigung:
+- Wird der Bot gestoppt und seine öffentliche Adresse vom Netz genommen, einschließlich der DNS-Einträge und der Webserver-Konfiguration, die wir dafür angelegt haben
+- Wird die Installation samt Ihrer Konfigurationsdateien und der Ticket-Datenbank des Bots archiviert und 14 Tage später endgültig gelöscht
+- Können Sie die Installation innerhalb dieser 14 Tage im Dashboard selbst mit ihren Daten zurückholen
+- Stellen wir Ihnen auf Anfrage Ihre Konfigurationsdateien (`config.jsonc`, `snippets.jsonc`, `.env`) zur Verfügung, damit Sie auf Self-Hosting wechseln können
+
+Eine von uns vergebene Subdomain unter `msk-scripts.de` wird für die Dauer des Dienstes bereitgestellt und kann mit dessen Ende entzogen werden. Eine eigene Domain bleibt Ihre.
 
 ---
 

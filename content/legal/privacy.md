@@ -112,7 +112,7 @@ This website operates the following distinct services, each with its own data pr
 
 **b) MSK Ticket Bot Transcript Service**: an optional hosted service for users who self-host the MSK Ticket Bot. It stores ticket transcripts online and provides public links. Users authenticate via Discord OAuth to obtain an API key.
 
-**c) Hosted Bot Management**: an optional, fully managed hosting service for Premium and Premium+ customers. The bot runs on MSK Scripts' servers; management is performed via the web dashboard.
+**c) Hosted Bot Management**: an optional, fully managed hosting service included in the Premium, Premium+ and Business tiers and activated by the customer in the dashboard. The bot runs on MSK Scripts' servers. The customer manages it through our dashboard, and the bot's own web dashboard is published under an address we provide (a subdomain of `msk-scripts.de`) or under the customer's own domain.
 
 **d) MSK Giveaway Bot**: a free Discord bot operated by MSK Scripts as an official public instance. Once invited to your Discord server, it lets you create and run giveaways. It processes Discord identifiers (server, channel, role and user IDs) to manage entries and draw winners. A public, anonymous statistics page is available at **www.msk-scripts.de/giveaway/stats**. Server administrators can optionally manage their giveaways through a web dashboard (Discord login), and when a giveaway ends a public results page showing the **winners** and the **anonymous participant count** is hosted under **www.msk-scripts.de/giveaway/g/…**.
 
@@ -142,6 +142,8 @@ This website operates the following distinct services, each with its own data pr
 - **`.env` file**: contains sensitive credentials of the customer (e.g. Discord bot token, MSK API key); stored on our server and required to operate the bot
 - **PM2 log output**: runtime output of the bot process; accessible live via the dashboard, not persistently stored
 - **Discord server ID (guild ID)**: used to identify the hosted bot instance; linked to the existing Transcript Service account
+- **Bot database**: the ticket data your bot itself writes (tickets, messages, and the Discord user IDs of the team members who sign in to its dashboard). We store the file, your bot decides its contents
+- **Public address of the bot dashboard**: the subdomain assigned to your bot, or your own domain. Creating it means a DNS record is written in our zone at our DNS provider IONOS; the record contains no personal data
 
 ### Data Collected by the Giveaway Bot
 
@@ -320,22 +322,23 @@ Legal basis: Art. 6(1)(b) GDPR, necessary to deliver the subscribed service.
 
 ### Hosted Bot Management
 
-For Premium and Premium+ customers who use the Hosted Bot Management service, the following data is stored on our servers in a directory assigned to your Discord server ID:
+For Premium, Premium+ and Business customers who use the Hosted Bot Management service, the following data is stored on our servers in a directory assigned to your Discord server ID:
 
 | Data | Description | Storage period |
 |---|---|---|
 | `config.jsonc` | Bot configuration (ticket types, roles, settings) | Until hosting is terminated |
 | `snippets.jsonc` | Canned responses (if configured) | Until hosting is terminated |
-| `.env` | Bot credentials (Discord token, API keys) | Until hosting is terminated |
+| `.env` | Bot credentials (Discord bot token, OAuth client secret, API keys) | Until hosting is terminated |
+| Bot database | Ticket data written by your bot, including the Discord user IDs of team members who sign in to its dashboard | Until hosting is terminated |
 | Bot log output | Runtime output of the bot process; accessible live via the dashboard | Not persistently stored: live buffer only |
 
-**Sensitive credentials:** The `.env` file may contain your Discord bot token and other API keys. This file is stored on our server and is required to operate the bot. MSK Scripts personnel may access this file for maintenance and support purposes. You are responsible for ensuring that the credentials stored therein are not compromised.
+**Sensitive credentials:** The `.env` file contains the Discord bot token and OAuth client secret you entered when activating the service, plus other API keys. This file is stored on our server and is required to operate the bot. MSK Scripts personnel may access this file for maintenance and support purposes. You are responsible for ensuring that the credentials stored therein are not compromised.
 
-Upon termination of the hosting arrangement, all files in your bot directory (including the `.env` file) are deleted from our servers within **14 days**.
+When you remove the service or the hosting arrangement ends, the bot is stopped, its public address is taken offline (DNS record and web server configuration), and your bot directory is archived. It is permanently deleted **14 days** later. Within those 14 days you can restore the installation yourself in the dashboard, which is why it is archived rather than deleted immediately.
 
 **Legal basis:** Art. 6(1)(b) GDPR, processing is necessary for the performance of the hosting contract.
 
-**Access control:** The configuration files can only be accessed by the service operator (MSK Scripts) and by you via the authenticated dashboard at **www.msk-scripts.de/ticketbot/dashboard**.
+**Access control:** The configuration files can only be accessed by the service operator (MSK Scripts) and by you via the authenticated dashboard at **www.msk-scripts.de/ticketbot/dashboard**. Your bot's own dashboard, under its public address, is protected by a Discord login that your bot handles itself; you decide which members of your team may sign in and what they may do there.
 
 ---
 
@@ -442,7 +445,9 @@ The data is fetched **server-side only**. Our server queries fivestats.io for st
 | Transcript HTML files | 30 days (Basic) / 180 days (Premium) / 365 days (Premium+) |
 | Attachment files | Same as transcript |
 | Stripe subscription data (customer/subscription IDs, tier, trial status) | Until account deletion |
-| Hosted bot configuration files (`config.jsonc`, `snippets.jsonc`, `.env`) | Until hosting is terminated + 14 days |
+| Hosted bot configuration files (`config.jsonc`, `snippets.jsonc`, `.env`) | Until hosting is removed + 14 days |
+| Hosted bot database (tickets, dashboard logins of your team) | Until hosting is removed + 14 days |
+| Hosted bot public address (DNS record, web server configuration) | Deleted when hosting is removed |
 | Hosted bot log output | Not persistently stored (live buffer only) |
 | Giveaway Bot: per-server settings | Deleted immediately when the bot is removed from the server; otherwise until changed or erasure request |
 | Giveaway Bot: giveaway, entry and winner records (Discord user IDs) | Deleted immediately when the bot is removed from the server, or on erasure request; participant entries removed on leave |

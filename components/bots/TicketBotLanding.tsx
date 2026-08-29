@@ -43,7 +43,7 @@ const VERIFY_ICONS = [MessageSquare, ServerCog, KeyRound] as const
 
 const DASHBOARD_ICONS = [LayoutDashboard, Terminal, Users, UserCheck] as const
 
-const HOSTED_ICONS = [ServerCog, RefreshCw, FileText, LayoutDashboard] as const
+const HOSTED_ICONS = [ServerCog, RefreshCw, FileText, Globe] as const
 
 const TIER_KEYS: Tier[] = ['basic', 'premium', 'premium_plus', 'business']
 
@@ -329,7 +329,7 @@ export function TicketBotLanding({ lang }: { lang: Lang }) {
                 <Button asChild variant="outline">
                   <a href={SITE_CONFIG.discord} target="_blank" rel="noopener noreferrer">
                     <MessageSquare className="h-4 w-4" />
-                    {t.hostedCtaRequest}
+                    {t.hostedCtaDiscord}
                   </a>
                 </Button>
               </div>

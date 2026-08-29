@@ -74,7 +74,7 @@ export interface TicketBotCopy {
   hostedHeading:     string
   hostedText:        string
   hostedCtaDashboard: string
-  hostedCtaRequest:  string
+  hostedCtaDiscord:  string
   hostedItems:       LabelledText[]
 
   tiersEyebrow:  string
@@ -192,19 +192,20 @@ const en: TicketBotCopy = {
     { title: 'Reply as yourself', text: 'Answers you send from the dashboard appear in Discord under your own name and avatar, not the bot.' },
   ],
 
-  hostedEyebrow: 'Premium & Premium+',
+  hostedEyebrow: 'Premium, Premium+ & Business',
   hostedHeading: 'Or let us host it for you',
   hostedText:
-    'Prefer not to run a server at all? Premium customers can have their bot instance '
-    + 'fully hosted by MSK Scripts and manage everything from the same dashboard. '
-    + 'No SSH access or server knowledge required.',
-  hostedCtaDashboard: 'Open Dashboard',
-  hostedCtaRequest:   'Request hosting',
+    'Prefer not to run a server at all? Set hosting up yourself in the dashboard: '
+    + 'enter your bot token, client ID and client secret, and we install the bot, start it '
+    + 'and check that it really came up. Your bot then gets its own address, and your whole '
+    + 'team signs in there with Discord. No SSH access or server knowledge required.',
+  hostedCtaDashboard: 'Set it up in the dashboard',
+  hostedCtaDiscord:   'Ask on Discord',
   hostedItems: [
-    { title: 'Bot Control',      text: 'Start, stop and restart the bot with a single click.' },
-    { title: 'One-click Update', text: 'Pull the latest version, install deps and restart, no terminal needed.' },
-    { title: 'Live Log Console', text: 'Real-time stream of the bot output right in the dashboard.' },
-    { title: 'Own Dashboard',    text: 'Open the bot’s own web dashboard through an authenticated gateway, no port ever exposed.' },
+    { title: 'Set up yourself',  text: 'Three values from the Discord developer portal and one button. No ticket, no waiting.' },
+    { title: 'Stays reversible', text: 'Remove hosting whenever you want. We keep the installation for 14 days, so one click brings it back with your tickets intact.' },
+    { title: 'Bot control and live logs', text: 'Start, stop, restart and update the bot, and read its output live, which is exactly what you need when it will not come up.' },
+    { title: 'Its own address',  text: 'The bot dashboard runs on its own address with its own Discord login, so your team gets in too. Bring your own domain if you prefer.' },
   ],
 
   tiersEyebrow:  'Transcript service',
@@ -330,19 +331,20 @@ const de: TicketBotCopy = {
     { title: 'Unter eigenem Namen',   text: 'Antworten aus dem Dashboard erscheinen in Discord unter deinem Namen und deinem Avatar, nicht unter dem des Bots.' },
   ],
 
-  hostedEyebrow: 'Premium & Premium+',
+  hostedEyebrow: 'Premium, Premium+ & Business',
   hostedHeading: 'Oder wir hosten ihn für dich',
   hostedText:
-    'Du willst gar keinen eigenen Server betreiben? Premium-Kunden können ihre Bot-Instanz '
-    + 'vollständig von MSK Scripts hosten lassen und alles über dasselbe Dashboard steuern. '
-    + 'Ohne SSH-Zugang und ohne Serverkenntnisse.',
-  hostedCtaDashboard: 'Dashboard öffnen',
-  hostedCtaRequest:   'Hosting anfragen',
+    'Du willst gar keinen eigenen Server betreiben? Richte das Hosting selbst im Dashboard ein: '
+    + 'Bot-Token, Client ID und Client Secret eintragen, und wir installieren den Bot, starten ihn '
+    + 'und prüfen, ob er wirklich hochgekommen ist. Dein Bot bekommt danach eine eigene Adresse, '
+    + 'an der sich dein ganzes Team mit Discord anmeldet. Ohne SSH-Zugang und ohne Serverkenntnisse.',
+  hostedCtaDashboard: 'Im Dashboard einrichten',
+  hostedCtaDiscord:   'Auf Discord fragen',
   hostedItems: [
-    { title: 'Bot-Steuerung',       text: 'Den Bot mit einem Klick starten, stoppen und neu starten.' },
-    { title: 'Update per Klick',    text: 'Neueste Version ziehen, Abhängigkeiten installieren, neu starten. Ganz ohne Terminal.' },
-    { title: 'Live-Log-Konsole',    text: 'Die Ausgabe des Bots in Echtzeit direkt im Dashboard mitlesen.' },
-    { title: 'Eigenes Dashboard',   text: 'Das mitgelieferte Web-Dashboard des Bots über ein authentifiziertes Gateway öffnen, ohne je einen Port freizugeben.' },
+    { title: 'Selbst einrichten',   text: 'Drei Werte aus dem Discord Developer Portal und ein Knopf. Kein Ticket, kein Warten.' },
+    { title: 'Bleibt umkehrbar',    text: 'Hosting jederzeit wieder entfernen. Wir heben die Installation 14 Tage auf, ein Klick holt sie samt deinen Tickets zurück.' },
+    { title: 'Steuerung und Live-Logs', text: 'Bot starten, stoppen, neu starten und aktualisieren, und seine Ausgabe live mitlesen. Genau das brauchst du, wenn er nicht hochkommt.' },
+    { title: 'Eine eigene Adresse', text: 'Das Bot-Dashboard läuft unter einer eigenen Adresse mit eigenem Discord-Login, damit auch dein Team hineinkommt. Auf Wunsch unter deiner eigenen Domain.' },
   ],
 
   tiersEyebrow:  'Transkriptdienst',

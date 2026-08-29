@@ -89,7 +89,7 @@ const en: TicketBotCompareCopy = {
     tickettool: 'Ticket Tool',
   },
   rows: [
-    { criterion: 'Hosting',        msk: 'Self-hosted', tickets: 'Self-hosted', sayrix: 'Self-hosted', tickettool: 'Hosted by the vendor' },
+    { criterion: 'Hosting',        msk: 'Self-hosted, or hosted by us on any paid tier', tickets: 'Self-hosted', sayrix: 'Self-hosted', tickettool: 'Hosted by the vendor' },
     { criterion: 'Source code',    msk: 'AGPL-3.0', tickets: 'GPL-3.0', sayrix: 'AGPL-3.0', tickettool: 'Closed' },
     { criterion: 'GitHub stars',   msk: '1', tickets: '1,471', sayrix: '502', tickettool: 'n/a' },
     { criterion: 'Language',       msk: 'JavaScript (Node 24)', tickets: 'JavaScript', sayrix: 'TypeScript', tickettool: 'n/a' },
@@ -98,7 +98,7 @@ const en: TicketBotCompareCopy = {
     { criterion: 'Transcripts',    msk: 'Self-contained HTML, as a file or a hosted link', tickets: 'HTML and text', sayrix: 'HTML', tickettool: 'Hosted, on their domain' },
     { criterion: 'Web dashboard',  msk: 'Built in, optional, 7 languages', tickets: 'Separate paid service', sayrix: 'No', tickettool: 'Yes' },
     { criterion: 'Docker',         msk: 'Yes', tickets: 'Yes', sayrix: 'No official image', tickettool: 'n/a' },
-    { criterion: 'Costs money for', msk: 'Transcript hosting beyond 30 days, attachments, custom domain', tickets: 'The hosted dashboard', sayrix: 'Nothing', tickettool: 'Higher limits and branding' },
+    { criterion: 'Costs money for', msk: 'Transcript hosting beyond 30 days, attachments, custom domains, bot hosting', tickets: 'The hosted dashboard', sayrix: 'Nothing', tickettool: 'Higher limits and branding' },
   ],
 
   honestHeading: 'When our bot is the wrong choice',
@@ -107,7 +107,7 @@ const en: TicketBotCompareCopy = {
   honest: [
     'You run several Discord servers from one instance. Ours registers its commands for a single server, so every server needs its own instance and its own bot application. Discord Tickets handles many servers at once.',
     'You want a large project with many contributors. Discord Tickets has roughly 1,400 more stars than we do and a correspondingly larger community. If a bus-factor of one is a problem for you, that is a real argument, and we are not going to talk you out of it.',
-    'You have no server and no interest in getting one. Everything below the hosted plan assumes you can keep a Node process alive. A hosted bot spares you that entirely.',
+    'You have no server, no interest in getting one, and you do not want to pay for one either. Running it yourself assumes you can keep a Node process alive. We do host it for you on any paid tier, but if free is the requirement, Ticket Tool is the honest answer.',
   ],
 
   faqHeading: 'Frequently asked questions',
@@ -118,7 +118,7 @@ const en: TicketBotCompareCopy = {
     },
     {
       q: 'Do I need a server to run it?',
-      a: 'Yes. It needs Node.js 24 and a process that stays alive, so a small VPS, a Raspberry Pi or any always-on machine will do. There is a Docker image and a compose file, which is the simplest route. SQLite is the default, so no database server is required.',
+      a: 'To run it yourself, yes: Node.js 24 and a process that stays alive, so a small VPS, a Raspberry Pi or any always-on machine will do. There is a Docker image and a compose file, which is the simplest route, and SQLite is the default so no database server is required. If you would rather not, every paid tier includes hosting on our servers: you enter three values from the Discord developer portal in the dashboard and we install and run it for you.',
     },
     {
       q: 'Where is the ticket data stored?',
@@ -130,7 +130,7 @@ const en: TicketBotCompareCopy = {
     },
     {
       q: 'What is the difference between the free and the paid tiers?',
-      a: 'The bot itself does not change. The paid tiers affect the hosted transcripts: Basic keeps them for 30 days with no file attachments, Premium for 180 days with attachments and a custom domain, Premium+ for 365 days, Business for ten years. Premium tiers may also remove the MSK notice from the ticket panel.',
+      a: 'The bot itself does not change. The paid tiers affect the hosted transcripts: Basic keeps them for 30 days with no file attachments, Premium for 180 days with attachments and a custom domain, Premium+ for 365 days, Business for ten years. Every paid tier also includes bot hosting on our servers, and lets you remove the MSK notice from the ticket panel.',
     },
     {
       q: 'Can I remove the MSK branding?',
@@ -182,7 +182,7 @@ const de: TicketBotCompareCopy = {
     tickettool: 'Ticket Tool',
   },
   rows: [
-    { criterion: 'Betrieb',          msk: 'Selbst gehostet', tickets: 'Selbst gehostet', sayrix: 'Selbst gehostet', tickettool: 'Vom Anbieter gehostet' },
+    { criterion: 'Betrieb',          msk: 'Selbst gehostet, auf jedem bezahlten Tarif auch von uns', tickets: 'Selbst gehostet', sayrix: 'Selbst gehostet', tickettool: 'Vom Anbieter gehostet' },
     { criterion: 'Quellcode',        msk: 'AGPL-3.0', tickets: 'GPL-3.0', sayrix: 'AGPL-3.0', tickettool: 'Geschlossen' },
     { criterion: 'GitHub-Sterne',    msk: '1', tickets: '1.471', sayrix: '502', tickettool: 'entfällt' },
     { criterion: 'Sprache',          msk: 'JavaScript (Node 24)', tickets: 'JavaScript', sayrix: 'TypeScript', tickettool: 'entfällt' },
@@ -191,7 +191,7 @@ const de: TicketBotCompareCopy = {
     { criterion: 'Transkripte',      msk: 'Eigenständiges HTML, als Datei oder gehosteter Link', tickets: 'HTML und Text', sayrix: 'HTML', tickettool: 'Gehostet, auf deren Domain' },
     { criterion: 'Web-Dashboard',    msk: 'Eingebaut, optional, 7 Sprachen', tickets: 'Getrennter, kostenpflichtiger Dienst', sayrix: 'Nein', tickettool: 'Ja' },
     { criterion: 'Docker',           msk: 'Ja', tickets: 'Ja', sayrix: 'Kein offizielles Image', tickettool: 'entfällt' },
-    { criterion: 'Kostet Geld für',  msk: 'Transkript-Hosting über 30 Tage hinaus, Anhänge, eigene Domain', tickets: 'Das gehostete Dashboard', sayrix: 'Nichts', tickettool: 'Höhere Limits und Branding' },
+    { criterion: 'Kostet Geld für',  msk: 'Transkript-Hosting über 30 Tage hinaus, Anhänge, eigene Domains, Bot-Hosting', tickets: 'Das gehostete Dashboard', sayrix: 'Nichts', tickettool: 'Höhere Limits und Branding' },
   ],
 
   honestHeading: 'Wann unser Bot die falsche Wahl ist',
@@ -200,7 +200,7 @@ const de: TicketBotCompareCopy = {
   honest: [
     'Du betreibst mehrere Discord-Server aus einer Instanz. Unserer registriert seine Befehle für genau einen Server, jeder weitere braucht also eine eigene Instanz und eine eigene Bot-Application. Discord Tickets kann viele Server gleichzeitig.',
     'Du willst ein großes Projekt mit vielen Mitwirkenden. Discord Tickets hat rund 1.400 Sterne mehr als wir und entsprechend mehr Community. Wenn dich ein Bus-Faktor von eins stört, ist das ein berechtigtes Argument, und wir werden es dir nicht ausreden.',
-    'Du hast keinen Server und willst auch keinen. Alles unterhalb des gehosteten Angebots setzt voraus, dass du einen Node-Prozess am Leben halten kannst. Ein gehosteter Bot nimmt dir das komplett ab.',
+    'Du hast keinen Server, willst auch keinen, und du willst dafür nichts bezahlen. Selbst betreiben setzt voraus, dass du einen Node-Prozess am Leben halten kannst. Wir hosten ihn auf jedem bezahlten Tarif für dich, aber wenn kostenlos die Bedingung ist, ist Ticket Tool die ehrliche Antwort.',
   ],
 
   faqHeading: 'Häufige Fragen',
@@ -211,7 +211,7 @@ const de: TicketBotCompareCopy = {
     },
     {
       q: 'Brauche ich einen Server dafür?',
-      a: 'Ja. Nötig sind Node.js 24 und ein Prozess, der durchläuft, also ein kleiner VPS, ein Raspberry Pi oder irgendeine Maschine, die an bleibt. Es gibt ein Docker-Image und eine Compose-Datei, das ist der einfachste Weg. SQLite ist der Standard, ein Datenbankserver ist nicht nötig.',
+      a: 'Wenn du ihn selbst betreiben willst, ja: Node.js 24 und ein Prozess, der durchläuft, also ein kleiner VPS, ein Raspberry Pi oder irgendeine Maschine, die an bleibt. Es gibt ein Docker-Image und eine Compose-Datei, das ist der einfachste Weg, und SQLite ist der Standard, ein Datenbankserver ist also nicht nötig. Wenn du lieber nicht willst: in jedem bezahlten Tarif ist das Hosting auf unseren Servern enthalten. Du trägst drei Werte aus dem Discord Developer Portal ins Dashboard ein, den Rest machen wir.',
     },
     {
       q: 'Wo liegen die Ticketdaten?',
@@ -223,7 +223,7 @@ const de: TicketBotCompareCopy = {
     },
     {
       q: 'Was unterscheidet die kostenlosen von den bezahlten Stufen?',
-      a: 'Am Bot selbst nichts. Die bezahlten Stufen betreffen die gehosteten Transkripte: Basic hebt sie 30 Tage ohne Dateianhänge auf, Premium 180 Tage mit Anhängen und eigener Domain, Premium+ 365 Tage, Business zehn Jahre. Premium-Stufen dürfen außerdem den MSK-Hinweis aus dem Ticket-Panel entfernen.',
+      a: 'Am Bot selbst nichts. Die bezahlten Stufen betreffen die gehosteten Transkripte: Basic hebt sie 30 Tage ohne Dateianhänge auf, Premium 180 Tage mit Anhängen und eigener Domain, Premium+ 365 Tage, Business zehn Jahre. In jeder bezahlten Stufe ist außerdem das Bot-Hosting auf unseren Servern enthalten, und du darfst den MSK-Hinweis aus dem Ticket-Panel entfernen.',
     },
     {
       q: 'Darf ich das MSK-Branding entfernen?',

@@ -8,7 +8,7 @@ These Terms & Conditions apply to all use of the MSK Scripts services available 
 
 - **MSK Scripts Shop**: purchase of digital products (FiveM resources and Discord bots) via Tebex
 - **MSK Ticket Bot Transcript Service**: an optional subscription-based hosted service for users who self-host the MSK Ticket Bot
-- **Hosted Bot Management**: an optional fully managed hosting service for the MSK Ticket Bot, available to Premium and Premium+ customers by individual arrangement
+- **Hosted Bot Management**: an optional fully managed hosting service for the MSK Ticket Bot, included in the Premium, Premium+ and Business tiers and activated by you in the dashboard
 - **MSK Giveaway Bot**: a free Discord bot, operated as an official public instance, that you can add to your own Discord server to run giveaways
 
 By completing a purchase, registering for any of these services, or inviting the Giveaway Bot to your Discord server, you agree to these terms.
@@ -179,24 +179,28 @@ Please delete whichever does not apply.
 
 ### 8.1 Service Description
 
-The Hosted Bot Management Service allows Premium and Premium+ customers to have their MSK Ticket Bot instance fully hosted and operated on MSK Scripts' servers. The service is only available by individual arrangement via our [Discord server](https://discord.gg/5hHSBRHvJE) and is not activated automatically by a Premium or Premium+ subscription.
+The Hosted Bot Management Service allows Premium, Premium+ and Business customers to have their MSK Ticket Bot instance hosted and operated on MSK Scripts' servers. You activate the service yourself in the dashboard under "Bot Hosting"; no individual arrangement is required.
 
 The service includes:
 - Hosting of the bot process on MSK Scripts' servers (managed via PM2)
-- Access to a web-based management panel at **www.msk-scripts.de/ticketbot/dashboard** for editing configuration files (`config.jsonc`, `snippets.jsonc`, `.env`, and the active language file `locales/<lang>.json`), controlling the bot (start / stop / restart / update), and viewing live log output
+- A public address for your bot's own web dashboard: either a subdomain we assign under `msk-scripts.de`, or a domain of your own that you point at our servers. The TLS certificate is included in both cases
+- A management panel at **www.msk-scripts.de/ticketbot/dashboard** for controlling the bot (start / stop / restart / update), viewing live log output, and correcting the credentials in the `.env` file
+- Your bot's own dashboard (tickets, statistics, configuration and per-user permissions) runs under the public address above and has its own Discord login, which you grant to the members of your team
 
 ### 8.2 Access to Configuration Data and Credentials
 
-By using the Hosted Bot Management Service, you acknowledge and agree that:
+You supply your Discord bot token, client ID and client secret through the dashboard when activating the service. By using the Hosted Bot Management Service, you acknowledge and agree that:
 
-- Your bot's configuration files, including `config.jsonc`, `snippets.jsonc`, and the **`.env` file containing sensitive credentials** (such as your Discord bot token and API keys), are stored on MSK Scripts' servers in a directory accessible to the service operator
+- Your bot's configuration files, including `config.jsonc`, `snippets.jsonc`, and the **`.env` file containing sensitive credentials** (your Discord bot token, your OAuth client secret and API keys), are stored on MSK Scripts' servers in a directory accessible to the service operator
 - MSK Scripts personnel may access these files for support, maintenance, and security purposes
 - You are solely responsible for any credentials stored in the `.env` file and for ensuring that the bot token and other secrets have not been compromised
-- You must **immediately regenerate** any compromised credentials (e.g. Discord bot token) and notify us so we can update the configuration
+- You must **immediately regenerate** any compromised credentials (e.g. Discord bot token) and enter the new values in the dashboard
 
 ### 8.3 Customer Responsibilities
 
 You are solely responsible for:
+- Registering the redirect URL shown in the dashboard in the Discord developer portal. Without it the login to your bot's dashboard cannot work, and only you can add it
+- Deciding who on your team may sign in to your bot's dashboard and what they are permitted to do there
 - Ensuring that your bot's configuration and usage comply with **Discord's Terms of Service** and Community Guidelines
 - The content processed by the hosted bot (messages, transcripts, user data)
 - Informing your Discord server members that a third-party service (MSK Scripts) operates the bot infrastructure on your behalf
@@ -215,9 +219,13 @@ We reserve the right to immediately suspend the hosted bot if it is used in viol
 
 We do not guarantee a specific uptime for the Hosted Bot Management Service. The service may be interrupted for maintenance, updates, or other operational reasons.
 
-Either party may terminate the hosting arrangement at any time with reasonable notice. Upon termination:
-- We will provide you with your configuration files (`config.jsonc`, `snippets.jsonc`, `.env`) so you can migrate to self-hosting
-- Bot data, logs, and configuration files will be deleted from our servers within 14 days of termination
+You can remove the service yourself at any time in the dashboard, and either party may terminate the hosting arrangement with reasonable notice. Upon removal or termination:
+- The bot is stopped and its public address is taken offline, including the DNS records and the web server configuration we created for it
+- The installation, including your configuration files and the bot's ticket database, is archived and permanently deleted 14 days later
+- Within those 14 days you can restore the installation yourself in the dashboard, with its data intact
+- On request we will provide you with your configuration files (`config.jsonc`, `snippets.jsonc`, `.env`) so you can migrate to self-hosting
+
+A subdomain we assign under `msk-scripts.de` is provided for the duration of the service and may be withdrawn when it ends. A domain of your own remains yours.
 
 ---
 

@@ -112,7 +112,7 @@ Diese Website betreibt die folgenden eigenständigen Dienste mit jeweils eigener
 
 **b) MSK Ticket Bot Transcript Service**: ein optionaler gehosteter Dienst für Nutzer, die den MSK Ticket Bot selbst betreiben. Er speichert Ticket-Transkripte online und stellt öffentliche Links bereit. Nutzer authentifizieren sich über Discord OAuth, um einen API Key zu erhalten.
 
-**c) Hosted Bot Management**: ein optionaler, vollständig verwalteter Hosting-Dienst für Premium- und Premium+-Kunden. Der Bot läuft auf den Servern von MSK Scripts; die Verwaltung erfolgt über das Web-Dashboard.
+**c) Hosted Bot Management**: ein optionaler, vollständig verwalteter Hosting-Dienst, der in den Tarifen Premium, Premium+ und Business enthalten ist und vom Kunden selbst im Dashboard aktiviert wird. Der Bot läuft auf den Servern von MSK Scripts. Der Kunde verwaltet ihn über unser Dashboard, das eigene Web-Dashboard des Bots wird unter einer von uns bereitgestellten Adresse (einer Subdomain von `msk-scripts.de`) oder unter der eigenen Domain des Kunden veröffentlicht.
 
 **d) MSK Giveaway Bot**: ein kostenloser, von MSK Scripts als offizielle öffentliche Instanz betriebener Discord-Bot. Auf deinen Discord-Server eingeladen, ermöglicht er das Erstellen und Durchführen von Giveaways. Er verarbeitet Discord-Kennungen (Server-, Channel-, Rollen- und Nutzer-IDs), um Teilnahmen zu verwalten und Gewinner zu ziehen. Eine öffentliche, anonyme Statistikseite ist unter **www.msk-scripts.de/giveaway/stats** verfügbar. Server-Administratoren können ihre Giveaways optional über ein Web-Dashboard (Discord-Login) verwalten; nach Ende eines Giveaways wird zudem eine öffentliche Ergebnisseite mit den **Gewinnern** und der **anonymen Teilnehmerzahl** unter **www.msk-scripts.de/giveaway/g/…** gehostet.
 
@@ -142,6 +142,8 @@ Diese Website betreibt die folgenden eigenständigen Dienste mit jeweils eigener
 - **`.env`-Datei**: enthält sensible Zugangsdaten des Kunden (z.B. Discord-Bot-Token, MSK API Key); auf unserem Server gespeichert und zum Betrieb des Bots erforderlich
 - **PM2-Log-Ausgabe**: Laufzeitausgabe des Bot-Prozesses; über das Dashboard live abrufbar, wird nicht dauerhaft gespeichert
 - **Discord-Server-ID (Guild-ID)**: zur Identifikation der gehosteten Bot-Instanz; verknüpft mit dem bestehenden Transcript Service-Konto
+- **Bot-Datenbank**: die Ticket-Daten, die Ihr Bot selbst schreibt (Tickets, Nachrichten und die Discord-Nutzer-IDs der Teammitglieder, die sich an seinem Dashboard anmelden). Wir speichern die Datei, über den Inhalt entscheidet Ihr Bot
+- **Öffentliche Adresse des Bot-Dashboards**: die Ihrem Bot zugewiesene Subdomain oder Ihre eigene Domain. Beim Anlegen wird ein DNS-Eintrag in unserer Zone bei unserem DNS-Anbieter IONOS geschrieben; der Eintrag enthält keine personenbezogenen Daten
 
 ### Vom Giveaway Bot erhobene Daten
 
@@ -320,22 +322,23 @@ Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO, zur Erbringung des gebuchten Dienst
 
 ### Hosted Bot Management
 
-Für Premium- und Premium+-Kunden, die den Hosted Bot Management Service nutzen, werden folgende Daten auf unseren Servern in einem Verzeichnis gespeichert, das Ihrer Discord-Server-ID zugeordnet ist:
+Für Premium-, Premium+- und Business-Kunden, die den Hosted Bot Management Service nutzen, werden folgende Daten auf unseren Servern in einem Verzeichnis gespeichert, das Ihrer Discord-Server-ID zugeordnet ist:
 
 | Daten | Beschreibung | Speicherdauer |
 |---|---|---|
 | `config.jsonc` | Bot-Konfiguration (Ticket-Typen, Rollen, Einstellungen) | Bis zur Beendigung des Hostings |
 | `snippets.jsonc` | Canned Responses (falls konfiguriert) | Bis zur Beendigung des Hostings |
-| `.env` | Bot-Zugangsdaten (Discord-Token, API-Keys) | Bis zur Beendigung des Hostings |
+| `.env` | Bot-Zugangsdaten (Discord-Bot-Token, OAuth-Client-Secret, API-Keys) | Bis zur Beendigung des Hostings |
+| Bot-Datenbank | Von Ihrem Bot geschriebene Ticket-Daten, einschließlich der Discord-Nutzer-IDs der Teammitglieder, die sich an seinem Dashboard anmelden | Bis zur Beendigung des Hostings |
 | Bot-Log-Ausgabe | Laufzeitausgabe des Bot-Prozesses; live über das Dashboard abrufbar | Nicht dauerhaft gespeichert: nur Live-Puffer |
 
-**Sensible Zugangsdaten:** Die `.env`-Datei kann Ihren Discord-Bot-Token und weitere API-Keys enthalten. Diese Datei wird auf unserem Server gespeichert und ist zum Betrieb des Bots erforderlich. Mitarbeiter von MSK Scripts können diese Datei für Wartungs- und Supportzwecke einsehen. Sie sind dafür verantwortlich, dass die darin gespeicherten Zugangsdaten nicht kompromittiert sind.
+**Sensible Zugangsdaten:** Die `.env`-Datei enthält den Discord-Bot-Token und das OAuth-Client-Secret, die Sie bei der Aktivierung eingetragen haben, sowie weitere API-Keys. Diese Datei wird auf unserem Server gespeichert und ist zum Betrieb des Bots erforderlich. Mitarbeiter von MSK Scripts können diese Datei für Wartungs- und Supportzwecke einsehen. Sie sind dafür verantwortlich, dass die darin gespeicherten Zugangsdaten nicht kompromittiert sind.
 
-Bei Beendigung des Hosting-Arrangements werden alle Dateien in Ihrem Bot-Verzeichnis (einschließlich der `.env`-Datei) innerhalb von **14 Tagen** von unseren Servern gelöscht.
+Wenn Sie den Dienst entfernen oder das Hosting-Arrangement endet, wird der Bot gestoppt, seine öffentliche Adresse vom Netz genommen (DNS-Eintrag und Webserver-Konfiguration) und Ihr Bot-Verzeichnis archiviert. **14 Tage** später wird es endgültig gelöscht. Innerhalb dieser 14 Tage können Sie die Installation im Dashboard selbst zurückholen, deshalb wird sie archiviert statt sofort gelöscht.
 
 **Rechtsgrundlage:** Art. 6 Abs. 1 lit. b DSGVO, die Verarbeitung ist zur Erfüllung des Hosting-Vertrags erforderlich.
 
-**Zugriffskontrolle:** Auf die Konfigurationsdateien können ausschließlich der Dienstbetreiber (MSK Scripts) und Sie über das authentifizierte Dashboard unter **www.msk-scripts.de/ticketbot/dashboard** zugreifen.
+**Zugriffskontrolle:** Auf die Konfigurationsdateien können ausschließlich der Dienstbetreiber (MSK Scripts) und Sie über das authentifizierte Dashboard unter **www.msk-scripts.de/ticketbot/dashboard** zugreifen. Das eigene Dashboard Ihres Bots unter seiner öffentlichen Adresse ist durch einen Discord-Login geschützt, den Ihr Bot selbst abwickelt; Sie entscheiden, wer aus Ihrem Team sich anmelden darf und was er dort tun kann.
 
 ---
 
@@ -442,7 +445,9 @@ Der Abruf erfolgt ausschließlich **server-seitig**. Unser Server fragt bei five
 | Transkript-HTML-Dateien | 30 Tage (Basic) / 180 Tage (Premium) / 365 Tage (Premium+) |
 | Anhangsdateien | Wie Transkript |
 | Stripe-Abo-Daten (Kunden-/Abo-ID, Tier, Testphasen-Status) | Bis zur Kontolöschung |
-| Hosted Bot Konfigurationsdateien (`config.jsonc`, `snippets.jsonc`, `.env`) | Bis zur Beendigung des Hostings + 14 Tage |
+| Hosted Bot Konfigurationsdateien (`config.jsonc`, `snippets.jsonc`, `.env`) | Bis zur Entfernung des Hostings + 14 Tage |
+| Hosted Bot Datenbank (Tickets, Dashboard-Anmeldungen Ihres Teams) | Bis zur Entfernung des Hostings + 14 Tage |
+| Hosted Bot öffentliche Adresse (DNS-Eintrag, Webserver-Konfiguration) | Wird bei Entfernung des Hostings gelöscht |
 | Hosted Bot Log-Ausgabe | Nicht dauerhaft gespeichert (nur Live-Puffer) |
 | Giveaway Bot: Server-Einstellungen | Werden beim Entfernen des Bots vom Server umgehend gelöscht; andernfalls bis zur Änderung oder Löschanfrage |
 | Giveaway Bot: Giveaway-, Teilnahme- und Gewinner-Datensätze (Discord-Nutzer-IDs) | Werden beim Entfernen des Bots vom Server umgehend gelöscht oder auf Löschanfrage; Teilnahmen werden bei Austritt entfernt |
