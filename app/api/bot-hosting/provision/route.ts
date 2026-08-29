@@ -13,8 +13,8 @@ import {
 } from '@/lib/dashboardHost'
 import {
   allocateBotPort, buildBotEnv, claimHostingJob, discardArchives, discardStagedEnv,
-  failHostingJob, findArchives, restoreArchive, stageBotEnv, validateHostingForm,
-  type HostingForm,
+  failHostingJob, findArchives, mergeWithArchivedEnv, readArchivedEnv, restoreArchive,
+  stageBotEnv, validateHostingForm, type HostingForm,
 } from '@/lib/botProvision'
 
 export const runtime = 'nodejs'
@@ -62,9 +62,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'invalid_body' }, { status: 400 })
   }
 
-  const invalid = validateHostingForm(form)
-  if (invalid) return NextResponse.json({ error: invalid }, { status: 400 })
-
   // An archived installation still holds the ticket history, and only the
   // customer can say whether this is a comeback or a fresh start. Guessing
   // either way is destructive: restoring silently resurrects data they may have
@@ -73,6 +70,17 @@ export async function POST(req: NextRequest) {
   if (archives.length > 0 && !archiveChoice) {
     return NextResponse.json({ error: 'archive_choice_required', archives }, { status: 409 })
   }
+
+  // On a restore, empty fields fall back to the archived .env. Read here rather
+  // than after restoring so the merged form can still be rejected without having
+  // moved anything on disk. Anything the customer typed wins — they may be
+  // coming back exactly because they rotated a secret.
+  if (archiveChoice === 'restore') {
+    form = mergeWithArchivedEnv(form, await readArchivedEnv(guild.guild_id, archives[0].name))
+  }
+
+  const invalid = validateHostingForm(form)
+  if (invalid) return NextResponse.json({ error: invalid }, { status: 400 })
 
   // Claimed before anything is created, so two clicks cannot start two runs that
   // clone into the same directory and fight over the same PM2 name.

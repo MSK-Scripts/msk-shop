@@ -1,9 +1,9 @@
 import { randomBytes }     from 'crypto'
 import { createServer }    from 'net'
-import { writeFile, mkdir, chmod, rm, readdir, rename, access } from 'fs/promises'
+import { writeFile, readFile, mkdir, chmod, rm, readdir, rename, access } from 'fs/promises'
 import { join, resolve, sep } from 'path'
 import { query, queryOne } from '@/lib/db'
-import { botDir, quote }   from '@/lib/botEnv'
+import { botDir, quote, parseEnv } from '@/lib/botEnv'
 import { dashboardUrl }    from '@/lib/dashboardHost'
 
 // =============================================================================
@@ -353,4 +353,44 @@ export async function discardArchives(guildId: string): Promise<number> {
     await rm(archivePath(guildId, a.name), { recursive: true, force: true })
   }
   return archives.length
+}
+
+/**
+ * The .env of an archived installation, or null if it has none.
+ *
+ * Read WITHOUT restoring, so a restore can be validated before anything moves.
+ * The point is that bringing a bot back should not require the customer to type
+ * their token again: Discord shows a bot token exactly once, so "just re-enter
+ * it" actually means "reset it and re-invite the bot", which is not a comeback,
+ * it is a reinstallation with extra steps.
+ */
+export async function readArchivedEnv(
+  guildId: string, name: string,
+): Promise<Record<string, string> | null> {
+  try {
+    return parseEnv(await readFile(join(archivePath(guildId, name), '.env'), 'utf8'))
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Fill the gaps in a submitted form from an archived .env.
+ *
+ * Anything the customer typed wins — they may be coming back precisely because
+ * they rotated a secret. Only the fields they left empty are taken from the
+ * archive, which is what lets "bring it back" be a single click.
+ */
+export function mergeWithArchivedEnv(
+  form: Partial<HostingForm>, env: Record<string, string> | null,
+): Partial<HostingForm> {
+  if (!env) return form
+  return {
+    ...form,
+    token:        form.token        || env.TOKEN         || '',
+    clientId:     form.clientId     || env.CLIENT_ID     || '',
+    clientSecret: form.clientSecret || env.CLIENT_SECRET || '',
+    databaseUrl:  form.databaseUrl  || env.DATABASE_URL  || '',
+    publicPortal: form.publicPortal ?? (env.DASHBOARD_PUBLIC_PORTAL === 'true'),
+  }
 }

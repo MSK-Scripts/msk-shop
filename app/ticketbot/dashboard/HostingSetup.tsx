@@ -149,6 +149,8 @@ function SetupCard({
 }: { guildId: string; status: Status | null; t: T; onDone: () => void }) {
   const hosted = !!status?.hosted
   const failed = status?.job?.status === 'failed'
+  // Newest archive of this guild, if setting hosting up would collide with one.
+  const archive = !hosted ? (status?.archives?.[0] ?? null) : null
 
   // Prefill from the .env once something is installed. The secrets come back
   // only as "set" flags, never as values. Before the first installation the
@@ -167,10 +169,14 @@ function SetupCard({
   const [touched, setTouched]           = useState<Record<string, boolean>>({})
   const [busy, setBusy]                 = useState(false)
   const [error, setError]               = useState<string | null>(null)
-  // Set when the server answered "there is an archive, decide first". Holding it
-  // here rather than deriving it from status keeps the choice tied to the submit
-  // the customer actually made.
-  const [askArchive, setAskArchive]     = useState<BotArchive | null>(null)
+  // What the customer decided about an existing archive. The question is asked
+  // BEFORE the form, not after a rejected submit: restoring must not require
+  // typing a bot token, and demanding one to even reach the question would mean
+  // resetting it in Discord — which is a reinstallation, not a comeback.
+  const [archiveChoice, setArchiveChoice] = useState<'restore' | 'discard' | null>(null)
+
+  // While this is true the form stays hidden: the question comes first.
+  const undecided = !!archive && archiveChoice === null
 
   const mark = (k: string) => setTouched(prev => (prev[k] ? prev : { ...prev, [k]: true }))
 
@@ -195,15 +201,17 @@ function SetupCard({
       })
       const data = await res.json().catch(() => ({}))
 
-      // Not an error the customer caused: the server is asking a question only
-      // they can answer, and it hands back the archives so we can name the date.
+      // A safety net rather than the normal path: the question is asked up front
+      // from status.archives. Reaching this means an archive appeared between
+      // loading the page and submitting.
       if (res.status === 409 && data?.error === 'archive_choice_required') {
-        setAskArchive((data.archives as BotArchive[] | undefined)?.[0] ?? null)
+        setArchiveChoice(null)
+        onDone()
         return
       }
 
       if (!res.ok) throw new Error(String(data?.error ?? 'generic'))
-      setToken(''); setClientSecret(''); setAskArchive(null)
+      setToken(''); setClientSecret('')
       onDone()
     } catch (err) {
       setError(errorText(t, err instanceof Error ? err.message : null))
@@ -224,7 +232,13 @@ function SetupCard({
         </h2>
         <p className="mb-4 text-sm text-[var(--color-muted-foreground)]">{t.host_intro}</p>
 
-        {!hosted && (
+        {undecided && archive && (
+          <ArchiveChoice archive={archive} t={t} busy={busy}
+                         onRestore={() => submit('restore')}
+                         onDiscard={() => setArchiveChoice('discard')} />
+        )}
+
+        {!hosted && !undecided && (
           <ol className="mb-5 space-y-2 text-sm text-[var(--color-muted-foreground)]">
             {[t.host_step1, t.host_step2, t.host_step3, t.host_step4].map((line, i) => (
               <li key={i} className="flex gap-2">
@@ -285,15 +299,9 @@ function SetupCard({
           </p>
         )}
 
-        {askArchive && (
-          <ArchiveChoice archive={askArchive} t={t} busy={busy}
-                         onRestore={() => submit('restore')}
-                         onDiscard={() => submit('discard')}
-                         onCancel={() => setAskArchive(null)} />
-        )}
-
         <div className="mt-5 flex flex-wrap items-center gap-3">
-          <Button onClick={() => submit()} disabled={busy || !complete} className="tap-target">
+          <Button onClick={() => submit(archiveChoice ?? undefined)}
+                  disabled={busy || !complete || undecided} className="tap-target">
             {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Server className="h-4 w-4" />}
             {busy ? t.host_activating : hosted ? t.host_save_restart : t.host_activate}
           </Button>
@@ -325,10 +333,10 @@ function SetupCard({
  * come back for — and only they know which.
  */
 function ArchiveChoice({
-  archive, t, busy, onRestore, onDiscard, onCancel,
+  archive, t, busy, onRestore, onDiscard,
 }: {
   archive: BotArchive; t: T; busy: boolean
-  onRestore: () => void; onDiscard: () => void; onCancel: () => void
+  onRestore: () => void; onDiscard: () => void
 }) {
   // The date comes out of a directory name, so it may not parse. Showing the raw
   // stamp beats showing "Invalid Date".
@@ -338,7 +346,7 @@ function ArchiveChoice({
     : parsed.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
 
   return (
-    <div role="alert" className="mt-5 rounded-lg border border-[var(--color-warning)]/30 bg-[var(--color-warning)]/10 p-4">
+    <div role="alert" className="mb-5 rounded-lg border border-[var(--color-warning)]/30 bg-[var(--color-warning)]/10 p-4">
       <p className="mb-1 flex items-center gap-2 text-sm font-semibold text-[var(--color-warning)]">
         <Archive className="h-4 w-4 shrink-0" /> {t.host_archive_title}
       </p>
@@ -362,10 +370,6 @@ function ArchiveChoice({
         </div>
       </div>
 
-      <button onClick={onCancel} disabled={busy}
-              className="tap-target mt-3 text-xs underline text-[var(--color-muted-foreground)]">
-        {t.host_archive_cancel}
-      </button>
     </div>
   )
 }
