@@ -485,7 +485,11 @@ export const dashboardTranslations = {
     sub_upgrade_plus:     'Upgrade to Premium+',
     sub_get_premium:      'Get Premium',
     sub_get_plus:         'Get Premium+',
-    sub_trial_hint:       '14 days free, then billed monthly. Cancel anytime.',
+    sub_trial_hint:       '14 days free, no card required. Cancel anytime.',
+    sub_trial_active:     'Your free trial runs until {date}. Add a payment method to keep Premium, otherwise the subscription ends automatically on that day.',
+    sub_trial_active_nodate:
+                          'Your free trial is running. Add a payment method to keep Premium, otherwise the subscription ends automatically when the trial is over.',
+    sub_add_payment:      'Add payment method',
     sub_err:              'Could not start checkout. Please try again.',
   },
   de: {
@@ -637,7 +641,11 @@ export const dashboardTranslations = {
     sub_upgrade_plus:     'Auf Premium+ upgraden',
     sub_get_premium:      'Premium holen',
     sub_get_plus:         'Premium+ holen',
-    sub_trial_hint:       '14 Tage gratis, danach monatliche Abrechnung. Jederzeit kündbar.',
+    sub_trial_hint:       '14 Tage gratis, ohne Kreditkarte. Jederzeit kündbar.',
+    sub_trial_active:     'Deine Testphase läuft bis zum {date}. Hinterlege ein Zahlungsmittel, um Premium zu behalten, sonst endet das Abo an diesem Tag automatisch.',
+    sub_trial_active_nodate:
+                          'Deine Testphase läuft. Hinterlege ein Zahlungsmittel, um Premium zu behalten, sonst endet das Abo nach Ablauf der Testphase automatisch.',
+    sub_add_payment:      'Zahlungsmittel hinterlegen',
     sub_err:              'Checkout konnte nicht gestartet werden. Bitte erneut versuchen.',
   },
 } as const;

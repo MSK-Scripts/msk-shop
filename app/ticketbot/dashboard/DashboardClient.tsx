@@ -42,6 +42,8 @@ interface Guild {
   domain_status:          'none' | 'pending_dns' | 'active'
   is_hosted:              number
   stripe_subscription_id: string | null
+  stripe_status:          string | null
+  expires_at:             string | null
   bot_port:               number | null
 }
 
@@ -163,6 +165,16 @@ function GuildPanel({
   ]
 
   const hasPremium = guild.tier === 'premium' || guild.tier === 'premium_plus'
+
+  // While a trial runs, expires_at carries its end. Derived during render, not
+  // in state: an invalid/absent date must fall back to the wording without a
+  // date rather than print "Invalid Date".
+  const trialEnd      = guild.expires_at ? new Date(guild.expires_at) : null
+  const trialEndLabel = trialEnd && !Number.isNaN(trialEnd.getTime())
+    ? trialEnd.toLocaleDateString(lang === 'de' ? 'de-DE' : 'en-GB',
+        { day: '2-digit', month: 'long', year: 'numeric' })
+    : null
+
   const [domain, setDomain] = useState(guild.custom_domain ?? '')
   const [domainStatus, setDomainStatus] = useState<Guild['domain_status']>(guild.domain_status)
   const [loading, setLoading] = useState(false)
@@ -356,6 +368,26 @@ function GuildPanel({
       <div className="mb-6">
         {guild.tier === 'basic' && (
           <p className="text-xs text-[var(--color-muted-foreground)]">{t.sub_trial_hint}</p>
+        )}
+        {/* Running trial. Checkout no longer takes a card, so the subscription
+            cannot convert by itself: without a payment method Stripe cancels at
+            trial end. That has to be visible here, otherwise premium simply
+            disappears one day without anyone having been told. */}
+        {guild.stripe_status === 'trialing' && (
+          <div className="flex flex-wrap items-center gap-3 rounded-lg border border-[var(--color-warning)]/30 bg-[var(--color-warning)]/10 p-3">
+            <Info className="h-4 w-4 shrink-0 text-[var(--color-warning)]" />
+            <p className="flex-1 text-xs leading-relaxed">
+              {trialEndLabel
+                ? t.sub_trial_active.replace('{date}', trialEndLabel)
+                : t.sub_trial_active_nodate}
+            </p>
+            <Button size="sm" onClick={handleManage} disabled={billingLoading !== null}>
+              {billingLoading === 'manage'
+                ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                : <CreditCard className="h-3.5 w-3.5" />}
+              {t.sub_add_payment}
+            </Button>
+          </div>
         )}
         {billingError && (
           <p className="mt-1 text-xs text-[var(--color-danger)]">{billingError}</p>

@@ -19,6 +19,16 @@ CREATE TABLE IF NOT EXISTS ticketbot_guilds (
     -- subscription/trial period end.
     stripe_subscription_id VARCHAR(64)  UNIQUE,
     stripe_customer_id     VARCHAR(64),
+    -- Last known Stripe subscription status ('trialing', 'active', 'past_due', …),
+    -- mirrored by the webhook. The tier alone cannot tell a running trial from a
+    -- paid subscription, and since the trial no longer collects a card, the
+    -- dashboard has to say so before the trial silently ends.
+    stripe_status          VARCHAR(24)  NULL,
+    -- When the "your trial ends soon" mail went out. Sending is not idempotent
+    -- the way the rest of this webhook is, and Stripe may deliver an event more
+    -- than once, so this column is the lock: the mail is only sent by whoever
+    -- manages to flip it from NULL. Cleared on downgrade.
+    trial_reminder_sent_at DATETIME     NULL,
     custom_domain          VARCHAR(255),
     domain_status          ENUM('none', 'pending_dns', 'active') NOT NULL DEFAULT 'none',
     is_hosted              TINYINT(1)   NOT NULL DEFAULT 0,
@@ -37,6 +47,8 @@ CREATE TABLE IF NOT EXISTS ticketbot_guilds (
 -- ALTER TABLE ticketbot_guilds ADD COLUMN stripe_subscription_id VARCHAR(64) NULL UNIQUE;
 -- ALTER TABLE ticketbot_guilds ADD COLUMN stripe_customer_id     VARCHAR(64) NULL;
 -- ALTER TABLE ticketbot_guilds ADD COLUMN guild_name             VARCHAR(120) NULL;
+-- ALTER TABLE ticketbot_guilds ADD COLUMN stripe_status          VARCHAR(24)  NULL;
+-- ALTER TABLE ticketbot_guilds ADD COLUMN trial_reminder_sent_at DATETIME     NULL;
 -- Stripe migration (GitHub Sponsors fully removed — no active sponsors existed):
 --   ALTER TABLE ticketbot_guilds DROP COLUMN github_username;
 --   DROP TABLE IF EXISTS ticketbot_sponsors;

@@ -85,13 +85,34 @@ export async function POST(req: Request): Promise<NextResponse> {
       line_items:  [{ price, quantity: 1 }],
       client_reference_id:        guildId,
       billing_address_collection: 'required',
-      payment_method_collection:  'always', // capture a card so the trial auto-converts
+      // No card for the free trial. `if_required` makes Stripe skip payment
+      // details while the amount due today is 0. The address stays mandatory: it
+      // costs far less friction than a card and keeps the first real invoice
+      // legally complete.
+      //
+      // The price of dropping the card is that the trial can no longer convert
+      // on its own, so it has to end cleanly instead of rolling into an invoice
+      // nobody can pay. See `trial_settings` below.
+      payment_method_collection: trialEligible ? 'if_required' : 'always',
       success_url: `${baseUrl}/ticketbot/dashboard?checkout=success`,
       cancel_url:  `${baseUrl}/ticketbot/dashboard?checkout=cancelled`,
       metadata:    { guild_id: guildId, discord_user_id: discordUserId },
       subscription_data: {
         metadata: { guild_id: guildId, discord_user_id: discordUserId },
-        ...(trialEligible ? { trial_period_days: TRIAL_DAYS } : {}),
+        ...(trialEligible
+          ? {
+              trial_period_days: TRIAL_DAYS,
+              // Trial over and still no payment method → cancel. The two other
+              // options both end badly here: `create_invoice` produces an
+              // invoice nobody agreed to pay (and Stripe dunning mails on top),
+              // `pause` leaves a zombie subscription that the one-sub-per-guild
+              // guard above would treat as live and that blocks a fresh
+              // checkout forever. Cancelling fires
+              // `customer.subscription.deleted`, which the webhook already
+              // turns into a clean downgrade to basic.
+              trial_settings: { end_behavior: { missing_payment_method: 'cancel' } },
+            }
+          : {}),
       },
       // Reuse the person's existing customer if we have one; otherwise Stripe
       // auto-creates a customer in subscription mode (customer_creation is only

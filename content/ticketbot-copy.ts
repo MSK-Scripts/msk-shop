@@ -210,7 +210,7 @@ const en: TicketBotCopy = {
   tiersHeading:  'Choose your tier',
   tiersSubLead:  'Host transcripts as public links. Premium tiers come with a',
   tiersSubTrial: '14-day free trial',
-  tiersSubTail:  '. Cancel anytime, billed monthly afterwards.',
+  tiersSubTail:  ', no credit card required. Cancel anytime, billed monthly afterwards.',
   tierCards: [
     { name: 'Basic',    price: 'Free',  priceSub: 'forever', badge: null,           cta: 'Get API Key' },
     { name: 'Premium',  price: '€3.99', priceSub: '/ month', badge: 'Most popular', cta: 'Start free trial' },
@@ -346,7 +346,7 @@ const de: TicketBotCopy = {
   tiersHeading:  'Wähle deinen Tarif',
   tiersSubLead:  'Transkripte als öffentliche Links hosten. Die Premium-Tarife starten mit',
   tiersSubTrial: '14 Tagen kostenlos',
-  tiersSubTail:  '. Jederzeit kündbar, danach monatliche Abrechnung.',
+  tiersSubTail:  ', ohne Kreditkarte. Jederzeit kündbar, danach monatliche Abrechnung.',
   tierCards: [
     { name: 'Basic',    price: 'Kostenlos', priceSub: 'dauerhaft', badge: null,               cta: 'API-Key holen' },
     { name: 'Premium',  price: '3,99 €',    priceSub: '/ Monat',   badge: 'Am beliebtesten',  cta: 'Kostenlos testen' },

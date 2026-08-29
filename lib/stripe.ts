@@ -72,3 +72,38 @@ export function priceIdFromSubscription(sub: Stripe.Subscription): string | null
 export function periodEndFromSubscription(sub: Stripe.Subscription): number | null {
   return sub.items.data[0]?.current_period_end ?? null;
 }
+
+/**
+ * Whether this subscription can charge anyone when the trial ends. Checks the
+ * subscription's own default first, then the customer's default (the billing
+ * portal writes the card there, not onto the subscription).
+ *
+ * The customer must be passed expanded; a bare id says nothing about payment
+ * methods and is treated as "no method known", which only ever leads to one
+ * extra reminder mail, never to a missed charge.
+ */
+export function hasPaymentMethod(
+  sub:      Stripe.Subscription,
+  customer: Stripe.Customer | Stripe.DeletedCustomer | null | undefined,
+): boolean {
+  if (sub.default_payment_method) return true;
+  if (sub.default_source) return true;
+  if (!customer || customer.deleted) return false;
+  const settings = customer.invoice_settings;
+  return Boolean(settings?.default_payment_method ?? customer.default_source);
+}
+
+/**
+ * The recurring price of a subscription, formatted for a human ("3,99 €" in
+ * German, "€3.99" in English). Read off the subscription rather than from a
+ * constant so the mail can never quote a price the customer is not on.
+ */
+export function formatSubscriptionPrice(sub: Stripe.Subscription, lang: 'en' | 'de'): string {
+  const price  = sub.items.data[0]?.price;
+  const amount = price?.unit_amount;
+  if (amount == null) return '';
+  return new Intl.NumberFormat(lang === 'de' ? 'de-DE' : 'en-GB', {
+    style:    'currency',
+    currency: (price?.currency ?? 'eur').toUpperCase(),
+  }).format(amount / 100);
+}

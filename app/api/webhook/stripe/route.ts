@@ -1,10 +1,14 @@
 import { NextResponse } from 'next/server';
 import type Stripe      from 'stripe';
+import type { ResultSetHeader } from 'mysql2';
 import { queryOne, withTransaction } from '@/lib/db';
 import {
   getStripe, resolveTierFromPrice, isActiveSubStatus,
   priceIdFromSubscription, periodEndFromSubscription,
+  hasPaymentMethod, formatSubscriptionPrice,
 } from '@/lib/stripe';
+import { sendMail } from '@/lib/mail';
+import { buildTrialEndingEmail, pickMailLang } from '@/lib/emails/trialEnding';
 import { archiveHostedBot } from '@/lib/hostedBot';
 import { teardownCustomDomain } from '@/lib/customDomain';
 import { trustedGuildId }       from '@/lib/guildScope';
@@ -14,6 +18,7 @@ import { TIER_CONFIG, type Tier } from '@/lib/tiers';
 //
 // Configure in Stripe → Developers → Webhooks → https://www.msk-scripts.de/api/webhook/stripe
 // Events: checkout.session.completed, customer.subscription.created/updated/deleted,
+//         customer.subscription.trial_will_end,
 //         invoice.payment_succeeded, invoice.payment_failed
 // Secret → STRIPE_WEBHOOK_SECRET
 //
@@ -21,6 +26,7 @@ import { TIER_CONFIG, type Tier } from '@/lib/tiers';
 // may deliver an event more than once.
 
 interface GuildIdRow { guild_id: string }
+interface GuildNameRow { guild_name: string | null }
 
 /**
  * Resolve the subscription id referenced by an invoice. Its location differs
@@ -83,9 +89,10 @@ async function applySubscription(sub: Stripe.Subscription): Promise<void> {
       await conn.execute(
         `UPDATE ticketbot_guilds
             SET tier = ?, active = TRUE, expires_at = ?,
-                stripe_subscription_id = ?, stripe_customer_id = ?
+                stripe_subscription_id = ?, stripe_customer_id = ?,
+                stripe_status = ?
           WHERE guild_id = ?`,
-        [tier, expiresAt, sub.id, customerId, guildId],
+        [tier, expiresAt, sub.id, customerId, sub.status, guildId],
       );
     });
     console.info(`[stripe] guild ${guildId} → ${tier} (status ${sub.status})`);
@@ -96,6 +103,91 @@ async function applySubscription(sub: Stripe.Subscription): Promise<void> {
   await downgradeGuild(guildId);
 }
 
+/**
+ * Three days before a trial ends, Stripe fires `customer.subscription.trial_will_end`.
+ * Since the checkout stopped asking for a card, that is the moment the customer
+ * has to be told: without a payment method the subscription does not convert, it
+ * simply stops. The dashboard says the same, but nobody has to open it.
+ *
+ * Sending a mail is the one thing in this webhook that cannot be made idempotent
+ * by "set state to X", so the DB column doubles as a lock: whoever flips
+ * trial_reminder_sent_at from NULL sends, everyone else returns.
+ */
+async function handleTrialWillEnd(sub: Stripe.Subscription): Promise<void> {
+  const guildId = sub.metadata?.guild_id;
+  if (!guildId) {
+    console.warn('[stripe] trial_will_end without guild_id metadata:', sub.id);
+    return;
+  }
+
+  const customerId = typeof sub.customer === 'string' ? sub.customer : sub.customer?.id ?? null;
+  if (!customerId) {
+    console.warn('[stripe] trial_will_end without customer:', sub.id);
+    return;
+  }
+
+  const customer = await getStripe().customers.retrieve(customerId);
+
+  // A payment method is on file → the subscription converts on its own and a
+  // "you are about to lose Premium" mail would simply be wrong.
+  if (hasPaymentMethod(sub, customer)) return;
+
+  if (customer.deleted) return;
+  const to = customer.email;
+  if (!to) {
+    console.warn(`[stripe] trial ending for guild ${guildId} but the customer has no email.`);
+    return;
+  }
+
+  // Claim the send. affectedRows === 0 means a redelivery of the same event (or a
+  // parallel one) already sent it.
+  const claimed = await withTransaction(async (conn) => {
+    const [res] = await conn.execute(
+      `UPDATE ticketbot_guilds
+          SET trial_reminder_sent_at = NOW()
+        WHERE guild_id = ? AND trial_reminder_sent_at IS NULL`,
+      [guildId],
+    );
+    return (res as ResultSetHeader).affectedRows > 0;
+  });
+  if (!claimed) return;
+
+  const lang        = pickMailLang(customer.preferred_locales);
+  const row         = await queryOne<GuildNameRow>(
+    'SELECT guild_name FROM ticketbot_guilds WHERE guild_id = ?',
+    [guildId],
+  );
+  const trialEndSec = sub.trial_end ?? periodEndFromSubscription(sub);
+  const mail = buildTrialEndingEmail({
+    lang,
+    guildLabel:  row?.guild_name || guildId,
+    trialEndsAt: new Date((trialEndSec ?? Math.floor(Date.now() / 1000)) * 1000),
+    price:       formatSubscriptionPrice(sub, lang),
+  });
+
+  try {
+    const sent = await sendMail({ to, ...mail });
+    if (!sent) {
+      // Mail is not configured at all. Keep the lock set: retrying costs a Stripe
+      // redelivery for something that cannot succeed until someone adds SMTP
+      // credentials, and the dashboard notice still covers the customer.
+      console.warn(`[stripe] trial reminder for guild ${guildId} not sent, SMTP unconfigured.`);
+      return;
+    }
+    console.info(`[stripe] trial reminder sent for guild ${guildId} (${lang}).`);
+  } catch (err) {
+    // Release the lock and let the 500 below make Stripe retry. A second attempt
+    // is worth more than a reminder silently lost to a temporary SMTP failure.
+    await withTransaction(async (conn) => {
+      await conn.execute(
+        'UPDATE ticketbot_guilds SET trial_reminder_sent_at = NULL WHERE guild_id = ?',
+        [guildId],
+      );
+    });
+    throw err;
+  }
+}
+
 /** Downgrade a guild to basic and archive its hosted bot (if any). */
 async function downgradeGuild(guildId: string): Promise<void> {
   // basicDays is a hard-coded number from our own config, safe to inline.
@@ -103,7 +195,8 @@ async function downgradeGuild(guildId: string): Promise<void> {
   await withTransaction(async (conn) => {
     await conn.execute(
       `UPDATE ticketbot_guilds
-          SET tier = 'basic', expires_at = NULL, stripe_subscription_id = NULL
+          SET tier = 'basic', expires_at = NULL, stripe_subscription_id = NULL,
+              stripe_status = NULL, trial_reminder_sent_at = NULL
         WHERE guild_id = ?`,
       [guildId],
     );
@@ -170,6 +263,11 @@ export async function POST(req: Request): Promise<NextResponse> {
       case 'customer.subscription.created':
       case 'customer.subscription.updated': {
         await applySubscription(event.data.object as Stripe.Subscription);
+        break;
+      }
+
+      case 'customer.subscription.trial_will_end': {
+        await handleTrialWillEnd(event.data.object as Stripe.Subscription);
         break;
       }
 

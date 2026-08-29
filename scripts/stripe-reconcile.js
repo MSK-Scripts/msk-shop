@@ -125,9 +125,13 @@ async function main() {
         await pool.execute(
           `UPDATE ticketbot_guilds
               SET tier = ?, active = TRUE, expires_at = ?,
-                  stripe_subscription_id = ?, stripe_customer_id = ?
+                  stripe_subscription_id = ?, stripe_customer_id = ?,
+                  stripe_status = ?
             WHERE guild_id = ?`,
-          [s.tier, expiresAt, subId, s.customerId, s.guildId],
+          // stripe_status is carried here too. If a lost webhook left it at
+          // 'trialing' after the trial had converted, the dashboard would keep
+          // asking a paying customer for a payment method they long added.
+          [s.tier, expiresAt, subId, s.customerId, s.status, s.guildId],
         );
       }
       upserted++;
@@ -151,7 +155,8 @@ async function main() {
       } else {
         await pool.execute(
           `UPDATE ticketbot_guilds
-              SET tier = 'basic', expires_at = NULL, stripe_subscription_id = NULL
+              SET tier = 'basic', expires_at = NULL, stripe_subscription_id = NULL,
+                  stripe_status = NULL, trial_reminder_sent_at = NULL
             WHERE guild_id = ?`,
           [row.guild_id],
         );
