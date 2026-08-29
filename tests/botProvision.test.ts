@@ -43,8 +43,11 @@ describe('validateHostingForm', () => {
     expect(validateHostingForm({ ...FORM, clientSecret: 'tiny' })).toBe('invalid_client_secret')
   })
 
+  // Deliberately without embedded credentials. The validator only looks at the
+  // scheme, so `user:pass@` would add nothing to the test while making the
+  // secret scanner flag the file as a leaked connection string.
   it('accepts the three supported database schemes and rejects anything else', () => {
-    for (const url of ['mysql://u:p@h/db', 'postgres://u:p@h/db', 'sqlite:./data/tickets.db']) {
+    for (const url of ['mysql://db.example/tickets', 'postgres://db.example/tickets', 'sqlite:./data/tickets.db']) {
       expect(validateHostingForm({ ...FORM, databaseUrl: url })).toBeNull()
     }
     expect(validateHostingForm({ ...FORM, databaseUrl: 'http://example.com' })).toBe('invalid_database_url')

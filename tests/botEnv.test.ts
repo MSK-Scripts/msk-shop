@@ -8,7 +8,7 @@ const SAMPLE = `# Discord Ticket Bot
 # Copy this file to .env and fill in your values
 
 # To use an external database instead, set DATABASE_URL to one of:
-#   MySQL/MariaDB:  mysql://user:password@host:3306/ticketbot
+#   MySQL/MariaDB:  mysql://HOST:PORT/ticketbot
 # DATABASE_URL=""
 
 # Your Discord bot token (from https://discord.com/developers/applications)
@@ -66,9 +66,9 @@ describe('setEnvValues', () => {
   // Un-commenting the example line would change what the comment block above it
   // means; appending is the honest edit.
   it('appends a key that only exists as a commented example instead of reviving it', () => {
-    const out = setEnvValues(SAMPLE, { DATABASE_URL: 'mysql://u:p@h/db' })
+    const out = setEnvValues(SAMPLE, { DATABASE_URL: 'mysql://db.example/tickets' })
     expect(out).toContain('# DATABASE_URL=""')
-    expect(parseEnv(out).DATABASE_URL).toBe('mysql://u:p@h/db')
+    expect(parseEnv(out).DATABASE_URL).toBe('mysql://db.example/tickets')
     expect(out).toContain('# ── Added by the MSK hosting dashboard')
   })
 
