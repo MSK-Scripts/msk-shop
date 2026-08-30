@@ -1803,6 +1803,9 @@ export const layoutTranslations = {
     theme_system:      'System setting',
 
     footer_tagline:    'FiveM Scripts with Heart 💚',
+    // Used on the two bot landing pages. Same shape, without the FiveM
+    // framing that made machines file a plain Discord bot under FiveM.
+    footer_tagline_bots: 'Discord Bots with Heart 💚',
     footer_col_shop:   'Shop',
     footer_col_eco:    'Ecosystem',
     footer_col_bots:   'Discord Bots',
@@ -1860,6 +1863,7 @@ export const layoutTranslations = {
     theme_system:      'Systemeinstellung',
 
     footer_tagline:    'FiveM Scripts mit Herz 💚',
+    footer_tagline_bots: 'Discord-Bots mit Herz 💚',
     footer_col_shop:   'Shop',
     footer_col_eco:    'Ökosystem',
     footer_col_bots:   'Discord Bots',

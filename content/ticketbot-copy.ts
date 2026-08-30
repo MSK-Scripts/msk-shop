@@ -110,9 +110,9 @@ const en: TicketBotCopy = {
   heroText:
     'A free, self-hosted support ticket system for Discord, built on Discord.js v14. '
     + 'It runs on SQLite out of the box or on your own MySQL, MariaDB or PostgreSQL. '
-    + 'No telemetry, no paywalled basics. Verify to get your API key, run and configure '
+    + 'No telemetry, no paywalled basics. It is a plain Discord bot: no game server, no FiveM, no framework, just Node.js and a bot token. Verify to get your API key, run and configure '
     + 'the bot from the dashboard, and keep an eye on the live stats.',
-  highlights: ['Self-hosted', 'No telemetry', 'SQLite · MySQL · PostgreSQL', 'Discord.js v14', 'German & English'],
+  highlights: ['Self-hosted', 'No game server needed', 'No telemetry', 'SQLite · MySQL · PostgreSQL', 'Discord.js v14'],
   heroCtaKey:     'Get API Key',
   heroCtaDocs:    'Documentation',
   heroCtaDiscord: 'Join Discord',
@@ -248,10 +248,10 @@ const de: TicketBotCopy = {
   heroText:
     'Ein kostenloses Ticketsystem für den Discord-Support, das du selbst hostest, gebaut auf '
     + 'Discord.js v14. Es läuft direkt mit SQLite oder mit deiner eigenen MySQL, MariaDB oder '
-    + 'PostgreSQL. Keine Telemetrie, keine Grundfunktion hinter einer Bezahlschranke. '
+    + 'PostgreSQL. Keine Telemetrie, keine Grundfunktion hinter einer Bezahlschranke. Es ist ein reiner Discord-Bot: kein Gameserver, kein FiveM, kein Framework, nur Node.js und ein Bot-Token. '
     + 'Verifizieren, API-Key holen, den Bot über das Dashboard starten und konfigurieren, '
     + 'und die Live-Statistiken im Blick behalten.',
-  highlights: ['Selbst gehostet', 'Keine Telemetrie', 'SQLite · MySQL · PostgreSQL', 'Discord.js v14', 'Deutsch & Englisch'],
+  highlights: ['Selbst gehostet', 'Kein Gameserver nötig', 'Keine Telemetrie', 'SQLite · MySQL · PostgreSQL', 'Discord.js v14'],
   heroCtaKey:     'API-Key holen',
   heroCtaDocs:    'Dokumentation',
   heroCtaDiscord: 'Discord beitreten',

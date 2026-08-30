@@ -66,7 +66,7 @@ const en: TicketBotCompareCopy = {
   badge: 'Comparison',
   headline: 'Which self-hosted Discord ticket bot should you use?',
   intro:
-    'There are three open-source ticket bots worth knowing and one hosted service almost everyone '
+    'MSK Ticket Bot is a general-purpose Discord ticket bot, in the same class as the others here: it needs Node.js and a bot token, nothing else. There are three open-source ticket bots worth knowing and one hosted service almost everyone '
     + 'starts with. They solve the same problem in different ways, and the right answer depends far '
     + 'more on who should hold your ticket data than on the feature list. This page lays out the '
     + 'differences, including the ones that speak against our own bot.',
@@ -117,6 +117,10 @@ const en: TicketBotCompareCopy = {
       a: 'The bot is free and open source under AGPL-3.0, with every feature included. Nothing in it is behind a paywall. What costs money is the optional transcript service on msk-scripts.de: without it, transcripts are still generated and sent as an HTML file, they just have no public link beyond the free 30-day tier.',
     },
     {
+      q: 'Do I need FiveM or a game server for it?',
+      a: 'No. It is a plain Discord bot and has nothing to do with FiveM, ESX, QBCore or any game server. It talks to Discord and to nothing else. We also publish FiveM resources, which is why the question comes up, but the two share nothing beyond the name on the shop.',
+    },
+    {
       q: 'Do I need a server to run it?',
       a: 'To run it yourself, yes: Node.js 24 and a process that stays alive, so a small VPS, a Raspberry Pi or any always-on machine will do. There is a Docker image and a compose file, which is the simplest route, and SQLite is the default so no database server is required. If you would rather not, every paid tier includes hosting on our servers: you enter three values from the Discord developer portal in the dashboard and we install and run it for you.',
     },
@@ -159,7 +163,7 @@ const de: TicketBotCompareCopy = {
   badge: 'Vergleich',
   headline: 'Welchen Discord Ticket Bot zum Selbsthosten soll man nehmen?',
   intro:
-    'Es gibt drei Open-Source-Ticket-Bots, die man kennen sollte, und einen gehosteten Dienst, mit dem '
+    'Der MSK Ticket Bot ist ein universeller Discord-Ticket-Bot, in derselben Klasse wie die anderen hier: er braucht Node.js und einen Bot-Token, sonst nichts. Es gibt drei Open-Source-Ticket-Bots, die man kennen sollte, und einen gehosteten Dienst, mit dem '
     + 'fast jeder anfängt. Sie lösen dasselbe Problem unterschiedlich, und die richtige Antwort hängt '
     + 'weit mehr daran, wer deine Ticketdaten halten soll, als an der Funktionsliste. Diese Seite legt '
     + 'die Unterschiede offen, auch die, die gegen unseren eigenen Bot sprechen.',
@@ -208,6 +212,10 @@ const de: TicketBotCompareCopy = {
     {
       q: 'Ist der MSK Ticket Bot kostenlos?',
       a: 'Der Bot ist kostenlos und quelloffen unter AGPL-3.0, mit vollem Funktionsumfang. Nichts daran liegt hinter einer Bezahlschranke. Geld kostet nur der optionale Transkriptdienst auf msk-scripts.de: ohne ihn werden Transkripte trotzdem erzeugt und als HTML-Datei verschickt, sie haben dann nur keinen öffentlichen Link über die kostenlosen 30 Tage hinaus.',
+    },
+    {
+      q: 'Brauche ich FiveM oder einen Gameserver dafür?',
+      a: 'Nein. Es ist ein reiner Discord-Bot und hat mit FiveM, ESX, QBCore oder irgendeinem Gameserver nichts zu tun. Er spricht mit Discord und sonst mit nichts. Wir veröffentlichen daneben auch FiveM-Ressourcen, daher kommt die Frage, aber die beiden teilen sich nichts außer dem Namen auf dem Shop.',
     },
     {
       q: 'Brauche ich einen Server dafür?',

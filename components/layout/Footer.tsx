@@ -40,7 +40,11 @@ function ColumnTitle({ children }: { children: React.ReactNode }) {
 }
 
 export function Footer() {
-  const { lang } = useLang()
+  const { lang, path } = useLang()
+  // Die beiden Bot-Landingpages richten sich an ein anderes Publikum als der
+  // Shop. `path` kommt bereits ohne Sprachpraefix, die Pruefung gilt also fuer
+  // /ticketbot und /de/ticketbot gleichermassen.
+  const isBotPage = path.startsWith('/ticketbot') || path.startsWith('/giveaway')
   const t = layoutTranslations[lang]
 
   const shopLinks = [
@@ -83,7 +87,7 @@ export function Footer() {
               <span>MSK Scripts</span>
             </Link>
             <p className="mt-3 max-w-xs text-sm text-[var(--color-muted-foreground)]">
-              {t.footer_tagline}
+              {isBotPage ? t.footer_tagline_bots : t.footer_tagline}
             </p>
             <div className="mt-4 flex gap-2">
               <Button asChild variant="outline" size="sm" className="tap-target" aria-label="Discord">

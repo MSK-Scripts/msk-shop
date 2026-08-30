@@ -35,14 +35,27 @@ const SCHEMA = 'https://schema.org'
  * `sameAs` listet die offiziellen Profile: Damit kann Google die Marke als
  * Entität zusammenführen, statt „MSK Scripts" für ein beliebiges Wort zu halten.
  */
-export function organizationJsonLd(): JsonLdObject {
+/**
+ * The publisher, as structured data.
+ *
+ * `describe: false` omits the description instead of substituting a different
+ * one. That distinction matters: the same organisation carrying two different
+ * descriptions across pages is a contradiction a crawler can see, while leaving
+ * the field out is simply less information. It is used on the bot landing pages,
+ * where the site-wide tagline ("High quality FiveM resources & Discord bots")
+ * was the strongest signal telling machines that a plain Discord bot belongs to
+ * a FiveM product line. Nothing in that tagline is false; it is just the wrong
+ * context for those two pages, and it was measurably being read that way.
+ */
+export function organizationJsonLd(opts: { describe?: boolean } = {}): JsonLdObject {
+  const { describe = true } = opts
   return {
     '@context': SCHEMA,
     '@type':    'Organization',
     name:       'MSK Scripts',
     url:        siteUrl(),
     logo:       absoluteUrl('/logo.png'),
-    description: SITE_CONFIG.tagline,
+    ...(describe ? { description: SITE_CONFIG.tagline } : {}),
     sameAs: [
       SITE_CONFIG.github,
       SITE_CONFIG.discord,

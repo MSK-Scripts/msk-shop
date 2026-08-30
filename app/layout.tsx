@@ -107,6 +107,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const path = hdrs.get(PATH_HEADER) || '/'
   const t = layoutTranslations[lang]
 
+  // Auf den beiden Bot-Landingpages traegt die Organization-Auszeichnung keine
+  // Branchenbeschreibung. Die seitenweite Zeile nennt zuerst FiveM, und genau
+  // daraus haben Sprachmodelle geschlossen, der Ticket-Bot sei eine
+  // FiveM-Erweiterung. Weggelassen statt ersetzt, siehe organizationJsonLd().
+  const botLanding = path.startsWith('/ticketbot') || path.startsWith('/giveaway')
+
   return (
     // `data-scroll-behavior="smooth"` ist keine Deko, sondern eine Anforderung
     // von Next: sein Router schaltet `scroll-behavior: smooth` waehrend eines
@@ -138,7 +144,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           nonce={nonce}
         >
           <LangProvider lang={lang} path={path}>
-            <JsonLd data={organizationJsonLd()} />
+            <JsonLd data={organizationJsonLd({ describe: !botLanding })} />
             <Header />
             <CartDrawer />
             <SalePriceFetcher />

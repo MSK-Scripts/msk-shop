@@ -165,3 +165,22 @@ describe('softwareApplicationJsonLd', () => {
     expect(oss.sameAs).toEqual(['https://github.com/MSK-Scripts/discord_giveawaybot'])
   })
 })
+
+describe('organizationJsonLd describe option', () => {
+  it('carries the site tagline by default', () => {
+    expect(organizationJsonLd()).toHaveProperty('description')
+  })
+
+  // Omitted, not replaced. Two different descriptions for the same organisation
+  // across pages is a contradiction a crawler can see; leaving the field out is
+  // simply less information. Used on the bot landing pages, where the site-wide
+  // tagline leads with FiveM and had language models filing a plain Discord bot
+  // as a FiveM extension.
+  it('omits the description entirely when asked to', () => {
+    const org = organizationJsonLd({ describe: false })
+    expect(org).not.toHaveProperty('description')
+    expect(org.name).toBe('MSK Scripts')
+    expect(org).toHaveProperty('url')
+    expect(org).toHaveProperty('sameAs')
+  })
+})
