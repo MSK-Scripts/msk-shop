@@ -476,7 +476,7 @@ export const dashboardTranslations = {
     botdash_hint:         'Manage tickets, statistics and settings in the full bot dashboard (opens in a new tab).',
     botdash_error:        'Could not open the bot dashboard. Please try again.',
     // Public host of the bot's own dashboard (tickets-….msk-scripts.de or the
-    // customer's own domain). This is the address their STAFF use — the handoff
+    // customer's own domain). This is the address their STAFF use. The handoff
     // link below only ever works for the account owner.
     // ── Self-service bot hosting ─────────────────────────────────────────────
     host_title:           'Let us host your bot',
@@ -1478,7 +1478,7 @@ export const homeTranslations = {
 // ── Paketübersicht (/packages) ───────────────────────────────────────────────
 // Die Facetten stammen ausschließlich aus vorhandenen Daten: die Variante aus
 // der Tebex-Kategorie, die Kompatibilität aus PACKAGE_TAGS in lib/config.ts.
-// Eine Framework-Facette gibt es bewusst nicht — dafür existieren keine
+// Eine Framework-Facette gibt es bewusst nicht, dafür existieren keine
 // strukturierten Angaben, und geraten wäre schlimmer als weggelassen.
 export const packagesTranslations = {
   en: {
