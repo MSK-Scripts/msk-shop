@@ -75,7 +75,6 @@ export interface TicketBotCopy {
   hostedText:        string
   hostedCtaDashboard: string
   hostedCtaDiscord:  string
-  hostedShotAlt:     string
   hostedItems:       LabelledText[]
 
   tiersEyebrow:  string
@@ -202,7 +201,6 @@ const en: TicketBotCopy = {
     + 'team signs in there with Discord. No SSH access or server knowledge required.',
   hostedCtaDashboard: 'Set it up in the dashboard',
   hostedCtaDiscord:   'Ask on Discord',
-  hostedShotAlt:      'The Bot Hosting tab: bot token, client ID and client secret, then one button to activate hosting.',
   hostedItems: [
     { title: 'Set up yourself',  text: 'Three values from the Discord developer portal and one button. No ticket, no waiting.' },
     { title: 'Stays reversible', text: 'Remove hosting whenever you want. We keep the installation for 14 days, so one click brings it back with your tickets intact.' },
@@ -342,7 +340,6 @@ const de: TicketBotCopy = {
     + 'an der sich dein ganzes Team mit Discord anmeldet. Ohne SSH-Zugang und ohne Serverkenntnisse.',
   hostedCtaDashboard: 'Im Dashboard einrichten',
   hostedCtaDiscord:   'Auf Discord fragen',
-  hostedShotAlt:      'Der Tab Bot Hosting: Bot-Token, Client ID und Client Secret, danach ein Knopf zum Aktivieren.',
   hostedItems: [
     { title: 'Selbst einrichten',   text: 'Drei Werte aus dem Discord Developer Portal und ein Knopf. Kein Ticket, kein Warten.' },
     { title: 'Bleibt umkehrbar',    text: 'Hosting jederzeit wieder entfernen. Wir heben die Installation 14 Tage auf, ein Klick holt sie samt deinen Tickets zurück.' },
