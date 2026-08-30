@@ -354,16 +354,24 @@ export function TicketBotLanding({ lang }: { lang: Lang }) {
 
           {/* Below the two columns, not beside them: this is the proof for the
               sentence above, that hosting is a form you fill in yourself, and a
-              form does not read at half width. A plain src with width/height
-              rather than a static import, so a missing file is one broken image
-              instead of a failed build. */}
-          <figure className="mt-10 overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-card)]">
+              form does not read at half width.
+
+              `unoptimized` on purpose. The file is already a LOSSLESS WebP, and
+              a UI screenshot is the worst possible input for lossy encoding:
+              the sharp text edges are exactly what it destroys. Measured on this
+              image, lossless is 46 KB while quality 88 is 67 KB, so the lossy
+              pass costs bytes AND legibility. Letting the optimizer re-encode it
+              would add a second lossy step on top of that for nothing.
+
+              Capped at 1200 px because the source is 1856 px wide. Wider, and a
+              HiDPI screen asks for more pixels than exist and upscales. */}
+          <figure className="mx-auto mt-10 max-w-[1200px] overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-card)]">
             <Image
               src="/ticketbot-hosting.webp"
               alt={t.hostedShotAlt}
               width={1856}
               height={1106}
-              sizes="(max-width: 1024px) 100vw, 1100px"
+              unoptimized
               className="h-auto w-full"
             />
           </figure>
