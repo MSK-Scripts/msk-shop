@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 import {
   ArrowRight, KeyRound, LayoutDashboard, BarChart3, Ticket, ClipboardList,
@@ -350,6 +351,22 @@ export function TicketBotLanding({ lang }: { lang: Lang }) {
               })}
             </div>
           </div>
+
+          {/* Below the two columns, not beside them: this is the proof for the
+              sentence above, that hosting is a form you fill in yourself, and a
+              form does not read at half width. A plain src with width/height
+              rather than a static import, so a missing file is one broken image
+              instead of a failed build. */}
+          <figure className="mt-10 overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-card)]">
+            <Image
+              src="/ticketbot-hosting.webp"
+              alt={t.hostedShotAlt}
+              width={1856}
+              height={1106}
+              sizes="(max-width: 1024px) 100vw, 1100px"
+              className="h-auto w-full"
+            />
+          </figure>
         </div>
       </section>
 
