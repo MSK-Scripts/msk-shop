@@ -184,7 +184,7 @@ lib/
 ├── session.ts              Signed verify session cookies (HMAC-SHA256) + OAuth state
 ├── statsIgnore.ts          API keys excluded from /ticketbot/stats
 ├── tebex.ts                Tebex API client (reads direct, mutations via /api/basket)
-├── tiers.ts                Tier definitions (basic / premium / premium_plus) + limits
+├── tiers.ts                Tier definitions (basic / premium / premium_plus / business) + limits
 ├── useCart.ts              Cart hook (auth flow, basket management)
 └── utils.ts                `cn()` helper (clsx + tailwind-merge)
 
@@ -219,18 +219,24 @@ proxy.ts                    Edge proxy (the file convention Next 16 renamed
 
 ## Tiers (`lib/tiers.ts`)
 
-This file is the single source of truth for all the limits. The tiers are `basic`, `premium` and `premium_plus`.
+This file is the single source of truth for all the limits. The tiers are `basic`, `premium`, `premium_plus` and `business`.
 
-| Limit | basic | premium | premium_plus |
-|---|---|---|---|
-| Transcript max. | 10 MB | 100 MB | 250 MB |
-| Attachments max. | none | 150 MB | 500 MB |
-| Storage retention | 30 days | 180 days | 365 days |
-| Custom domain | no | yes | yes |
-| Attachment downloads | no | yes | yes |
-| Uploads / hour | 30 | 60 | 300 |
+| Limit | basic | premium | premium_plus | business |
+|---|---|---|---|---|
+| Transcript max. | 10 MB | 50 MB | 100 MB | 200 MB |
+| Attachments max. | none | 100 MB | 200 MB | 500 MB |
+| Storage retention | 30 days | 180 days | 365 days | 10 years |
+| Custom domain | no | yes | yes | yes |
+| Bot hosting | no | yes | yes | yes |
+| Attachment downloads | no | yes | yes | yes |
+| Remove branding | no | yes | yes | yes |
+| Uploads / hour | 30 | 60 | 120 | 300 |
 
 `getExpiresAt(tier)` derives the expiry date from `storageDays`.
+
+Every paid tier carries every perk, so code that gates on one asks
+`tier !== 'basic'` instead of listing tiers. Enumerating them is how `business`
+lost the dashboard shortcut in the verify flow when it was introduced.
 
 ---
 

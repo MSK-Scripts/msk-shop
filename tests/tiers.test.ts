@@ -1,5 +1,13 @@
 import { describe, it, expect, afterEach, vi } from 'vitest'
-import { getExpiresAt, TIER_CONFIG } from '@/lib/tiers'
+import { getExpiresAt, TIER_CONFIG, type Tier } from '@/lib/tiers'
+
+/**
+ * Cheapest to most expensive. Asserted below to cover TIER_CONFIG in full, so a
+ * new tier cannot be added without deciding where it sits in the ladder. The
+ * hand-enumerated version of these tests is how `business` reached production
+ * with no coverage at all.
+ */
+const LADDER: Tier[] = ['basic', 'premium', 'premium_plus', 'business']
 
 afterEach(() => { vi.useRealTimers() })
 
@@ -13,25 +21,48 @@ describe('getExpiresAt', () => {
     const days = (tier: Parameters<typeof getExpiresAt>[0]) =>
       Math.round((getExpiresAt(tier).getTime() - now.getTime()) / 86_400_000)
 
+    for (const tier of LADDER) {
+      expect(days(tier)).toBe(TIER_CONFIG[tier].storageDays)
+    }
+    // Spot values, so a wrong number in TIER_CONFIG cannot agree with itself.
     expect(days('basic')).toBe(30)
     expect(days('premium')).toBe(180)
     expect(days('premium_plus')).toBe(365)
+    expect(days('business')).toBe(3650)
   })
 })
 
 describe('TIER_CONFIG invariants', () => {
-  it('limits grow from basic to premium to premium_plus', () => {
-    expect(TIER_CONFIG.basic.storageDays).toBeLessThan(TIER_CONFIG.premium.storageDays)
-    expect(TIER_CONFIG.premium.storageDays).toBeLessThan(TIER_CONFIG.premium_plus.storageDays)
-    expect(TIER_CONFIG.basic.transcriptMaxBytes).toBeLessThan(TIER_CONFIG.premium.transcriptMaxBytes)
-    expect(TIER_CONFIG.basic.uploadsPerHour).toBeLessThan(TIER_CONFIG.premium.uploadsPerHour)
+  it('the ladder covers every configured tier', () => {
+    expect([...LADDER].sort()).toEqual(Object.keys(TIER_CONFIG).sort())
   })
 
-  it('gates custom domains and attachments to paid tiers only', () => {
+  it('limits grow with every step up the ladder', () => {
+    for (let i = 1; i < LADDER.length; i++) {
+      const lower = TIER_CONFIG[LADDER[i - 1]]
+      const upper = TIER_CONFIG[LADDER[i]]
+      expect(lower.storageDays).toBeLessThan(upper.storageDays)
+      expect(lower.transcriptMaxBytes).toBeLessThan(upper.transcriptMaxBytes)
+      expect(lower.attachmentMaxBytes).toBeLessThan(upper.attachmentMaxBytes)
+      expect(lower.uploadsPerHour).toBeLessThan(upper.uploadsPerHour)
+    }
+  })
+
+  it('gates every perk to the paid tiers and grants all of them to each', () => {
     expect(TIER_CONFIG.basic.customDomain).toBe(false)
     expect(TIER_CONFIG.basic.attachments).toBe(false)
+    expect(TIER_CONFIG.basic.botHosting).toBe(false)
+    expect(TIER_CONFIG.basic.removeBranding).toBe(false)
     expect(TIER_CONFIG.basic.attachmentMaxBytes).toBe(0)
-    expect(TIER_CONFIG.premium.customDomain).toBe(true)
-    expect(TIER_CONFIG.premium_plus.attachments).toBe(true)
+
+    // Every paid tier gets the lot. VerifyClient and the dashboard ask
+    // `tier !== 'basic'` rather than listing tiers, and this is what makes
+    // that question the right one.
+    for (const tier of LADDER.filter(t => t !== 'basic')) {
+      expect(TIER_CONFIG[tier].customDomain).toBe(true)
+      expect(TIER_CONFIG[tier].attachments).toBe(true)
+      expect(TIER_CONFIG[tier].botHosting).toBe(true)
+      expect(TIER_CONFIG[tier].removeBranding).toBe(true)
+    }
   })
 })

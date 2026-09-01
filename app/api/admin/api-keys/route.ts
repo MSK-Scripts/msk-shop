@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { adminRoute }   from '@/lib/adminApi';
 import { query }        from '@/lib/db';
+import type { Tier }    from '@/lib/tiers';
 
 // Session-/cookie-dependent → never cache.
 export const dynamic = 'force-dynamic';
@@ -9,7 +10,7 @@ interface GuildRow {
   guild_id:      string;
   guild_name:    string | null;
   api_key:       string;
-  tier:          'basic' | 'premium' | 'premium_plus';
+  tier:          Tier;
   custom_domain: string | null;
   domain_status: 'none' | 'pending_dns' | 'active';
   is_hosted:     number;

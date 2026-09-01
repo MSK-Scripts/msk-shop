@@ -134,6 +134,7 @@ const TIER_LABELS: Record<string, { en: string; de: string }> = {
   basic:        { en: 'Basic (Free)', de: 'Basic (Kostenlos)' },
   premium:      { en: 'Premium',      de: 'Premium' },
   premium_plus: { en: 'Premium+',     de: 'Premium+' },
+  business:     { en: 'Business',     de: 'Business' },
 }
 
 export default function VerifyClient({ session, step: _step, errorCode }: Props) {
@@ -417,7 +418,10 @@ export default function VerifyClient({ session, step: _step, errorCode }: Props)
                 </div>
 
                 {/* Option B — Go to Dashboard */}
-                {(existingGuild.tier === 'premium' || existingGuild.tier === 'premium_plus') && (
+                {/* Every paid tier, asked negatively on purpose. Enumerating
+                    them meant Business silently lost this shortcut when it was
+                    added, and the next tier would have lost it too. */}
+                {existingGuild.tier !== 'basic' && (
                   <div className="rounded-xl border border-[var(--color-primary)]/25 bg-[var(--color-primary)]/5 p-4">
                     <div className="mb-1 flex items-center gap-2">
                       <LayoutDashboard className="h-3.5 w-3.5 shrink-0 text-[var(--color-primary)]" />

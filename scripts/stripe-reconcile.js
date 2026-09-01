@@ -33,7 +33,8 @@
  *     /opt/msk-shop/scripts/stripe-reconcile.js \
  *     >> /var/log/msk-stripe-reconcile.log 2>&1
  *
- * Required env: STRIPE_SECRET_KEY, STRIPE_PRICE_PREMIUM, STRIPE_PRICE_PREMIUM_PLUS.
+ * Required env: STRIPE_SECRET_KEY, STRIPE_PRICE_PREMIUM, STRIPE_PRICE_PREMIUM_PLUS,
+ *               STRIPE_PRICE_BUSINESS.
  * Flags: --dry-run   log intended changes without writing to the DB.
  */
 
@@ -46,11 +47,24 @@ const DRY_RUN    = process.argv.includes('--dry-run');
 const STRIPE_KEY = process.env.STRIPE_SECRET_KEY;
 const PRICE_PREMIUM      = process.env.STRIPE_PRICE_PREMIUM;
 const PRICE_PREMIUM_PLUS = process.env.STRIPE_PRICE_PREMIUM_PLUS;
+const PRICE_BUSINESS     = process.env.STRIPE_PRICE_BUSINESS;
 
-/** Map a Stripe price id → internal tier. Mirrors lib/stripe.ts. */
+/**
+ * Map a Stripe price id → internal tier. Hand-written mirror of
+ * `resolveTierFromPrice` in lib/stripe.ts, because this cron is plain JS
+ * running outside Next and cannot import the module. Same arrangement as
+ * BASIC_STORAGE_DAYS in cleanup.js.
+ *
+ * A new tier has to be added here as well, and missing one is not cosmetic:
+ * an unknown price resolves to 'basic', and the upsert below would write that
+ * over a guild whose subscription is active and paid. Business was missing
+ * from 2026-08-29 until 2026-09-02. The guard in the upsert loop is there so
+ * the next omission cannot demote anyone.
+ */
 function resolveTierFromPrice(priceId) {
   if (priceId && priceId === PRICE_PREMIUM)      return 'premium';
   if (priceId && priceId === PRICE_PREMIUM_PLUS) return 'premium_plus';
+  if (priceId && priceId === PRICE_BUSINESS)     return 'business';
   return 'basic';
 }
 
@@ -112,6 +126,16 @@ async function main() {
     // 2. Upsert every active/trialing subscription that is bound to a guild.
     for (const [subId, s] of activeSubs) {
       if (!s.guildId) continue;
+
+      // An active subscription resolving to 'basic' means its price id is not
+      // one we know, so writing that tier would demote a paying customer on the
+      // strength of a mapping failure. Skip and say so. Downgrading belongs to
+      // phase 3, and only for subscriptions that really stopped being active.
+      if (s.tier === 'basic') {
+        console.warn(`[stripe-reconcile] ⚠ sub ${subId} (guild ${s.guildId}, ${s.status}) has an unknown price id, skipping. Check STRIPE_PRICE_* and resolveTierFromPrice.`);
+        continue;
+      }
+
       const expiresAt = s.periodEnd ? new Date(s.periodEnd * 1000) : null;
 
       if (DRY_RUN) {
