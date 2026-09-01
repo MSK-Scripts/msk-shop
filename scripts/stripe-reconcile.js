@@ -72,7 +72,10 @@ async function main() {
   //    Stripe failure means no writes. Build a map subId → details.
   const subsById = new Map();
   try {
-    for await (const sub of stripe.subscriptions.list({ status: 'all', limit: 100 }).autoPagingEach()) {
+    // The list result is itself async-iterable. `autoPagingEach` takes a
+    // callback and returns a Promise, so iterating its return value throws
+    // on the very first tick and every run since 2026-06-24 died here.
+    for await (const sub of stripe.subscriptions.list({ status: 'all', limit: 100 })) {
       const item       = sub.items && sub.items.data && sub.items.data[0];
       const priceId    = item && item.price ? item.price.id : null;
       const periodEnd  = item ? item.current_period_end : null;
