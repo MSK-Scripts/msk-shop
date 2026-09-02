@@ -67,16 +67,24 @@ export function mailConfigFromEnv(
  * character appears in the pattern.
  *
  * The two line-break replacements in front of it are redundant against that
- * range and stay anyway. CodeQL does not read a negated character class as a
- * sanitizer, it re-raised the same finding after the first attempt, and it is
- * right to be strict: the line break is the actual attack, and a reader should
- * see it handled by name rather than have to work out which code points a range
- * happens to exclude.
+ * range and stay anyway, for two reasons. The line break is the actual attack,
+ * so naming it reads better than leaving someone to work out which code points
+ * a range happens to exclude. And CodeQL accepts exactly one shape as a
+ * sanitizer here, which took two attempts to get right:
+ *
+ *   exists(string s | this.(StringReplaceCall).replaces(s, "") and s.regexpMatch("\n"))
+ *
+ * A replace of a newline against the EMPTY string. Neither the negated
+ * character class nor a replacement with a space satisfied it, and both came
+ * back as the same finding. Dropping the character rather than substituting a
+ * space is the better behaviour anyway: the value is an address, it has no
+ * whitespace worth preserving, and inventing one would put something in the log
+ * that the caller never sent.
  */
 function forLog(value: string): string {
   return String(value ?? '')
-    .replace(/\r/g, ' ')
-    .replace(/\n/g, ' ')
+    .replace(/\r/g, '')
+    .replace(/\n/g, '')
     .replace(/[^ -~\u00A0-\uFFFF]/g, '?')
     .slice(0, 120);
 }
