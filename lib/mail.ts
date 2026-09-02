@@ -46,6 +46,30 @@ export function mailConfigFromEnv(
   return { host, port, user, pass, from };
 }
 
+/**
+ * Make a value safe to write into a log line.
+ *
+ * A recipient address reaches this module from the withdrawal, cancellation and
+ * report forms, which anyone can submit without signing in. A value carrying CR
+ * or LF can forge additional log entries, and a very long one pushes real
+ * entries out of view.
+ *
+ * The three forms do validate the address before it gets here (`lib/legalForms.ts`
+ * collapses whitespace and then rejects anything that is not `user@host.tld`), so
+ * this is not exploitable today. The guarantee would live three files away in
+ * whichever validator a caller happened to use, though, and `sendMail` is a
+ * shared helper — the next caller may not validate at all. The check belongs
+ * where the value is written.
+ *
+ * Allow-list rather than block-list: printable ASCII plus everything from U+00A0
+ * up, which keeps umlauts and every other real name intact while dropping the C0
+ * controls, DEL and the C1 range. Written as a range so no literal control
+ * character appears in the pattern.
+ */
+function forLog(value: string): string {
+  return String(value ?? '').replace(/[^ -~\u00A0-\uFFFF]/g, '?').slice(0, 120);
+}
+
 let transporter: Transporter | null = null;
 let transporterKey = '';
 
@@ -73,7 +97,7 @@ function getTransporter(cfg: MailConfig): Transporter {
 export async function sendMail(message: MailMessage): Promise<boolean> {
   const cfg = mailConfigFromEnv();
   if (!cfg) {
-    console.warn('[mail] SMTP is not configured, skipping mail to', message.to);
+    console.warn('[mail] SMTP is not configured, skipping mail to', forLog(message.to));
     return false;
   }
 
