@@ -53,14 +53,26 @@ describe('sendMail: Logzeile bei fehlender SMTP-Konfiguration', () => {
   })
 
   it('laesst keinen Zeilenumbruch in die Logzeile', async () => {
+    // Geprueft wird die Wirkung, nicht das Ersatzzeichen: entscheidend ist,
+    // dass aus einer Meldung keine zweite wird. Womit der Umbruch ersetzt
+    // wurde, ist Sache der Umsetzung und darf sich aendern.
     const line = await capture(`a@b.de${NL}2026-09-02 [mail] gefaelschte Zeile`)
     expect(line.split(NL)).toHaveLength(1)
-    expect(line).toContain('?')
+    expect(line).not.toContain(NL)
   })
 
   it('faengt auch einen Wagenruecklauf ab', async () => {
     const line = await capture(`a@b.de${CR}${CR}gefaelscht`)
     expect(line).not.toContain(CR)
+  })
+
+  it('ersetzt uebrige Steuerzeichen', async () => {
+    // Escape und Nullbyte sind keine Zeilenumbrueche, gehoeren aber ebenso
+    // wenig in eine Logzeile: ANSI-Sequenzen koennen die Ausgabe eines
+    // Terminals umschreiben.
+    const line = await capture(`a@b.de${String.fromCharCode(27)}[2Kgefaelscht`)
+    expect(line).not.toContain(String.fromCharCode(27))
+    expect(line).toContain('?')
   })
 
   it('deckelt die Laenge', async () => {

@@ -58,16 +58,27 @@ export function mailConfigFromEnv(
  * collapses whitespace and then rejects anything that is not `user@host.tld`), so
  * this is not exploitable today. The guarantee would live three files away in
  * whichever validator a caller happened to use, though, and `sendMail` is a
- * shared helper — the next caller may not validate at all. The check belongs
+ * shared helper whose next caller may not validate at all. The check belongs
  * where the value is written.
  *
  * Allow-list rather than block-list: printable ASCII plus everything from U+00A0
  * up, which keeps umlauts and every other real name intact while dropping the C0
  * controls, DEL and the C1 range. Written as a range so no literal control
  * character appears in the pattern.
+ *
+ * The two line-break replacements in front of it are redundant against that
+ * range and stay anyway. CodeQL does not read a negated character class as a
+ * sanitizer, it re-raised the same finding after the first attempt, and it is
+ * right to be strict: the line break is the actual attack, and a reader should
+ * see it handled by name rather than have to work out which code points a range
+ * happens to exclude.
  */
 function forLog(value: string): string {
-  return String(value ?? '').replace(/[^ -~\u00A0-\uFFFF]/g, '?').slice(0, 120);
+  return String(value ?? '')
+    .replace(/\r/g, ' ')
+    .replace(/\n/g, ' ')
+    .replace(/[^ -~\u00A0-\uFFFF]/g, '?')
+    .slice(0, 120);
 }
 
 let transporter: Transporter | null = null;
