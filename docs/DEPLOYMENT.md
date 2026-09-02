@@ -167,17 +167,40 @@ nach `main` pushen. CI läuft → bei Grün triggert der Deploy automatisch.
   gilt für **alle** Zonen des Kontos, deshalb lässt `lib/ionosDns.ts` nur Namen innerhalb
   von `IONOS_DNS_ZONE` zu. Dieselben Zugangsdaten stehen bereits in
   `/etc/ionos-ssl/conf.d/msk-scripts.de.conf` (dort für die DNS-01-Challenge).
-- **`cleanup.js`-Cron** auf `/opt/msk-shop/scripts/cleanup.js` zeigen lassen (wird mit jedem
-  Deploy aktualisiert) — Env-Load + `NODE_PATH` weiterhin nötig (siehe Datei-Header).
-- **`tebex-stats.js`-Cron** (neu): füllt `msk_shop_stats` mit den gemessenen Verkaufszahlen,
-  die die Startseite anzeigt. Läuft einmal nächtlich, braucht zusätzlich
-  `TEBEX_PLUGIN_SECRET`. Ein Lauf dauert derzeit rund 25 Sekunden (93 paginierte
-  Seiten). Ohne diesen Cron blendet die Startseite die Zahlen einfach aus.
+- **Cron-Jobs laufen über `scripts/msk-cron.sh`**, nicht mehr als Kette in der Crontab:
+
   ```
-  30 4 * * * set -a; . /opt/msk-shop/.env.local; set +a; NODE_PATH=/opt/msk-shop/node_modules /usr/bin/node /opt/msk-shop/scripts/tebex-stats.js >> /var/log/msk-tebex-stats.log 2>&1
+  MAILTO=info@msk-scripts.de
+
+  0  3 * * * /opt/msk-shop/scripts/msk-cron.sh cleanup
+  0  4 * * * /opt/msk-shop/scripts/msk-cron.sh stripe-reconcile
+  30 4 * * * /opt/msk-shop/scripts/msk-cron.sh tebex-stats
   ```
-  Vor dem ersten Lauf `msk_shop_stats` anlegen (steht in `database/schema.sql`), danach
-  einmal von Hand starten. `--dry-run` rechnet, ohne zu schreiben.
+
+  **Warum ein Wrapper.** In der alten Kette
+  (`set -a; . .env.local; set +a; node … >> log 2>&1`) hängt die Umleitung nur am
+  **letzten** Kommando. Als am 29.08.2026 eine unquotierte Zeile in die `.env.local` kam
+  (`MAIL_FROM=MSK Scripts <info@…>`, und `sh` liest `<` als Umleitung), starb das Sourcen,
+  also der Teil davor. Die Logdatei sah unverändert aus statt kaputt, und drei Crons lagen
+  drei Tage still. Der Wrapper leitet **vor allem anderen** um, deshalb landet auch ein
+  Fehler beim Laden der Umgebung im Log.
+
+  Der Wrapper schreibt bei Erfolg nichts auf stdout, es gibt also nur bei einem Fehlschlag
+  Mail. Logs weiterhin unter `/var/log/msk-<job>.log`.
+
+  **`MAILTO` allein hätte nichts gebracht.** exim4 lief bis zum 02.09.2026 mit
+  `dc_eximconfig_configtype='local'` ohne Smarthost und konnte an keine externe Adresse
+  zustellen; `/etc/aliases` zeigte `root` ausserdem auf den nicht existierenden Benutzer
+  `kvminstall`. Beides ist behoben (Smarthost `smtp.ionos.de::587`, Zugangsdaten in
+  `/etc/exim4/passwd.client`, `root: info@msk-scripts.de`). Prüfen mit `exim -bpc` (soll 0
+  sein) und einem `sendmail`-Testversand.
+
+- **`tebex-stats.js`** füllt `msk_shop_stats` mit den gemessenen Verkaufszahlen, die die
+  Startseite anzeigt. Braucht zusätzlich `TEBEX_PLUGIN_SECRET`. Ein Lauf dauert derzeit
+  rund 25 Sekunden (93 paginierte Seiten). Ohne diesen Cron blendet die Startseite die
+  Zahlen einfach aus. Vor dem ersten Lauf `msk_shop_stats` anlegen (steht in
+  `database/schema.sql`), danach einmal von Hand starten. `--dry-run` rechnet, ohne zu
+  schreiben.
 - **DB:** msk-shop nutzt rohes `database/schema.sql` (kein Prisma) — `deploy.sh` führt
   **keine** Migrationen aus. Schema-Änderungen manuell einspielen.
 - **Audit-Log** des Deploys: `/var/log/msk-shop-deploy.log`.
