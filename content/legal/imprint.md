@@ -1,88 +1,87 @@
-# Imprint
+# Legal Notice (Impressum)
 
-*Last updated: August 2026*
+Information pursuant to § 5 DDG (German Digital Services Act) – applies to www.msk-scripts.de and the subdomains forms., paste., s., docu. and discord.msk-scripts.de
 
-## Information pursuant to § 5 DDG
+This is a translation for your convenience. The German version is authoritative.
+
+## Service provider
 
 **Moritz Kohm**
-c/o Impressumservice Dein-Impressum  
-Stettiner Str. 41  
-35410 Hungen  
+trading as "MSK Scripts" (sole proprietorship)
+c/o Impressumservice Dein-Impressum
+Stettiner Str. 41
+35410 Hungen
 Germany
 
-**Contact:**  
-Email: [info@msk-scripts.de](mailto:info@msk-scripts.de)
+## Contact
 
-**VAT ID number pursuant to § 27a UStG:**  
-DE364543992
+Email: info@msk-scripts.de
+Support: https://discord.msk-scripts.de (Discord) – requests there and by email are usually answered within 48 hours.
 
-**Notice pursuant to § 19 UStG:**
-Turnover is exempt from VAT under § 19 UStG (small business regulation); no VAT is shown.
+## VAT
 
----
+VAT identification number pursuant to § 27a UStG (German VAT Act): DE364543992
+
+For services provided by MSK Scripts itself (Ticket Bot and MSK Forms subscriptions), no VAT is charged or shown, pursuant to § 19 UStG (small business regulation).
+
+Purchases in the shop are processed by Tebex Limited as the seller ("Merchant of Record"); any VAT shown there is collected by Tebex.
 
 ## Responsible for content pursuant to § 18 (2) MStV
 
-**Moritz Kohm**
-c/o Impressumservice Dein-Impressum  
-Stettiner Str. 41  
-35410 Hungen  
-Germany
+Moritz Kohm, address as above.
 
----
+## Payment processing in the shop
 
-## Service Provider (Payment Processing)
-
-Payment processing and checkout services are provided by:
+The seller and contracting party for all shop purchases (FiveM resources) is:
 
 **Tebex Limited**
-201 Haverstock Hill, Second Floor C/O Fkgb  
-London, England, NW3 4QG
+201 Haverstock Hill, Second Floor, c/o FKGB
+London NW3 4QG, United Kingdom
+Registry: Companies House England and Wales, no. 08129184
+Director: Liam Wiltshire
+VAT ID: GB167189962 / EU372035465
+Email: checkout-support@tebex.io
+Contact form: https://www.tebex.io/contact/checkout
 
-Email: [checkout-support@tebex.io](mailto:checkout-support@tebex.io)  
-[Support contact form](https://www.tebex.io/contact/checkout)
+By making a purchase you additionally accept the terms of service (https://checkout.tebex.io/terms) and the privacy policy (https://checkout.tebex.io/privacy) of Tebex.
 
-Managing Director: Liam Wiltshire
+Subscriptions for the Ticket Bot transcript service and MSK Forms are processed via **Stripe Payments Europe, Ltd.**, 1 Grand Canal Street Lower, Dublin 2, Ireland. Here MSK Scripts is your contracting party; Stripe only processes the payment. We do not receive payment data.
 
-Tebex Limited is a company registered under the laws of England and Wales.   
-Registration number: 08129184  
-VAT ID: GB167189962 & EU372035465  
+## Single point of contact under the Digital Services Act (DSA)
 
-### Payment Processing
+MSK Scripts stores and publishes content provided by users (ticket transcripts, image gallery, giveaway result pages, MSK Paste, MSK Forms) and is therefore a hosting service provider within the meaning of Regulation (EU) 2022/2065. Single point of contact for authorities (Art. 11 DSA) and users (Art. 12 DSA):
 
-Shop purchases are processed through Tebex Limited. By making a purchase, you also agree to the [Tebex Terms of Service](https://checkout.tebex.io/terms) and the [Tebex Privacy Policy](https://checkout.tebex.io/privacy).
+Email: info@msk-scripts.de
+Postal address: Moritz Kohm, MSK Scripts, c/o Impressumservice Dein-Impressum, Stettiner Str. 41, 35410 Hungen
 
-**Stripe Payments Europe, Ltd.**
-1 Grand Canal Street Lower, Grand Canal Dock  
-Dublin, Ireland
+Languages: German and English. The point of contact is staffed personally.
 
-Ticket Bot Premium and Premium+ subscriptions are processed through Stripe. By subscribing, you also agree to the [Stripe Privacy Policy](https://stripe.com/privacy). We do not receive or store your card details.
+**Reporting illegal content (Art. 16 DSA):** Please give us the URL of the content, an explanation of why it is illegal, your name and email address, and a statement that your information is correct to the best of your knowledge. The procedure is described in our Terms and Conditions.
+
+## Withdrawal from and cancellation of subscriptions
+
+Consumers can withdraw from subscriptions concluded via the website using the **"Withdraw from contract"** function (§ 356a BGB) and cancel them using **"Cancel contracts here"** (§ 312k BGB) – both in the site footer, reachable without logging in. Details are in the withdrawal instructions.
+
+## Consumer dispute resolution
+
+We are neither willing nor obliged to take part in dispute resolution proceedings before a consumer arbitration body within the meaning of the VSBG.
+
+## Accessibility
+
+MSK Scripts is operated as a micro-enterprise and is exempt from the service obligations of the German Accessibility Strengthening Act pursuant to § 3 (3) BFSG. We are happy to receive accessibility feedback by email.
+
+## Notes on content, links and trademarks
+
+We are responsible for our own content under general law. For content stored by users, the liability rules of Art. 4–6 DSA apply; there is no general monitoring obligation. Once we become aware of legal violations, we remove the content without delay.
+
+External links (GitHub, Discord, Tebex, Stripe, fivestats.io, CFX.re and others) lead to third-party offerings for which the respective provider is responsible.
+
+"FiveM" and "CFX.re" are trademarks or designations of Cfx.re / Rockstar Games; "Discord" is a trademark of Discord Inc. MSK Scripts is not affiliated with these companies. All of our own software products are protected by copyright; the terms of use follow from the Terms and Conditions or the respective open source licence (e.g. AGPL-3.0 for the Ticket Bot, Paste and Shortener).
+
+## Objection to promotional emails
+
+We hereby object to the use of the contact details published here for sending unsolicited advertising.
 
 ---
 
-## Disclaimer
-
-### Liability for Content
-
-The contents of our pages have been created with the greatest care. However, we cannot guarantee the accuracy, completeness, or timeliness of the content.
-
-### Liability for Links
-
-Our offer contains links to external third-party websites over whose content we have no influence. Therefore, we cannot assume any liability for these external contents. The respective provider or operator of the linked pages is always responsible for the content of those pages. The linked pages were checked for possible legal violations at the time of linking. Illegal content was not recognisable at the time of linking. However, permanent content control of the linked pages is unreasonable without concrete evidence of a violation of the law. If we become aware of any legal violations, we will remove such links immediately.
-
-### Copyright
-
-The content and works on these pages created by the site operators are subject to German copyright law. Duplication, processing, distribution, and any kind of exploitation outside the limits of copyright law require the written consent of the respective author or creator. Downloads and copies of this page are only permitted for private, non-commercial use. Insofar as the content on this page was not created by the operator, the copyrights of third parties are respected. In particular, third-party content is identified as such. Should you nevertheless become aware of a copyright infringement, please notify us accordingly. If we become aware of any infringements, we will remove such content immediately.
-
----
-
-## Objection to Promotional Emails
-
-The use of contact data published as part of the imprint obligation for the purpose of sending unsolicited advertising and information material is hereby objected to. The operators of the pages expressly reserve the right to take legal action in the event of the unsolicited sending of advertising information, e.g. via spam emails.
-
----
-
-## Dispute Resolution
-### Consumer Dispute Resolution / Universal Arbitration Board
-
-We are neither willing nor obligated to participate in dispute resolution proceedings before a consumer arbitration board.
+*Last updated: September 2026*

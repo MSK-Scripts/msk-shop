@@ -1,490 +1,141 @@
 # Datenschutzerklärung
 
-*Stand: August 2026*
+Stand: September 2026
 
-## Datenschutz auf einen Blick
+Diese Datenschutzerklärung gilt für www.msk-scripts.de und die Subdomains docu., discord., paste. und s.msk-scripts.de sowie für die von MSK Scripts betriebenen Discord-Bots. Für **MSK Forms** (forms.msk-scripts.de) gilt eine eigene Datenschutzerklärung; MSK Paste und MSK Shortener haben zusätzlich Kurzhinweise auf ihren Seiten.
 
-### Allgemeine Hinweise
-Die folgenden Hinweise geben einen einfachen Überblick darüber, was mit Ihren personenbezogenen Daten passiert, wenn Sie diese Website besuchen. Personenbezogene Daten sind alle Daten, mit denen Sie persönlich identifiziert werden können.
+## 1. Verantwortlicher
 
-### Datenerfassung auf dieser Website
-Die Datenverarbeitung auf dieser Website erfolgt durch den Websitebetreiber. Dessen Kontaktdaten können Sie dem Abschnitt „Hinweis zur verantwortlichen Stelle" entnehmen.
+**Moritz Kohm** (MSK Scripts)
+c/o Impressumservice Dein-Impressum, Stettiner Str. 41, 35410 Hungen, Deutschland
+E-Mail: info@msk-scripts.de
 
-Ihre Daten werden zum einen dadurch erhoben, dass Sie uns diese mitteilen. Andere Daten werden automatisch oder nach Ihrer Einwilligung beim Besuch der Website durch unsere IT-Systeme erfasst (z. B. Internetbrowser, Betriebssystem, Uhrzeit des Seitenaufrufs).
+Ein Datenschutzbeauftragter ist gesetzlich nicht erforderlich und nicht bestellt.
 
-### Welche Rechte haben Sie bezüglich Ihrer Daten?
-Sie haben jederzeit das Recht auf unentgeltliche Auskunft über Herkunft, Empfänger und Zweck Ihrer gespeicherten personenbezogenen Daten sowie ein Recht auf Berichtigung oder Löschung dieser Daten. Hierzu sowie zu weiteren Fragen können Sie sich jederzeit an uns wenden.
+## 2. Rollen: Wer ist wofür verantwortlich?
 
----
+- Für Website, Shop-Anbindung, Konten, Abonnements und den technischen Betrieb sind **wir** Verantwortlicher.
+- Für den **Inhalt von Ticket-Transkripten** und für die Daten, die ein von dir gehosteter oder von uns für dich gehosteter Ticket-Bot verarbeitet, ist der **Betreiber des jeweiligen Discord-Servers** Verantwortlicher. Wir speichern und liefern diese Daten in seinem Auftrag (Auftragsverarbeitung, Art. 28 DSGVO) – die Vereinbarung dazu findest du unter https://www.msk-scripts.de/de/terms/avv.
+- Für den **Giveaway-Bot** sind wir Verantwortlicher für die in unserer Datenbank gespeicherten Discord-IDs; der Server-Administrator ist verantwortlich für die Rechtmäßigkeit seiner Gewinnspiele.
+- Für **Zahlungen im Shop** ist Tebex Limited eigenständig Verantwortlicher; für **Stripe-Zahlungen** ist Stripe eigenständig Verantwortlicher.
 
-## Hosting
-Wir hosten die Inhalte unserer Website bei folgendem Anbieter:
+## 3. Hosting und Server-Logdateien
 
-**netcup GmbH**, Daimlerstraße 25, D-76185 Karlsruhe
+Alle Dienste werden gehostet bei **netcup GmbH**, Daimlerstraße 25, 76185 Karlsruhe (Auftragsverarbeiter, AVV nach Art. 28 DSGVO; Serverstandort EU). Der Webserver protokolliert bei jedem Zugriff IP-Adresse, Datum/Uhrzeit, aufgerufene URL, HTTP-Status, übertragene Datenmenge, Referrer, Browser und Betriebssystem. Zweck: Betrieb, Sicherheit, Fehleranalyse. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO. Löschung nach **14 Tagen**, bei Sicherheitsvorfällen bis zur Klärung.
 
-Wenn Sie unsere Website besuchen, erfasst netcup als Auftragsverarbeiter in Server-Log-Dateien automatisch folgende Informationen, die Ihr Browser übermittelt: Browsertyp und -version, verwendetes Betriebssystem, Referrer-URL, Hostname des zugreifenden Rechners, Uhrzeit der Server­anfrage sowie die IP-Adresse. Eine Zusammen­führung dieser Daten mit anderen Datenquellen erfolgt nicht.
+## 4. Cookies und lokale Speicherung (§ 25 TDDDG)
 
-**Speicherdauer:** Die Server-Logs werden ausschließlich zu Zwecken der technischen Bereitstellung, Stabilität und Sicherheit verarbeitet. Sie werden gelöscht, sobald sie zur Erreichung dieser Zwecke nicht mehr erforderlich sind, oder, im Falle eines Sicherheitsvorfalls, bis zur abschließenden Klärung des Vorfalls. Eine Zuordnung dieser Daten zu Ihrer Person nehmen wir nicht vor.
+Wir setzen ausschließlich technisch notwendige Cookies und Speicherobjekte, die für von dir gewünschte Funktionen unbedingt erforderlich sind (§ 25 Abs. 2 Nr. 2 TDDDG). Es gibt kein Tracking und daher kein Cookie-Banner.
 
-**Rechtsgrundlage:** Die Verarbeitung erfolgt auf Grundlage des berechtigten Interesses an einer technisch fehlerfreien Bereitstellung und Sicherheit unserer Website (Art. 6 Abs. 1 lit. f DSGVO).
+**Cookies (alle HttpOnly, Secure, SameSite=Lax):**
 
-Weitere Informationen: [netcup Datenschutzerklärung](https://www.netcup.com/de/kontakt/datenschutzerklaerung).
+| Name | Dienst | Zweck | Dauer |
+|---|---|---|---|
+| `msk_oauth_state` | Ticket-Bot Verify | CSRF-Schutz im Discord-Login | 10 Min. |
+| `msk_verify_session` | Ticket-Bot Verify | verifizierte Discord-ID und Serverliste während der Auswahl | 1 Std. |
+| `msk_dashboard_session` | Ticket-Bot Dashboard | Anmeldung im Dashboard | 30 Tage |
+| `msk_gw_oauth_state` | Giveaway Dashboard | CSRF-Schutz im Discord-Login | 10 Min. |
+| `msk_gw_verify` | Giveaway Dashboard | Discord-ID und administrierbare Server während der Auswahl | 1 Std. |
+| `msk_giveaway_session` | Giveaway Dashboard | Anmeldung für den gewählten Server | 30 Tage |
+| `msk_upload_oauth_state` | Bildergalerie | CSRF-Schutz im Discord-Login | 10 Min. |
+| `msk_upload_session` | Bildergalerie | Anmeldung für das Einreichen von Bildern | 7 Tage |
+| `msk_admin_oauth_state` | Admin-Bereich | CSRF-Schutz im Discord-Login | 10 Min. |
+| `msk_admin_session` | Admin-Bereich | Anmeldung im internen Admin-Bereich | 1 Std. |
+| `NEXT_LOCALE` | Paste, Shortener | Sprachwahl | 12 Monate |
 
-### Auftragsverarbeitung
-Wir haben einen Vertrag über Auftragsverarbeitung (AVV) zur Nutzung des oben genannten Dienstes geschlossen.
+**localStorage (Shop, wird nicht an unseren Server gesendet):**
+`msk-cart` (Warenkorb-ID, dein CFX.re-Name, Warenkorbinhalt, bei Geschenken Name und Discord-ID des Empfängers) und `discordId` (deine Discord-ID) – bis zum Logout. Gib Empfängerdaten nur mit dessen Einverständnis ein.
 
----
+**sessionStorage (Shop):** `discordReturnPath`, `wantDiscordAuth`, `pendingBasketIdent`, `pendingPackageId`, `pendingPackageType` – merken den laufenden Kauf während des CFX.re-/Discord-Logins; gelöscht beim Schließen des Tabs.
 
-## Allgemeine Hinweise und Pflichtinformationen
+Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO (Login, Warenkorb) bzw. lit. f DSGVO (Sprache). Die Sprache der Hauptseite steckt in der URL (`/de/`), dafür wird kein Cookie gesetzt.
 
-### Datenschutz
-Die Betreiber dieser Seiten nehmen den Schutz Ihrer persönlichen Daten sehr ernst. Wir behandeln Ihre personenbezogenen Daten vertraulich und entsprechend den gesetzlichen Datenschutzvorschriften sowie dieser Datenschutzerklärung.
+## 5. Shop (Tebex, CFX.re, Discord)
 
-### Hinweis zur verantwortlichen Stelle
+Beim Kauf einer FiveM-Ressource meldest du dich über den Tebex-Identitätsdienst mit deinem **CFX.re-Konto** an; bei Paketen mit Discord-Rolle zusätzlich mit **Discord**. Verarbeitet werden: CFX.re-Nutzername und -ID (für die Zuweisung im Keymaster/Asset Escrow), Discord-ID (nur bei Discord-Rollen), IP-Adresse (Betrugsprävention beim Anlegen des Warenkorbs, an Tebex übermittelt), Warenkorbinhalt. Die Zahlung, Rechnung und Widerrufsabwicklung übernimmt **Tebex Limited**, 201 Haverstock Hill, London NW3 4QG, UK, als Verkäufer. Zahlungsdaten erhalten wir nicht. Wir erhalten von Tebex die Bestelldaten (Produkt, Zeitpunkt, CFX.re-/Discord-ID, Transaktions-ID), um Support zu leisten und Lizenzen zuzuordnen; diese speichern wir 3 Jahre nach Kauf, Abrechnungsdaten 10 Jahre (§ 147 AO).
 
-**Moritz Kohm**  
-c/o Impressumservice Dein-Impressum  
-Stettiner Str. 41  
-35410 Hungen  
-Deutschland
+Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO; IP-Übermittlung Art. 6 Abs. 1 lit. f DSGVO. Drittland: Das Vereinigte Königreich verfügt über einen Angemessenheitsbeschluss der EU-Kommission. Tebex-Datenschutz: https://checkout.tebex.io/privacy
 
-E-Mail: [info@msk-scripts.de](mailto:info@msk-scripts.de)
+## 6. Ticket-Bot-Transcript-Service
 
-Verantwortliche Stelle ist die natürliche oder juristische Person, die allein oder gemeinsam mit anderen über die Zwecke und Mittel der Verarbeitung von personenbezogenen Daten (z. B. Namen, E-Mail-Adressen o. Ä.) entscheidet.
+### 6.1 Registrierung (Verify)
+Beim Discord-Login (Scopes `identify`, `guilds`) erhalten wir deine Discord-ID und die Server, auf denen du Administrator bist. Gespeichert werden: Discord-ID, ID und Name des gewählten Servers, ein zufälliger API-Schlüssel, Abo-Stufe, Stripe-Kunden-/Abo-ID und -Status, Zeitpunkt der Trial-Erinnerung, ggf. eigene Domain und deren Status. Nicht gewählte Server und Server-Icons werden nicht gespeichert. Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO. Speicherung bis zur Kontolöschung.
 
-### Datenschutzbeauftragter
-Für unser Unternehmen besteht keine gesetzliche Pflicht zur Bestellung eines Datenschutzbeauftragten. Bei Fragen zum Datenschutz wenden Sie sich bitte direkt an die unter „Hinweis zur verantwortlichen Stelle" genannten Kontaktdaten.
+### 6.2 Transkripte und Anhänge
+Dein Bot lädt beim Schließen eines Tickets eine HTML-Datei hoch, die Namen, Avatare, Nachrichten und Zeitstempel der Ticket-Beteiligten enthalten kann (Premium/Premium+/Business zusätzlich Dateianhänge, die wir vom Discord-CDN abrufen). Wir speichern Datei, Uploadzeit, Größe, Ablaufdatum und Server-Zuordnung. Transkripte sind über eine zufällige, nicht verlinkte und nicht indexierte URL abrufbar; wer die URL kennt, kann sie öffnen. Löschung nach **30 / 180 / 365 Tagen / 10 Jahren** je nach Stufe. Wir verarbeiten diese Inhalte als **Auftragsverarbeiter** des Bot-Betreibers (Art. 28 DSGVO).
 
-### Bildergalerie: Community-Einreichungen
+### 6.3 Abonnements (Stripe)
+Name, Rechnungsadresse, E-Mail und Zahlungsdaten gibst du direkt bei **Stripe Payments Europe, Ltd.**, Dublin, ein. Wir speichern nur Kunden-/Abo-ID, Status, Stufe und Laufzeitende, die uns Stripe per Webhook meldet. Die kostenlose Testphase endet ohne Zahlungsmittel automatisch; drei Tage vorher senden wir **eine** Erinnerungs-E-Mail an die bei Stripe hinterlegte Adresse (Versand über **IONOS SE**, Montabaur, als Auftragsverarbeiter, Verarbeitung in der EU). Die Adresse speichern wir nicht, nur den Versandzeitpunkt. Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO. Abrechnungsbelege bewahren wir 10 Jahre auf (§ 147 AO, Art. 6 Abs. 1 lit. c DSGVO). Stripe kann Daten an Stripe, Inc. (USA) übermitteln; Grundlage sind das EU-US Data Privacy Framework und Standardvertragsklauseln.
 
-Die Bildergalerie unter **www.msk-scripts.de/images** kann von jedem mitgefüllt werden. Für eine Einreichung melden Sie sich mit Discord an (ausschließlich Scope `identify`, wir erhalten also Ihre Discord-Benutzer-ID und Ihren Anzeigenamen, sonst nichts, und wir sehen Ihre Server nicht).
+### 6.4 Eigene Domain
+Die Domain wird gespeichert, ein Apache-VirtualHost eingerichtet und ein Let's-Encrypt-Zertifikat ausgestellt (unsere Admin-Adresse wird bei Let's Encrypt/ISRG hinterlegt). Domainnamen erscheinen in öffentlichen Certificate-Transparency-Logs.
 
-**Was wir je Einreichung speichern:** Ihre Discord-Benutzer-ID und den Anzeigenamen zum Zeitpunkt der Anmeldung, die von Ihnen gewählte Kategorie und den Namen, den optionalen Anzeigenamen, Tags und Hinweistext, den ursprünglichen Dateinamen so wie Sie ihn geschickt haben, die technischen Eigenschaften des Bildes (Maße, Größe, Prüfsumme), die Bestätigung Ihrer Rechteerklärung samt Zeitpunkt sowie nach der Prüfung, wer wie entschieden hat, einschließlich des Grundes bei einer Ablehnung.
+### 6.5 Hosted Bot Management (Premium, Premium+, Business)
+Wir speichern in einem deinem Server zugeordneten Verzeichnis: `config.jsonc`, `snippets.jsonc`, die `.env` mit deinen Zugangsdaten (Bot-Token, OAuth-Secret, API-Keys), die Datenbank deines Bots (Tickets, Nachrichten, Discord-IDs deines Teams) sowie einen flüchtigen Log-Puffer. Für die öffentliche Adresse wird ein DNS-Eintrag bei **IONOS SE** angelegt. Auf diese Dateien können wir zu Wartungs- und Supportzwecken zugreifen. Nach Beendigung wird die Installation archiviert und nach **14 Tagen** endgültig gelöscht. Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO; für Inhalte der Bot-Datenbank sind wir Auftragsverarbeiter.
 
-**Was mit der Datei passiert:** Sie wird beim Eingang neu kodiert und unter einer zufälligen Kennung in einem Verzeichnis abgelegt, das nicht öffentlich erreichbar ist. Über eine URL kommt niemand daran. Wird die Einreichung freigegeben, erscheint das fertige Bild in der Galerie und die Datei aus der Quarantäne wird gelöscht. Wird sie abgelehnt, wird die Datei ebenfalls gelöscht und es bleibt nur der Vermerk über die Entscheidung.
+## 7. Giveaway-Bot
 
-**Rechtsgrundlage:** Art. 6 Abs. 1 lit. b DSGVO (Durchführung der von Ihnen gewünschten Einreichung) und Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einer zuordenbaren Einreichung, damit Rückfragen zu Rechten oder Qualität möglich sind und wiederholter Missbrauch erkennbar wird).
+Der Bot speichert je Server: Server-, Kanal-, Nachrichten- und Rollen-IDs, Einstellungen, Discord-ID des Erstellers, Discord-IDs der Teilnehmer (bei Austritt vor Ende sofort gelöscht) und der Gewinner, Titel/Beschreibung/Laufzeit. Nach Ende wird eine öffentliche Ergebnisseite unter `/giveaway/g/{token}` mit **Nutzernamen der Gewinner** und der anonymen Teilnehmerzahl veröffentlicht. Die Statistikseite `/giveaway/stats` enthält nur aggregierte Zahlen. **Wird der Bot vom Server entfernt, werden alle Daten des Servers sofort gelöscht.** Das Dashboard nutzt Discord-Login (Scopes `identify`, `guilds`). Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (Bereitstellung der angeforderten Funktion) und lit. b DSGVO (Dashboard).
 
-Der Vermerk zu einer Einreichung bleibt bestehen, solange das Bild veröffentlicht ist, damit wir auf eine Entfernungsanfrage reagieren können. Vermerke zu abgelehnten Einreichungen werden ein Jahr aufbewahrt. Sie können jederzeit Löschung verlangen; ist das Bild bereits veröffentlicht, schließt das dessen Entfernung ein.
+## 8. Bildergalerie
 
----
+Zum Einreichen meldest du dich mit Discord an (Scope `identify`). Gespeichert werden: Discord-ID und Anzeigename, Kategorie, Name, optionale Angaben, Originaldateiname, technische Bilddaten, deine Rechtebestätigung mit Zeitstempel sowie die Prüfentscheidung. Die Datei wird neu kodiert und bis zur Prüfung unter zufälligem Namen in einem nicht öffentlichen Verzeichnis abgelegt. Bei Freigabe wird das Bild veröffentlicht, bei Ablehnung gelöscht; abgelehnte Einreichungen bleiben 1 Jahr als Vorgang gespeichert, veröffentlichte solange das Bild online ist. Rechtsgrundlage: Art. 6 Abs. 1 lit. b und lit. f DSGVO.
 
-## Speicherdauer
-Soweit keine speziellere Speicherdauer genannt wurde, verbleiben Ihre personenbezogenen Daten bei uns, bis der Zweck für die Datenverarbeitung entfällt.
+## 9. Discord-Login (alle Dienste)
 
-### Widerruf Ihrer Einwilligung zur Datenverarbeitung
-Viele Datenverarbeitungsvorgänge sind nur mit Ihrer ausdrücklichen Einwilligung möglich. Sie können eine bereits erteilte Einwilligung jederzeit widerrufen. Die Rechtmäßigkeit der bis zum Widerruf erfolgten Datenverarbeitung bleibt vom Widerruf unberührt.
+Die Anmeldung mit Discord erfolgt über **Discord Inc.**, 444 De Haro Street, San Francisco, USA (bzw. Discord Netherlands B.V.). Dabei erhält Discord die Information, dass du dich bei uns anmeldest. Die Übermittlung in die USA stützt sich auf das EU-US Data Privacy Framework und Standardvertragsklauseln. Wir fordern nur die jeweils genannten Scopes an. Datenschutz bei Discord: https://discord.com/privacy
 
-### Widerspruchsrecht gegen die Datenerhebung in besonderen Fällen sowie gegen Direktwerbung (Art. 21 DSGVO)
-WENN DIE DATENVERARBEITUNG AUF GRUNDLAGE VON ART. 6 ABS. 1 LIT. E ODER F DSGVO ERFOLGT, HABEN SIE JEDERZEIT DAS RECHT, AUS GRÜNDEN, DIE SICH AUS IHRER BESONDEREN SITUATION ERGEBEN, GEGEN DIE VERARBEITUNG IHRER PERSONENBEZOGENEN DATEN WIDERSPRUCH EINZULEGEN; DIES GILT AUCH FÜR EIN AUF DIESE BESTIMMUNGEN GESTÜTZTES PROFILING. DIE JEWEILIGE RECHTSGRUNDLAGE, AUF DENEN EINE VERARBEITUNG BERUHT, ENTNEHMEN SIE DIESER DATENSCHUTZERKLÄRUNG. WENN SIE WIDERSPRUCH EINLEGEN, WERDEN WIR IHRE BETROFFENEN PERSONENBEZOGENEN DATEN NICHT MEHR VERARBEITEN, ES SEI DENN, WIR KÖNNEN ZWINGENDE SCHUTZWÜRDIGE GRÜNDE FÜR DIE VERARBEITUNG NACHWEISEN, DIE IHRE INTERESSEN, RECHTE UND FREIHEITEN ÜBERWIEGEN ODER DIE VERARBEITUNG DIENT DER GELTENDMACHUNG, AUSÜBUNG ODER VERTEIDIGUNG VON RECHTSANSPRÜCHEN (WIDERSPRUCH NACH ART. 21 ABS. 1 DSGVO).
+## 10. Weitere Verarbeitungen
 
-WERDEN IHRE PERSONENBEZOGENEN DATEN VERARBEITET, UM DIREKTWERBUNG ZU BETREIBEN, SO HABEN SIE DAS RECHT, JEDERZEIT WIDERSPRUCH GEGEN DIE VERARBEITUNG SIE BETREFFENDER PERSONENBEZOGENER DATEN ZUM ZWECKE DERARTIGER WERBUNG EINZULEGEN; DIES GILT AUCH FÜR DAS PROFILING, SOWEIT ES MIT SOLCHER DIREKTWERBUNG IN VERBINDUNG STEHT. WENN SIE WIDERSPRECHEN, WERDEN IHRE PERSONENBEZOGENEN DATEN ANSCHLIESSEND NICHT MEHR ZUM ZWECKE DER DIREKTWERBUNG VERWENDET (WIDERSPRUCH NACH ART. 21 ABS. 2 DSGVO).
+- **Discord-Mitgliederzahl:** Unsere Startseite zeigt die Online-Zahl unseres Discord-Servers; die Abfrage erfolgt serverseitig und wird 60 Sekunden gecacht. Es werden keine Daten von dir an Discord übertragen.
+- **Ressourcen-Statistik (fivestats.io):** Die Seite `/resources` zeigt Serverzahlen unserer Ressourcen. Unser Server fragt fivestats.io serverseitig ab; dein Browser verbindet sich nicht mit fivestats.io, es werden keine Daten von dir übermittelt. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO.
+- **Rate-Limiting:** Öffentliche Endpunkte (Giveaway-Ergebnisseiten, Dashboard-Login, Transkript-Upload) zählen Anfragen pro IP-Adresse für kurze Zeit im Arbeitsspeicher; keine Speicherung in Datenbanken. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO.
+- **MSK Paste** (paste.msk-scripts.de): Speichert den eingegebenen Text, Titel, Sprache, Ablaufdatum, optionales Passwort (gehasht) und einen Lösch-Token; Pastes werden nach dem gewählten Ablauf gelöscht. IP-Adressen nur in den Server-Logs.
+- **MSK Shortener** (s.msk-scripts.de): Speichert Ziel-URL, Kurzcode, optionales Passwort (bcrypt) und Ablaufdatum; bei Erstellung und jedem Klick einen mit geheimem Salt gehashten (pseudonymisierten) IP-Wert, Gerätetyp, Browser, Betriebssystem und Referrer-Domain für Missbrauchsschutz und Klickstatistik. Rechtsgrundlage: Art. 6 Abs. 1 lit. b und lit. f DSGVO.
+- **Dokumentation** (docu.msk-scripts.de): statische Seiten, nur Server-Logs nach Abschnitt 3.
+- **Widerrufs- und Kündigungsfunktion:** Nutzt du „Vertrag widerrufen“ oder „Verträge hier kündigen“, verarbeiten wir Name, Vertragsangaben, E-Mail-Adresse und Zeitpunkt und senden eine Eingangsbestätigung. Rechtsgrundlage: Art. 6 Abs. 1 lit. b und c DSGVO; Aufbewahrung 3 Jahre zum Jahresende.
+- **E-Mail und Discord-Support:** Anfragen speichern wir zur Bearbeitung und löschen sie 12 Monate nach Abschluss, sofern keine Aufbewahrungspflicht besteht.
 
-### Beschwerderecht bei der zuständigen Aufsichtsbehörde
-Im Falle von Verstößen gegen die DSGVO steht den Betroffenen ein Beschwerderecht bei einer Aufsichtsbehörde, insbesondere in dem Mitgliedstaat ihres gewöhnlichen Aufenthalts, ihres Arbeitsplatzes oder des Orts des mutmaßlichen Verstoßes zu. Das Beschwerderecht besteht unbeschadet anderweitiger verwaltungsrechtlicher oder gerichtlicher Rechtsbehelfe.
+## 11. Empfänger
 
-### Recht auf Datenübertragbarkeit
-Sie haben das Recht, Daten, die wir auf Grundlage Ihrer Einwilligung oder in Erfüllung eines Vertrags automatisiert verarbeiten, an sich oder an einen Dritten in einem gängigen, maschinenlesbaren Format aushändigen zu lassen.
+| Empfänger | Zweck | Rolle | Sitz |
+|---|---|---|---|
+| netcup GmbH | Hosting | Auftragsverarbeiter | DE |
+| IONOS SE | E-Mail-Versand, DNS | Auftragsverarbeiter | DE |
+| Tebex Limited | Shop-Verkauf und Zahlung | eigenständig Verantwortlicher | UK (Angemessenheitsbeschluss) |
+| Stripe Payments Europe, Ltd. | Abo-Zahlungen | eigenständig Verantwortlicher | IE / USA (DPF, SCC) |
+| Discord Inc. | OAuth-Login, Bot-API | eigenständig Verantwortlicher | USA (DPF, SCC) |
+| Cfx.re (Tebex-Identitätsdienst) | CFX.re-Login | eigenständig Verantwortlicher | – |
+| Internet Security Research Group (Let's Encrypt) | TLS-Zertifikate für eigene Domains | eigenständig Verantwortlicher | USA |
+| fivestats.io | Ressourcen-Statistik (keine Nutzerdaten) | – | – |
 
-### Auskunft, Berichtigung und Löschung
-Sie haben im Rahmen der geltenden gesetzlichen Bestimmungen jederzeit das Recht auf unentgeltliche Auskunft über Ihre gespeicherten personenbezogenen Daten, deren Herkunft und Empfänger und den Zweck der Datenverarbeitung sowie ein Recht auf Berichtigung oder Löschung dieser Daten.
+## 12. Speicherdauer (Übersicht)
 
-### Recht auf Einschränkung der Verarbeitung
-Sie haben das Recht, die Einschränkung der Verarbeitung Ihrer personenbezogenen Daten zu verlangen. Hierzu können Sie sich jederzeit an uns wenden. Das Recht auf Einschränkung der Verarbeitung besteht in folgenden Fällen:
-
-- Wenn Sie die Richtigkeit Ihrer bei uns gespeicherten personenbezogenen Daten bestreiten, benötigen wir in der Regel Zeit, um dies zu überprüfen. Für die Dauer der Prüfung haben Sie das Recht, die Einschränkung der Verarbeitung Ihrer personenbezogenen Daten zu verlangen.
-- Wenn die Verarbeitung Ihrer personenbezogenen Daten unrechtmäßig geschah/geschieht, können Sie statt der Löschung die Einschränkung der Datenverarbeitung verlangen.
-- Wenn wir Ihre personenbezogenen Daten nicht mehr benötigen, Sie sie jedoch zur Ausübung, Verteidigung oder Geltendmachung von Rechtsansprüchen benötigen, haben Sie das Recht, statt der Löschung die Einschränkung der Verarbeitung Ihrer personenbezogenen Daten zu verlangen.
-- Wenn Sie einen Widerspruch nach Art. 21 Abs. 1 DSGVO eingelegt haben, muss eine Abwägung zwischen Ihren und unseren Interessen vorgenommen werden. Solange noch nicht feststeht, wessen Interessen überwiegen, haben Sie das Recht, die Einschränkung der Verarbeitung Ihrer personenbezogenen Daten zu verlangen.
-
-Wenn Sie die Verarbeitung Ihrer personenbezogenen Daten eingeschränkt haben, dürfen diese Daten, von ihrer Speicherung abgesehen, nur mit Ihrer Einwilligung oder zur Geltendmachung, Ausübung oder Verteidigung von Rechtsansprüchen oder zum Schutz der Rechte einer anderen natürlichen oder juristischen Person oder aus Gründen eines wichtigen öffentlichen Interesses der Europäischen Union oder eines Mitgliedstaats verarbeitet werden.
-
-### SSL- bzw. TLS-Verschlüsselung
-Diese Seite nutzt aus Sicherheitsgründen eine SSL- bzw. TLS-Verschlüsselung. Eine verschlüsselte Verbindung erkennen Sie daran, dass die Adresszeile des Browsers von „http://" auf „https://" wechselt.
-
----
-
-## Datenerfassung auf dieser Website
-
-Diese Website betreibt die folgenden eigenständigen Dienste mit jeweils eigener Datenverarbeitung:
-
-**a) MSK Scripts Shop**: zum Kauf von FiveM-Ressourcen und Discord-Bots über Tebex.
-
-**b) MSK Ticket Bot Transcript Service**: ein optionaler gehosteter Dienst für Nutzer, die den MSK Ticket Bot selbst betreiben. Er speichert Ticket-Transkripte online und stellt öffentliche Links bereit. Nutzer authentifizieren sich über Discord OAuth, um einen API Key zu erhalten.
-
-**c) Hosted Bot Management**: ein optionaler, vollständig verwalteter Hosting-Dienst, der in den Tarifen Premium, Premium+ und Business enthalten ist und vom Kunden selbst im Dashboard aktiviert wird. Der Bot läuft auf den Servern von MSK Scripts. Der Kunde verwaltet ihn über unser Dashboard, das eigene Web-Dashboard des Bots wird unter einer von uns bereitgestellten Adresse (einer Subdomain von `msk-scripts.de`) oder unter der eigenen Domain des Kunden veröffentlicht.
-
-**d) MSK Giveaway Bot**: ein kostenloser, von MSK Scripts als offizielle öffentliche Instanz betriebener Discord-Bot. Auf deinen Discord-Server eingeladen, ermöglicht er das Erstellen und Durchführen von Giveaways. Er verarbeitet Discord-Kennungen (Server-, Channel-, Rollen- und Nutzer-IDs), um Teilnahmen zu verwalten und Gewinner zu ziehen. Eine öffentliche, anonyme Statistikseite ist unter **www.msk-scripts.de/giveaway/stats** verfügbar. Server-Administratoren können ihre Giveaways optional über ein Web-Dashboard (Discord-Login) verwalten; nach Ende eines Giveaways wird zudem eine öffentliche Ergebnisseite mit den **Gewinnern** und der **anonymen Teilnehmerzahl** unter **www.msk-scripts.de/giveaway/g/…** gehostet.
-
-### Vom Shop erhobene Daten
-
-- **CFX.re / FiveM-Nutzername und Nutzer-ID**: erforderlich zur Authentifizierung und Lieferung über das FiveM Asset Escrow-System
-- **Discord-ID**: erforderlich für Pakete mit Discord-Rollenzuweisung
-- **IP-Adresse**: wird beim Erstellen eines Warenkorbs an Tebex zur Betrugsprävention übermittelt
-- **Warenkorbdaten**: lokal im Browser gespeichert (localStorage)
-- **Technische Protokolldaten**: Webserver-Zugriffsprotokolle mit IP-Adresse, Browsertyp, Datum und Uhrzeit
-
-### Vom Ticket Bot Transcript Service erhobene Daten
-
-- **Discord-Nutzer-ID**: über Discord OAuth während der Verifizierung erhoben, zur Identität und Kontoinhaberschaft
-- **Discord-Server-ID (Guild-ID)**: mit dem API Key verknüpft, um Transkripte dem richtigen Server zuzuordnen
-- **Abo-Tier**: ermittelt anhand Ihres Stripe-Abo-Status (Basic, Premium, Premium+)
-- **Stripe-Kunden-/Abo-IDs**: in unserer Datenbank gespeicherte Referenzen, um ein Abo Ihrem Server zuzuordnen; wir speichern keine Zahlungsdaten
-- **API Key**: zufällig generiertes Token, in unserer Datenbank gespeichert, zur Authentifizierung von Transcript-Uploads
-- **Eigene Domain** (optional, Premium und Premium+): gespeichert, wenn eine Custom Domain konfiguriert wird
-- **Ticket-Transkriptinhalt**: HTML-Dateien, vom Bot generiert und auf unseren Server hochgeladen; je nach Tier 30–365 Tage gespeichert
-- **Ticket-Anhänge** (Premium und Premium+): im Ticket verschickte Dateien, neben dem Transkript gespeichert
-- **Rate-Limiting-Daten**: Anfragezähler pro API Key pro Stunde zur Missbrauchsverhinderung
-
-### Vom Hosted Bot Management Service erhobene Daten
-
-- **Bot-Konfigurationsdateien**: `config.jsonc` und `snippets.jsonc` werden als Teil des Dienstbetriebs auf unserem Server gespeichert
-- **`.env`-Datei**: enthält sensible Zugangsdaten des Kunden (z.B. Discord-Bot-Token, MSK API Key); auf unserem Server gespeichert und zum Betrieb des Bots erforderlich
-- **PM2-Log-Ausgabe**: Laufzeitausgabe des Bot-Prozesses; über das Dashboard live abrufbar, wird nicht dauerhaft gespeichert
-- **Discord-Server-ID (Guild-ID)**: zur Identifikation der gehosteten Bot-Instanz; verknüpft mit dem bestehenden Transcript Service-Konto
-- **Bot-Datenbank**: die Ticket-Daten, die Ihr Bot selbst schreibt (Tickets, Nachrichten und die Discord-Nutzer-IDs der Teammitglieder, die sich an seinem Dashboard anmelden). Wir speichern die Datei, über den Inhalt entscheidet Ihr Bot
-- **Öffentliche Adresse des Bot-Dashboards**: die Ihrem Bot zugewiesene Subdomain oder Ihre eigene Domain. Beim Anlegen wird ein DNS-Eintrag in unserer Zone bei unserem DNS-Anbieter IONOS geschrieben; der Eintrag enthält keine personenbezogenen Daten
-
-### Vom Giveaway Bot erhobene Daten
-
-Wenn die offizielle Giveaway-Bot-Instanz zu einem Discord-Server hinzugefügt wird, werden folgende Daten in ihrer Datenbank gespeichert:
-
-- **Discord-Server-ID (Guild-ID)**: zur Speicherung der Giveaway-Einstellungen des Servers und zur Zuordnung von Giveaways zum richtigen Server
-- **Discord-Channel- und Nachrichten-IDs**: um die Giveaway-Nachricht und ihren Teilnahme-Button zu finden
-- **Discord-Rollen-IDs**: zur serverweiten und Giveaway-spezifischen Konfiguration (Manager-/Notify-Rolle, Whitelist-/Blacklist-Rollen, Bonus-Lose-Rollen)
-- **Discord-Nutzer-ID des Erstellers**: das Mitglied, das das Giveaway erstellt hat
-- **Discord-Nutzer-IDs der Teilnehmer**: gespeichert, wenn ein Mitglied per Button teilnimmt; wird sofort wieder entfernt, wenn es vor Ende wieder austritt
-- **Discord-Nutzer-IDs der Gewinner**: gespeichert, sobald Gewinner gezogen werden (inkl. Reroll)
-- **Giveaway-Inhalt**: Titel, Beschreibung, Dauer, Anzahl der Gewinner und Status
-- **Server-Einstellungen**: Sprache, Embed-Farbe, Button-Stil und -Emoji sowie die konfigurierten Teilnahmebedingungen (Mindest-Account-/Mitgliedschaftsalter)
-
-Nach Ende eines Giveaways werden die **Nutzernamen der Gewinner** einmalig aufgelöst und auf der öffentlichen Ergebnisseite des Giveaways veröffentlicht (zusammen mit der anonymen Teilnehmerzahl, niemals die Teilnehmerliste). Darüber hinaus erheben wir über den Giveaway Bot **keine** Nachrichteninhalte, E-Mail-Adressen, Nutzernamen oder sonstige Discord-Profildaten.
-
-### Nicht erhobene Daten
-
-- Wir erheben keine Zahlungsdaten für den Shop. Die Zahlungsabwicklung erfolgt ausschließlich durch **Tebex Limited**.
-- Wir verwenden keine Tracking-Cookies, Analysedienste oder Werbetechnologien.
-- Wir lesen oder speichern keine Discord-Nachrichten über das hinaus, was der Bot-Betreiber als Transkript hochlädt.
-
----
-
-## Rechtsgrundlagen der Verarbeitung
-
-| Verarbeitungstätigkeit | Rechtsgrundlage |
+| Daten | Dauer |
 |---|---|
-| Shop-Käufe, Warenkorb, Lieferung | Art. 6 Abs. 1 lit. b DSGVO: Vertragserfüllung |
-| Webserver-Logs, Betrugsprävention | Art. 6 Abs. 1 lit. f DSGVO: berechtigte Interessen |
-| Transcript Service: Kontoerstellung (Verify) | Art. 6 Abs. 1 lit. b DSGVO: Vertragserfüllung |
-| Transcript Service: Transkript- und Anhangsspeicherung | Art. 6 Abs. 1 lit. b DSGVO: Vertragserfüllung |
-| Transcript Service: Stripe-Abo-Verarbeitung | Art. 6 Abs. 1 lit. b DSGVO: Vertragserfüllung |
-| Rate Limiting | Art. 6 Abs. 1 lit. f DSGVO: berechtigte Interessen (Missbrauchsschutz) |
-| Hosted Bot Management: Speicherung von Konfigurationsdateien und Zugangsdaten | Art. 6 Abs. 1 lit. b DSGVO: Vertragserfüllung |
-| Hosted Bot Management: Bot-Prozess-Logs | Art. 6 Abs. 1 lit. b DSGVO: Vertragserfüllung |
-| Giveaway Bot: Server-Einstellungen, Giveaway-Verwaltung, Teilnahmen und Gewinner | Art. 6 Abs. 1 lit. f DSGVO: berechtigte Interessen (Bereitstellung der angeforderten Bot-Funktionalität) |
-| Giveaway Bot: anonyme aggregierte Statistiken | Art. 6 Abs. 1 lit. f DSGVO: berechtigte Interessen (es werden keine personenbezogenen Daten angezeigt) |
+| Server-Logs | 14 Tage |
+| Shop-Bestelldaten von Tebex | 3 Jahre; Abrechnung 10 Jahre |
+| Ticket-Bot-Konto, Stripe-Referenzen | bis Kontolöschung |
+| Transkripte und Anhänge | 30 / 180 / 365 Tage / 10 Jahre je Stufe |
+| Hosted-Bot-Dateien und -Datenbank | bis Beendigung + 14 Tage |
+| Giveaway-Daten | bis Entfernen des Bots vom Server |
+| Galerie-Einreichungen | solange veröffentlicht; abgelehnt 1 Jahr |
+| Pastes | gewähltes Ablaufdatum (10 Min. bis 1 Jahr) |
+| Kurzlinks | bis Löschung/Ablauf; Klickstatistik pseudonymisiert unbefristet |
+| Widerrufs-/Kündigungserklärungen | 3 Jahre zum Jahresende |
+| Support-Anfragen | 12 Monate nach Abschluss |
 
----
+## 13. Deine Rechte
 
-## Cookies und lokale Speicherung
+Auskunft (Art. 15), Berichtigung (Art. 16), Löschung (Art. 17), Einschränkung (Art. 18), Datenübertragbarkeit (Art. 20), Widerruf von Einwilligungen (Art. 7 Abs. 3).
 
-### Session-Cookies (Ticket Bot Transcript Service)
+> **Widerspruchsrecht (Art. 21 DSGVO):** Gegen Verarbeitungen auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO kannst du aus Gründen, die sich aus deiner besonderen Situation ergeben, jederzeit Widerspruch einlegen. Wir verarbeiten die Daten dann nicht weiter, es sei denn, wir können zwingende schutzwürdige Gründe nachweisen, die deine Interessen überwiegen.
 
-Während des Verifizierungsprozesses unter **www.msk-scripts.de/ticketbot/verify** werden **httpOnly Session-Cookies** verwendet, um den mehrstufigen OAuth-Ablauf aufrechtzuerhalten:
+Anfragen an info@msk-scripts.de; wir antworten innerhalb eines Monats. Bei Daten in Transkripten oder Bot-Datenbanken ist der jeweilige Server-Betreiber erster Ansprechpartner; wir helfen bei der Kontaktaufnahme.
 
-| Cookie-Name | Zweck | Dauer |
-|---|---|---|
-| `msk_oauth_state` | CSRF-Schutz während des OAuth-Ablaufs | 10 Minuten |
-| `msk_verify_session` | Speichert Ihre verifizierte Discord-Nutzer-ID und Server-Liste | 1 Stunde |
-| `msk_dashboard_session` | Authentifizierung im Dashboard nach abgeschlossener Verifizierung | 30 Tage |
+**Beschwerderecht (Art. 77 DSGVO)** – zuständige Aufsichtsbehörde:
+Der Landesbeauftragte für den Datenschutz und die Informationsfreiheit Baden-Württemberg, Lautenschlagerstraße 20, 70173 Stuttgart, Tel. +49 711 615541-0, poststelle@lfdi.bwl.de, https://www.baden-wuerttemberg.datenschutz.de
 
-Alle Session-Cookies sind:
-- **httpOnly**: nicht über JavaScript zugänglich
-- **Secure**: ausschließlich über HTTPS übertragen
-- **SameSite=Lax**: geschützt gegen Cross-Site Request Forgery
+## 14. Keine automatisierte Entscheidungsfindung, Sicherheit, Änderungen
 
-**Rechtsgrundlage:** Art. 6 Abs. 1 lit. b DSGVO, technisch notwendig zur Erbringung des Verifizierungsdienstes.
-
-### Session-Cookies (Giveaway-Dashboard)
-
-Bei Nutzung des Giveaway-Dashboards unter **www.msk-scripts.de/giveaway/dashboard** halten folgende **httpOnly Session-Cookies** den Discord-Login und die Server-Auswahl aufrecht:
-
-| Cookie-Name | Zweck | Dauer |
-|---|---|---|
-| `msk_gw_oauth_state` | CSRF-Schutz während des Discord-OAuth-Ablaufs | 10 Minuten |
-| `msk_gw_verify` | Hält Ihre Discord-User-ID und die Liste Ihrer administrierbaren Server während der Server-Auswahl | 1 Stunde |
-| `msk_giveaway_session` | Authentifiziert Sie für den ausgewählten Server im Dashboard | 30 Tage |
-
-Diese Cookies sind **httpOnly**, **Secure** und **SameSite=Lax**, genau wie die Verifizierungs-Cookies oben.
-
-**Rechtsgrundlage:** Art. 6 Abs. 1 lit. b DSGVO, technisch notwendig zur Bereitstellung des Dashboards.
-
-### Lokaler Speicher (Shop: Warenkorb und Discord-ID)
-
-Der **localStorage** des Browsers enthält zwei Einträge. Keiner davon ist ein Cookie, keiner wird von unserem Server gelesen, und beide überdauern das Schließen des Browsers, bis Sie sich abmelden:
-
-| Schlüssel | Inhalt | Dauer |
-|---|---|---|
-| `msk-cart` | Warenkorb-Kennung, Ihr CFX.re-Benutzername, der Inhalt des Warenkorbs und bei Geschenkkäufen Benutzername und Discord-ID der beschenkten Person | bis zur Abmeldung |
-| `discordId` | Ihre Discord-ID, damit sie nicht bei jedem Kauf erneut abgefragt wird | bis zur Abmeldung |
-
-Beim Abmelden wird der Warenkorb geleert und beide Einträge werden gelöscht. Sie können sie außerdem jederzeit über die Einstellungen Ihres Browsers entfernen.
-
-**Hinweis zu Geschenkkäufen:** Wenn Sie ein Paket verschenken, werden Benutzername und Discord-ID der beschenkten Person in Ihrem eigenen Browser gespeichert, damit die Bestellung zugeordnet werden kann. Bitte geben Sie diese Daten nur mit deren Einverständnis ein.
-
-**Rechtsgrundlage:** Art. 6 Abs. 1 lit. b DSGVO, technisch erforderlich für den Warenkorb und die Zuordnung des Kaufs.
-
-### Session-Speicher (Shop: laufender Kauf)
-
-Der **sessionStorage** merkt sich vorübergehend, welches Paket Sie kaufen wollten und wohin Sie zurückkehren, während Sie durch die Anmeldung bei CFX.re oder Discord geschickt werden (`discordReturnPath`, `wantDiscordAuth`, `pendingBasketIdent`, `pendingPackageId`, `pendingPackageType`). Diese Daten werden beim Schließen des Browser-Tabs automatisch gelöscht.
-
-### Sprache (kein Cookie)
-
-Die Anzeigesprache steckt in der Adresse: die englischen Seiten liegen auf der Wurzel, die deutschen unter `/de/`. **Dafür wird kein Cookie gesetzt.** Bis zum 22. August 2026 wurde die Sprachwahl in einem Cookie `msk_lang` gespeichert; das gibt es nicht mehr und es wird nicht mehr gesetzt.
-### Missbrauchsschutz (Rate-Limiting)
-
-Zum Schutz der öffentlich erreichbaren Endpunkte (der Giveaway-Ergebnisseiten `/giveaway/g/…` und des Dashboard-Logins `/api/giveaway/auth`) vor automatisiertem Missbrauch verarbeitet der Server **vorübergehend** Ihre IP-Adresse **im Arbeitsspeicher**, um Anfragen innerhalb eines kurzen Zeitfensters zu zählen. Dieser IP-basierte Zähler wird **in keiner Datenbank gespeichert**, **nicht** zur Profilbildung oder zum Tracking verwendet und nach Ablauf des Zeitfensters automatisch verworfen. (Davon unabhängig führt der Webserver Standard-Zugriffsprotokolle, siehe „Technische Protokolldaten".)
-
-**Rechtsgrundlage:** Art. 6 Abs. 1 lit. f DSGVO, berechtigtes Interesse an Sicherheit, Integrität und Verfügbarkeit des Dienstes.
-
-### Tracking und Analyse
-
-Diese Website verwendet **keine** Tracking-Cookies, Analysewerkzeuge (z.B. Google Analytics) oder Werbetechnologien. Ein Cookie-Hinweis-Banner ist nicht erforderlich, da keine nicht notwendigen Cookies gesetzt werden.
-
----
-
-## Ticket Bot Transcript Service: Detaillierte Verarbeitung
-
-### Verifizierung und Kontoerstellung
-
-Bei der Registrierung unter **www.msk-scripts.de/ticketbot/verify** finden folgende Datenverarbeitungen statt:
-
-**Discord OAuth:** Sie werden zu Discord weitergeleitet. Nach der Autorisierung übermittelt Discord Ihre Discord-Nutzer-ID sowie eine Liste der Server, auf denen Sie Administrator-Rechte haben (Server-Namen, -IDs und -Icons). Server-Icons und die nicht ausgewählten Server dienen ausschließlich der Anzeige der Auswahl und werden **nicht gespeichert**. Ihre Discord-Nutzer-ID, die ID des ausgewählten Servers **und dessen Name** werden in unserer Datenbank gespeichert. Der Name wird in Ihrem Dashboard angezeigt, damit Sie Ihre Server unterscheiden können.
-
-**In unserer Datenbank gespeicherte Daten nach erfolgreicher Verifizierung:**
-
-| Feld | Beschreibung | Speicherdauer |
-|---|---|---|
-| `guild_id` | Ihre Discord-Server-ID | Bis zur Kontolöschung |
-| `guild_name` | Ihr Discord-Server-Name (zur Anzeige im Dashboard) | Bis zur Kontolöschung |
-| `api_key` | Zufällig generiertes Authentifizierungstoken | Bis zur Neugenerierung oder Kontolöschung |
-| `tier` | Abo-Tier (basic/premium/premium_plus) | Bis zur Kontolöschung |
-| `discord_user_id` | Ihre Discord-Nutzer-ID | Bis zur Kontolöschung |
-| `stripe_customer_id` / `stripe_subscription_id` | Stripe-Referenzen für Ihr Abo (keine Zahlungsdaten) | Bis zur Kontolöschung |
-| `stripe_status` | Von Stripe gemeldeter Status Ihres Abos (z. B. Testphase, aktiv) | Bis zur Kontolöschung |
-| `trial_reminder_sent_at` | Zeitpunkt der Erinnerungs-E-Mail zur Testphase, damit sie nur einmal versandt wird | Bis zur Kontolöschung |
-| `custom_domain` | Eigene Domain (falls konfiguriert) | Bis zur Entfernung |
-| `domain_status` | Status der eigenen Domain | Bis zur Kontolöschung |
-
-### Transkriptspeicherung
-
-Wenn ein Ticket auf einem selbst-gehosteten Bot mit gültigem API Key geschlossen wird, lädt der Bot das generierte HTML-Transkript auf unseren Server hoch. Gespeichert werden:
-
-- Die **HTML-Datei** des Transkripts im Dateisystem unseres Servers
-- Metadaten in unserer Datenbank: Upload-Zeitstempel, Dateigröße, Ablaufdatum, Server-Referenz
-
-Das HTML-Transkript wird **vor** dem Upload vom selbst-gehosteten Bot erzeugt und kann personenbezogene Daten der Ticket-Teilnehmer enthalten, insbesondere deren Discord-Benutzernamen und Anzeigenamen, Benutzer-Avatare, benutzerdefinierte Server-Emojis, den Nachrichteninhalt des Tickets sowie Zeitstempel (und bei Premium und Premium+ Dateianhänge; siehe unten). Avatare und benutzerdefinierte Emojis werden direkt in die Datei eingebettet. Der Betreiber des selbst-gehosteten Bots entscheidet, welche Tickets hochgeladen werden, und ist für den Inhalt dieser Transkripte verantwortlich; wir speichern und stellen die resultierende Datei in seinem Auftrag bereit.
-
-Transkripte werden nach Ablauf der für Ihr Tier geltenden Aufbewahrungsfrist (30, 180 oder 365 Tage) automatisch gelöscht. Transkripte sind über ihre eindeutige URL (mit zufälliger UUID) öffentlich abrufbar, werden jedoch nicht indiziert oder verlinkt.
-
-### Anhangsspeicherung (Premium und Premium+)
-
-Für Premium- und Premium+-Nutzer werden Dateianhänge aus Tickets (Bilder, PDFs etc.) vom Discord-CDN heruntergeladen und zusammen mit dem Transkript auf unserem Server gespeichert. Diese Dateien werden mit dem Transkript zum Ablaufzeitpunkt gelöscht.
-
-Basic-Nutzer haben keinen Zugriff auf die Anhangsspeicherung; bei diesem Tier werden keine Dateianhänge auf unseren Servern gespeichert.
-
-### Eigene Domain (Premium und Premium+)
-
-Bei Konfiguration einer eigenen Domain wird der Domain-Name in unserer Datenbank gespeichert. Bei der Aktivierung:
-- Wird eine **Apache2 VirtualHost-Konfiguration** auf unserem Server erstellt
-- Wird über Certbot ein **kostenloses SSL-Zertifikat** (Let's Encrypt) eingerichtet; dabei wird unsere Admin-E-Mail (`info@msk-scripts.de`) bei Let's Encrypt für Zertifikatsbenachrichtigungen hinterlegt
-
-Ihr Domain-Name kann aufgrund der SSL-Zertifikatsausstellung in öffentlichen **Certificate Transparency Logs** erscheinen. Dies ist ein Standardmerkmal der öffentlichen Web-PKI-Infrastruktur.
-
-### Stripe Abo-Webhook
-
-Wir betreiben einen Webhook-Endpunkt, der Ereignisse von **Stripe** empfängt, wenn Ihr Abo erstellt, verlängert, geändert oder gekündigt wird. Wir verarbeiten diese Ereignisse, um Ihr Abo-Tier automatisch zu aktivieren, upzugraden oder downzugraden und den Testphasen-Status zu erfassen. Über diesen Webhook erhalten wir keine Karten- oder Zahlungsdaten.
-
-**Verarbeitete Daten:** Stripe-Kunden- und Abo-ID, Abo-Status und -Tier, Periodenende, Ihre Discord-Nutzer-ID und Server-ID (als Metadaten übergeben).
-
-Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO, zur Erbringung des gebuchten Dienstes erforderlich.
-
-### Erinnerungs-E-Mail zur Testphase
-
-Für den Start der kostenlosen Testphase ist kein Zahlungsmittel erforderlich. Weil das Abo dadurch von selbst endet, wenn kein Zahlungsmittel hinterlegt wird, senden wir Ihnen drei Tage vor Ablauf **eine** E-Mail, die Ihnen mitteilt, wann die Testphase endet und dass nichts abgebucht wird.
-
-**Verarbeitete Daten:** die E-Mail-Adresse, die Sie beim Checkout bei Stripe angegeben haben, der Name Ihres Discord-Servers und das Enddatum Ihrer Testphase. Die Adresse rufen wir zum Versandzeitpunkt bei Stripe ab und speichern sie **nicht** in unserer Datenbank; festgehalten wird lediglich der Zeitpunkt, zu dem die E-Mail versandt wurde, damit sie nicht doppelt verschickt wird.
-
-Die E-Mail wird nur versandt, solange kein Zahlungsmittel hinterlegt ist. Sie ist eine vertragsbezogene Mitteilung und keine Werbung; weitere Nachrichten erhalten Sie auf dieser Grundlage nicht.
-
-**Versanddienstleister:** Der Versand erfolgt über den Mailserver von **IONOS SE**, Elgendorfer Straße 57, 56410 Montabaur. IONOS verarbeitet dabei als Auftragsverarbeiter die Empfängeradresse und den Inhalt der Nachricht; die Verarbeitung findet in der Europäischen Union statt. Wir haben mit IONOS einen Vertrag über Auftragsverarbeitung (AVV) geschlossen. Weitere Informationen: [IONOS Datenschutzerklärung](https://www.ionos.de/terms-gtc/datenschutzerklaerung/).
-
-Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO, zur Erbringung des gebuchten Dienstes erforderlich.
-
-### Hosted Bot Management
-
-Für Premium-, Premium+- und Business-Kunden, die den Hosted Bot Management Service nutzen, werden folgende Daten auf unseren Servern in einem Verzeichnis gespeichert, das Ihrer Discord-Server-ID zugeordnet ist:
-
-| Daten | Beschreibung | Speicherdauer |
-|---|---|---|
-| `config.jsonc` | Bot-Konfiguration (Ticket-Typen, Rollen, Einstellungen) | Bis zur Beendigung des Hostings |
-| `snippets.jsonc` | Canned Responses (falls konfiguriert) | Bis zur Beendigung des Hostings |
-| `.env` | Bot-Zugangsdaten (Discord-Bot-Token, OAuth-Client-Secret, API-Keys) | Bis zur Beendigung des Hostings |
-| Bot-Datenbank | Von Ihrem Bot geschriebene Ticket-Daten, einschließlich der Discord-Nutzer-IDs der Teammitglieder, die sich an seinem Dashboard anmelden | Bis zur Beendigung des Hostings |
-| Bot-Log-Ausgabe | Laufzeitausgabe des Bot-Prozesses; live über das Dashboard abrufbar | Nicht dauerhaft gespeichert: nur Live-Puffer |
-
-**Sensible Zugangsdaten:** Die `.env`-Datei enthält den Discord-Bot-Token und das OAuth-Client-Secret, die Sie bei der Aktivierung eingetragen haben, sowie weitere API-Keys. Diese Datei wird auf unserem Server gespeichert und ist zum Betrieb des Bots erforderlich. Mitarbeiter von MSK Scripts können diese Datei für Wartungs- und Supportzwecke einsehen. Sie sind dafür verantwortlich, dass die darin gespeicherten Zugangsdaten nicht kompromittiert sind.
-
-Wenn Sie den Dienst entfernen oder das Hosting-Arrangement endet, wird der Bot gestoppt, seine öffentliche Adresse vom Netz genommen (DNS-Eintrag und Webserver-Konfiguration) und Ihr Bot-Verzeichnis archiviert. **14 Tage** später wird es endgültig gelöscht. Innerhalb dieser 14 Tage können Sie die Installation im Dashboard selbst zurückholen, deshalb wird sie archiviert statt sofort gelöscht.
-
-**Rechtsgrundlage:** Art. 6 Abs. 1 lit. b DSGVO, die Verarbeitung ist zur Erfüllung des Hosting-Vertrags erforderlich.
-
-**Zugriffskontrolle:** Auf die Konfigurationsdateien können ausschließlich der Dienstbetreiber (MSK Scripts) und Sie über das authentifizierte Dashboard unter **www.msk-scripts.de/ticketbot/dashboard** zugreifen. Das eigene Dashboard Ihres Bots unter seiner öffentlichen Adresse ist durch einen Discord-Login geschützt, den Ihr Bot selbst abwickelt; Sie entscheiden, wer aus Ihrem Team sich anmelden darf und was er dort tun kann.
-
----
-
-## Giveaway Bot: Detaillierte Verarbeitung
-
-MSK Scripts betreibt die offizielle öffentliche Instanz des Giveaway Bots. Lädt ein Server-Administrator den Bot auf seinen Discord-Server ein, ist MSK Scripts Verantwortlicher für die Daten, die der Bot in seiner Datenbank speichert.
-
-### Was gespeichert wird und warum
-
-Der Bot speichert serverbezogene Einstellungen sowie pro Giveaway den Giveaway-Inhalt zusammen mit den Discord-Nutzer-IDs des Erstellers, der Teilnehmer und der Gewinner. Teilnehmer-IDs sind erforderlich, um Mehrfachteilnahmen zu verhindern, die konfigurierten Teilnahmebedingungen anzuwenden und Gewinner zu ziehen. Gewinner-IDs werden gespeichert, damit Ergebnisse sichtbar bleiben und Rerolls möglich sind.
-
-Tritt ein Mitglied vor Ende eines Giveaways wieder aus (durch erneutes Drücken des Buttons), wird seine Teilnahme **sofort gelöscht**.
-
-### Aufbewahrung
-
-Giveaway-Daten werden nur aufbewahrt, solange der Bot Mitglied Ihres Servers ist, damit Befehle wie `/ginfo` und `/greroll` weiterhin funktionieren. **Wird der Bot von einem Server entfernt, werden sämtliche Daten dieses Servers (Server-Einstellungen, Giveaways, Teilnahmen, Gewinner und Vorlagen) umgehend und automatisch gelöscht.** Solange der Bot auf dem Server verbleibt, bestehen die Server-Einstellungen, bis sie geändert werden. Sie können darüber hinaus jederzeit die Löschung Ihrer Daten verlangen (siehe „Ihre Rechte nach der DSGVO" unten).
-
-### Öffentliche Statistikseite
-
-Die Seite unter **www.msk-scripts.de/giveaway/stats** zeigt ausschließlich **anonyme, aggregierte Summen**, etwa die Anzahl der Server mit dem Bot, die Gesamtzahl der Giveaways, Teilnahmen und Gewinner sowie die Verteilung nach Sprache und Status. Sie enthält **keine** Server-IDs, Nutzer-IDs, Nutzernamen oder sonstige personenbezogene Daten.
-
-### Öffentliche Ergebnisseiten
-
-Nach Ende eines Giveaways veröffentlicht der Bot eine öffentliche Ergebnisseite unter **www.msk-scripts.de/giveaway/g/{token}** (der Token ist eine zufällige, nicht erratbare Zeichenfolge). Diese Seite zeigt Titel und Preis des Giveaways, die **Nutzernamen der Gewinner** sowie die **anonyme Teilnehmerzahl**. Sie listet bewusst **nicht** die Teilnehmer auf. Der Link wird in der Discord-Ergebnisnachricht und in den Gewinner-Benachrichtigungen geteilt. Die Seite wird entfernt, wenn der Bot vom Server entfernt wird (Löschung der Serverdaten).
-
-### Web-Dashboard
-
-Server-Administratoren können ihre Giveaways unter **www.msk-scripts.de/giveaway/dashboard** verwalten. Der Zugriff erfordert eine Discord-Anmeldung (OAuth-Scopes `identify` und `guilds`); diese nutzen wir ausschließlich, um festzustellen, welche Server Sie administrieren und ob der Bot dort vorhanden ist. Ein signiertes, httpOnly-Session-Cookie (`msk_giveaway_session`) autorisiert anschließend Verwaltungsaktionen für diesen Server. Verwaltungsaktionen werden über einen serverinternen, geheim-authentifizierten localhost-Kanal an den Bot weitergeleitet.
-
-### Verantwortung der Server-Administratoren
-
-Wenn Sie den Bot auf einen von Ihnen verwalteten Server einladen, sind Sie für die dort durchgeführten Giveaways verantwortlich, einschließlich ihrer Rechtmäßigkeit (Preise, Teilnahmeberechtigung, anwendbares Gewinnspielrecht) und dafür, Ihre Mitglieder darüber zu informieren, dass ein Drittanbieter (MSK Scripts) den Bot betreibt.
-
----
-
-## Zahlungsabwicklung (Tebex, Shop)
-
-Alle Shop-Käufe werden über **Tebex Limited**, 201 Haverstock Hill, Second Floor, London, NW3 4QG, Vereinigtes Königreich, abgewickelt. Tebex fungiert als Merchant of Record und ist allein für die Zahlungsverarbeitung verantwortlich.
-
-- [Tebex Datenschutzerklärung](https://checkout.tebex.io/privacy)
-- [Tebex Nutzungsbedingungen](https://checkout.tebex.io/terms)
-
----
-
-## Abo-Zahlungen (Stripe)
-
-Das Premium- und Premium+-Abo für den Ticket Bot Transcript Service wird über **Stripe** (Stripe Payments Europe, Ltd., 1 Grand Canal Street Lower, Grand Canal Dock, Dublin, Irland) abgewickelt.
-
-Zur Einrichtung eines Abos geben Sie Ihren **Namen, Ihre Rechnungsadresse, Ihre E-Mail-Adresse und Ihre Zahlungsdaten** während des Checkouts direkt bei Stripe ein. Stripe übernimmt die gesamte Zahlungsabwicklung, Rechnungsstellung und Rückerstattung. Wir erhalten und speichern **keine** Kartendaten. Wir speichern lediglich die Stripe-Kunden- und Abo-ID sowie Ihr Abo-Tier, um den Dienst bereitzustellen.
-
-Datenschutzerklärung von Stripe: [stripe.com/privacy](https://stripe.com/privacy)
-
----
-
-## Authentifizierung über CFX.re / FiveM (Shop)
-
-Zum Kauf von Shop-Paketen authentifizieren Sie sich über den Tebex-Identitätsdienst mit Ihrem **CFX.re-Konto**. Ihr FiveM-Nutzername und Ihre Nutzer-ID werden vorübergehend im localStorage Ihres Browsers gespeichert.
-
----
-
-## Authentifizierung über Discord (Shop)
-
-Für Pakete mit Discord-Rollenzuweisung wird Ihre **Discord-ID** über den Tebex-Identitätsdienst erhoben und als Teil des Kaufs an Tebex übermittelt. Eine dauerhafte Speicherung auf unseren Servern erfolgt nicht.
-
----
-
-## Webserver-Protokolle
-
-Unser Server erfasst automatisch Zugriffsprotokolle mit: IP-Adresse, Datum und Uhrzeit, aufgerufener URL, HTTP-Statuscode, Browser-/Client-Typ. Diese werden für Sicherheits- und Betriebszwecke verwendet und nach maximal **14 Tagen** automatisch gelöscht.
-
-**Rechtsgrundlage:** Art. 6 Abs. 1 lit. f DSGVO, berechtigtes Interesse am Betrieb und der Absicherung der Website.
-
----
-
-## Discord-Mitgliederanzahl
-
-Unsere Startseite zeigt die aktuelle Online-Mitgliederzahl unseres Discord-Servers an. Das Ergebnis wird 60 Sekunden auf unserem Server zwischengespeichert. Es werden keine personenbezogenen Daten an Discord übermittelt.
-
----
-
-## Resource-Statistiken (fivestats.io)
-
-Die öffentliche Seite unter **www.msk-scripts.de/resources** zeigt die Live-Verbreitung unserer FiveM-Ressourcen, also die Anzahl der Server, die eine Ressource nutzen, deren Rang und einen 7-Tage-Trend. Diese Zahlen stammen vom Drittanbieter-Dienst **fivestats.io** (betrieben von fivestats.io).
-
-Der Abruf erfolgt ausschließlich **server-seitig**. Unser Server fragt bei fivestats.io die Statistiken zu unseren eigenen Ressourcen ab und zeigt sie an. Ihr Browser verbindet sich dabei zu **keinem** Zeitpunkt direkt mit fivestats.io. Es werden **keine** personenbezogenen Daten von Ihnen an fivestats.io übermittelt, weder Ihre IP-Adresse noch Cookies oder sonstige Kennungen. Übertragen werden lediglich die Namen unserer eigenen Ressourcen sowie unser API-Schlüssel; die Antwort besteht aus aggregierten Server-Zahlen ohne Personenbezug. Das Ergebnis wird für kurze Zeit auf unserem Server zwischengespeichert.
-
-**Rechtsgrundlage:** Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an der Darstellung der Verbreitung unserer Ressourcen; es werden keine personenbezogenen Daten übermittelt).
-
----
-
-## Speicherdauer
-
-| Daten | Speicherdauer |
-|---|---|
-| Server-Zugriffsprotokolle | 14 Tage |
-| Warenkorb, CFX.re-Benutzername, Beschenkte (localStorage `msk-cart`) | Bis zur Abmeldung oder Löschung durch den Nutzer |
-| Ihre Discord-ID (localStorage `discordId`) | Bis zur Abmeldung oder Löschung durch den Nutzer |
-| Laufender Kauf (sessionStorage) | Bis zum Schließen des Browser-Tabs |
-| OAuth-State-Cookie | 10 Minuten |
-| Verify-Session-Cookie | 1 Stunde |
-| Dashboard-Session-Cookie | 30 Tage |
-| Ticket Bot Kontodaten (guild_id, api_key, discord_user_id, tier, Stripe-IDs) | Bis zur Löschanfrage |
-| Rate-Limiting-Daten | 1 Stunde (gleitendes Fenster) |
-| Transkript-HTML-Dateien | 30 Tage (Basic) / 180 Tage (Premium) / 365 Tage (Premium+) |
-| Anhangsdateien | Wie Transkript |
-| Stripe-Abo-Daten (Kunden-/Abo-ID, Tier, Testphasen-Status) | Bis zur Kontolöschung |
-| Hosted Bot Konfigurationsdateien (`config.jsonc`, `snippets.jsonc`, `.env`) | Bis zur Entfernung des Hostings + 14 Tage |
-| Hosted Bot Datenbank (Tickets, Dashboard-Anmeldungen Ihres Teams) | Bis zur Entfernung des Hostings + 14 Tage |
-| Hosted Bot öffentliche Adresse (DNS-Eintrag, Webserver-Konfiguration) | Wird bei Entfernung des Hostings gelöscht |
-| Hosted Bot Log-Ausgabe | Nicht dauerhaft gespeichert (nur Live-Puffer) |
-| Giveaway Bot: Server-Einstellungen | Werden beim Entfernen des Bots vom Server umgehend gelöscht; andernfalls bis zur Änderung oder Löschanfrage |
-| Giveaway Bot: Giveaway-, Teilnahme- und Gewinner-Datensätze (Discord-Nutzer-IDs) | Werden beim Entfernen des Bots vom Server umgehend gelöscht oder auf Löschanfrage; Teilnahmen werden bei Austritt entfernt |
-| Bild-Einreichung: Discord-Benutzer-ID, Anzeigename, Formulardaten, Entscheidung | Solange das Bild veröffentlicht ist; abgelehnte Einreichungen 1 Jahr |
-| Bild-Einreichung: Datei in der Quarantäne | Bis zur Entscheidung über die Prüfung |
-| Cookie der Bild-Upload-Sitzung | 7 Tage |
-
----
-
-## Datenübermittlung in Drittländer
-
-**Tebex Limited** (UK): Das Vereinigte Königreich verfügt über einen Angemessenheitsbeschluss der EU-Kommission. Übermittlungen an Tebex gelten als DSGVO-konform.
-
-**Stripe Payments Europe, Ltd.** (Irland): Abo-Zahlungen werden von Stripe innerhalb der EU verarbeitet. Soweit Stripe Daten an sein US-Mutterunternehmen übermittelt, erfolgt dies auf Grundlage von Standardvertragsklauseln. Siehe: [stripe.com/privacy](https://stripe.com/privacy)
-
-Unser Webserver sowie alle Transkript- und Anhangsdaten sind innerhalb der **Europäischen Union** gespeichert.
-
----
-
-## Ihre Rechte nach der DSGVO
-
-Als betroffene Person haben Sie folgende Rechte:
-
-- **Auskunftsrecht** (Art. 15 DSGVO): Auskunft über gespeicherte Daten verlangen
-- **Recht auf Berichtigung** (Art. 16 DSGVO): Berichtigung unrichtiger Daten verlangen
-- **Recht auf Löschung** (Art. 17 DSGVO): Löschung Ihrer Daten verlangen
-- **Recht auf Einschränkung** (Art. 18 DSGVO): Einschränkung der Verarbeitung verlangen
-- **Recht auf Datenübertragbarkeit** (Art. 20 DSGVO): Daten in maschinenlesbarem Format erhalten
-- **Widerspruchsrecht** (Art. 21 DSGVO): Widerspruch gegen Verarbeitung auf Basis berechtigter Interessen
-- **Beschwerderecht**: bei der zuständigen Aufsichtsbehörde (in Deutschland: der/die Landesbeauftragte für Datenschutz Ihres Bundeslandes)
-
-Zur Ausübung Ihrer Rechte wenden Sie sich bitte an: [info@msk-scripts.de](mailto:info@msk-scripts.de)
-
-Wir bearbeiten Ihren Antrag innerhalb von **30 Tagen**.
-
----
-
-## Änderungen dieser Datenschutzerklärung
-
-Wir behalten uns das Recht vor, diese Datenschutzerklärung zu aktualisieren, um Änderungen unserer Dienste oder des geltenden Rechts widerzuspiegeln. Die jeweils aktuelle Version ist immer unter dieser URL abrufbar. Das Datum oben zeigt an, wann die letzte Aktualisierung erfolgte.
+Es findet keine automatisierte Entscheidungsfindung nach Art. 22 DSGVO statt. Alle Verbindungen sind TLS-verschlüsselt; Passwörter und Secrets werden gehasht bzw. verschlüsselt gespeichert; Zugriff auf Kundendaten hat nur der Verantwortliche. Diese Erklärung wird bei Änderungen der Dienste oder der Rechtslage aktualisiert.

@@ -1,88 +1,85 @@
 # Impressum
 
-*Stand: August 2026*
+Angaben gemäß § 5 DDG – gilt für www.msk-scripts.de sowie die Subdomains forms., paste., s., docu. und discord.msk-scripts.de
 
-## Angaben gemäß § 5 DDG
-
-**Moritz Kohm**
-c/o Impressumservice Dein-Impressum  
-Stettiner Str. 41  
-35410 Hungen  
-Deutschland
-
-**Kontakt:**  
-E-Mail: [info@msk-scripts.de](mailto:info@msk-scripts.de)
-
-**Umsatzsteuer-Identifikationsnummer gem. § 27a UStG:**  
-DE364543992
-
-**Hinweis nach § 19 UStG:**  
-Die Umsätze sind nach § 19 UStG steuerfrei (Kleinunternehmerregelung), es wird keine Umsatzsteuer ausgewiesen.
-
----
-
-## Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV
+## Diensteanbieter
 
 **Moritz Kohm**
-c/o Impressumservice Dein-Impressum  
-Stettiner Str. 41  
-35410 Hungen  
+handelnd unter der Geschäftsbezeichnung „MSK Scripts“ (Einzelunternehmen)
+c/o Impressumservice Dein-Impressum
+Stettiner Str. 41
+35410 Hungen
 Deutschland
 
----
+## Kontakt
 
-## Dienstanbieter (Zahlungsabwicklung)
+E-Mail: info@msk-scripts.de
+Support: https://discord.msk-scripts.de (Discord) – Anfragen werden dort und per E-Mail in der Regel innerhalb von 48 Stunden beantwortet.
 
-Die Zahlungsabwicklung und Checkout-Dienste werden bereitgestellt von:
+## Umsatzsteuer
+
+Umsatzsteuer-Identifikationsnummer gemäß § 27a UStG: DE364543992
+
+Für die von MSK Scripts selbst erbrachten Leistungen (Ticket-Bot- und MSK-Forms-Abonnements) wird gemäß § 19 UStG keine Umsatzsteuer berechnet und ausgewiesen (Kleinunternehmerregelung).
+
+Käufe im Shop werden von Tebex Limited als Verkäufer („Merchant of Record“) abgewickelt; dort ausgewiesene Umsatzsteuer wird von Tebex erhoben.
+
+## Verantwortlich für Inhalte nach § 18 Abs. 2 MStV
+
+Moritz Kohm, Anschrift wie oben.
+
+## Zahlungsabwicklung im Shop
+
+Verkäufer und Vertragspartner für alle Käufe im Shop (FiveM-Ressourcen) ist:
 
 **Tebex Limited**
-201 Haverstock Hill, Second Floor C/O Fkgb  
-London, England, NW3 4QG
-
-E-Mail: [checkout-support@tebex.io](mailto:checkout-support@tebex.io)  
-[Support-Kontaktformular](https://www.tebex.io/contact/checkout)
-
+201 Haverstock Hill, Second Floor, c/o FKGB
+London NW3 4QG, Vereinigtes Königreich
+Registergericht: Companies House England and Wales, Nr. 08129184
 Geschäftsführer: Liam Wiltshire
+USt-ID: GB167189962 / EU372035465
+E-Mail: checkout-support@tebex.io
+Kontaktformular: https://www.tebex.io/contact/checkout
 
-Tebex Limited ist eine nach englischem und walisischem Recht eingetragene Gesellschaft.   
-Registernummer: 08129184  
-USt-IdNr.: GB167189962 & EU372035465  
+Mit einem Kauf erkennst du zusätzlich die Nutzungsbedingungen (https://checkout.tebex.io/terms) und die Datenschutzerklärung (https://checkout.tebex.io/privacy) von Tebex an.
 
-### Zahlungsabwicklung
+Abonnements für den Ticket-Bot-Transcript-Service und MSK Forms werden über **Stripe Payments Europe, Ltd.**, 1 Grand Canal Street Lower, Dublin 2, Irland, abgewickelt. Vertragspartner ist hier MSK Scripts; Stripe verarbeitet nur die Zahlung. Zahlungsdaten erhalten wir nicht.
 
-Shop-Käufe werden über Tebex Limited abgewickelt. Mit dem Kauf stimmen Sie auch den [Tebex Nutzungsbedingungen](https://checkout.tebex.io/terms) und der [Tebex Datenschutzerklärung](https://checkout.tebex.io/privacy) zu.
+## Zentrale Kontaktstelle nach dem Digital Services Act (DSA)
 
-**Stripe Payments Europe, Ltd.**
-1 Grand Canal Street Lower, Grand Canal Dock  
-Dublin, Irland
+MSK Scripts speichert und veröffentlicht von Nutzern bereitgestellte Inhalte (Ticket-Transkripte, Bildergalerie, Giveaway-Ergebnisseiten, MSK Paste, MSK Forms) und ist damit Hostingdiensteanbieter im Sinne der Verordnung (EU) 2022/2065. Zentrale Kontaktstelle für Behörden (Art. 11 DSA) und Nutzer (Art. 12 DSA):
 
-Ticket-Bot Premium- und Premium+-Abos werden über Stripe abgewickelt. Mit dem Abschluss eines Abos stimmen Sie auch der [Stripe Datenschutzerklärung](https://stripe.com/privacy) zu. Wir erhalten und speichern keine Kartendaten.
+E-Mail: info@msk-scripts.de
+Postanschrift: Moritz Kohm, MSK Scripts, c/o Impressumservice Dein-Impressum, Stettiner Str. 41, 35410 Hungen
 
----
+Sprachen: Deutsch und Englisch. Die Kontaktstelle wird persönlich betreut.
 
-## Haftungsausschluss
+**Rechtswidrige Inhalte melden (Art. 16 DSA):** Bitte nenne uns die URL des Inhalts, eine Begründung, warum er rechtswidrig ist, deinen Namen und deine E-Mail-Adresse sowie eine Erklärung, dass deine Angaben nach bestem Wissen richtig sind. Das Verfahren ist in unseren AGB beschrieben.
 
-### Haftung für Inhalte
+## Widerruf und Kündigung von Abonnements
 
-Die Inhalte unserer Seiten wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte können wir jedoch keine Gewähr übernehmen.
+Verbraucher können über die Website geschlossene Abonnements über die Funktion **„Vertrag widerrufen“** (§ 356a BGB) widerrufen und über **„Verträge hier kündigen“** (§ 312k BGB) kündigen – beides im Seitenfuß, ohne Login erreichbar. Details in der Widerrufsbelehrung.
 
-### Haftung für Links
+## Verbraucherstreitbeilegung
 
-Unser Angebot enthält Links zu externen Webseiten Dritter, auf deren Inhalte wir keinen Einfluss haben. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich. Die verlinkten Seiten wurden zum Zeitpunkt der Verlinkung auf mögliche Rechtsverstöße überprüft. Rechtswidrige Inhalte waren zum Zeitpunkt der Verlinkung nicht erkennbar. Eine permanente inhaltliche Kontrolle der verlinkten Seiten ist jedoch ohne konkrete Anhaltspunkte einer Rechtsverletzung nicht zumutbar. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Links umgehend entfernen.
+Wir sind nicht bereit und nicht verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle im Sinne des VSBG teilzunehmen.
 
-### Urheberrecht
+## Barrierefreiheit
 
-Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers. Downloads und Kopien dieser Seite sind nur für den privaten, nicht kommerziellen Gebrauch gestattet. Soweit die Inhalte auf dieser Seite nicht vom Betreiber erstellt wurden, werden die Urheberrechte Dritter beachtet. Insbesondere werden Inhalte Dritter als solche gekennzeichnet. Sollten Sie trotzdem auf eine Urheberrechtsverletzung aufmerksam werden, bitten wir um einen entsprechenden Hinweis. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Inhalte umgehend entfernen.
+MSK Scripts wird als Kleinstunternehmen betrieben und ist nach § 3 Abs. 3 BFSG von den Pflichten des Barrierefreiheitsstärkungsgesetzes für Dienstleistungen ausgenommen. Hinweise zur Zugänglichkeit nehmen wir gern per E-Mail entgegen.
 
----
+## Hinweise zu Inhalten, Links und Marken
+
+Für eigene Inhalte sind wir nach den allgemeinen Gesetzen verantwortlich. Für von Nutzern gespeicherte Inhalte gelten die Haftungsregeln der Art. 4–6 DSA; eine allgemeine Überwachungspflicht besteht nicht. Bei Kenntnis von Rechtsverletzungen entfernen wir Inhalte umgehend.
+
+Externe Links (GitHub, Discord, Tebex, Stripe, fivestats.io, CFX.re u. a.) führen zu Angeboten Dritter, für die der jeweilige Anbieter verantwortlich ist.
+
+„FiveM“ und „CFX.re“ sind Marken bzw. Bezeichnungen von Cfx.re / Rockstar Games; „Discord“ ist eine Marke von Discord Inc. MSK Scripts steht in keiner Verbindung zu diesen Unternehmen. Alle eigenen Software-Produkte unterliegen dem Urheberrecht; die Nutzungsbedingungen ergeben sich aus den AGB bzw. der jeweiligen Open-Source-Lizenz (z. B. AGPL-3.0 für Ticket-Bot, Paste, Shortener).
 
 ## Widerspruch gegen Werbe-Mails
 
-Der Nutzung der im Rahmen der Impressumspflicht veröffentlichten Kontaktdaten zur Übersendung von nicht ausdrücklich angeforderter Werbung und Informationsmaterialien wird hiermit widersprochen. Die Betreiber der Seiten behalten sich ausdrücklich rechtliche Schritte im Falle der unverlangten Zusendung von Werbeinformationen, etwa durch Spam-E-Mails, vor.
+Der Nutzung der hier veröffentlichten Kontaktdaten zur Übersendung nicht ausdrücklich angeforderter Werbung wird widersprochen.
 
 ---
 
-## Streitbeilegung
-### Verbraucher­streit­beilegung/Universal­schlichtungs­stelle
-
-Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.
+*Stand: September 2026*

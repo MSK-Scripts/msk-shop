@@ -4,6 +4,7 @@ import { queryOne }     from '@/lib/db';
 import { Card }         from '@/components/ui/Card';
 import { getRequestLang } from '@/lib/serverLang';
 import { giveawayResultTranslations } from '@/lib/i18n';
+import { ReportLink } from '@/components/legal/ReportLink';
 
 export const dynamic = 'force-dynamic';
 
@@ -103,6 +104,12 @@ export default async function GiveawayResultPage({ params }: { params: Promise<{
       </Card>
 
       <p className="mt-6 text-center font-mono text-[0.625rem] uppercase tracking-widest text-[var(--color-muted-foreground)]">{t.footer}</p>
+
+      {/* Meldeweg nach Art. 16 DSA. Titel, Beschreibung und Gewinnernamen
+          stammen vom Serverbetreiber, nicht von uns. */}
+      <div className="mt-3 text-center">
+        <ReportLink path={`/giveaway/g/${row.token}`} />
+      </div>
     </main>
   );
 }

@@ -30,6 +30,9 @@ export const translations = {
     select_warning:     'If you have already verified this server, your current API key will become invalid immediately. You must update the key in your bot\'s .env and restart it.',
     select_no_guilds:   'No servers found where you are an Administrator.',
     select_btn:         'Continue →',
+    // Auftragsverarbeitung (Art. 28 DSGVO), Pflicht vor dem ersten Upload.
+    dpa_accept:         'I conclude the data processing agreement.',
+    dpa_link:           'Read the agreement',
     select_btn_loading: 'Checking...',
 
     // Step 2, already registered
@@ -97,6 +100,8 @@ export const translations = {
     select_warning:     'Falls du diesen Server bereits verifiziert hast, wird dein bisheriger API Key sofort ungültig. Du musst den neuen Key in der .env deines Bots eintragen und ihn neu starten.',
     select_no_guilds:   'Keine Server gefunden auf denen du Administrator bist.',
     select_btn:         'Weiter →',
+    dpa_accept:         'Ich schließe die Vereinbarung zur Auftragsverarbeitung ab.',
+    dpa_link:           'Vereinbarung lesen',
     select_btn_loading: 'Wird geprüft...',
 
     // Step 2, already registered
@@ -590,6 +595,26 @@ export const dashboardTranslations = {
                           'Your free trial is running. Add a payment method to keep Premium, otherwise the subscription ends automatically when the trial is over.',
     sub_add_payment:      'Add payment method',
     sub_err:              'Could not start checkout. Please try again.',
+    // Auftragsverarbeitung (Art. 28 DSGVO), Pflicht vor dem Bot-Hosting.
+    // Bestellzusammenfassung (§ 312j Abs. 2 BGB) und Bestellschaltflaeche
+    // (§ 312j Abs. 3 BGB). Der deutsche Wortlaut des Knopfes ist vorgegeben.
+    sub_confirm_title:    'Check your order',
+    sub_confirm_service:  'Service',
+    sub_confirm_price:    'Total price',
+    sub_confirm_price_value: '{price} per month, no VAT shown (§ 19 UStG)',
+    sub_confirm_term:     'Term',
+    sub_confirm_term_value:
+                          'One month, renews monthly, can be cancelled at any time to the end of the billing period.',
+    sub_confirm_legal_pre: 'By ordering you accept the',
+    sub_confirm_legal_and: 'and confirm that you have read the',
+    sub_confirm_terms:    'Terms and Conditions',
+    sub_confirm_withdrawal: 'withdrawal instructions',
+    sub_confirm_legal_post: '. Payment is handled by Stripe.',
+    sub_confirm_submit:   'Subscribe with obligation to pay',
+    sub_confirm_cancel:   'Cancel',
+    dpa_accept:           'I conclude the data processing agreement.',
+    dpa_link:             'Read the agreement',
+    host_err_dpa:         'Please conclude the data processing agreement first.',
   },
   de: {
     label:            'Ticket Bot',
@@ -838,6 +863,23 @@ export const dashboardTranslations = {
                           'Deine Testphase läuft. Hinterlege ein Zahlungsmittel, um Premium zu behalten, sonst endet das Abo nach Ablauf der Testphase automatisch.',
     sub_add_payment:      'Zahlungsmittel hinterlegen',
     sub_err:              'Checkout konnte nicht gestartet werden. Bitte erneut versuchen.',
+    sub_confirm_title:    'Bestellung prüfen',
+    sub_confirm_service:  'Leistung',
+    sub_confirm_price:    'Gesamtpreis',
+    sub_confirm_price_value: '{price} pro Monat, keine Umsatzsteuer ausgewiesen (§ 19 UStG)',
+    sub_confirm_term:     'Laufzeit',
+    sub_confirm_term_value:
+                          'Ein Monat, verlängert sich monatlich, jederzeit zum Ende des Abrechnungszeitraums kündbar.',
+    sub_confirm_legal_pre: 'Mit der Bestellung akzeptierst du die',
+    sub_confirm_legal_and: 'und bestätigst, die',
+    sub_confirm_terms:    'AGB',
+    sub_confirm_withdrawal: 'Widerrufsbelehrung',
+    sub_confirm_legal_post: ' gelesen zu haben. Die Zahlung wickelt Stripe ab.',
+    sub_confirm_submit:   'Zahlungspflichtig abonnieren',
+    sub_confirm_cancel:   'Abbrechen',
+    dpa_accept:           'Ich schließe die Vereinbarung zur Auftragsverarbeitung ab.',
+    dpa_link:             'Vereinbarung lesen',
+    host_err_dpa:         'Bitte schließe zuerst die Vereinbarung zur Auftragsverarbeitung ab.',
   },
 } as const;
 
@@ -1811,6 +1853,7 @@ export const layoutTranslations = {
     footer_col_bots:   'Discord Bots',
     footer_col_support: 'Support',
     footer_col_legal:  'Legal',
+    footer_col_duties: 'Contracts & reports',
     footer_all_packages: 'All Packages',
     footer_resource_stats: 'Resource Stats',
     footer_image_gallery: 'Image Gallery',
@@ -1831,6 +1874,16 @@ export const layoutTranslations = {
     legal_imprint:     'Imprint',
     legal_privacy:     'Privacy Policy',
     legal_terms:       'Terms & Conditions',
+    legal_widerruf:    'Withdrawal Instructions',
+    legal_avv:         'Data Processing Agreement',
+    // Die drei Pflichtschaltflächen. Ihre Beschriftung ist nicht frei wählbar:
+    // § 312k Abs. 2 BGB schreibt „Verträge hier kündigen" wörtlich vor, und
+    // § 356a BGB verlangt eine Schaltfläche, die mit nichts anderem als dem
+    // Widerruf beschriftet ist. Die englischen Fassungen sind Übersetzungen —
+    // maßgeblich ist der deutsche Wortlaut.
+    legal_revoke:      'Withdraw from contract',
+    legal_cancel:      'Cancel contracts here',
+    legal_report:      'Report content',
   },
   de: {
     nav_home:          'Start',
@@ -1869,6 +1922,7 @@ export const layoutTranslations = {
     footer_col_bots:   'Discord Bots',
     footer_col_support: 'Support',
     footer_col_legal:  'Rechtliches',
+    footer_col_duties: 'Verträge & Meldungen',
     footer_all_packages: 'Alle Pakete',
     footer_resource_stats: 'Resourcen-Stats',
     footer_image_gallery: 'Bildergalerie',
@@ -1886,6 +1940,11 @@ export const layoutTranslations = {
     legal_imprint:     'Impressum',
     legal_privacy:     'Datenschutz',
     legal_terms:       'AGB',
+    legal_widerruf:    'Widerrufsbelehrung',
+    legal_avv:         'Auftragsverarbeitung',
+    legal_revoke:      'Vertrag widerrufen',
+    legal_cancel:      'Verträge hier kündigen',
+    legal_report:      'Inhalt melden',
   },
 } as const;
 
@@ -2151,3 +2210,154 @@ export const imageUploadTranslations = {
   },
 } as const
 
+// ---------------------------------------------------------------------------
+// Pflichtformulare: Widerruf (§ 356a BGB), Kündigung (§ 312k BGB) und
+// DSA-Meldung (Art. 16 der Verordnung (EU) 2022/2065)
+//
+// Alle drei sind ohne Anmeldung erreichbar und dürfen keine Hürde aufbauen.
+// Deshalb fragen sie ausschließlich das ab, was das Gesetz nennt, und es gibt
+// bewusst kein Captcha: eine Widerrufserklärung, die an einem Bilderrätsel
+// scheitert, ist eine unzulässige Erschwerung.
+//
+// Die Beschriftungen der Bestätigungsschaltflächen sind gesetzlich vorgegeben
+// („Widerruf bestätigen", „Jetzt kündigen") und dürfen nicht umformuliert
+// werden. Die englischen Fassungen sind Übersetzungen zur Information.
+// ---------------------------------------------------------------------------
+export const legalFormTranslations = {
+  en: {
+    // Gemeinsam
+    back_home:         'Back to the home page',
+    field_name:        'Name',
+    field_email:       'Email address',
+    field_contract:    'Details identifying the contract',
+    submitting:        'Sending…',
+    err_network:       'Could not reach the server. Please try again.',
+    err_generic:       'Something went wrong. Please try again.',
+    err_required:      'Please fill in all fields.',
+    err_email:         'Please enter a valid email address.',
+    err_rate:          'Too many requests. Please try again later.',
+
+    // Widerruf
+    revoke_title:      'Withdraw from contract',
+    revoke_intro:
+      'Use this form to withdraw from a paid subscription (Ticket Bot Premium, Premium+ or Business). '
+      + 'You do not need to give a reason and you do not need to sign in. '
+      + 'This form does not apply to purchases in the shop, those are handled by Tebex.',
+    revoke_contract_hint:
+      'For example your Discord server ID or the Stripe invoice number.',
+    revoke_email_hint:
+      'We send the acknowledgement of receipt to this address.',
+    revoke_submit:     'Confirm withdrawal',
+    revoke_done_title: 'Withdrawal received',
+    revoke_done_text:
+      'We have recorded your withdrawal on {timestamp} and sent an acknowledgement of receipt to {email}. '
+      + 'Please keep that email, it contains the content of your declaration together with the date and time it was received.',
+    revoke_legal_link: 'Withdrawal instructions',
+
+    // Kündigung
+    cancel_title:      'Cancel contracts here',
+    cancel_intro:
+      'Use this form to cancel a paid subscription. Cancellation takes effect at the end of the current billing period '
+      + 'unless you choose immediate termination for cause. You do not need to sign in.',
+    cancel_kind:       'Type of cancellation',
+    cancel_kind_ordinary: 'Ordinary cancellation at the end of the billing period',
+    cancel_kind_extraordinary: 'Immediate cancellation for cause',
+    cancel_when:       'Date of cancellation',
+    cancel_when_asap:  'As soon as possible',
+    cancel_when_date:  'On a specific date',
+    cancel_contract_hint:
+      'For example your Discord server ID or the Stripe invoice number.',
+    cancel_reason:     'Reason for the immediate cancellation',
+    cancel_submit:     'Cancel now',
+    cancel_done_title: 'Cancellation received',
+    cancel_done_text:
+      'We have recorded your cancellation on {timestamp} and sent an acknowledgement of receipt to {email}. '
+      + 'The acknowledgement states the date and time of receipt and when the contract ends.',
+    cancel_portal_hint:
+      'If you are signed in to the dashboard you can also cancel directly in the Stripe customer portal under "Manage subscription".',
+
+    // DSA-Meldung
+    report_title:      'Report illegal content',
+    report_intro:
+      'Use this form to report content hosted by us that you consider illegal (Art. 16 of Regulation (EU) 2022/2065). '
+      + 'We confirm receipt, decide promptly and inform you of the outcome.',
+    report_url:        'URL of the content',
+    report_url_hint:   'The full address of the page or image concerned.',
+    report_reason:     'Why is this content illegal?',
+    report_reason_hint:
+      'Please describe as precisely as possible what the content is and which right it infringes.',
+    report_declaration:
+      'I declare that my information is correct and complete to the best of my knowledge.',
+    report_submit:     'Submit report',
+    report_done_title: 'Report received',
+    report_done_text:
+      'We received your report on {timestamp} and sent an acknowledgement of receipt to {email}.',
+    report_err_declaration: 'Please confirm the declaration.',
+  },
+  de: {
+    back_home:         'Zurück zur Startseite',
+    field_name:        'Name',
+    field_email:       'E-Mail-Adresse',
+    field_contract:    'Angaben zur Identifizierung des Vertrags',
+    submitting:        'Wird gesendet…',
+    err_network:       'Der Server war nicht erreichbar. Bitte noch einmal versuchen.',
+    err_generic:       'Da ist etwas schiefgelaufen. Bitte noch einmal versuchen.',
+    err_required:      'Bitte fülle alle Felder aus.',
+    err_email:         'Bitte gib eine gültige E-Mail-Adresse ein.',
+    err_rate:          'Zu viele Anfragen. Bitte versuche es später noch einmal.',
+
+    revoke_title:      'Vertrag widerrufen',
+    revoke_intro:
+      'Mit diesem Formular widerrufst du ein kostenpflichtiges Abonnement (Ticket Bot Premium, Premium+ oder Business). '
+      + 'Du musst keinen Grund angeben und dich nicht anmelden. '
+      + 'Für Käufe im Shop gilt dieses Formular nicht, die wickelt Tebex ab.',
+    revoke_contract_hint:
+      'Zum Beispiel deine Discord-Server-ID oder die Stripe-Rechnungsnummer.',
+    revoke_email_hint:
+      'An diese Adresse senden wir die Eingangsbestätigung.',
+    revoke_submit:     'Widerruf bestätigen',
+    revoke_done_title: 'Widerruf eingegangen',
+    revoke_done_text:
+      'Wir haben deinen Widerruf am {timestamp} aufgenommen und eine Eingangsbestätigung an {email} gesendet. '
+      + 'Bitte bewahre diese E-Mail auf, sie enthält den Inhalt deiner Erklärung sowie Datum und Uhrzeit des Eingangs.',
+    revoke_legal_link: 'Widerrufsbelehrung',
+
+    cancel_title:      'Verträge hier kündigen',
+    cancel_intro:
+      'Mit diesem Formular kündigst du ein kostenpflichtiges Abonnement. Die Kündigung wirkt zum Ende des laufenden '
+      + 'Abrechnungszeitraums, sofern du keine außerordentliche Kündigung wählst. Eine Anmeldung ist nicht nötig.',
+    cancel_kind:       'Art der Kündigung',
+    cancel_kind_ordinary: 'Ordentliche Kündigung zum Ende des Abrechnungszeitraums',
+    cancel_kind_extraordinary: 'Außerordentliche Kündigung aus wichtigem Grund',
+    cancel_when:       'Kündigungszeitpunkt',
+    cancel_when_asap:  'Zum nächstmöglichen Zeitpunkt',
+    cancel_when_date:  'Zu einem bestimmten Datum',
+    cancel_contract_hint:
+      'Zum Beispiel deine Discord-Server-ID oder die Stripe-Rechnungsnummer.',
+    cancel_reason:     'Grund der außerordentlichen Kündigung',
+    cancel_submit:     'Jetzt kündigen',
+    cancel_done_title: 'Kündigung eingegangen',
+    cancel_done_text:
+      'Wir haben deine Kündigung am {timestamp} aufgenommen und eine Eingangsbestätigung an {email} gesendet. '
+      + 'Darin stehen Datum und Uhrzeit des Eingangs sowie das Vertragsende.',
+    cancel_portal_hint:
+      'Wenn du im Dashboard angemeldet bist, kannst du auch direkt im Stripe-Kundenportal unter "Manage subscription" kündigen.',
+
+    report_title:      'Rechtswidrige Inhalte melden',
+    report_intro:
+      'Mit diesem Formular meldest du bei uns gespeicherte Inhalte, die du für rechtswidrig hältst '
+      + '(Art. 16 der Verordnung (EU) 2022/2065). Wir bestätigen den Eingang, entscheiden zeitnah und informieren dich über das Ergebnis.',
+    report_url:        'URL des Inhalts',
+    report_url_hint:   'Die vollständige Adresse der betroffenen Seite oder des Bildes.',
+    report_reason:     'Warum ist der Inhalt rechtswidrig?',
+    report_reason_hint:
+      'Bitte beschreibe möglichst genau, worum es geht und welches Recht verletzt wird.',
+    report_declaration:
+      'Meine Angaben sind nach bestem Wissen richtig und vollständig.',
+    report_submit:     'Meldung absenden',
+    report_done_title: 'Meldung eingegangen',
+    report_done_text:
+      'Wir haben deine Meldung am {timestamp} erhalten und eine Eingangsbestätigung an {email} gesendet.',
+    report_err_declaration: 'Bitte bestätige die Erklärung.',
+  },
+} as const

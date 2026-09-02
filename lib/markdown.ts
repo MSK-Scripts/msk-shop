@@ -3,7 +3,16 @@ import path from 'path'
 
 const LEGAL_DIR = path.join(process.cwd(), 'content', 'legal')
 
-const ALLOWED_SLUGS = ['imprint', 'imprint-de', 'privacy', 'privacy-de', 'terms', 'terms-de'] as const
+const ALLOWED_SLUGS = [
+  'imprint', 'imprint-de',
+  'privacy', 'privacy-de',
+  'terms',   'terms-de',
+  // Widerrufsbelehrung (§ 356a BGB) und Auftragsverarbeitungsvertrag (Art. 28
+  // DSGVO). Die Liste ist der Pfad-Traversal-Schutz dieser Datei — ein neuer
+  // Rechtstext ohne Eintrag hier wirft, statt irgendeine Datei zu lesen.
+  'widerruf', 'widerruf-de',
+  'avv',      'avv-de',
+] as const
 type LegalSlug = typeof ALLOWED_SLUGS[number]
 
 export function getLegalContent(slug: string): string {
@@ -50,6 +59,22 @@ export function renderMarkdown(md: string): string {
       i++; continue
     }
 
+    // Blockquote — aufeinanderfolgende Zeilen mit '>'
+    //
+    // Gebraucht wird das genau einmal, aber an einer Stelle, an der es zählt:
+    // der Hinweis auf das Widerspruchsrecht nach Art. 21 DSGVO muss sich vom
+    // Fließtext abheben (die Aufsichtsbehörden verlangen eine hervorgehobene
+    // Darstellung). Ohne diesen Zweig stand dort ein sichtbares '>' im Text.
+    if (line.startsWith('>')) {
+      const quoted: string[] = []
+      while (i < lines.length && lines[i].startsWith('>')) {
+        quoted.push(inline(lines[i].replace(/^>\s?/, '')))
+        i++
+      }
+      output.push(`<blockquote><p>${quoted.join('<br />')}</p></blockquote>`)
+      continue
+    }
+
     // Table — lines starting with |
     if (line.startsWith('|')) {
       const tableLines: string[] = []
@@ -92,6 +117,7 @@ export function renderMarkdown(md: string): string {
       !lines[i].startsWith('- ') &&
       !lines[i].startsWith('* ') &&
       !lines[i].startsWith('|') &&
+      !lines[i].startsWith('>') &&
       !/^-{3,}$/.test(lines[i].trim()) &&
       !/^\d+\.\s/.test(lines[i])
     ) {

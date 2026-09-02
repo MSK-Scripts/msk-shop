@@ -10,12 +10,13 @@ import {
 } from 'lucide-react'
 import { dashboardTranslations } from '@/lib/i18n'
 import { useLang } from '@/components/i18n/LangProvider'
-import { TIER_CONFIG, type Tier } from '@/lib/tiers'
+import { TIER_CONFIG, formatTierPrice, type Tier } from '@/lib/tiers'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import DnsInstructions from './DnsInstructions'
 import { cn } from '@/lib/utils'
+import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 
 const BotConfigEditor = dynamic(() => import('@/components/BotConfigEditor'), { ssr: false })
 const TranscriptsCard = dynamic(() => import('./TranscriptsCard'), { ssr: false })
@@ -217,6 +218,11 @@ function GuildPanel({
   // Subscription (Stripe)
   const [billingLoading, setBillingLoading] = useState<null | PaidTier | 'manage'>(null)
   const [billingError, setBillingError] = useState<string | null>(null)
+  // § 312j Abs. 2 BGB verlangt die wesentlichen Angaben unmittelbar VOR der
+  // Bestellschaltflaeche. Der Klick auf eine Stufe bestellt deshalb nicht mehr
+  // direkt, sondern klappt die Zusammenfassung auf; erst der Knopf darin
+  // startet den Checkout.
+  const [pendingTier, setPendingTier] = useState<PaidTier | null>(null)
 
   const showMsg = (type: 'success' | 'error' | 'info', text: string) => setMessage({ type, text })
 
@@ -350,7 +356,7 @@ function GuildPanel({
               key={target}
               size="sm"
               variant={i === 0 ? 'primary' : 'outline'}
-              onClick={() => handleCheckout(target)}
+              onClick={() => { setBillingError(null); setPendingTier(target) }}
               disabled={billingLoading !== null}
             >
               {billingLoading === target
@@ -392,6 +398,59 @@ function GuildPanel({
           </Button>
         </div>
       </div>
+
+      {/* Bestellzusammenfassung (§ 312j Abs. 2 BGB).
+          Steht unmittelbar vor der Bestellschaltflaeche und nennt Leistung,
+          Gesamtpreis und Laufzeit, dazu die Links auf AGB und
+          Widerrufsbelehrung. Bewusst als aufklappender Block und nicht als
+          Modal: ein `position: fixed`-Overlay in einem Teilbaum mit `sticky`
+          landet unter fremden Elementen, das hat am 18.08.2026 schon einmal
+          die Galerie ueber den Dialog gelegt. */}
+      {pendingTier && (
+        <div className="mb-6 rounded-lg border border-[var(--color-primary)]/30 bg-[color-mix(in_oklab,var(--color-primary)_6%,transparent)] p-4">
+          <h2 className="text-sm font-bold text-[var(--color-foreground)]">{t.sub_confirm_title}</h2>
+          <dl className="mt-3 space-y-1.5 text-sm">
+            <div className="flex flex-wrap gap-x-2">
+              <dt className="text-[var(--color-muted-foreground)]">{t.sub_confirm_service}:</dt>
+              <dd className="font-medium text-[var(--color-foreground)]">
+                {t[`tier_${pendingTier}` as 'tier_premium' | 'tier_premium_plus' | 'tier_business']}
+                {' · '}{guild.guild_name ?? guild.guild_id}
+              </dd>
+            </div>
+            <div className="flex flex-wrap gap-x-2">
+              <dt className="text-[var(--color-muted-foreground)]">{t.sub_confirm_price}:</dt>
+              <dd className="font-medium text-[var(--color-foreground)]">
+                {t.sub_confirm_price_value
+                  .replace('{price}', formatTierPrice(pendingTier, lang))}
+              </dd>
+            </div>
+            <div className="flex flex-wrap gap-x-2">
+              <dt className="text-[var(--color-muted-foreground)]">{t.sub_confirm_term}:</dt>
+              <dd className="font-medium text-[var(--color-foreground)]">{t.sub_confirm_term_value}</dd>
+            </div>
+          </dl>
+          <p className="mt-3 text-xs leading-relaxed text-[var(--color-muted-foreground)]">
+            {t.sub_confirm_legal_pre}{' '}
+            <Link href="/terms" className="text-[var(--color-primary)] hover:underline">{t.sub_confirm_terms}</Link>
+            {' '}{t.sub_confirm_legal_and}{' '}
+            <Link href="/terms/widerruf" className="text-[var(--color-primary)] hover:underline">{t.sub_confirm_withdrawal}</Link>
+            {t.sub_confirm_legal_post}
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {/* Der Wortlaut ist gesetzlich vorgegeben (§ 312j Abs. 3 BGB) und
+                darf nicht zu "Abonnieren" oder "Weiter" verkuerzt werden. */}
+            <Button size="sm" onClick={() => handleCheckout(pendingTier)} disabled={billingLoading !== null}>
+              {billingLoading === pendingTier
+                ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                : <CreditCard className="h-3.5 w-3.5" />}
+              {t.sub_confirm_submit}
+            </Button>
+            <Button size="sm" variant="ghost" onClick={() => setPendingTier(null)} disabled={billingLoading !== null}>
+              {t.sub_confirm_cancel}
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Trial / billing hint + error */}
       <div className="mb-6">

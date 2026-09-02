@@ -34,6 +34,18 @@ export interface TierConfig {
   removeBranding: boolean;
   /** Max uploads per hour per API key (rate limiting). */
   uploadsPerHour: number;
+  /**
+   * Monthly price in euro cents, VAT not shown (§ 19 UStG).
+   *
+   * Lives here rather than only in the marketing copy because § 312j Abs. 2
+   * BGB requires the total price to be shown *immediately before* the order
+   * button. A number the checkout reads from the same place as the limits
+   * cannot drift away from the tier it belongs to; a string in a copy file
+   * can, and the AGB table would then be the only place that is still right.
+   *
+   * 0 for the free tier, which has no order button.
+   */
+  priceCents: number;
 }
 
 export const TIER_CONFIG: Record<Tier, TierConfig> = {
@@ -46,6 +58,7 @@ export const TIER_CONFIG: Record<Tier, TierConfig> = {
     attachments: false,
     removeBranding: false,
     uploadsPerHour: 30,
+    priceCents: 0,
   },
   premium: {
     transcriptMaxBytes: 50 * 1024 * 1024, // 50 MB
@@ -56,6 +69,7 @@ export const TIER_CONFIG: Record<Tier, TierConfig> = {
     attachments: true,
     removeBranding: true,
     uploadsPerHour: 60,
+    priceCents: 399,
   },
   premium_plus: {
     transcriptMaxBytes: 100 * 1024 * 1024, // 100 MB
@@ -66,6 +80,7 @@ export const TIER_CONFIG: Record<Tier, TierConfig> = {
     attachments: true,
     removeBranding: true,
     uploadsPerHour: 120,
+    priceCents: 699,
   },
   business: {
     transcriptMaxBytes: 200 * 1024 * 1024, // 200 MB
@@ -76,6 +91,7 @@ export const TIER_CONFIG: Record<Tier, TierConfig> = {
     attachments: true,
     removeBranding: true,
     uploadsPerHour: 300,
+    priceCents: 999,
   },
 };
 
@@ -85,4 +101,18 @@ export function getExpiresAt(tier: Tier): Date {
   const date = new Date();
   date.setDate(date.getDate() + days);
   return date;
+}
+
+/**
+ * Monthly price for humans, in the language of the page.
+ *
+ * German writes "3,99 €", English "€3.99" — the same number, and both are
+ * wrong in the other language. Built from `priceCents` rather than from a
+ * literal so it can never disagree with the tier table above.
+ */
+export function formatTierPrice(tier: Tier, lang: 'en' | 'de'): string {
+  const amount = TIER_CONFIG[tier].priceCents / 100;
+  return new Intl.NumberFormat(lang === 'de' ? 'de-DE' : 'en-GB', {
+    style: 'currency', currency: 'EUR',
+  }).format(amount);
 }

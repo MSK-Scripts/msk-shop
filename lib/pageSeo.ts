@@ -91,6 +91,61 @@ export const PAGE_SEO: Record<string, Record<Lang, PageSeo>> = {
     en: { title: 'Privacy Policy',        description: 'How MSK Scripts handles personal data, in line with the GDPR.' },
     de: { title: 'Datenschutzerklärung',  description: 'Wie MSK Scripts mit personenbezogenen Daten umgeht, nach den Vorgaben der DSGVO.' },
   },
+  '/terms/widerruf': {
+    en: {
+      title:       'Withdrawal Instructions',
+      description: 'Your 14-day right of withdrawal for MSK Scripts subscriptions, including the model withdrawal form.',
+    },
+    de: {
+      title:       'Widerrufsbelehrung',
+      description: 'Dein 14-tägiges Widerrufsrecht für Abonnements von MSK Scripts, inklusive Muster-Widerrufsformular.',
+    },
+  },
+  '/terms/avv': {
+    en: {
+      title:       'Data Processing Agreement',
+      description: 'The Art. 28 GDPR agreement for the transcript service, hosted bot management and MSK Forms.',
+    },
+    de: {
+      title:       'Auftragsverarbeitung (AVV)',
+      description: 'Die Vereinbarung nach Art. 28 DSGVO für Transcript-Service, Bot-Hosting und MSK Forms.',
+    },
+  },
+
+  // Die drei Pflichtformulare. Sie tragen bewusst kein `noindex`: § 356a und
+  // § 312k BGB verlangen eine ständig und ohne Hürde erreichbare Schaltfläche,
+  // und eine Seite aus dem Index zu nehmen, die jemand im Ernstfall suchen
+  // wird, arbeitet gegen diesen Zweck.
+  '/vertrag-widerrufen': {
+    en: {
+      title:       'Withdraw from contract',
+      description: 'Withdraw from an MSK Scripts subscription online, without signing in. You receive an acknowledgement of receipt by email.',
+    },
+    de: {
+      title:       'Vertrag widerrufen',
+      description: 'Widerrufe ein Abonnement von MSK Scripts online und ohne Anmeldung. Die Eingangsbestätigung kommt per E-Mail.',
+    },
+  },
+  '/vertrag-kuendigen': {
+    en: {
+      title:       'Cancel contracts here',
+      description: 'Cancel an MSK Scripts subscription online, without signing in. You receive an acknowledgement of receipt by email.',
+    },
+    de: {
+      title:       'Verträge hier kündigen',
+      description: 'Kündige ein Abonnement von MSK Scripts online und ohne Anmeldung. Die Eingangsbestätigung kommt per E-Mail.',
+    },
+  },
+  '/report': {
+    en: {
+      title:       'Report illegal content',
+      description: 'Report content hosted by MSK Scripts that you consider illegal, under Art. 16 of Regulation (EU) 2022/2065.',
+    },
+    de: {
+      title:       'Rechtswidrige Inhalte melden',
+      description: 'Melde bei MSK Scripts gespeicherte Inhalte, die du für rechtswidrig hältst, nach Art. 16 der Verordnung (EU) 2022/2065.',
+    },
+  },
 
   // Kaufpfad. Diese fünf tragen `robots: noindex` und stehen zusätzlich in der
   // robots.txt, die Beschreibung wird also nie in einem Suchergebnis landen.

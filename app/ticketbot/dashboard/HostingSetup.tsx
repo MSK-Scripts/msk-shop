@@ -7,6 +7,7 @@ import { useLang }               from '@/components/i18n/LangProvider'
 import { useJsonResource }       from '@/lib/useAdminResource'
 import { Button }                from '@/components/ui/Button'
 import { Input }                 from '@/components/ui/Input'
+import { LocaleLink as Link }    from '@/components/i18n/LocaleLink'
 
 // ── Self-service bot hosting ────────────────────────────────────────────────
 //
@@ -81,6 +82,7 @@ function errorText(t: T, key: string | null): string | null {
     health_unreachable:    t.host_err_health_unreachable,
     in_progress:           t.host_err_in_progress,
     rate_limited:          t.host_err_rate_limited,
+    dpa_required:          t.host_err_dpa,
   }
   return map[key] ?? t.host_err_generic
 }
@@ -172,6 +174,10 @@ function SetupCard({
   const [touched, setTouched]           = useState<Record<string, boolean>>({})
   const [busy, setBusy]                 = useState(false)
   const [error, setError]               = useState<string | null>(null)
+  // Auftragsverarbeitung (Art. 28 DSGVO). Nur bei der Ersteinrichtung
+  // gefragt: ein spaeteres Speichern der .env schliesst keinen neuen
+  // Vertrag, deshalb gilt der Haken bei `hosted` als gesetzt.
+  const [dpaAccepted, setDpaAccepted]   = useState(false)
   // What the customer decided about an existing archive. The question is asked
   // BEFORE the form, not after a rejected submit: restoring must not require
   // typing a bot token, and demanding one to even reach the question would mean
@@ -205,6 +211,7 @@ function SetupCard({
         body:    JSON.stringify({
           token, clientId: clientIdValue, clientSecret,
           databaseUrl: databaseUrlValue, publicPortal: portalValue,
+          ...(hosted ? {} : { dpaAccepted }),
           ...(archive ? { archive } : {}),
         }),
       })
@@ -321,9 +328,27 @@ function SetupCard({
           </p>
         )}
 
+        {/* Beim Hosting liegt mehr auf unseren Systemen als beim reinen
+            Transcript-Service: die komplette Bot-Datenbank samt Discord-Ids des
+            Teams. Die Vereinbarung wird deshalb hier eigens bestaetigt. */}
+        {!hosted && (
+          <label className="mt-4 flex min-h-11 items-start gap-3">
+            <input type="checkbox" checked={dpaAccepted}
+                   className="mt-1 h-4 w-4 shrink-0 accent-[var(--color-primary)]"
+                   onChange={e => setDpaAccepted(e.target.checked)} />
+            <span className="text-sm text-[var(--color-muted-foreground)]">
+              {t.dpa_accept}{' '}
+              <Link href="/terms/avv" className="text-[var(--color-primary)] hover:underline">
+                {t.dpa_link}
+              </Link>
+            </span>
+          </label>
+        )}
+
         <div className="mt-5 flex flex-wrap items-center gap-3">
           <Button onClick={() => submit(archiveChoice ?? undefined)}
-                  disabled={busy || !complete || undecided} className="tap-target">
+                  disabled={busy || !complete || undecided || (!hosted && !dpaAccepted)}
+                  className="tap-target">
             {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Server className="h-4 w-4" />}
             {busy ? t.host_activating : hosted ? t.host_save_restart : t.host_activate}
           </Button>

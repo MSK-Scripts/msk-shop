@@ -1,300 +1,140 @@
-# Terms & Conditions
+# Terms and Conditions
 
-*Last updated: August 2026*
+Last updated: September 2026
 
-## 1. Scope
+This is a translation for your convenience. The German version at www.msk-scripts.de/de/terms is authoritative. German statutory references (§ = section, Art. = article) are kept unchanged.
 
-These Terms & Conditions apply to all use of the MSK Scripts services available at **www.msk-scripts.de**, including:
+## § 1 Scope
 
-- **MSK Scripts Shop**: purchase of digital products (FiveM resources and Discord bots) via Tebex
-- **MSK Ticket Bot Transcript Service**: an optional subscription-based hosted service for users who self-host the MSK Ticket Bot
-- **Hosted Bot Management**: an optional fully managed hosting service for the MSK Ticket Bot, included in the Premium, Premium+ and Business tiers and activated by you in the dashboard
-- **MSK Giveaway Bot**: a free Discord bot, operated as an official public instance, that you can add to your own Discord server to run giveaways
+(1) These Terms apply between Moritz Kohm, trading as "MSK Scripts", c/o Impressumservice Dein-Impressum, Stettiner Str. 41, 35410 Hungen ("MSK Scripts", "we") and you for:
 
-By completing a purchase, registering for any of these services, or inviting the Giveaway Bot to your Discord server, you agree to these terms.
+- the **shop** at www.msk-scripts.de (FiveM resources), insofar as MSK Scripts is the licensor – the seller is Tebex Limited (§ 2);
+- the **Ticket Bot transcript service** including Hosted Bot Management (§§ 5–7);
+- the **Giveaway Bot** (§ 8);
+- the **image gallery, MSK Paste and MSK Shortener** (§ 9);
+- the use of the website in all other respects.
 
----
+For **MSK Forms**, the terms at forms.msk-scripts.de/terms apply.
 
-## 2. Shop: Payment Processing (Tebex)
+(2) A consumer is any natural person who enters into a legal transaction for purposes that are predominantly outside their trade, business or profession (§ 13 BGB); an entrepreneur is anyone acting in the exercise of their trade, business or profession (§ 14 BGB).
 
-All shop purchases are processed by **Tebex Limited** (formerly Buycraft), acting as payment service provider and merchant of record. By purchasing, you also agree to Tebex's own terms:
+(3) These Terms are available at www.msk-scripts.de/terms and can be saved and printed. The contract language is German; the English version is provided for information, and in the event of discrepancies the German version prevails.
 
-- [Tebex Terms & Conditions](https://checkout.tebex.io/terms)
-- [Tebex Privacy Policy](https://checkout.tebex.io/privacy)
-- [Tebex Impressum](https://checkout.tebex.io/impressum)
+## § 2 Shop: contracting party, payment, delivery
 
----
+(1) Purchases in the shop are handled by **Tebex Limited**, 201 Haverstock Hill, London NW3 4QG, UK, as the seller and "Merchant of Record". The purchase contract, payment, invoice, VAT and the right of withdrawal for shop purchases are governed by the terms of Tebex (https://checkout.tebex.io/terms). As licensor, MSK Scripts grants you the rights of use under § 3.
 
-## 3. Shop: License Terms
+(2) For delivery you sign in with your CFX.re account; the resource is provided in the CFX.re Keymaster under "Granted Assets" after payment (FiveM Asset Escrow). Packages with a Discord role require a Discord ID and membership of our Discord server. Use requires an active CFX.re account and a server with an internet connection; offline use is not possible.
 
-Purchasing an MSK Scripts resource grants you a **non-transferable, non-exclusive single-server license** to use the resource on one (1) FiveM server at a time.
+(3) In the case of technical problems for which we are responsible, we provide support and assist with refunds through Tebex.
 
-The licensor (MSK Scripts) retains all rights to the software, including all intellectual property rights (copyright, trademark, and related rights).
+## § 3 Shop: rights of use
 
-**You may not:**
-- Use the resource on more than one FiveM server simultaneously
-- Resell, redistribute, sublicense, or publicly share the resource
-- Attempt to circumvent the Asset Escrow system
-- Reverse engineer or decompile the resource, except where mandatory law allows it (in particular §§ 69d(2), 69d(3) and 69e UrhG, which cannot be excluded by contract)
-- Share or publish the Source version of any resource
+(1) With your purchase you receive a non-exclusive, non-transferable, unlimited right to use the resource on **one (1) FiveM server at a time** ("single server licence"). Subscriptions ("everything as a subscription") grant this right for all included resources for the duration of the subscription.
 
----
+(2) The following are not permitted: use on several servers at the same time; resale, transfer, sublicensing or publication; circumvention of the asset escrow system; decompilation or reverse engineering, unless §§ 69d, 69e UrhG (German Copyright Act) mandatorily permit it; publication of the source version.
 
-## 4. Shop: Returns & Refunds
+(3) The source version may be modified for your own server; modified versions are subject to the same restrictions.
 
-As these are digital products, the statutory right of withdrawal does not apply once the product has been delivered, provided you explicitly agreed at checkout that delivery begins before the withdrawal period expires.
+(4) All rights, in particular copyright, remain with MSK Scripts. In the event of violations, MSK Scripts may terminate the licence and withdraw the resource in the Keymaster; claims for damages are reserved.
 
-In the event of technical issues attributable to our side, we offer support and may provide refunds on a case-by-case basis. Contact us at: [info@msk-scripts.de](mailto:info@msk-scripts.de)
+(5) **Updates:** We provide security and functional updates for purchased resources for as long as the resource is offered in the shop, but for at least **24 months** from purchase (§ 327f BGB). We are not responsible for changes to the FiveM platform made by Cfx.re that are outside our control; we endeavour to adapt promptly.
 
-This section covers **shop purchases**. For the paid Premium and Premium+ subscriptions a statutory right of withdrawal applies, see section 7.9.
+(6) Towards consumers, the statutory warranty rights for digital products (§§ 327 ff. BGB) apply insofar as MSK Scripts is the contracting party; otherwise warranty claims are to be asserted against Tebex, and we will support you in doing so.
 
----
+## § 4 Free software and open source
 
-## 5. Shop: FiveM Asset Escrow
+Resources provided free of charge (e.g. msk_core, msk_fuel), the Ticket Bot, the Giveaway Bot source code, MSK Paste and MSK Shortener are subject to the open source licences stated in the respective repository (as a rule AGPL-3.0 with an additional term under section 7(b): the reference to MSK Scripts remains visible). For free software we are only liable for fraudulently concealed defects (§§ 523, 524 BGB) and under § 12.
 
-Many resources use the [FiveM Asset Escrow System](https://forum.cfx.re/t/introducing-asset-escrow-for-your-resources/4777151). Usage requires an active CFX.re account. Offline use is not supported.
+## § 5 Ticket Bot transcript service: service and tiers
 
----
+(1) The service allows operators of the self-hosted MSK Ticket Bot to upload ticket transcripts to our servers and retrieve them via a link.
 
-## 6. Shop: Discord Requirements
+| Tier | Price | Retention | max. transcript | Attachments | Custom domain | Remove branding | Bot hosting |
+|---|---|---|---|---|---|---|---|
+| Basic | free | 30 days | 10 MB | no | no | no | no |
+| Premium | €3.99/month | 180 days | 50 MB | yes (100 MB/ticket) | yes | yes | yes |
+| Premium+ | €6.99/month | 365 days | 100 MB | yes (200 MB/ticket) | yes | yes | yes |
+| Business | €9.99/month | 10 years | 200 MB | yes (500 MB/ticket) | yes | yes | yes |
 
-Packages with Discord integration require a valid Discord ID. You must be a member of the MSK Scripts Discord server to receive Discord roles and other Discord-based deliverables.
+Prices are final prices; VAT is not shown pursuant to § 19 UStG.
 
----
+(2) **Branding waiver:** For servers with an active Premium, Premium+ or Business subscription we waive the additional term under § 4; the notice may be removed. The waiver ends with the subscription.
 
-## 7. Ticket Bot Transcript Service
+(3) **Conclusion of contract:** You select a tier in the dashboard, check the details and click **"Subscribe with obligation to pay"**; this constitutes an offer that we accept by activating the tier and sending a confirmation email (containing the contents of the contract and these Terms, § 312f BGB). You can correct input errors up until you click.
 
-### 7.1 Service Description
+(4) **Trial period:** New customers receive a one-off 14 days free of charge without a payment method. Without a payment method on file, the subscription ends automatically and falls back to Basic; no charge is incurred. With a payment method on file, the trial period converts into a paid monthly subscription unless you cancel beforehand. We notify you by email three days before it expires.
 
-The MSK Ticket Bot Transcript Service allows users who self-host the MSK Ticket Bot to upload ticket transcripts to our servers and retrieve them via a public link. The service is provided in three tiers:
+## § 6 Subscriptions: term, cancellation, withdrawal
 
-| Tier | Price | Storage | Max Transcript | Attachments | Custom Domain | Remove branding |
-|---|---|---|---|---|---|---|
-| **Basic** | Free | 30 days | 10 MB | No | No | No |
-| **Premium** | €3.99/month | 180 days | 50 MB | Yes (100 MB/ticket) | Yes | Yes |
-| **Premium+** | €6.99/month | 365 days | 100 MB | Yes (200 MB/ticket) | Yes | Yes |
-| **Business** | €9.99/month | 10 years | 200 MB | Yes (500 MB/ticket) | Yes | Yes |
+(1) Subscriptions run monthly and renew by one month at a time unless cancelled. Billing is handled by Stripe in advance at the start of each billing period.
 
-**Remove branding:** The MSK Ticket Bot is licensed under AGPL-3.0 with an additional term under section 7(b) requiring that the notice identifying MSK Scripts stays visible to the people using the bot. For servers with an active Premium or Premium+ subscription we waive that term, so the notice may be removed there. The waiver is tied to the subscription and ends with it.
+(2) **Cancellation** is possible at any time with effect from the end of the current billing period: via the **"Cancel contracts here"** button in the site footer (§ 312k BGB, no login required), via "Manage subscription" in the dashboard (Stripe customer portal), or by email to info@msk-scripts.de. We confirm the cancellation by email without delay. After cancellation the tier falls back to Basic; existing transcripts remain available until their individual expiry, custom domains and bot hosting are deactivated (§ 7 (5)).
 
-### 7.2 Subscription and Payment
+(3) We may cancel the subscription with four weeks notice to the end of a billing period; in the event of serious violations (§ 10) without notice.
 
-Premium and Premium+ subscriptions are billed via **Stripe** (Stripe Payments Europe, Ltd.). Stripe processes all payments; we never receive or store your card details. By subscribing, you also agree to Stripe's terms.
+(4) **Right of withdrawal:** Consumers have a 14-day right of withdrawal. The withdrawal instructions with the model form and the electronic withdrawal function "Withdraw from contract" can be found at www.msk-scripts.de/terms/widerruf. If the service begins during the withdrawal period at your request, on withdrawal you owe the proportionate value of the service provided up to that point; during the free trial period nothing is owed.
 
-Subscription fees are billed monthly. Your tier is activated automatically once the subscription is confirmed and remains active for as long as payment succeeds.
+(5) We announce price changes at least six weeks in advance in text form; they take effect from the next billing period after that deadline. You may cancel until then.
 
-**14-day free trial:** New customers receive a 14-day free trial. **No payment method is required** to start it. If you do not add a payment method before the trial ends, the subscription ends automatically and your tier returns to Basic; nothing is charged and no cancellation is needed. If you do add a payment method, the subscription converts to a paid monthly plan at the end of the trial and the first monthly fee is charged, unless you cancel before then. The trial is available once per customer.
+## § 7 Ticket Bot: API key, content, domain, hosting
 
-### 7.3 Cancellation and Downgrade
+(1) **API key:** The key is tied to one Discord server and must be kept secret. On re-verification the previous key becomes invalid. In the event of misuse we may block keys.
 
-You may cancel your subscription at any time via the **"Manage subscription"** button in your dashboard (Stripe customer portal). Upon cancellation:
-- Your tier is downgraded to **Basic** at the end of the current billing period (or immediately if you cancel during the free trial, no charge is made)
-- Existing transcripts remain accessible until their individual expiry date
-- Custom domains are deactivated at the time of downgrade
-- No partial refunds are provided for unused subscription time. This does **not** affect your statutory right of withdrawal under section 7.9
+(2) **Responsibility for content:** Transcripts and attachments are created by your bot; you are responsible for their content. For the storage you conclude the data processing agreement with us at www.msk-scripts.de/terms/avv (Art. 28 GDPR) and ensure that your users are informed about the storage at MSK Scripts. Illegal content, infringements of third-party rights and malicious code are not permitted.
 
-### 7.4 API Key
+(3) **Public URLs:** Transcripts are accessible via random, unlinked URLs to anyone who knows the URL. You decide who you pass links on to. After the retention period expires, transcripts are deleted; beyond that there is no claim to availability.
 
-Upon successful registration via **www.msk-scripts.de/ticketbot/verify**, you receive a personal API key.
+(4) **Custom domain:** You must be the owner of the domain and set the DNS A record. We set up TLS via Let's Encrypt. We may remove misconfigured or unlawfully used domains.
 
-- The API key is **linked to one Discord server** and must be kept confidential
-- **Do not share your API key** with anyone: it grants the ability to upload transcripts on behalf of your server
-- If you re-verify for the same server, a new API key is generated and the previous one is **immediately invalidated**; you must update the key in your bot's configuration
-- We reserve the right to revoke API keys in cases of abuse or violation of these terms
+(5) **Hosted Bot Management:** We operate your bot on our servers (PM2) under a subdomain of msk-scripts.de or your own domain and provide you with a management panel. You transmit the bot token, client ID and client secret; these are stored in an `.env` file on our server which we can access for support and maintenance. You are responsible for registering the redirect URL with Discord, for granting permissions in your bot dashboard, for compliance with the Discord terms of service, and for the content your bot processes. After termination the bot and address are shut down, the installation is archived for 14 days (you can restore it yourself) and then deleted; we hand over configuration files on request.
 
-### 7.5 Transcript Content and Responsibility
+## § 8 Giveaway Bot
 
-The transcript content is generated entirely by your self-hosted bot instance and uploaded to our servers. You are solely responsible for the content of transcripts and attachments stored on our servers.
+(1) The Giveaway Bot is free of charge, usable without an account and provided without any guarantee of availability. We may change or discontinue it at any time, or remove it from individual servers in the event of misuse.
 
-**You must not upload transcripts containing:**
-- Illegal content of any kind
-- Content that violates the rights of third parties
-- Malware, scripts, or executable code intended to harm
+(2) As a server administrator you are solely responsible for the lawfulness of your giveaways (prizes, terms of participation, competition and consumer law), for delivering the prizes, and for informing your members about the use of the bot. MSK Scripts is not the organiser.
 
-We reserve the right to delete content that violates these terms without prior notice and to terminate access to the service.
+(3) Use for unlawful lotteries or gambling, spam, and illegal content or prizes is not permitted.
 
-### 7.6 Transcript Availability and Public URLs
+## § 9 Image gallery, Paste, Shortener
 
-Transcripts are accessible via a URL containing a randomly generated UUID (e.g. `https://www.msk-scripts.de/transcripts/.../...`). These URLs are not listed, indexed, or linked. Anyone who knows the URL can access the transcript, so it is your responsibility to handle these links appropriately.
+(1) When submitting images you warrant that you hold all necessary rights, and you grant us the non-exclusive right to make the image publicly available in the gallery and in our channels for the presentation of our products; you may request removal at any time. We review submissions before publication.
 
-We do not guarantee permanent availability of transcripts beyond the stated retention period for your tier.
+(2) MSK Paste and MSK Shortener are free tools without any guarantee of availability. Illegal content, phishing targets, malicious code and the circumvention of blocks are not permitted. Short links to reported targets are deactivated.
 
-### 7.7 Custom Domain (Premium and Premium+)
+## § 10 Content moderation and reporting procedure (Art. 14, 16, 17 DSA)
 
-Premium and Premium+ users may configure a custom domain for transcript delivery.
+(1) We do not review user-provided content (transcripts, images, pastes, short links, giveaway pages) comprehensively, but on a case-by-case basis. We do not use automated filters to assess content. Uploaded images are technically re-encoded and file attachments are checked against permitted file types in order to remove malicious code; this does not involve any assessment of the content.
 
-- You must **own and control** the domain you configure
-- You must set the required DNS A-record pointing to our server before activating the domain
-- An SSL certificate is automatically obtained via Let's Encrypt at no additional cost
-- We reserve the right to remove custom domains that are misconfigured, cause conflicts, or violate applicable law
-- Upon subscription cancellation or downgrade to Basic, the custom domain is deactivated
+(2) Anyone can report illegal content by email to info@msk-scripts.de (URL, reasons, name, email, statement of accuracy). We confirm receipt, decide promptly, diligently and proportionately, and inform the reporting party.
 
-### 7.8 Service Availability
+(3) Possible measures: a warning, removal of the content, blocking of functions or API keys, termination of the contract. If measures are taken against you, you receive a statement of reasons (measure, facts, rule violated, means of redress). You can lodge a complaint free of charge by email within six months; recourse to the courts remains open.
 
-We strive to maintain high availability of the Transcript Service but do not provide a guaranteed uptime or SLA. Scheduled maintenance or unforeseen outages may temporarily interrupt the service.
+(4) If we suspect criminal offences against the life or safety of persons, we inform the law enforcement authorities (Art. 18 DSA).
 
-If the service is unavailable at the time a transcript is uploaded by the bot, the bot will fall back to sending the transcript as a file attachment via DM.
+## § 11 Availability and changes
 
----
+(1) We aim for high availability but do not guarantee any uptime. If the transcript service is unreachable during an upload, the bot sends the transcript as a file via Discord DM instead.
 
-### 7.9 Right of Withdrawal (consumers)
+(2) We only change paid services for good cause, at no additional cost and with prior notice (§ 327r BGB). In the event of a not insignificant impairment we give six weeks notice; you may then cancel free of charge within 30 days.
 
-**Draft, not yet reviewed by a lawyer.** This section follows the statutory model instruction (Annex 1 to Art. 246a § 1(2) sentence 2 EGBGB), adapted for a digital service. Please have it checked before you rely on it.
+## § 12 Liability
 
-This right of withdrawal applies to the **paid Premium and Premium+ subscriptions**, for which MSK Scripts is your contractual partner (Stripe only processes the payment). It does not apply to shop purchases, where Tebex Limited is the merchant of record and provides its own withdrawal terms.
+(1) We are liable without limitation in cases of intent and gross negligence, for injury to life, body or health, under the German Product Liability Act, and for guarantees we have given.
 
-**Right of withdrawal**
+(2) In cases of simple negligence we are only liable for the breach of material contractual obligations, limited to the typical, foreseeable damage. Otherwise liability is excluded, in particular for changes to the FiveM platform, temporary unavailability, data loss after the retention period has expired, transcript links passed on by you, and DNS misconfiguration.
 
-You have the right to withdraw from this contract within fourteen days without giving any reason. The withdrawal period is fourteen days from the day of the conclusion of the contract.
+## § 13 Changes to these Terms
 
-To exercise your right of withdrawal you must inform us
+We may change these Terms for good cause (change in the law, case law, change to the services), provided this does not unreasonably disadvantage you. For subscriptions we inform you at least 30 days in advance in text form, with a note about your right to object and the consequences; if you object, we may cancel with effect from the end of the billing period. For free services, changes take effect on publication; significant changes to the moderation rules are announced on Discord (Art. 14 (2) DSA).
 
-**Moritz Kohm**, c/o Impressumservice Dein-Impressum, Stettiner Str. 41, 35410 Hungen, Germany, [info@msk-scripts.de](mailto:info@msk-scripts.de)
+## § 14 Dispute resolution, applicable law, place of jurisdiction
 
-of your decision to withdraw from this contract by a clear statement (for example a letter sent by post or an email). You may use the model withdrawal form below, but it is not obligatory. To meet the withdrawal deadline it is sufficient for you to send your communication concerning your exercise of the right of withdrawal before the withdrawal period has expired.
+(1) We are neither willing nor obliged to take part in dispute resolution proceedings before a consumer arbitration body.
 
-**Effects of withdrawal**
+(2) German law applies, excluding the UN Convention on Contracts for the International Sale of Goods. For consumers with their habitual residence in another EU state, the mandatory protective provisions of their state of residence remain unaffected (Art. 6 (2) Rome I).
 
-If you withdraw from this contract, we shall reimburse to you all payments received from you without undue delay and in any event not later than fourteen days from the day on which we are informed about your decision to withdraw. We will carry out such reimbursement using the same means of payment as you used for the initial transaction, unless you have expressly agreed otherwise; in any event you will not incur any fees as a result of such reimbursement.
+(3) Towards merchants, legal persons under public law and special funds under public law, the place of jurisdiction is Mannheim. For consumers, the statutory places of jurisdiction apply.
 
-If you requested that the service begin during the withdrawal period, you shall pay us an amount which is in proportion to what has been provided until you have communicated your withdrawal, in comparison with the full coverage of the contract. During the free trial no payment is made, so no such amount arises.
-
-**Model withdrawal form**
-
-(Complete and return this form only if you wish to withdraw from the contract.)
-
-- To Moritz Kohm, c/o Impressumservice Dein-Impressum, Stettiner Str. 41, 35410 Hungen, Germany, info@msk-scripts.de:
-- I/We hereby give notice that I/We withdraw from my/our contract for the provision of the following service: MSK Ticket Bot Transcript Service (Premium / Premium+)
-- Ordered on
-- Name of consumer(s)
-- Address of consumer(s)
-- Signature of consumer(s) (only if this form is notified on paper)
-- Date
-
-Please delete whichever does not apply.
-
----
-
-## 8. Hosted Bot Management Service
-
-### 8.1 Service Description
-
-The Hosted Bot Management Service allows Premium, Premium+ and Business customers to have their MSK Ticket Bot instance hosted and operated on MSK Scripts' servers. You activate the service yourself in the dashboard under "Bot Hosting"; no individual arrangement is required.
-
-The service includes:
-- Hosting of the bot process on MSK Scripts' servers (managed via PM2)
-- A public address for your bot's own web dashboard: either a subdomain we assign under `msk-scripts.de`, or a domain of your own that you point at our servers. The TLS certificate is included in both cases
-- A management panel at **www.msk-scripts.de/ticketbot/dashboard** for controlling the bot (start / stop / restart / update), viewing live log output, and correcting the credentials in the `.env` file
-- Your bot's own dashboard (tickets, statistics, configuration and per-user permissions) runs under the public address above and has its own Discord login, which you grant to the members of your team
-
-### 8.2 Access to Configuration Data and Credentials
-
-You supply your Discord bot token, client ID and client secret through the dashboard when activating the service. By using the Hosted Bot Management Service, you acknowledge and agree that:
-
-- Your bot's configuration files, including `config.jsonc`, `snippets.jsonc`, and the **`.env` file containing sensitive credentials** (your Discord bot token, your OAuth client secret and API keys), are stored on MSK Scripts' servers in a directory accessible to the service operator
-- MSK Scripts personnel may access these files for support, maintenance, and security purposes
-- You are solely responsible for any credentials stored in the `.env` file and for ensuring that the bot token and other secrets have not been compromised
-- You must **immediately regenerate** any compromised credentials (e.g. Discord bot token) and enter the new values in the dashboard
-
-### 8.3 Customer Responsibilities
-
-You are solely responsible for:
-- Registering the redirect URL shown in the dashboard in the Discord developer portal. Without it the login to your bot's dashboard cannot work, and only you can add it
-- Deciding who on your team may sign in to your bot's dashboard and what they are permitted to do there
-- Ensuring that your bot's configuration and usage comply with **Discord's Terms of Service** and Community Guidelines
-- The content processed by the hosted bot (messages, transcripts, user data)
-- Informing your Discord server members that a third-party service (MSK Scripts) operates the bot infrastructure on your behalf
-- Any legal obligations arising from the collection and storage of user data by the bot within your Discord server
-
-### 8.4 Bot Usage Compliance
-
-The hosted bot must not be configured or used to:
-- Collect or store data in violation of applicable law or Discord's Terms of Service
-- Send spam, unsolicited messages, or engage in any abusive behaviour
-- Perform actions that could harm Discord's infrastructure or other users
-
-We reserve the right to immediately suspend the hosted bot if it is used in violation of these terms, Discord's policies, or applicable law.
-
-### 8.5 Service Availability and Termination
-
-We do not guarantee a specific uptime for the Hosted Bot Management Service. The service may be interrupted for maintenance, updates, or other operational reasons.
-
-You can remove the service yourself at any time in the dashboard, and either party may terminate the hosting arrangement with reasonable notice. Upon removal or termination:
-- The bot is stopped and its public address is taken offline, including the DNS records and the web server configuration we created for it
-- The installation, including your configuration files and the bot's ticket database, is archived and permanently deleted 14 days later
-- Within those 14 days you can restore the installation yourself in the dashboard, with its data intact
-- On request we will provide you with your configuration files (`config.jsonc`, `snippets.jsonc`, `.env`) so you can migrate to self-hosting
-
-A subdomain we assign under `msk-scripts.de` is provided for the duration of the service and may be withdrawn when it ends. A domain of your own remains yours.
-
----
-
-## 9. Discord Giveaway Bot
-
-### 9.1 Service Description
-
-The MSK Giveaway Bot is a **free** Discord bot operated by MSK Scripts as an official public instance. You add it to your own Discord server via the official invite link and use it to create and run giveaways. There is no subscription, payment, or account required to use it.
-
-Server administrators may optionally manage their giveaways through a free web dashboard at **www.msk-scripts.de/giveaway/dashboard** (Discord login). When a giveaway ends, a public results page (showing the winners and the number of participants, but not the participant list) is hosted under **www.msk-scripts.de/giveaway/g/…** and linked from Discord. These features are part of the same free service and processed as described in our [Privacy Policy](/terms/privacy).
-
-Self-hosting of the bot is neither required nor supported; the published source code is provided for transparency only.
-
-### 9.2 Acceptable Use
-
-When using the Giveaway Bot, you agree that you will not use it to:
-- Run giveaways that violate **Discord's Terms of Service** or Community Guidelines
-- Conduct unlawful lotteries, gambling, or promotions where these are prohibited or require a licence you do not hold
-- Send spam or otherwise abuse Discord's infrastructure
-- Distribute illegal content, or prizes that are illegal or infringe third-party rights
-
-### 9.3 Your Responsibility as a Server Operator
-
-You are solely responsible for the giveaways you run on your server, including:
-- The **legality** of each giveaway (prizes, eligibility conditions, and any applicable promotion, sweepstakes, or consumer-protection law)
-- Delivering any prizes you offer. MSK Scripts is not a party to your giveaways and provides no prizes
-- Informing your server members that a third-party service (MSK Scripts) operates the bot and processes Discord identifiers as described in our [Privacy Policy](/terms/privacy)
-
-### 9.4 Service Availability and Changes
-
-The Giveaway Bot is provided free of charge and **without any guaranteed uptime or SLA**. We may modify, suspend, or discontinue the bot, or remove it from individual servers in cases of abuse, at any time and without notice. We accept no liability for giveaways that are interrupted, delayed, or lost due to downtime, maintenance, or discontinuation of the service.
-
----
-
-## 10. Limitation of Liability
-
-We are liable without limitation for damages arising from injury to life, body or health, for intent and gross negligence, and under the German Product Liability Act.
-
-For slight negligence we are liable only where we breach a material contractual obligation, meaning an obligation whose fulfilment makes the proper performance of the contract possible in the first place and on whose observance you may regularly rely. In that case liability is limited to the damage that is foreseeable and typical for this kind of contract.
-
-Any further liability is excluded. Within these limits we accept no liability in particular for:
-- Changes to the FiveM platform or CFX.re affecting the functionality of purchased resources
-- Temporary unavailability of the Transcript Service
-- Loss of transcript data beyond the stated retention period
-- Consequences arising from sharing transcript URLs with third parties
-- Domain-related issues arising from DNS misconfiguration by the user
-
----
-
-## 11. Support
-
-Support for shop products and the Transcript Service is provided via our Discord server. We aim to respond promptly but cannot guarantee specific response times.
-
----
-
-## 12. Changes to Terms
-
-We may amend these Terms where there is a valid reason, for example a change in the law, in case law, or in the services described here, and where the amendment does not shift the balance of the contract to your disadvantage.
-
-**For paid subscriptions** we will notify you of any amendment in text form at least 30 days before it takes effect, and the notification will state the deadline, your right to object and the consequences of not objecting. If you object within that period, we may terminate the subscription at the end of the current billing period. If you do not object, the amendment takes effect.
-
-**For services provided free of charge** (the Basic tier and the Giveaway Bot), amendments take effect when they are published on this page with an updated date.
-
----
-
-## 13. Governing Law
-
-These Terms are governed by the laws of the **Federal Republic of Germany**, excluding the UN Convention on Contracts for the International Sale of Goods.
-
-If you are a consumer with your habitual residence in another EU member state, this choice of law does **not** deprive you of the protection afforded by those provisions of the law of your country of residence that cannot be derogated from by agreement (Art. 6(2) Rome I Regulation).
-
-If you are a merchant, a legal person under public law or a special fund under public law, the exclusive place of jurisdiction is the licensor's place of business. **For consumers the statutory places of jurisdiction apply**; a consumer can only be sued at the court of their own domicile.
+(4) Should individual provisions be invalid, the remainder of the contract remains effective; the statutory provisions then apply.

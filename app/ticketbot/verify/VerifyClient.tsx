@@ -13,6 +13,7 @@ import type { Tier } from '@/lib/tiers'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { cn } from '@/lib/utils'
+import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 
 // ── Step Indicator ─────────────────────────────────────────────────────────────
 
@@ -148,6 +149,9 @@ export default function VerifyClient({ session, step: _step, errorCode }: Props)
   const [completeError, setCompleteError] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
   const [existingGuild, setExistingGuild] = useState<{ tier: Tier } | null>(null)
+  // Zustimmung zur Auftragsverarbeitung. Startet bewusst auf false: eine
+  // vorangekreuzte Vereinbarung ist keine Vereinbarung.
+  const [dpaAccepted, setDpaAccepted] = useState(false)
   const [discordChecking, setDiscordChecking] = useState(false)
   const [discordStatus, setDiscordStatus] = useState<'none' | 'minor' | 'major' | 'critical' | 'unknown' | null>(null)
 
@@ -162,7 +166,7 @@ export default function VerifyClient({ session, step: _step, errorCode }: Props)
   const currentStep = result ? 3 : hasDiscord ? 2 : 1
 
   const handleContinue = async () => {
-    if (!selectedGuildId) return
+    if (!selectedGuildId || !dpaAccepted) return
     setLoading(true)
     setCompleteError(null)
     try {
@@ -183,14 +187,14 @@ export default function VerifyClient({ session, step: _step, errorCode }: Props)
   }
 
   const handleGenerateKey = async () => {
-    if (!selectedGuildId) return
+    if (!selectedGuildId || !dpaAccepted) return
     setLoading(true)
     setCompleteError(null)
     try {
       const res = await fetch('/api/verify/complete', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ guildId: selectedGuildId }),
+        body:    JSON.stringify({ guildId: selectedGuildId, dpaAccepted }),
       })
       const data = await res.json()
       if (!res.ok) setCompleteError(data.error ?? 'Error')
@@ -369,9 +373,29 @@ export default function VerifyClient({ session, step: _step, errorCode }: Props)
                 ))}
               </div>
 
+              {/* Auftragsverarbeitungsvertrag (Art. 28 DSGVO).
+                  Fuer den Inhalt der Transkripte ist der Serverbetreiber
+                  Verantwortlicher, wir sind Auftragsverarbeiter. Ohne diese
+                  Vereinbarung darf der Dienst nicht starten, deshalb sperrt
+                  der Haken den Knopf und die Route prueft ihn noch einmal. */}
+              <label className="mb-4 flex min-h-11 items-start gap-2.5 text-sm text-[var(--color-muted-foreground)]">
+                <input
+                  type="checkbox"
+                  className="mt-1 h-4 w-4 shrink-0 accent-[var(--color-primary)]"
+                  checked={dpaAccepted}
+                  onChange={e => setDpaAccepted(e.target.checked)}
+                />
+                <span>
+                  {t.dpa_accept}{' '}
+                  <Link href="/terms/avv" className="text-[var(--color-primary)] hover:underline">
+                    {t.dpa_link}
+                  </Link>
+                </span>
+              </label>
+
               <Button
                 onClick={handleContinue}
-                disabled={!selectedGuildId || loading}
+                disabled={!selectedGuildId || !dpaAccepted || loading}
                 className="w-full"
               >
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4" />}

@@ -54,6 +54,19 @@ const RATE_RULES: RateRule[] = [
   { prefix: '/api/images/upload',      limit: 20,  windowMs: 60_000 },
   { prefix: '/api/images',        limit: 300, windowMs: 60_000 },
   { prefix: '/images',            limit: 600, windowMs: 60_000 },
+  // Die drei Pflichtformulare (§ 356a BGB, § 312k BGB, Art. 16 DSA). Jede
+  // Absendung schreibt eine Zeile und verschickt zwei Mails, das gehört
+  // gedeckelt. Die Zahl ist aber bewusst hoch genug, dass sie niemanden
+  // trifft, der es ernst meint: eine Widerrufserklärung, die an einem
+  // Rate-Limit scheitert, wäre genau die Erschwerung, die § 356a verbietet.
+  // Wer sich vertippt und es dreimal versucht, kommt durch.
+  //
+  // 20 statt der zunaechst gesetzten 10: alle drei Formulare teilen sich diesen
+  // Eimer, und hinter einer NAT sitzen mehrere Personen auf derselben Adresse.
+  // Ein 429 sperrt die Widerrufsfunktion fuer zehn Minuten — das ist teurer als
+  // die zehn zusaetzlichen Anfragen, die ein Angreifer damit gewinnt, zumal
+  // jede Absendung nur eine Zeile schreibt und zwei Mails ausloest.
+  { prefix: '/api/legal/',        limit: 20,  windowMs: 10 * 60_000 },
 ]
 
 // Explizite Body-Limits (Content-Length) je Routenpräfix.
@@ -70,6 +83,9 @@ const BODY_LIMITS: Array<{ prefix: string; maxBytes: number }> = [
   { prefix: '/api/images/upload',    maxBytes: 8 * 1024 * 1024 },
   { prefix: '/api/giveaway/',        maxBytes: 64 * 1024 },
   { prefix: '/api/giveaway-result/', maxBytes: 64 * 1024 },
+  // Reiner Text. 64 KB reichen für eine ausführliche DSA-Begründung um ein
+  // Vielfaches; `lib/legalForms.ts` schneidet pro Feld noch einmal ab.
+  { prefix: '/api/legal/',           maxBytes: 64 * 1024 },
 ]
 
 interface Bucket { count: number; reset: number }

@@ -70,9 +70,22 @@ export function Footer() {
   ]
   // Legal-Labels sind sprachabhängig (z. B. Imprint ⇄ Impressum).
   const legalLinks = [
-    { label: t.legal_imprint, href: '/terms/imprint' },
-    { label: t.legal_privacy, href: '/terms/privacy' },
-    { label: t.legal_terms,   href: '/terms' },
+    { label: t.legal_imprint,  href: '/terms/imprint' },
+    { label: t.legal_privacy,  href: '/terms/privacy' },
+    { label: t.legal_terms,    href: '/terms' },
+    { label: t.legal_widerruf, href: '/terms/widerruf' },
+    { label: t.legal_avv,      href: '/terms/avv' },
+  ]
+  // Eigene Spalte für die drei Pflichtschaltflächen.
+  //
+  // Sie stehen bewusst NICHT unter „Rechtliches": § 356a und § 312k BGB
+  // verlangen eine **gut sichtbare** Schaltfläche, und zwischen fünf
+  // Textseiten wäre sie genau das nicht. Der Wortlaut der Beschriftungen ist
+  // vorgegeben und darf nicht zu „Widerruf" oder „Kündigung" verkürzt werden.
+  const dutyLinks = [
+    { label: t.legal_revoke, href: '/vertrag-widerrufen' },
+    { label: t.legal_cancel, href: '/vertrag-kuendigen' },
+    { label: t.legal_report, href: '/report' },
   ]
 
   return (
@@ -145,6 +158,14 @@ export function Footer() {
           <div>
             <ColumnTitle>{t.footer_col_legal}</ColumnTitle>
             {legalLinks.map(l => (
+              <FooterLink key={l.href} href={l.href}>{l.label}</FooterLink>
+            ))}
+          </div>
+
+          {/* Verträge und Meldungen — die drei Pflichtschaltflächen */}
+          <div>
+            <ColumnTitle>{t.footer_col_duties}</ColumnTitle>
+            {dutyLinks.map(l => (
               <FooterLink key={l.href} href={l.href}>{l.label}</FooterLink>
             ))}
           </div>

@@ -157,6 +157,33 @@ async function main() {
     `DELETE FROM ticketbot_rate_limits WHERE window_start < DATE_SUB(NOW(), INTERVAL 2 HOUR)`
   );
 
+  // ── Widerrufs- und Kuendigungserklaerungen ausraeumen ───────────────────────
+  //
+  // Die Datenschutzerklaerung sagt "3 Jahre zum Jahresende", und genau das ist
+  // hier gerechnet: erst der 01.01. des uebernaechsten Jahres nach dem dritten
+  // Jahr loescht. Ein schlichtes `INTERVAL 3 YEAR` waere kuerzer und wuerde die
+  // Zusage brechen, weil eine Erklaerung vom Maerz dann schon im Maerz statt
+  // erst zum Jahreswechsel verschwindet.
+  //
+  // DSA-Meldungen bleiben stehen: fuer sie nennt die Datenschutzerklaerung
+  // keine Frist, und sie belegen, wie mit einem gemeldeten Inhalt umgegangen
+  // wurde. Wer sie loeschen will, muss vorher eine Frist festlegen.
+  for (const table of ['msk_withdrawals', 'msk_cancellations']) {
+    try {
+      const [res] = await pool.execute(
+        `DELETE FROM ${table}
+          WHERE created_at < MAKEDATE(YEAR(NOW()) - 3, 1)`
+      );
+      if (res.affectedRows > 0) {
+        console.log(`[cleanup] ${table}: ${res.affectedRows} Zeilen nach Ablauf der Aufbewahrung geloescht`);
+      }
+    } catch (err) {
+      // Eine fehlende Tabelle ist kein Grund, den ganzen Lauf abzubrechen:
+      // die Transkript-Loeschung oben ist der wichtigere Teil.
+      console.error(`[cleanup] ${table} konnte nicht aufgeraeumt werden:`, err.message);
+    }
+  }
+
   // ── Purge archived hosted-bot directories past retention ─────────────────────
   // The Stripe cancel webhook renames a hosted bot's dir to <guildId>_archived_<ts>
   // (its .env secrets + ticket PII stay on disk). Hard-delete those once they are

@@ -53,7 +53,18 @@ CREATE TABLE IF NOT EXISTS ticketbot_guilds (
     bot_port               SMALLINT UNSIGNED NULL,
     active                 BOOLEAN      NOT NULL DEFAULT TRUE,
     created_at             DATETIME     NOT NULL DEFAULT NOW(),
-    expires_at             DATETIME     NULL
+    expires_at             DATETIME     NULL,
+    -- Zeitpunkt, zu dem der Betreiber die Vereinbarung zur Auftragsverarbeitung
+    -- geschlossen hat (Art. 28 Abs. 3 DSGVO). NULL heisst: noch nicht
+    -- geschlossen, also aus einer Registrierung vor dem 02.09.2026. Der Wert
+    -- wird nur einmal gesetzt und bei einer erneuten Verifizierung nicht
+    -- ueberschrieben (COALESCE in app/api/verify/complete/route.ts).
+    dpa_accepted_at        DATETIME     NULL,
+    -- Abo-Id, fuer die zuletzt eine Bestellbestaetigung nach § 312f BGB
+    -- verschickt wurde. Sperre gegen Doppelversand bei erneuter
+    -- Zustellung desselben Stripe-Events; ein spaeteres zweites Abo
+    -- traegt eine andere Id und bekommt deshalb wieder eine Mail.
+    order_confirmation_sub_id VARCHAR(64) NULL
 );
 
 -- Migration (run once on existing databases):
@@ -69,6 +80,9 @@ CREATE TABLE IF NOT EXISTS ticketbot_guilds (
 --   ALTER TABLE ticketbot_guilds ADD COLUMN dashboard_domain        VARCHAR(255) NULL;
 --   ALTER TABLE ticketbot_guilds ADD COLUMN dashboard_domain_status
 --     ENUM('none','pending_dns','active') NOT NULL DEFAULT 'none';
+-- Auftragsverarbeitung (2026-09-02):
+--   ALTER TABLE ticketbot_guilds ADD COLUMN dpa_accepted_at DATETIME NULL;
+--   ALTER TABLE ticketbot_guilds ADD COLUMN order_confirmation_sub_id VARCHAR(64) NULL;
 -- Business tier (2026-08-29). MODIFY rewrites the ENUM in place and keeps every
 -- existing value; the new member is appended at the end:
 --   ALTER TABLE ticketbot_guilds MODIFY tier ENUM('basic','premium','premium_plus','business') NOT NULL DEFAULT 'basic';
@@ -409,3 +423,90 @@ CREATE TABLE IF NOT EXISTS msk_image_uploads (
 --   mkdir -p /var/lib/msk-image-uploads
 --   chown musiker15:musiker15 /var/lib/msk-image-uploads
 --   chmod 700 /var/lib/msk-image-uploads
+
+-- ===========================================================================
+-- Gesetzliche Pflichtformulare
+--
+-- Drei Tabellen, kein gemeinsamer Topf: die drei Erklaerungen haben
+-- verschiedene Pflichtfelder, verschiedene Aufbewahrungsfristen und
+-- verschiedene Adressaten. Eine gemeinsame Tabelle mit einer `kind`-Spalte
+-- haette bei jeder Abfrage eine Fallunterscheidung erzwungen und bei jedem
+-- Feld die Frage "gilt das hier ueberhaupt".
+--
+-- Alle drei sind ohne Anmeldung erreichbar. Es gibt deshalb keine
+-- Fremdschluessel auf `ticketbot_guilds`: wer widerruft, muss seinen Vertrag
+-- nur *identifizierbar* beschreiben (Art. 246a EGBGB), nicht nachweisen. Eine
+-- Erklaerung abzulehnen, weil die Server-Id nicht in unserer Tabelle steht,
+-- waere genau die Huerde, die § 356a BGB verbietet.
+-- ===========================================================================
+
+-- Widerrufserklaerungen (§ 356a BGB, seit 19.06.2026)
+--
+-- Gespeichert wird nur, was die Norm nennt: Name, Angaben zum Vertrag,
+-- E-Mail und der Zeitpunkt. Der Zeitpunkt ist der eigentliche Zweck der
+-- Tabelle, er entscheidet ueber die Wahrung der 14-Tage-Frist.
+CREATE TABLE IF NOT EXISTS msk_withdrawals (
+    id             CHAR(36)      NOT NULL PRIMARY KEY,   -- UUID
+    name           VARCHAR(255)  NOT NULL,
+    contract_ref   VARCHAR(255)  NOT NULL,               -- Guild-Id, Rechnungsnummer o. Ae.
+    email          VARCHAR(255)  NOT NULL,
+    -- Wortlaut der Erklaerung, wie er in der Eingangsbestaetigung steht. Ohne
+    -- ihn liesse sich spaeter nicht belegen, was genau bestaetigt wurde.
+    declaration    TEXT          NOT NULL,
+    -- Nachweis, dass die Bestaetigung auf einem dauerhaften Datentraeger
+    -- rausging. NULL heisst: Versand fehlgeschlagen oder SMTP nicht
+    -- konfiguriert — dann muss von Hand nachgefasst werden.
+    confirmed_at   TIMESTAMP     NULL,
+    client_ip      VARCHAR(45)   NULL,                   -- Missbrauchsanalyse, faellt mit der Zeile weg
+    created_at     TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    KEY idx_created (created_at),
+    KEY idx_email (email)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Kuendigungserklaerungen (§ 312k BGB)
+CREATE TABLE IF NOT EXISTS msk_cancellations (
+    id             CHAR(36)      NOT NULL PRIMARY KEY,
+    -- § 312k Abs. 2 BGB verlangt die Angabe der Art der Kuendigung.
+    kind           ENUM('ordinary','extraordinary') NOT NULL DEFAULT 'ordinary',
+    name           VARCHAR(255)  NOT NULL,
+    contract_ref   VARCHAR(255)  NOT NULL,
+    email          VARCHAR(255)  NOT NULL,
+    -- Freitext statt DATE: "zum naechstmoeglichen Zeitpunkt" ist die von der
+    -- Norm ausdruecklich vorgesehene Angabe und laesst sich nicht datieren.
+    effective_at   VARCHAR(64)   NOT NULL,
+    reason         TEXT          NULL,                   -- nur bei ausserordentlicher Kuendigung
+    declaration    TEXT          NOT NULL,
+    confirmed_at   TIMESTAMP     NULL,
+    client_ip      VARCHAR(45)   NULL,
+    created_at     TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    KEY idx_created (created_at),
+    KEY idx_email (email)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Meldungen rechtswidriger Inhalte (Art. 16 Verordnung (EU) 2022/2065)
+CREATE TABLE IF NOT EXISTS msk_content_reports (
+    id             CHAR(36)      NOT NULL PRIMARY KEY,
+    content_url    TEXT          NOT NULL,
+    reason         TEXT          NOT NULL,
+    name           VARCHAR(255)  NOT NULL,
+    email          VARCHAR(255)  NOT NULL,
+    -- Art. 16 Abs. 2 lit. d DSA: die Erklaerung ist Pflichtbestandteil einer
+    -- Meldung, ohne sie loest sie keine Kenntnis im Sinne des Art. 6 aus.
+    declared_true  TINYINT(1)    NOT NULL DEFAULT 0,
+    status         ENUM('open','actioned','rejected') NOT NULL DEFAULT 'open',
+    resolution     TEXT          NULL,
+    confirmed_at   TIMESTAMP     NULL,
+    client_ip      VARCHAR(45)   NULL,
+    created_at     TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    resolved_at    TIMESTAMP     NULL,
+
+    KEY idx_status_created (status, created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Migration einer bestehenden Datenbank: die drei CREATE-Anweisungen oben
+-- genuegen, es aendert sich nichts an vorhandenen Tabellen.
+--
+-- Aufbewahrung: Widerrufe und Kuendigungen 3 Jahre zum Jahresende (so steht es
+-- in der Datenschutzerklaerung, Abschnitt 12). Das erledigt `cleanup.js`.

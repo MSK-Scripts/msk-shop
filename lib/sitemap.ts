@@ -55,6 +55,13 @@ const STATIC_ROUTES = [
   '/terms',
   '/terms/imprint',
   '/terms/privacy',
+  '/terms/widerruf',
+  '/terms/avv',
+  // Die drei Pflichtformulare gehören in die Sitemap, nicht in die robots.txt:
+  // sie müssen ohne Anmeldung und ohne Suchen erreichbar sein.
+  '/vertrag-widerrufen',
+  '/vertrag-kuendigen',
+  '/report',
 ]
 
 /**

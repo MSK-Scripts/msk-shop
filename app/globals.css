@@ -616,9 +616,22 @@
   .legal-content > h1,
   .legal-content > h2,
   .legal-content > h3,
-  .legal-content > .table-wrap {
+  .legal-content > .table-wrap,
+  .legal-content > blockquote {
     max-width: 82rem;
   }
+  /* Hervorgehobener Hinweis. Genutzt für das Widerspruchsrecht nach Art. 21
+     DSGVO, das nach Auffassung der Aufsichtsbehörden nicht im Fließtext
+     untergehen darf. Farbe über `--color-primary`, damit es in beiden Themes
+     denselben geprüften Kontrast trägt wie jeder andere Akzent der Seite. */
+  .legal-content blockquote {
+    margin: 1.5rem 0;
+    padding: 1rem 1.25rem;
+    border-left: 3px solid var(--color-primary);
+    border-radius: var(--radius-sm);
+    background: color-mix(in oklab, var(--color-primary) 8%, transparent);
+  }
+  .legal-content blockquote p { margin: 0; }
   .legal-content h1 {
     font-size: 1.875rem;
     font-weight: 800;

@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, Download } from 'lucide-react'
 import { notFound } from 'next/navigation'
 
 import { CopyUrlButton } from '@/components/images/CopyUrlButton'
+import { ReportLink } from '@/components/legal/ReportLink'
 import { JsonLd } from '@/components/JsonLd'
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 import { Button } from '@/components/ui/Button'
@@ -189,6 +190,13 @@ export default async function ImageDetailPage({ params }: { params: Params }) {
               {t.back_to.replace('{category}', category?.name ?? slug)}
             </Link>
           </Button>
+
+          {/* Meldeweg nach Art. 16 DSA. Die Galerie enthaelt von Nutzern
+              eingereichte Bilder; ein Meldeformular, das nur im Fusszeilen-Menue
+              steht, ist nicht "leicht zugaenglich" im Sinne der Norm. */}
+          <div className="mt-4">
+            <ReportLink path={`/images/${slug}/${image.name}`} />
+          </div>
         </aside>
       </div>
     </div>

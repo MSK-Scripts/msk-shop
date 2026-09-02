@@ -10,7 +10,7 @@ interface Props {
   htmlDe: string
   /** Schlüssel statt fertigem Text: der Breadcrumb stand sonst auf jeder der
    *  drei Seiten fest auf Englisch, während die Fußzeile daneben „AGB“ sagte. */
-  breadcrumbKey: 'legal_terms' | 'legal_privacy' | 'legal_imprint'
+  breadcrumbKey: 'legal_terms' | 'legal_privacy' | 'legal_imprint' | 'legal_widerruf' | 'legal_avv'
   href: string
 }
 

@@ -9,6 +9,7 @@ import {
 } from '@/lib/stripe';
 import { sendMail } from '@/lib/mail';
 import { buildTrialEndingEmail, pickMailLang } from '@/lib/emails/trialEnding';
+import { buildOrderConfirmation } from '@/lib/emails/orderConfirmation';
 import { archiveHostedBot } from '@/lib/hostedBot';
 import { teardownCustomDomain } from '@/lib/customDomain';
 import { trustedGuildId }       from '@/lib/guildScope';
@@ -189,6 +190,96 @@ async function handleTrialWillEnd(sub: Stripe.Subscription): Promise<void> {
 }
 
 /** Downgrade a guild to basic and archive its hosted bot (if any). */
+/**
+ * Bestellbestaetigung nach § 312f BGB.
+ *
+ * Stripe schickt eine Zahlungsquittung, aber keine Vertragsbestaetigung: dort
+ * stehen weder Laufzeit noch Kuendigung noch die AGB, und ueber den Widerruf
+ * sagt sie nichts. Ohne diese Mail fehlt dem Kunden der Vertragsinhalt auf
+ * einem dauerhaften Datentraeger.
+ *
+ * Doppelversand-Schutz wie bei der Trial-Erinnerung ueber eine Spalte, nicht
+ * ueber den Handler: Stripe stellt Events auch mehrfach zu, und eine Mail
+ * laesst sich nicht wie ein Zustand ueberschreiben. Gespeichert wird die
+ * Abo-Id, damit ein spaeteres zweites Abo derselben Guild wieder eine
+ * Bestaetigung bekommt.
+ */
+async function sendOrderConfirmation(sub: Stripe.Subscription): Promise<void> {
+  // `trustedGuildId` wirft bei einer unbrauchbaren Id. Hier wird das gefangen
+  // statt durchgereicht: eine fehlende Bestaetigungsmail darf den Webhook nicht
+  // scheitern lassen, sonst stellt Stripe endlos neu zu und der Abo-Zustand,
+  // der bereits geschrieben ist, wird jedes Mal erneut verarbeitet.
+  let guildId: string;
+  try {
+    guildId = trustedGuildId(sub.metadata?.guild_id ?? '', 'stripe-webhook');
+  } catch {
+    console.warn('[stripe] Bestellbestaetigung ohne brauchbare guild_id:', sub.id);
+    return;
+  }
+
+  const customerId = typeof sub.customer === 'string' ? sub.customer : sub.customer?.id ?? null;
+  if (!customerId) return;
+
+  const customer = await getStripe().customers.retrieve(customerId);
+  if (customer.deleted) return;
+  const to = customer.email;
+  if (!to) {
+    console.warn(`[stripe] Bestellbestaetigung fuer Guild ${guildId} nicht moeglich, Kunde hat keine E-Mail.`);
+    return;
+  }
+
+  const claimed = await withTransaction(async (conn) => {
+    const [res] = await conn.execute(
+      `UPDATE ticketbot_guilds
+          SET order_confirmation_sub_id = ?
+        WHERE guild_id = ?
+          AND (order_confirmation_sub_id IS NULL OR order_confirmation_sub_id <> ?)`,
+      [sub.id, guildId, sub.id],
+    );
+    return (res as ResultSetHeader).affectedRows > 0;
+  });
+  if (!claimed) return;
+
+  const lang = pickMailLang(customer.preferred_locales);
+  const row  = await queryOne<GuildNameRow>(
+    'SELECT guild_name FROM ticketbot_guilds WHERE guild_id = ?', [guildId],
+  );
+  const tier: Tier = resolveTierFromPrice(priceIdFromSubscription(sub));
+  const trialEnd   = sub.trial_end ? new Date(sub.trial_end * 1000) : null;
+
+  try {
+    await sendMail({
+      to,
+      ...buildOrderConfirmation({
+        lang,
+        tierLabel:   TIER_LABELS[tier],
+        guildLabel:  row?.guild_name ?? guildId,
+        price:       formatSubscriptionPrice(sub, lang),
+        inTrial:     sub.status === 'trialing',
+        trialEndsAt: trialEnd,
+      }),
+    });
+  } catch (err) {
+    // Sperre wieder freigeben, damit ein erneuter Zustellversuch von Stripe
+    // die Bestaetigung nachholt.
+    await withTransaction(async (conn) => {
+      await conn.execute(
+        'UPDATE ticketbot_guilds SET order_confirmation_sub_id = NULL WHERE guild_id = ? AND order_confirmation_sub_id = ?',
+        [guildId, sub.id],
+      );
+    });
+    throw err;
+  }
+}
+
+/** Anzeigenamen der Stufen fuer die Bestellbestaetigung. */
+const TIER_LABELS: Record<Tier, string> = {
+  basic:        'Basic',
+  premium:      'Premium',
+  premium_plus: 'Premium+',
+  business:     'Business',
+};
+
 async function downgradeGuild(guildId: string): Promise<void> {
   // basicDays is a hard-coded number from our own config, safe to inline.
   const basicDays = TIER_CONFIG.basic.storageDays;
@@ -256,6 +347,9 @@ export async function POST(req: Request): Promise<NextResponse> {
         if (typeof session.subscription === 'string') {
           const sub = await getStripe().subscriptions.retrieve(session.subscription);
           await applySubscription(sub);
+          // Nach dem Freischalten, nicht davor: die Bestaetigung soll einen
+          // Vertrag beschreiben, der auch wirklich steht.
+          await sendOrderConfirmation(sub);
         }
         break;
       }

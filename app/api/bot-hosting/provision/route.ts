@@ -47,10 +47,12 @@ export async function POST(req: NextRequest) {
 
   let form: Partial<HostingForm>
   let archiveChoice: 'restore' | 'discard' | null = null
+  let dpaAccepted = false
   try {
     const body = await req.json()
     const choice = String((body as { archive?: unknown })?.archive ?? '')
     archiveChoice = choice === 'restore' || choice === 'discard' ? choice : null
+    dpaAccepted = (body as { dpaAccepted?: unknown })?.dpaAccepted === true
     form = {
       token:        String(body?.token ?? '').trim(),
       clientId:     String(body?.clientId ?? '').trim(),
@@ -60,6 +62,15 @@ export async function POST(req: NextRequest) {
     }
   } catch {
     return NextResponse.json({ error: 'invalid_body' }, { status: 400 })
+  }
+
+  // Auftragsverarbeitung (Art. 28 DSGVO). Beim Hosting verarbeiten wir mehr als
+  // die Transkripte: die komplette Bot-Datenbank samt Discord-Ids des Teams
+  // liegt auf unseren Systemen. Die Vereinbarung wird deshalb hier eigens
+  // bestaetigt und nicht aus dem Verify-Schritt uebernommen, auch wenn die
+  // Spalte dieselbe ist.
+  if (!dpaAccepted) {
+    return NextResponse.json({ error: 'dpa_required' }, { status: 400 })
   }
 
   // An archived installation still holds the ticket history, and only the
@@ -105,8 +116,11 @@ export async function POST(req: NextRequest) {
     }
     port = await allocateBotPort()
     await publishDashboardHost(host, port)
+    // `COALESCE`: der frueheste Abschluss zaehlt, ein zweites Hosting-Setup
+    // schreibt kein neues Datum ueber die alte Vereinbarung.
     await query(
-      'UPDATE ticketbot_guilds SET bot_port = ?, dashboard_host = ? WHERE guild_id = ?',
+      'UPDATE ticketbot_guilds SET bot_port = ?, dashboard_host = ?, '
+      + 'dpa_accepted_at = COALESCE(dpa_accepted_at, NOW()) WHERE guild_id = ?',
       [port, host, guild.guild_id],
     )
     await stageBotEnv(guild.guild_id, buildBotEnv(form as HostingForm, {

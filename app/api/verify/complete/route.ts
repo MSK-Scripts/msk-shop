@@ -24,11 +24,23 @@ export async function POST(req: Request) {
 
   // Validate guild_id from body
   let guildId: string;
+  let dpaAccepted: boolean;
   try {
-    const body = await req.json();
-    guildId    = String(body.guildId ?? '').trim();
+    const body  = await req.json();
+    guildId     = String(body.guildId ?? '').trim();
+    dpaAccepted = body.dpaAccepted === true;
   } catch {
     return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 });
+  }
+
+  // Auftragsverarbeitungsvertrag (Art. 28 DSGVO).
+  //
+  // Fuer den Inhalt der Transkripte ist der Serverbetreiber Verantwortlicher
+  // und wir sind Auftragsverarbeiter. Ohne geschlossene Vereinbarung waere die
+  // Verarbeitung nach Art. 28 Abs. 3 DSGVO nicht zulaessig, deshalb ist die
+  // Zustimmung hier eine echte Bedingung und nicht nur ein Haken im Formular.
+  if (!dpaAccepted) {
+    return NextResponse.json({ error: 'dpa_required' }, { status: 400 });
   }
 
   // Verify the user actually has access to this guild (must be in their admin guilds list)
@@ -62,9 +74,13 @@ export async function POST(req: Request) {
     // Guild exists — rotate the API key and (re)bind ownership; do NOT touch
     // tier / expires_at / stripe_* so an active subscription survives re-verify.
     tier = existingGuild.tier;
+    // `COALESCE` haelt den ersten Zeitpunkt fest: massgeblich ist, wann die
+    // Vereinbarung zum ersten Mal geschlossen wurde, nicht wann zuletzt ein
+    // neuer API-Schluessel gezogen wurde.
     await query(
       `UPDATE ticketbot_guilds
-       SET discord_user_id = ?, api_key = ?, active = TRUE, guild_name = ?
+       SET discord_user_id = ?, api_key = ?, active = TRUE, guild_name = ?,
+           dpa_accepted_at = COALESCE(dpa_accepted_at, NOW())
        WHERE guild_id = ?`,
       [session.discordUserId, apiKey, guildName, guildId],
     );
@@ -72,8 +88,9 @@ export async function POST(req: Request) {
     // New guild — create record on the free tier
     tier = 'basic';
     await query(
-      `INSERT INTO ticketbot_guilds (guild_id, api_key, tier, discord_user_id, guild_name, active)
-       VALUES (?, ?, 'basic', ?, ?, TRUE)`,
+      `INSERT INTO ticketbot_guilds
+         (guild_id, api_key, tier, discord_user_id, guild_name, active, dpa_accepted_at)
+       VALUES (?, ?, 'basic', ?, ?, TRUE, NOW())`,
       [guildId, apiKey, session.discordUserId, guildName],
     );
   }
