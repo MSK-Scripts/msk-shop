@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import {
   Gift, Plus, Pause, Play, Square, Ban, Dice5, Pencil, Clock,
   LogOut, RefreshCw, Settings as SettingsIcon, Loader2, ExternalLink,
-  Store, Ticket, Eye, EyeOff, Trash2, ShieldCheck, LayoutTemplate, Save,
+  Store, Ticket, Eye, EyeOff, Trash2, ShieldCheck, LayoutTemplate, Save, Zap,
 } from 'lucide-react';
 import { giveawayDashboardTranslations, type Lang } from '@/lib/i18n';
 import { useLang } from '@/components/i18n/LangProvider';
@@ -21,10 +21,15 @@ const useCtx = () => useContext(Ctx);
 interface Role { id: string; name: string; color: string }
 interface Channel { id: string; name: string }
 type PrizeMode = 'ALL' | 'INDIVIDUAL';
+/**
+ * How the winners are determined. Sits next to the prize mode, not inside it:
+ * one says WHO wins, the other WHAT the winners get.
+ */
+type WinnerMode = 'RANDOM' | 'FIRST_CLICK';
 interface GiveawayWinner { userId: string; prizeIndex: number | null }
 interface Giveaway {
   id: string; channelId: string; title: string; description: string;
-  prizes: string[]; prizeMode: PrizeMode;
+  prizes: string[]; prizeMode: PrizeMode; winnerMode: WinnerMode;
   winnersCount: number; status: 'ACTIVE' | 'PAUSED' | 'ENDED' | 'CANCELLED';
   endAt: string | null; createdAt: string | null; endedAt: string | null;
   entryCount: number; winnerIds?: string[]; winners?: GiveawayWinner[]; resultUrl?: string;
@@ -52,7 +57,7 @@ interface Giveaway {
  */
 interface Template {
   id: number; name: string; title: string; description: string;
-  duration: string; winnersCount: number; prizes: string[]; prizeMode: PrizeMode;
+  duration: string; winnersCount: number; prizes: string[]; prizeMode: PrizeMode; winnerMode: WinnerMode;
   /** null = die Vorlage sagt nichts dazu, das Giveaway erbt die Server-Einstellung. */
   blacklistRoles?: string[] | null;
   whitelistRoles?: string[] | null;
@@ -351,6 +356,7 @@ function GiveawaysTab({ giveaways, channels, roles, reload, setError, packages, 
                   <span className="font-mono text-xs text-[var(--color-muted-foreground)]">{g.id}</span>
                 </div>
                 <h3 className="mt-1 truncate font-semibold">{g.title}</h3>
+                <DrawBadge mode={g.winnerMode} />
                 {g.couponPercent != null && (
                   <span className="mt-1 inline-flex items-center gap-1 rounded bg-[var(--color-primary)]/10 px-1.5 py-0.5 font-mono text-[0.625rem] text-[var(--color-primary)]">
                     <Ticket className="h-3 w-3" />
@@ -638,6 +644,47 @@ function PrizeFields({ prizes, setPrizes, mode, setMode, winnersCount, setWinner
   );
 }
 
+/**
+ * The winner-selection picker.
+ *
+ * The hint only shows for FIRST_CLICK: that is where the meaning of the button
+ * in the giveaway changes and three things work differently (no bonus entries,
+ * no withdrawing, the duration as a deadline). RANDOM has nothing to explain.
+ */
+function DrawModeField({ mode, setMode, editing = false }: {
+  mode: WinnerMode; setMode: (v: WinnerMode) => void; editing?: boolean;
+}) {
+  const { t } = useCtx();
+  return (
+    <Field label={t.f_draw_mode}>
+      <select value={mode} onChange={(e) => setMode(e.target.value as WinnerMode)} className={selectCls}>
+        <option value="RANDOM">{t.draw_random}</option>
+        <option value="FIRST_CLICK">{t.draw_first_click}</option>
+      </select>
+      {mode === 'FIRST_CLICK' && (
+        <p className="mt-1 text-xs text-[var(--color-muted-foreground)]">
+          {t.draw_first_click_hint}
+          {editing ? ` ${t.draw_first_click_edit_hint}` : ''}
+        </p>
+      )}
+    </Field>
+  );
+}
+
+/**
+ * Badge on the cards. Only visible for FIRST_CLICK: a "draw at the end" line on
+ * every card would be noise, the normal case needs no label.
+ */
+function DrawBadge({ mode }: { mode: WinnerMode | undefined }) {
+  const { t } = useCtx();
+  if (mode !== 'FIRST_CLICK') return null;
+  return (
+    <span className="mt-1 inline-flex items-center gap-1 rounded bg-[var(--color-primary)]/10 px-1.5 py-0.5 font-mono text-[0.625rem] text-[var(--color-primary)]">
+      <Zap className="h-3 w-3" /> {t.draw_badge_fast}
+    </span>
+  );
+}
+
 /** Preis-Eingaben in das Format des Steuer-Endpunkts bringen. */
 function prizePayload(prizes: string, mode: PrizeMode, winnersCount: number) {
   const list = splitPrizes(prizes);
@@ -681,6 +728,7 @@ function CreateForm({ channels, roles, busy, onCreate, packages, couponReady, ow
   const [description, setDescription] = useState('');
   const [prizes, setPrizes] = useState('');
   const [prizeMode, setPrizeMode] = useState<PrizeMode>('ALL');
+  const [winnerMode, setWinnerMode] = useState<WinnerMode>('RANDOM');
   const [winnersCount, setWinnersCount] = useState(1);
   const [duration, setDuration] = useState('1d');
   const [fromTemplate, setFromTemplate] = useState('');
@@ -725,6 +773,7 @@ function CreateForm({ channels, roles, busy, onCreate, packages, couponReady, ow
     setDescription(tpl.description);
     setPrizes(tpl.prizes.join('\n'));
     setPrizeMode(tpl.prizeMode);
+    setWinnerMode(tpl.winnerMode ?? 'RANDOM');
     setWinnersCount(tpl.winnersCount);
     setDuration(tpl.duration);
     setBlacklistRoles(tpl.blacklistRoles ?? settings?.blacklist ?? []);
@@ -760,6 +809,7 @@ function CreateForm({ channels, roles, busy, onCreate, packages, couponReady, ow
         mode={prizeMode} setMode={setPrizeMode}
         winnersCount={winnersCount} setWinnersCount={setWinnersCount}
       />
+      <DrawModeField mode={winnerMode} setMode={setWinnerMode} />
       <Field label={t.f_duration}><Input value={duration} onChange={(e) => setDuration(e.target.value)} placeholder="1d2h30m" /></Field>
 
       <CouponFields
@@ -789,6 +839,7 @@ function CreateForm({ channels, roles, busy, onCreate, packages, couponReady, ow
         <Button size="sm" disabled={busy || !channelId || !title.trim() || !description.trim()}
           onClick={() => onCreate({
             channelId, title: title.trim(), description: description.trim(), duration,
+            winnerMode,
             ...prizePayload(prizes, prizeMode, winnersCount),
             ...couponPayload(percent, validDays, selected, perPrize, prizeList.length,
               { code: manualCode, perPrize: manualPerPrize, note: manualNote }),
@@ -838,6 +889,7 @@ function EditButton({ giveaway, roles, settings, onSave, disabled, packages, cou
   const [description, setDescription] = useState(giveaway.description);
   const [prizes, setPrizes] = useState((giveaway.prizes ?? []).join('\n'));
   const [prizeMode, setPrizeMode] = useState<PrizeMode>(giveaway.prizeMode ?? 'ALL');
+  const [winnerMode, setWinnerMode] = useState<WinnerMode>(giveaway.winnerMode ?? 'RANDOM');
   const [winnersCount, setWinnersCount] = useState(giveaway.winnersCount);
   const [percent, setPercent] = useState(giveaway.couponPercent == null ? '' : String(giveaway.couponPercent));
   const [validDays, setValidDays] = useState(giveaway.couponValidDays == null ? '' : String(giveaway.couponValidDays));
@@ -868,6 +920,7 @@ function EditButton({ giveaway, roles, settings, onSave, disabled, packages, cou
         mode={prizeMode} setMode={setPrizeMode}
         winnersCount={winnersCount} setWinnersCount={setWinnersCount}
       />
+      <DrawModeField mode={winnerMode} setMode={setWinnerMode} editing />
       <CouponFields
         percent={percent} setPercent={setPercent}
         validDays={validDays} setValidDays={setValidDays}
@@ -894,7 +947,7 @@ function EditButton({ giveaway, roles, settings, onSave, disabled, packages, cou
         <Button variant="ghost" size="sm" onClick={() => setOpen(false)}>{t.btn_cancel}</Button>
         <Button size="sm" disabled={disabled} onClick={() => {
           onSave({
-            title, description,
+            title, description, winnerMode,
             ...prizePayload(prizes, prizeMode, winnersCount),
             ...couponPayload(percent, validDays, selected, perPrize, prizeList.length,
               { code: manualCode, perPrize: manualPerPrize, note: manualNote }),
@@ -989,6 +1042,7 @@ function TemplatesTab({ templates, roles, settings, reload, setError }: {
                   </span>
                 </div>
                 <p className="mt-1 truncate font-semibold">{tpl.title}</p>
+                <DrawBadge mode={tpl.winnerMode} />
                 {tpl.prizes.length > 0 && (
                   <p className="mt-0.5 text-xs text-[var(--color-muted-foreground)]">
                     {tpl.prizeMode === 'INDIVIDUAL'
@@ -1053,6 +1107,7 @@ function TemplateForm({ template, roles, settings, busy, onSave, onCancel }: {
   const [description, setDescription] = useState(template?.description ?? '');
   const [prizes, setPrizes] = useState((template?.prizes ?? []).join('\n'));
   const [prizeMode, setPrizeMode] = useState<PrizeMode>(template?.prizeMode ?? 'ALL');
+  const [winnerMode, setWinnerMode] = useState<WinnerMode>(template?.winnerMode ?? 'RANDOM');
   const [winnersCount, setWinnersCount] = useState(template?.winnersCount ?? 1);
   const [duration, setDuration] = useState(template?.duration ?? '1d');
 
@@ -1085,6 +1140,7 @@ function TemplateForm({ template, roles, settings, busy, onSave, onCancel }: {
         mode={prizeMode} setMode={setPrizeMode}
         winnersCount={winnersCount} setWinnersCount={setWinnersCount}
       />
+      <DrawModeField mode={winnerMode} setMode={setWinnerMode} />
       <Field label={t.f_duration}>
         <Input value={duration} onChange={(e) => setDuration(e.target.value)} placeholder="1d2h30m" />
       </Field>
@@ -1112,6 +1168,7 @@ function TemplateForm({ template, roles, settings, busy, onSave, onCancel }: {
           disabled={busy || !name.trim() || !title.trim() || !description.trim() || !duration.trim()}
           onClick={() => onSave({
             name: name.trim(), title: title.trim(), description: description.trim(), duration: duration.trim(),
+            winnerMode,
             ...prizePayload(prizes, prizeMode, winnersCount),
             // Ausgeschaltet heißt null, nicht leere Liste: leer wäre eine eigene
             // Bedingung ("hier gilt keine"), null lässt die Server-Einstellung gelten.
