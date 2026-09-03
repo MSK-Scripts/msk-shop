@@ -57,7 +57,7 @@ Du bist Verantwortlicher für die Daten in deinen Transkripten, Bot-Datenbanken 
 - **Zugriffskontrolle:** Transkripte unter zufälligen, nicht erratbaren UUID-Pfaden; Formular-Einsendungen unter zufälligen IDs; API-Schlüssel serverspezifisch; Secrets (OAuth, Turnstile) verschlüsselt gespeichert.
 - **Übertragungskontrolle:** ausschließlich TLS-verschlüsselte Verbindungen (HTTPS), Certbot/Let's Encrypt.
 - **Trennung:** getrennte Verzeichnisse und Datenbankdatensätze je Discord-Server; Hosted Bots als separate Prozesse.
-- **Verfügbarkeit:** Rate-Limiting gegen Missbrauch; Betrieb auf Systemen innerhalb der EU.
+- **Verfügbarkeit und Wiederherstellbarkeit:** Rate-Limiting gegen Missbrauch; Betrieb auf Systemen innerhalb der EU. Tägliche verschlüsselte Sicherung (AES-256) der Datenbanken, Ticket-Transkripte und Konfigurationen; Aufbewahrung von 30 Tagesständen und 12 Monatsständen. Zusätzlich eine verschlüsselte Zweitkopie außerhalb des Produktivsystems bei einem Anbieter mit Rechenzentren in der Schweiz und in Deutschland. Die Sicherungen werden nach dem Schreiben automatisch gegengelesen; die Wiederherstellbarkeit wird durch Rückspielproben überprüft.
 - **Löschung:** automatische Löschung nach Ablauf der Speicherdauer; Archivierung gelöschter Hosted-Bot-Installationen 14 Tage, danach endgültige Löschung.
 - **Protokollierung:** Server-Logs 14 Tage.
 
@@ -69,6 +69,7 @@ Du stimmst dem Einsatz folgender Unterauftragsverarbeiter zu:
 |---|---|---|
 | netcup GmbH, Daimlerstraße 25, 76185 Karlsruhe | Hosting, Speicher | Deutschland |
 | IONOS SE, Elgendorfer Str. 57, 56410 Montabaur | DNS, E-Mail-Versand | Deutschland |
+| Proton AG, Route de la Galaise 32, 1228 Plan-les-Ouates, Genf | Verschlüsselte Backup-Zweitkopie | Schweiz (Angemessenheitsbeschluss der EU-Kommission), Deutschland |
 
 Über den Einsatz weiterer Unterauftragsverarbeiter informieren wir dich mindestens 30 Tage vorher per E-Mail oder Hinweis im Dashboard. Du kannst innerhalb dieser Frist aus wichtigem Grund widersprechen; in diesem Fall kannst du den Dienst kündigen.
 

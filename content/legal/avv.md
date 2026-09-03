@@ -59,7 +59,7 @@ You are the controller for the data in your transcripts, bot databases and forms
 - **Authorisation control:** transcripts under random, non-guessable UUID paths; form submissions under random IDs; API keys specific to each server; secrets (OAuth, Turnstile) stored encrypted.
 - **Transmission control:** exclusively TLS-encrypted connections (HTTPS), Certbot/Let's Encrypt.
 - **Separation:** separate directories and database records per Discord server; hosted bots as separate processes.
-- **Availability:** rate limiting against misuse; operation on systems within the EU.
+- **Availability and restorability:** rate limiting against misuse; operation on systems within the EU. Daily encrypted backup (AES-256) of the databases, ticket transcripts and configurations; retention of 30 daily and 12 monthly sets. In addition, an encrypted second copy outside the production system with a provider operating data centres in Switzerland and Germany. Backups are verified by reading them back after they are written; restorability is checked by restore drills.
 - **Deletion:** automatic deletion after the retention period expires; archiving of deleted hosted bot installations for 14 days, then final deletion.
 - **Logging:** server logs 14 days.
 
@@ -71,6 +71,7 @@ You consent to the engagement of the following sub-processors:
 |---|---|---|
 | netcup GmbH, Daimlerstraße 25, 76185 Karlsruhe | Hosting, storage | Germany |
 | IONOS SE, Elgendorfer Str. 57, 56410 Montabaur | DNS, email delivery | Germany |
+| Proton AG, Route de la Galaise 32, 1228 Plan-les-Ouates, Geneva | Encrypted second backup copy | Switzerland (EU adequacy decision), Germany |
 
 We will inform you at least 30 days in advance by email or via a notice in the dashboard about the engagement of further sub-processors. You may object within that period for good cause; in that case you may terminate the service.
 
