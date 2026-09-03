@@ -3,7 +3,7 @@ import {
   Shield, Users, PauseCircle, ScrollText, ClipboardList, Star,
   Check, MessageSquare, FileText, Terminal, UserCheck,
   CalendarClock, ListChecks, Mail, Bell, Pencil,
-  LayoutDashboard, Trophy, Ticket, Languages, Package,
+  LayoutDashboard, Trophy, Ticket, Languages, Package, Zap,
 } from 'lucide-react'
 
 import { BotCrossLink } from '@/components/bots/BotCrossLink'
@@ -32,7 +32,7 @@ export const GIVEAWAY_GITHUB_URL = 'https://github.com/MSK-Scripts/discord_givea
 const STEP_ICONS = [MessageSquare, ClipboardList, Gift] as const
 
 const FEATURE_ICONS = [
-  Gift, RefreshCw, Package, Users, Shield, PauseCircle, Layers, Sparkles, Mail, Bell,
+  Gift, RefreshCw, Package, Zap, Users, Shield, PauseCircle, Layers, Sparkles, Mail, Bell,
   Pencil, LayoutDashboard, Trophy, Ticket, Globe, Palette, ScrollText, UserCheck, Shield,
 ] as const
 
