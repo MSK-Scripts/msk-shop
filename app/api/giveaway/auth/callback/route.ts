@@ -2,18 +2,7 @@ import { NextResponse }            from 'next/server';
 import { cookies }                 from 'next/headers';
 import { signGiveawayVerify }      from '@/lib/giveawaySession';
 import type { GiveawayGuild }      from '@/lib/giveawaySession';
-
-// Discord-Permission-Bit für ADMINISTRATOR.
-const ADMINISTRATOR = BigInt(0x8);
-
-function isAdmin(permissions: string, owner: boolean): boolean {
-  if (owner) return true;
-  try {
-    return (BigInt(permissions) & ADMINISTRATOR) !== BigInt(0);
-  } catch {
-    return false;
-  }
-}
+import { canManageGuild }          from '@/lib/discordPermissions';
 
 export async function GET(req: Request) {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://www.msk-scripts.de';
@@ -28,7 +17,7 @@ export async function GET(req: Request) {
     return NextResponse.redirect(`${baseUrl}/giveaway/verify?error=invalid_state`);
   }
 
-  // Code gegen Access-Token tauschen.
+  // Exchange the code for an access token.
   let tokenData: { access_token?: string };
   try {
     const tokenRes = await fetch('https://discord.com/api/oauth2/token', {
@@ -50,7 +39,7 @@ export async function GET(req: Request) {
     return NextResponse.redirect(`${baseUrl}/giveaway/verify?error=discord_token_failed`);
   }
 
-  // User-ID + Guild-Liste parallel holen.
+  // Fetch the user id and the guild list in parallel.
   let discordUserId: string;
   let rawGuilds: Array<{ id: string; name: string; icon: string | null; owner: boolean; permissions: string }>;
   try {
@@ -76,14 +65,16 @@ export async function GET(req: Request) {
     return NextResponse.redirect(`${baseUrl}/giveaway/verify?error=discord_guilds_failed`);
   }
 
-  // Nur Guilds, in denen der User Admin/Owner ist. Das Besitzer-Flag wird
-  // mitgeführt, weil der Tebex-Bereich im Dashboard nur für Besitzer sichtbar
-  // ist — die eigentliche Prüfung macht der Bot gegen guild.ownerId.
+  // Only guilds the user may manage (owner, Administrator or Manage Server).
+  // The owner flag is carried along because the Tebex section of the dashboard
+  // is owner-only, but the authoritative check is the bot's own comparison
+  // against guild.ownerId.
   const adminGuilds: GiveawayGuild[] = rawGuilds
-    .filter((g) => isAdmin(g.permissions, g.owner))
+    .filter((g) => canManageGuild(g.permissions, g.owner))
     .map((g) => ({ id: g.id, name: g.name, icon: g.icon, owner: Boolean(g.owner) }));
 
-  // Kurzlebige Zwischen-Session (nur Guild-Auswahl), eigener Cookie-Name + Scope.
+  // Short-lived intermediate session (guild selection only), with its own
+  // cookie name and scope.
   const sessionToken = signGiveawayVerify({ discordUserId, guilds: adminGuilds });
   const res = NextResponse.redirect(`${baseUrl}/giveaway/verify?step=select`);
   res.cookies.set('msk_gw_verify', sessionToken, {

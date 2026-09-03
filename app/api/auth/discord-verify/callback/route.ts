@@ -2,18 +2,7 @@ import { NextResponse }                 from 'next/server';
 import { cookies }                      from 'next/headers';
 import { signSession }                  from '@/lib/session';
 import type { DiscordGuild }            from '@/lib/session';
-
-// Discord guild permissions bit for ADMINISTRATOR
-const ADMINISTRATOR = BigInt(0x8);
-
-function isAdmin(permissions: string, owner: boolean): boolean {
-  if (owner) return true;
-  try {
-    return (BigInt(permissions) & ADMINISTRATOR) !== BigInt(0);
-  } catch {
-    return false;
-  }
-}
+import { canManageGuild }               from '@/lib/discordPermissions';
 
 export async function GET(req: Request) {
   const baseUrl      = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://www.msk-scripts.de';
@@ -85,9 +74,9 @@ export async function GET(req: Request) {
     return fail('discord_guilds_failed');
   }
 
-  // Only show guilds where the user is admin or owner
+  // Only show guilds the user may manage (owner, Administrator or Manage Server)
   const adminGuilds: DiscordGuild[] = rawGuilds
-    .filter(g => isAdmin(g.permissions, g.owner))
+    .filter(g => canManageGuild(g.permissions, g.owner))
     .map(g => ({ id: g.id, name: g.name, icon: g.icon }));
 
   // Store guild list + Discord user ID in the signed session, redirect to guild selection

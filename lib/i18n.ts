@@ -26,9 +26,9 @@ export const translations = {
 
     // Step 2, select server
     select_title:       'Select Server',
-    select_desc:        'Choose the Discord server you want to generate the API key for. You only see servers where you are an Administrator.',
+    select_desc:        'Choose the Discord server you want to generate the API key for. You only see servers you can manage (Administrator or Manage Server).',
     select_warning:     'If you have already verified this server, your current API key will become invalid immediately. You must update the key in your bot\'s .env and restart it.',
-    select_no_guilds:   'No servers found where you are an Administrator.',
+    select_no_guilds:   'No servers found that you can manage. You need the Administrator or Manage Server permission.',
     select_btn:         'Continue →',
     // Auftragsverarbeitung (Art. 28 DSGVO), Pflicht vor dem ersten Upload.
     dpa_accept:         'I conclude the data processing agreement.',
@@ -96,9 +96,9 @@ export const translations = {
 
     // Step 2, select server
     select_title:       'Server auswählen',
-    select_desc:        'Wähle den Discord-Server für den du den API Key generieren möchtest. Du siehst nur Server auf denen du Administrator bist.',
+    select_desc:        'Wähle den Discord-Server für den du den API Key generieren möchtest. Du siehst nur Server, die du verwalten darfst (Administrator oder Server verwalten).',
     select_warning:     'Falls du diesen Server bereits verifiziert hast, wird dein bisheriger API Key sofort ungültig. Du musst den neuen Key in der .env deines Bots eintragen und ihn neu starten.',
-    select_no_guilds:   'Keine Server gefunden auf denen du Administrator bist.',
+    select_no_guilds:   'Keine Server gefunden, die du verwalten darfst. Du brauchst das Recht Administrator oder Server verwalten.',
     select_btn:         'Weiter →',
     dpa_accept:         'Ich schließe die Vereinbarung zur Auftragsverarbeitung ab.',
     dpa_link:           'Vereinbarung lesen',
@@ -1045,7 +1045,7 @@ export const giveawayDashboardTranslations = {
     v_back:            'Back to giveaway page',
     v_select_server:   'Select a server',
     v_err_unauthorized:'Your session expired. Please log in again.',
-    v_err_forbidden:   'You are not an administrator of this server.',
+    v_err_forbidden:   'You are not allowed to manage this server.',
     v_err_not_found:   'The giveaway bot is not in this server.',
     v_err_generic:     'Something went wrong.',
     v_err_network:     'Network error. Please try again.',
@@ -1210,7 +1210,7 @@ export const giveawayDashboardTranslations = {
     v_back:            'Zurück zur Giveaway-Seite',
     v_select_server:   'Server auswählen',
     v_err_unauthorized:'Deine Sitzung ist abgelaufen. Bitte melde dich erneut an.',
-    v_err_forbidden:   'Du bist kein Administrator dieses Servers.',
+    v_err_forbidden:   'Du darfst diesen Server nicht verwalten.',
     v_err_not_found:   'Der Giveaway-Bot ist nicht auf diesem Server.',
     v_err_generic:     'Etwas ist schiefgelaufen.',
     v_err_network:     'Netzwerkfehler. Bitte versuche es erneut.',
