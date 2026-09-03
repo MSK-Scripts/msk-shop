@@ -109,6 +109,17 @@ chown -R root:root "$REPO_DIR/scripts"
 chmod 755 "$REPO_DIR/scripts"
 find "$REPO_DIR/scripts" -name '*.sh' -exec chmod 755 {} +
 
+# .env.local gehört dem App-User und sonst niemandem. Am 03.09.2026 stand sie
+# auf 644, und auf dieser Maschine gibt es elf weitere Login-Nutzer (ts3,
+# sinusbot, fivem, minecraft, steam, …). Jeder davon konnte damit den
+# Live-Stripe-Key, SESSION_SECRET, das DB-Passwort, den IONOS-API-Key und
+# BOT_DASHBOARD_PROXY_SECRET mitlesen. Die Datei ist gitignored und wird vom
+# Deploy nicht neu angelegt; die Zeile steht hier, damit eine von Hand neu
+# geschriebene Datei nicht wieder offen liegen bleibt.
+if [ -f "$REPO_DIR/.env.local" ]; then
+  chmod 600 "$REPO_DIR/.env.local"
+fi
+
 # 6. systemd-Unit aktualisieren, falls geändert.
 if ! cmp -s "$REPO_DIR/msk-shop.service" /etc/systemd/system/msk-shop.service 2>/dev/null; then
   echo "msk-shop.service geändert — übernehme + daemon-reload."
