@@ -356,7 +356,7 @@ A note on security: the Action's SSH key is pinned with `ForceCommand`, so it ca
 | `NEXT_PUBLIC_BASE_URL` | `https://www.msk-scripts.de` (CI build) |
 | `TEBEX_PRIVATE_KEY` | Tebex private key (CI build) |
 
-There are a few more workflows in the repo: `codeql.yml` (code scanning), `release.yml`, `dependency-review.yml` and `secret-scan.yml`.
+There are a few more workflows in the repo: `codeql.yml` (code scanning), `mirror.yml` (mirrors the repo to Codeberg), `dependency-review.yml` and `secret-scan.yml`.
 
 ---
 
