@@ -1,5 +1,6 @@
 import { query, queryOne } from '@/lib/db'
 import { cdnBase, searchClause, MAX_PER_PAGE, DEFAULT_PER_PAGE } from '@/lib/images'
+import { copyVariants, deleteVariants } from '@/lib/imagePipeline'
 
 /**
  * Bildergalerie: der Datenzugriff des Admin-Bereichs.
@@ -15,11 +16,17 @@ import { cdnBase, searchClause, MAX_PER_PAGE, DEFAULT_PER_PAGE } from '@/lib/ima
  * ist deshalb geteilt (`searchClause`), damit Admin und Besucher nicht
  * unterschiedliche Treffer sehen.
  *
- * Was hier NICHT passiert: Dateien schreiben. Der Ingest bleibt
- * `scripts/image-ingest.js` auf dem Server. Ein Upload-Endpunkt, der in ein
- * oeffentlich ausgeliefertes Verzeichnis schreibt, ist die riskanteste
- * Einzelkomponente des ganzen Projekts und wird fuer nichts gebraucht, was
- * dieser Bereich leisten soll.
+ * What does NOT happen here: producing new image data. The ingest stays
+ * `scripts/image-ingest.js` on the server, and an endpoint that writes foreign
+ * bytes into a publicly served directory is the riskiest single component of
+ * this whole project.
+ *
+ * What does happen here, since moving and deleting exist: copying and removing
+ * files that are already there. The difference is where the bytes come from.
+ * What gets moved is what the ingest or an approval produced; `category` and
+ * `name` come from our own database, never from the request. Until 05.09.2026
+ * this said flatly "no files are written here", which was already wrong once
+ * community uploads landed.
  */
 
 /**
@@ -331,4 +338,117 @@ export async function updateAdminImage(
   }
 
   return getAdminImage(category, name)
+}
+// ── Moving between categories, and deleting ─────────────────────────────────
+
+/**
+ * Does the category exist at all?
+ *
+ * Deliberately without `allows_upload`. That flag answers "may a submitter
+ * pick this" and excludes `brand`. Where a moderator files an image is a
+ * different question, and its answer is meant to include `brand`.
+ */
+export async function categoryExists(slug: string): Promise<boolean> {
+  const row = await queryOne<{ slug: string }>(
+    `SELECT slug FROM msk_image_categories WHERE slug = ?`, [slug],
+  )
+  return Boolean(row)
+}
+
+export type MoveFailure = 'not_found' | 'category_unknown' | 'name_taken' | 'no_files' | 'move_failed'
+
+export type MoveResult =
+  | { ok: true; image: AdminImage }
+  | { ok: false; reason: MoveFailure }
+
+/**
+ * File an image under a different category.
+ *
+ * **This changes the public address.** `cdn.msk-scripts.de/<old>/<name>.png`
+ * 404s afterwards, and because the CDN vhost sends `immutable`, caches keep the
+ * old address until it expires. Anyone who wrote that URL into a script or a
+ * doc page will notice the move. That is why the UI says so before saving and
+ * not after.
+ *
+ * Order: copy, rewrite the row, remove the old files. Every intermediate state
+ * is one in which the gallery works. A `rename` would be shorter and would, in
+ * between the two steps, leave a row whose image 404s.
+ */
+export async function moveAdminImage(
+  category: string, name: string, target: string,
+): Promise<MoveResult> {
+  const existing = await getAdminImage(category, name)
+  if (!existing) return { ok: false, reason: 'not_found' }
+  if (target === category) return { ok: true, image: existing }
+
+  if (!(await categoryExists(target))) return { ok: false, reason: 'category_unknown' }
+
+  // `UNIQUE (category, name)` would catch this anyway, but as a write error and
+  // only after the files have already been copied. Asking first costs one query
+  // and avoids exactly that half-finished state.
+  const taken = await queryOne<{ id: number }>(
+    `SELECT id FROM msk_images WHERE category = ? AND name = ?`, [target, name],
+  )
+  if (taken) return { ok: false, reason: 'name_taken' }
+
+  let copied = 0
+  try {
+    copied = await copyVariants(category, target, name, existing.ext)
+  } catch (e) {
+    console.error('[admin-images] copying the variants failed:', e)
+    return { ok: false, reason: 'move_failed' }
+  }
+  // Not a single file found means the row describes nothing. Moving it anyway
+  // would carry the finding into another category instead of surfacing it.
+  if (!copied) return { ok: false, reason: 'no_files' }
+
+  await query(
+    `UPDATE msk_images SET category = ? WHERE category = ? AND name = ?`,
+    [target, category, name],
+  )
+
+  // Only now the old files. If that fails, copies without a row are left in the
+  // old directory: the sync check reports them and the gallery stays intact.
+  await deleteVariants(category, name, existing.ext).catch(e =>
+    console.error('[admin-images] removing the old variants failed:', e))
+
+  const image = await getAdminImage(target, name)
+  return image ? { ok: true, image } : { ok: false, reason: 'move_failed' }
+}
+
+export type DeleteResult =
+  | { ok: true; filesRemoved: boolean }
+  | { ok: false; reason: 'not_found' }
+
+/**
+ * Remove an image for good: the row goes, the three files go.
+ *
+ * Not reversible, and the file cannot be recovered from a database backup
+ * either, because `msk_images` only ever described it.
+ *
+ * **Row first, files second.** The other way round a failure would leave a row
+ * without a file, and in the public gallery that is a tile whose image 404s,
+ * visible to every visitor. This way the worst case is files without a row:
+ * nobody knows them except whoever still has the old address, and the sync
+ * check reports them. Same trade-off as in the upload approval.
+ *
+ * `filesRemoved` says whether the second step worked. A silent `ok` would be
+ * the worst possible answer here: whoever removes an image for a legal reason
+ * has to know that the file is still being served.
+ */
+export async function deleteAdminImage(category: string, name: string): Promise<DeleteResult> {
+  const existing = await getAdminImage(category, name)
+  if (!existing) return { ok: false, reason: 'not_found' }
+
+  await query(`DELETE FROM msk_images WHERE category = ? AND name = ?`, [category, name])
+
+  let filesRemoved = true
+  try {
+    await deleteVariants(category, name, existing.ext)
+  } catch (e) {
+    console.error('[admin-images] removing the variants failed:', e)
+    filesRemoved = false
+  }
+
+  return { ok: true, filesRemoved }
 }

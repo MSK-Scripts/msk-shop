@@ -5,8 +5,12 @@ import { generateState } from '@/lib/session';
 // the customer verify flow (own client id + own state cookie).
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(req: Request) {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://www.msk-scripts.de';
+
+  // A yes/no, never a path. Anything but exactly `de` counts as English, so
+  // this parameter can never turn into a redirect destination.
+  const german = new URL(req.url).searchParams.get('lang') === 'de';
 
   const state  = generateState();
   const params = new URLSearchParams({
@@ -28,6 +32,15 @@ export async function GET() {
     maxAge:   600,
     path:     '/',
   });
+
+  // Separate from the state, because they are two different things: the state
+  // guards against CSRF and has to stay exactly comparable, the language is
+  // convenience. Merged, every change to one would have touched the other.
+  if (german) {
+    res.cookies.set('msk_admin_oauth_lang', 'de', {
+      httpOnly: true, secure: true, sameSite: 'lax', maxAge: 600, path: '/',
+    });
+  }
 
   return res;
 }

@@ -4,7 +4,7 @@ import { join } from 'node:path'
 import sharp, { type Metadata } from 'sharp'
 
 import { query, queryOne } from '@/lib/db'
-import { normalizeLabel, normalizeTags } from '@/lib/adminImages'
+import { categoryExists, normalizeLabel, normalizeTags } from '@/lib/adminImages'
 import {
   ACCEPTED_INPUT_FORMATS,
   PIPELINE_RULES,
@@ -342,7 +342,9 @@ export async function readQuarantine(id: string): Promise<Buffer | null> {
 
 // ── Entscheiden ──────────────────────────────────────────────────────────────
 
-export type DecisionFailure = 'not_found' | 'not_pending' | 'file_gone' | 'name_taken' | 'write_failed'
+export type DecisionFailure =
+  | 'not_found' | 'not_pending' | 'file_gone' | 'name_taken'
+  | 'write_failed' | 'category_unknown'
 
 export type DecisionResult =
   | { ok: true }
@@ -361,14 +363,32 @@ export type DecisionResult =
  * das Schreiben ab, gibt es Dateien ohne Zeile — das meldet der Sync-Check und
  * ist harmlos, weil ohne Zeile niemand die Adresse kennt. Andersherum gaebe es
  * eine Kachel in der Galerie, deren Bild 404 liefert.
+ *
+ * `targetCategory` allows refiling on approval. The category a submitter picked
+ * is a suggestion, and sorting it correctly is precisely the decision that
+ * moderation exists for. Only the existence of the category is checked, **not**
+ * `allows_upload`: that flag governs what is offered at submission time
+ * (`brand` is deliberately not on that list), not where a human may finally
+ * file the image.
  */
-export async function approveUpload(id: string, reviewerId: string): Promise<DecisionResult> {
+export async function approveUpload(
+  id: string, reviewerId: string, targetCategory?: string,
+): Promise<DecisionResult> {
   const upload = await getUpload(id)
   if (!upload) return { ok: false, reason: 'not_found' }
   if (upload.status !== 'pending') return { ok: false, reason: 'not_pending' }
 
+  const category = targetCategory ?? upload.category
+  if (category !== upload.category && !(await categoryExists(category))) {
+    return { ok: false, reason: 'category_unknown' }
+  }
+
+  // The name collision is checked against the TARGET category, not the
+  // submitted one. A name taken in `items` says nothing about whether it is
+  // free in `props` -- that is exactly why `UNIQUE (category, name)` spans two
+  // columns.
   const taken = await queryOne<{ id: number }>(
-    `SELECT id FROM msk_images WHERE category = ? AND name = ?`, [upload.category, upload.name],
+    `SELECT id FROM msk_images WHERE category = ? AND name = ?`, [category, upload.name],
   )
   if (taken) return { ok: false, reason: 'name_taken' }
 
@@ -385,7 +405,7 @@ export async function approveUpload(id: string, reviewerId: string): Promise<Dec
   // ist. Die Datenbankzeile bleibt bewusst ungeschrieben: eine Kachel ohne
   // Datei liefert in der Galerie 404, umgekehrt kennt niemand die Adresse.
   try {
-    await writeVariants(upload.category, upload.name, variants)
+    await writeVariants(category, upload.name, variants)
   } catch (e) {
     console.error('[image-upload] writing to the CDN failed:', e)
     return { ok: false, reason: 'write_failed' }
@@ -399,7 +419,7 @@ export async function approveUpload(id: string, reviewerId: string): Promise<Dec
         source, license_note, status, submitted_by)
      VALUES (?, ?, ?, 'png', ?, ?, ?, ?, 1, ?, 'community', ?, 'published', ?)`,
     [
-      upload.category, upload.name, upload.label,
+      category, upload.name, upload.label,
       variants.width, variants.height, variants.original.length, sha,
       upload.tags.length ? upload.tags.join(',') : null,
       `Community submission, rights declared by the submitter (upload ${id})`,
@@ -407,11 +427,16 @@ export async function approveUpload(id: string, reviewerId: string): Promise<Dec
     ],
   )
 
+  // The category travels with it. Otherwise the Uploads tab's "in the gallery"
+  // link, which is built from this column, would point nowhere after a refile.
+  // What was originally submitted lives in the audit log; that is the place for
+  // history, not this column.
   await query(
     `UPDATE msk_image_uploads
-        SET status = 'approved', reviewed_by = ?, reviewed_at = NOW(), reject_reason = NULL
+        SET status = 'approved', category = ?, reviewed_by = ?, reviewed_at = NOW(),
+            reject_reason = NULL
       WHERE id = ?`,
-    [reviewerId, id],
+    [category, reviewerId, id],
   )
 
   await dropQuarantine(id)

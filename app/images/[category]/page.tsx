@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 
 import { ImageCard } from '@/components/images/ImageCard'
 import { GallerySearch } from '@/components/images/GallerySearch'
+import { BrandNotice, OWN_WORK_CATEGORY } from '@/components/images/BrandNotice'
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 import { Button } from '@/components/ui/Button'
 import { alternatesFor } from '@/lib/seo'
@@ -31,9 +32,18 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const title = lang === 'de'
     ? `${category.name} Bilder für FiveM`
     : `FiveM ${category.name} Images`
+  // `brand` holds our own logos and banners, not game content. Until
+  // 05.09.2026 the GTA wording covered that category too, so the search result
+  // description claimed the opposite of what the rights notice on the very same
+  // page says.
+  const own = slug === OWN_WORK_CATEGORY
   const description = lang === 'de'
-    ? `${category.count} freigestellte ${category.name}-Bilder aus GTA V, benannt nach dem Spawnnamen. Kostenlos für FiveM-Scripts, ausgeliefert über unser CDN.`
-    : `${category.count} transparent GTA V ${category.name.toLowerCase()} images, named by spawn name. Free for FiveM scripts, served from our CDN.`
+    ? own
+      ? `Logos, Banner und Marken-Grafiken von MSK Scripts. Eigene Werke, nutzbar mit Bezug auf MSK Scripts, nicht als eigenes Logo.`
+      : `${category.count} freigestellte ${category.name}-Bilder aus GTA V, benannt nach dem Spawnnamen. Kostenlos für FiveM-Scripts, ausgeliefert über unser CDN.`
+    : own
+      ? `Logos, banners and brand graphics by MSK Scripts. Original works, free to use where they refer to MSK Scripts, not as your own logo.`
+      : `${category.count} transparent GTA V ${category.name.toLowerCase()} images, named by spawn name. Free for FiveM scripts, served from our CDN.`
 
   return { title, description, alternates: alternatesFor(lang, `/images/${slug}`) }
 }
@@ -82,6 +92,8 @@ export default async function CategoryPage(
           {num(category.count)} {t.count_images}
         </p>
       </header>
+
+      {slug === OWN_WORK_CATEGORY && <BrandNotice lang={lang} />}
 
       <section aria-labelledby="filters-heading" className="mb-8">
         <h2 id="filters-heading" className="sr-only">{t.filters_title}</h2>

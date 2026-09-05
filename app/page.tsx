@@ -12,6 +12,7 @@ import { CustomPackages } from '@/components/home/CustomPackages'
 import { CTASection } from '@/components/home/CTASection'
 import { alternatesFor, openGraphFor } from '@/lib/seo'
 import { loadHeadlineStat } from '@/lib/fivestats'
+import { loadDocPageCount } from '@/lib/docsPages'
 import { loadReleases } from '@/lib/releases'
 import { loadShopStats } from '@/lib/shopStats'
 
@@ -47,7 +48,7 @@ export async function generateMetadata(): Promise<Metadata> {
  * sie noch gar nicht überzeugt hat.
  */
 export default async function HomePage() {
-  const [{ lang }, headline, releases, stats] = await Promise.all([
+  const [{ lang }, headline, releases, stats, docPages] = await Promise.all([
     getRequestLang(),
     // Fail-soft: keine dieser Quellen darf die Startseite kippen. Fällt eine
     // aus, verschwindet die zugehörige Angabe — es wird nichts geschätzt.
@@ -63,6 +64,10 @@ export default async function HomePage() {
       console.warn('[home] Shop-Kennzahlen nicht verfügbar:', err)
       return null
     }),
+    loadDocPageCount().catch(err => {
+      console.warn('[home] Doku-Seitenzahl nicht verfügbar:', err)
+      return null
+    }),
   ])
 
   return (
@@ -70,7 +75,7 @@ export default async function HomePage() {
       {/* Die Belegzeile steht im Hero, nicht darunter: sie ist der Beleg für
           dessen Behauptung und muss deshalb ohne Scrollen sichtbar sein. */}
       <Hero lang={lang} stat={headline} releases={releases}>
-        <ProofLine lang={lang} stats={stats} servers={headline} />
+        <ProofLine lang={lang} stats={stats} servers={headline} docPages={docPages} />
       </Hero>
       <Catalog lang={lang} />
       <WhyMSK lang={lang} />

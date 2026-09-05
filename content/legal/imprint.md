@@ -76,7 +76,7 @@ We are responsible for our own content under general law. For content stored by 
 
 External links (GitHub, Discord, Tebex, Stripe, fivestats.io, CFX.re and others) lead to third-party offerings for which the respective provider is responsible.
 
-"FiveM" and "CFX.re" are trademarks or designations of Cfx.re / Rockstar Games; "Discord" is a trademark of Discord Inc. MSK Scripts is not affiliated with these companies. All of our own software products are protected by copyright; the terms of use follow from the Terms and Conditions or the respective open source licence (e.g. AGPL-3.0 for the Ticket Bot, Paste and Shortener).
+"FiveM" and "CFX.re" are trademarks or designations of Cfx.re / Rockstar Games; "Discord" is a trademark of Discord Inc. MSK Scripts is not affiliated with these companies. All of our own software products and graphics, including logos and banners, are protected by copyright; the terms of use follow from the Terms and Conditions (for our images from § 9 (2) of the Terms) or the respective open source licence (e.g. AGPL-3.0 for the Ticket Bot, Paste and Shortener).
 
 ## Objection to promotional emails
 

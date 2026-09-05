@@ -10,6 +10,7 @@ import {
   type AdminTeamMember,
 } from '@/lib/adminPerms'
 import { visibleTabs, resolveTab, tabHref } from '@/lib/adminTabs'
+import { useLang } from '@/components/i18n/LangProvider'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { cn } from '@/lib/utils'
@@ -33,6 +34,11 @@ export default function AdminClient({ member, initialTab }: { member: AdminTeamM
   // zwischen Server-Render und Hydration.
   const [active, setActive] = useState(() => resolveTab(tabs, initialTab))
   const router = useRouter()
+  // The dashboard itself is single-language, its ADDRESS is not: the proxy
+  // answers `/de/admin` just like `/admin`, and somebody browsing in German
+  // should still be after switching tabs. `tabHref` deliberately keeps
+  // returning the language-less path; the prefix is added here.
+  const { localize } = useLang()
 
   /**
    * Reiter wechseln und die Adresszeile mitziehen, damit F5 nicht auf
@@ -47,7 +53,7 @@ export default function AdminClient({ member, initialTab }: { member: AdminTeamM
    */
   const selectTab = (id: string) => {
     setActive(id)
-    window.history.replaceState(null, '', tabHref(tabs, id))
+    window.history.replaceState(null, '', localize(tabHref(tabs, id)))
   }
 
   const handleLogout = async () => {
@@ -56,7 +62,7 @@ export default function AdminClient({ member, initialTab }: { member: AdminTeamM
     } catch { /* leave even on network error */ }
     // refresh() nach push(): die Seite entscheidet server-seitig am Cookie,
     // ob sie das Panel oder den Login zeigt, und das Cookie ist gerade weg.
-    router.push('/admin')
+    router.push(localize('/admin'))
     router.refresh()
   }
 
@@ -146,6 +152,7 @@ export default function AdminClient({ member, initialTab }: { member: AdminTeamM
             <ImagesTab
               canManage={memberHasPermission(member, 'images.manage')}
               canModerate={memberHasPermission(member, 'images.moderate')}
+              canDelete={memberHasPermission(member, 'images.delete')}
             />
           )}
           {active === 'uploads'   && (

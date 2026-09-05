@@ -74,7 +74,7 @@ Für eigene Inhalte sind wir nach den allgemeinen Gesetzen verantwortlich. Für 
 
 Externe Links (GitHub, Discord, Tebex, Stripe, fivestats.io, CFX.re u. a.) führen zu Angeboten Dritter, für die der jeweilige Anbieter verantwortlich ist.
 
-„FiveM“ und „CFX.re“ sind Marken bzw. Bezeichnungen von Cfx.re / Rockstar Games; „Discord“ ist eine Marke von Discord Inc. MSK Scripts steht in keiner Verbindung zu diesen Unternehmen. Alle eigenen Software-Produkte unterliegen dem Urheberrecht; die Nutzungsbedingungen ergeben sich aus den AGB bzw. der jeweiligen Open-Source-Lizenz (z. B. AGPL-3.0 für Ticket-Bot, Paste, Shortener).
+„FiveM“ und „CFX.re“ sind Marken bzw. Bezeichnungen von Cfx.re / Rockstar Games; „Discord“ ist eine Marke von Discord Inc. MSK Scripts steht in keiner Verbindung zu diesen Unternehmen. Alle eigenen Software-Produkte und Grafiken, einschließlich Logos und Banner, unterliegen dem Urheberrecht; die Nutzungsbedingungen ergeben sich aus den AGB (für unsere Bilder aus § 9 Abs. 2 der AGB) bzw. der jeweiligen Open-Source-Lizenz (z. B. AGPL-3.0 für Ticket-Bot, Paste, Shortener).
 
 ## Widerspruch gegen Werbe-Mails
 

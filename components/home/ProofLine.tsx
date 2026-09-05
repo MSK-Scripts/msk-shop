@@ -2,6 +2,7 @@ import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 import { homeTranslations, type Lang } from '@/lib/i18n'
 import { formatReversalRate, type ShopStats } from '@/lib/shopStats'
 import type { HeadlineStat } from '@/lib/fivestats'
+import { SITE_CONFIG } from '@/lib/config'
 
 /**
  * The measured figures under the hero.
@@ -17,9 +18,6 @@ import type { HeadlineStat } from '@/lib/fivestats'
  * invented teaches the reader to discount the other three.
  */
 
-/** Published documentation pages. Comes from the Docusaurus build in the docs repo. */
-const DOC_PAGES = 206
-
 interface Entry {
   value: string
   label: string
@@ -27,11 +25,13 @@ interface Entry {
 }
 
 export function ProofLine({
-  lang, stats, servers,
+  lang, stats, servers, docPages,
 }: {
   lang: Lang
   stats: ShopStats | null
   servers: HeadlineStat | null
+  /** Documentation pages, counted from its sitemap. `null` when unreachable. */
+  docPages: number | null
 }) {
   const t = homeTranslations[lang]
   const locale = lang === 'de' ? 'de-DE' : 'en-US'
@@ -55,7 +55,13 @@ export function ProofLine({
       label: t.proof_reversal,
     })
   }
-  entries.push({ value: num(DOC_PAGES), label: t.proof_docs })
+  // Until 05.09.2026 this was a constant `206`. Measured while replacing it,
+  // the real figure was 208: a hand-written number in a line that claims every
+  // one of its figures is measured. If the source fails, the entry drops out,
+  // same as the other three.
+  if (docPages !== null && docPages > 0) {
+    entries.push({ value: num(docPages), label: t.proof_docs, href: SITE_CONFIG.docs })
+  }
 
   // Eine einzelne Zahl trägt keine Belegzeile.
   if (entries.length < 2) return null

@@ -101,7 +101,11 @@ Prices are final prices; VAT is not shown pursuant to § 19 UStG.
 
 (1) When submitting images you warrant that you hold all necessary rights, and you grant us the non-exclusive right to make the image publicly available in the gallery and in our channels for the presentation of our products; you may request removal at any time. We review submissions before publication.
 
-(2) MSK Paste and MSK Shortener are free tools without any guarantee of availability. Illegal content, phishing targets, malicious code and the circumvention of blocks are not permitted. Short links to reported targets are deactivated.
+(2) **Our own images (gallery category "Brand").** Logos, banners and brand graphics by MSK Scripts are original works and protected by copyright. You may use them unchanged wherever they refer to MSK Scripts or our products, for example in your server's Discord, in forum posts or in guides; no separate permission is required for that. It is not permitted to pass them off as your own work, to use them as your own or your server's logo, to edit them or to use them detached from any reference to MSK Scripts, nor is any use permitted that suggests a cooperation with us or an endorsement by us that does not exist. **Any use in connection with pornographic, violence-glorifying, extremist, discriminatory or otherwise unlawful content is strictly prohibited**; this covers the images themselves as much as the sites and services they appear on. We may revoke the permission in sentence 2 at any time with effect for the future.
+
+(3) The remaining gallery categories show game content by Rockstar Games and Take-Two Interactive. MSK Scripts claims no rights to it and cannot grant any; we provide the images for non-commercial use in the FiveM community. If you hold rights to an image and want it removed, contact info@msk-scripts.de.
+
+(4) MSK Paste and MSK Shortener are free tools without any guarantee of availability. Illegal content, phishing targets, malicious code and the circumvention of blocks are not permitted. Short links to reported targets are deactivated.
 
 ## § 10 Content moderation and reporting procedure (Art. 14, 16, 17 DSA)
 

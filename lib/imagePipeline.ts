@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from 'node:fs/promises'
+import { copyFile, mkdir, rm, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import sharp from 'sharp'
 
@@ -148,4 +148,67 @@ export async function writeVariants(category: string, name: string, v: Variants)
   await writeFile(join(/*turbopackIgnore: true*/ dir, `${name}.png`), v.original)
   await writeFile(join(/*turbopackIgnore: true*/ dir, `${name}.webp`), v.card)
   await writeFile(join(/*turbopackIgnore: true*/ dir, `${name}_thumb.webp`), v.thumb)
+}
+/**
+ * The three files an image consists of on the CDN.
+ *
+ * `ext` applies to the original only. Both derivatives are always WebP, which
+ * `buildVariants` decides and `scripts/image-sync-check.js` checks by exactly
+ * these three names. Adding a fourth variant here means changing both places,
+ * or the sync check reports it as a file without a row.
+ */
+export function variantFiles(name: string, ext: string): string[] {
+  return [`${name}.${ext}`, `${name}.webp`, `${name}_thumb.webp`]
+}
+
+/**
+ * Copy the three variants into another category.
+ *
+ * **Copy, not move**, and that is the whole point: the caller rewrites the
+ * database row between the copy and the removal. If it breaks in between, the
+ * files exist twice. The gallery keeps working and the sync check reports the
+ * copies as files without a row. A real move would, at that same moment, leave
+ * a row whose image 404s, which is the failure a visitor sees.
+ *
+ * A missing derivative is skipped instead of aborting the move: that is an
+ * existing sync-check finding and no reason to leave the row in the wrong
+ * category. The return value says how many files actually came along; at 0 the
+ * row describes nothing and the caller stops.
+ */
+export async function copyVariants(
+  from: string, to: string, name: string, ext: string,
+): Promise<number> {
+  const root = cdnRootPath()
+  const targetDir = join(/*turbopackIgnore: true*/ root, to)
+  await mkdir(/*turbopackIgnore: true*/ targetDir, { recursive: true })
+
+  let copied = 0
+  for (const file of variantFiles(name, ext)) {
+    try {
+      await copyFile(
+        join(/*turbopackIgnore: true*/ root, from, file),
+        join(/*turbopackIgnore: true*/ targetDir, file),
+      )
+      copied++
+    } catch (e) {
+      // Only "does not exist" is harmless. An EACCES has to be loud, or half a
+      // move looks exactly like a finished one.
+      if ((e as NodeJS.ErrnoException).code !== 'ENOENT') throw e
+    }
+  }
+  return copied
+}
+
+/**
+ * Remove the three variants.
+ *
+ * `force`, because an already missing file is not an error. This runs in two
+ * places, when deleting a row and as the second step of a move, and in both the
+ * goal is "nothing is there afterwards", not "everything was there before".
+ */
+export async function deleteVariants(category: string, name: string, ext: string): Promise<void> {
+  const root = cdnRootPath()
+  for (const file of variantFiles(name, ext)) {
+    await rm(join(/*turbopackIgnore: true*/ root, category, file), { force: true })
+  }
 }

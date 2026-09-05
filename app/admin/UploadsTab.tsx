@@ -31,6 +31,17 @@ interface Upload {
   hasFile:          boolean
 }
 
+/**
+ * Only the two fields the selector needs.
+ *
+ * The list comes from `/api/admin/images/stats`, because the categories are
+ * already there and that route accepts the same three permissions as this view.
+ * A dedicated endpoint would have queried the same table a second time.
+ */
+interface Figures {
+  categories: Array<{ slug: string; name: string }>
+}
+
 const TABS = [
   { id: 'pending',  label: 'Awaiting review' },
   { id: 'approved', label: 'Approved' },
@@ -53,11 +64,23 @@ export default function UploadsTab({ canModerate }: { canModerate: boolean }) {
     url, 'uploads', 'Failed to load the queue.',
   )
 
+  // If the call fails, `categories` stays empty and the row shows no selector.
+  // Approving still works, just into the submitted category: a loading error
+  // here must not block moderation.
+  const { data: figures } = useJsonResource<Figures>(
+    '/api/admin/images/stats', 'figures', 'Failed to load categories.',
+  )
+  const categories = figures?.categories ?? []
+
   const [busyId, setBusyId]   = useState<string | null>(null)
   const [rowError, setRowError] = useState<string | null>(null)
   // Rejection reasons, keyed by upload id. A reason is mandatory server-side:
   // a rejection without one is a silent disappearance for the submitter.
   const [reasons, setReasons] = useState<Record<string, string>>({})
+  // Target category per submission. Empty means "leave it as submitted", which
+  // is why this is its own state and not a prefilled field: that way the code
+  // can tell whether somebody actively refiled it.
+  const [targets, setTargets] = useState<Record<string, string>>({})
 
   const decide = async (u: Upload, decision: 'approve' | 'reject') => {
     if (busyId) return
@@ -70,10 +93,17 @@ export default function UploadsTab({ canModerate }: { canModerate: boolean }) {
     setBusyId(u.id)
     setRowError(null)
     try {
+      // The category only travels with an approval. A rejection writes no file,
+      // and its category is the submitter's own statement, which stays on
+      // record as exactly that.
+      const body = decision === 'reject'
+        ? { decision, reason }
+        : { decision, category: targets[u.id] ?? u.category }
+
       const r = await fetch(`/api/admin/image-uploads/${u.id}`, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify(decision === 'reject' ? { decision, reason } : { decision }),
+        body:    JSON.stringify(body),
       })
       const d = await r.json().catch(() => ({}))
       if (!r.ok) throw new Error(d.error ?? 'Decision failed.')
@@ -92,7 +122,7 @@ export default function UploadsTab({ canModerate }: { canModerate: boolean }) {
         A pending file sits in quarantine outside any DocumentRoot; approving is the one action
         that puts it into the public CDN.
         {canModerate
-          ? ' It was re-encoded by sharp on arrival, so what you see below is our own PNG, not the submitted bytes.'
+          ? ' It was re-encoded by sharp on arrival, so what you see below is our own PNG, not the submitted bytes. The category a submitter picked is a suggestion — set the one you want before approving.'
           : ' You can see the queue but not decide on it.'}
       </p>
 
@@ -216,6 +246,22 @@ export default function UploadsTab({ canModerate }: { canModerate: boolean }) {
                       {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ThumbsUp className="h-3.5 w-3.5" />}
                       Approve
                     </Button>
+                    {categories.length > 0 && (
+                      <label className="flex items-center gap-1.5 text-xs text-[var(--color-muted-foreground)]">
+                        into
+                        <select
+                          value={targets[u.id] ?? u.category}
+                          onChange={e => setTargets(t => ({ ...t, [u.id]: e.target.value }))}
+                          disabled={busy}
+                          aria-label={`Category to approve ${u.name} into`}
+                          className="h-8 rounded-md border border-[var(--color-border)] bg-[var(--color-muted)] px-2 text-xs text-[var(--color-foreground)]"
+                        >
+                          {categories.map(c => (
+                            <option key={c.slug} value={c.slug}>{c.name}</option>
+                          ))}
+                        </select>
+                      </label>
+                    )}
                     <Input
                       value={reasons[u.id] ?? ''}
                       onChange={e => setReasons(r => ({ ...r, [u.id]: e.target.value }))}
@@ -227,6 +273,12 @@ export default function UploadsTab({ canModerate }: { canModerate: boolean }) {
                     <Button variant="danger" size="sm" disabled={busy} onClick={() => decide(u, 'reject')}>
                       <ThumbsDown className="h-3.5 w-3.5" /> Reject
                     </Button>
+                    {(targets[u.id] ?? u.category) !== u.category && (
+                      <span className="w-full text-xs text-[var(--color-warning)]">
+                        Filed under <span className="font-mono">{targets[u.id]}</span> instead of the
+                        submitted <span className="font-mono">{u.category}</span>. Rejecting ignores this.
+                      </span>
+                    )}
                   </div>
                 )}
               </div>

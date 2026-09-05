@@ -3,6 +3,7 @@ import { cookies }                         from 'next/headers';
 import { query }                           from '@/lib/db';
 import { signAdminSession, ADMIN_SESSION_COOKIE } from '@/lib/adminSession';
 import { loadAdminMember }                 from '@/lib/adminAuth';
+import { localePath }                      from '@/lib/lang';
 
 // Session-/cookie-dependent → never cache.
 export const dynamic = 'force-dynamic';
@@ -15,12 +16,22 @@ export async function GET(req: Request) {
 
   const cookieStore = await cookies();
   const storedState = cookieStore.get('msk_admin_oauth_state')?.value;
+  // Set by the sign-in button when the login started on the German version.
+  // `localePath` builds the prefix, not this string: there is exactly one place
+  // that knows what an address looks like in a given language, and a second
+  // hand-written `/de` is the mistake the guard in `tests/localeLinks.test.ts`
+  // has been catching since 23.08.2026.
+  const adminPath   = localePath(
+    cookieStore.get('msk_admin_oauth_lang')?.value === 'de' ? 'de' : 'en',
+    '/admin',
+  );
 
   // Redirect back to /admin AND clear the one-shot state cookie on every error
   // path, so an abandoned callback does not leave it lingering.
   const fail = (reason: string) => {
-    const res = NextResponse.redirect(`${baseUrl}/admin?error=${reason}`);
+    const res = NextResponse.redirect(`${baseUrl}${adminPath}?error=${reason}`);
     res.cookies.delete('msk_admin_oauth_state');
+    res.cookies.delete('msk_admin_oauth_lang');
     return res;
   };
 
@@ -92,7 +103,7 @@ export async function GET(req: Request) {
     return fail('not_authorized');
   }
 
-  const res = NextResponse.redirect(`${baseUrl}/admin`);
+  const res = NextResponse.redirect(`${baseUrl}${adminPath}`);
   res.cookies.set(ADMIN_SESSION_COOKIE, signAdminSession({ discordUserId }), {
     httpOnly: true,
     secure:   true,
@@ -101,5 +112,6 @@ export async function GET(req: Request) {
     path:     '/',
   });
   res.cookies.delete('msk_admin_oauth_state');
+  res.cookies.delete('msk_admin_oauth_lang');
   return res;
 }

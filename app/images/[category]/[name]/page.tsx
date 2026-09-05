@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, Download } from 'lucide-react'
 import { notFound } from 'next/navigation'
 
 import { CopyUrlButton } from '@/components/images/CopyUrlButton'
+import { BrandNotice, OWN_WORK_CATEGORY } from '@/components/images/BrandNotice'
 import { ReportLink } from '@/components/legal/ReportLink'
 import { JsonLd } from '@/components/JsonLd'
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
@@ -153,6 +154,10 @@ export default async function ImageDetailPage({ params }: { params: Params }) {
 
           {/* Die URL steht sichtbar da und nicht nur hinter dem Knopf: wer sie
               braucht, will sie oft auch lesen und von Hand anpassen. */}
+          {/* Above the copy button and not below it: whoever takes the address
+              should have read what they may do with it first. */}
+          {slug === OWN_WORK_CATEGORY && <BrandNotice lang={lang} className="mt-6" />}
+
           <div className="mt-6">
             <p className="mb-2 font-mono text-xs font-bold uppercase tracking-widest text-[var(--color-muted-foreground)]">
               URL

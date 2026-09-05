@@ -99,7 +99,11 @@ Preise sind Endpreise; Umsatzsteuer wird nach § 19 UStG nicht ausgewiesen.
 
 (1) Beim Einreichen von Bildern versicherst du, alle erforderlichen Rechte zu besitzen, und räumst uns das einfache Recht ein, das Bild in der Galerie und in unseren Kanälen zur Präsentation unserer Produkte öffentlich zugänglich zu machen; du kannst die Entfernung jederzeit verlangen. Wir prüfen Einreichungen vor Veröffentlichung.
 
-(2) MSK Paste und MSK Shortener sind kostenlose Werkzeuge ohne Verfügbarkeitsgarantie. Unzulässig sind rechtswidrige Inhalte, Phishing-Ziele, Schadcode und Umgehung von Sperren. Kurzlinks auf gemeldete Ziele werden deaktiviert.
+(2) **Eigene Bilder von MSK Scripts (Galerie-Kategorie „Brand“).** Logos, Banner und Marken-Grafiken von MSK Scripts sind eigene Werke und urheberrechtlich geschützt. Du darfst sie unverändert verwenden, soweit sie sich auf MSK Scripts oder unsere Produkte beziehen, etwa im Discord deines Servers, in Forenbeiträgen oder Anleitungen; einer gesonderten Erlaubnis bedarf es dafür nicht. Nicht gestattet ist es, sie als eigenes Werk auszugeben, als eigenes Logo oder Serverlogo zu führen, sie zu bearbeiten oder ohne Bezug auf MSK Scripts zu verwenden, ebenso wenig jede Nutzung, die eine Zusammenarbeit mit uns oder eine Unterstützung durch uns nahelegt, die nicht besteht. **Streng untersagt ist jede Verwendung im Zusammenhang mit pornografischen, gewaltverherrlichenden, extremistischen, diskriminierenden oder sonst rechtswidrigen Inhalten**; das gilt für die Bilder selbst ebenso wie für die Seiten und Angebote, auf denen sie erscheinen. Die Erlaubnis nach Satz 2 können wir jederzeit mit Wirkung für die Zukunft widerrufen.
+
+(3) Die übrigen Kategorien der Galerie zeigen Spielinhalte von Rockstar Games und Take-Two Interactive. Daran beansprucht MSK Scripts keine Rechte und kann daran auch keine einräumen; wir stellen die Bilder für die nicht-kommerzielle Nutzung in der FiveM-Community bereit. Wer Rechte an einem Bild hält und dessen Entfernung wünscht, wendet sich an info@msk-scripts.de.
+
+(4) MSK Paste und MSK Shortener sind kostenlose Werkzeuge ohne Verfügbarkeitsgarantie. Unzulässig sind rechtswidrige Inhalte, Phishing-Ziele, Schadcode und Umgehung von Sperren. Kurzlinks auf gemeldete Ziele werden deaktiviert.
 
 ## § 10 Inhaltsmoderation und Meldeverfahren (Art. 14, 16, 17 DSA)
 

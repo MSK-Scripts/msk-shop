@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react'
 import {
   Loader2, Search, Pencil, Check, X, Eye, EyeOff, ExternalLink,
   ShieldQuestion, ThumbsUp, ThumbsDown, RefreshCw, ChevronLeft, ChevronRight,
+  Trash2, AlertTriangle,
 } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
@@ -115,9 +116,10 @@ function formatBytes(bytes: number): string {
 interface Props {
   canManage:   boolean
   canModerate: boolean
+  canDelete:   boolean
 }
 
-export default function ImagesTab({ canManage, canModerate }: Props) {
+export default function ImagesTab({ canManage, canModerate, canDelete }: Props) {
   // Query state. Every one of these only ever changes inside an event handler,
   // so the URL below is a plain derived value and there is no setState in an
   // effect anywhere in this file.
@@ -151,8 +153,14 @@ export default function ImagesTab({ canManage, canModerate }: Props) {
   const [editKey, setEditKey]     = useState<string | null>(null)
   const [editLabel, setEditLabel] = useState('')
   const [editTags, setEditTags]   = useState('')
+  const [editCategory, setEditCategory] = useState('')
   const [busyKey, setBusyKey]     = useState<string | null>(null)
   const [rowError, setRowError]   = useState<string | null>(null)
+  // Two clicks to delete, without `window.confirm`. The browser dialog cannot
+  // be styled or tested, and a delete that looks exactly like "hide" is the
+  // kind of button people hit one time too many.
+  const [confirmKey, setConfirmKey] = useState<string | null>(null)
+  const [notice, setNotice]         = useState<string | null>(null)
 
   const [sync, setSync]           = useState<SyncReport | null>(null)
   const [syncBusy, setSyncBusy]   = useState(false)
@@ -201,13 +209,17 @@ export default function ImagesTab({ canManage, canModerate }: Props) {
     setPage(1)
   }
 
-  const pickCategory = (slug: string) => { setCategory(slug); setPage(1); setEditKey(null) }
-  const pickFilter   = (f: Filter)     => { setFilter(f);     setPage(1); setEditKey(null) }
+  const closeRowState = () => { setEditKey(null); setConfirmKey(null) }
+
+  const pickCategory = (slug: string) => { setCategory(slug); setPage(1); closeRowState() }
+  const pickFilter   = (f: Filter)     => { setFilter(f);     setPage(1); closeRowState() }
 
   const openEdit = (img: AdminImage) => {
     setEditKey(`${img.category}/${img.name}`)
     setEditLabel(img.label ?? '')
     setEditTags(img.tags.join(', '))
+    setEditCategory(img.category)
+    setConfirmKey(null)
     setRowError(null)
   }
 
@@ -224,12 +236,40 @@ export default function ImagesTab({ canManage, canModerate }: Props) {
       const d = await r.json()
       if (!r.ok) throw new Error(d.error ?? 'Update failed.')
       setEditKey(null)
+      setConfirmKey(null)
       await reload()
       // The counters move with every edit — a fixed label is one less in
       // "missing label", and that is the number this screen exists for.
       await reloadStats()
     } catch (e) {
       setRowError(e instanceof Error ? e.message : 'Update failed.')
+    } finally {
+      setBusyKey(null)
+    }
+  }
+
+  /**
+   * Delete for good.
+   *
+   * `filesRemoved: false` is not an error and still deserves a message: the row
+   * is gone, the files are still on the CDN and still being served. That is
+   * exactly what somebody removing an image for a legal reason has to hear.
+   */
+  const remove = async (img: AdminImage) => {
+    const key = `${img.category}/${img.name}`
+    setBusyKey(key)
+    setRowError(null)
+    setNotice(null)
+    try {
+      const r = await fetch(`/api/admin/images/${img.category}/${img.name}`, { method: 'DELETE' })
+      const d = await r.json()
+      if (!r.ok) throw new Error(d.error ?? 'Delete failed.')
+      setConfirmKey(null)
+      if (d.warning) setNotice(String(d.warning))
+      await reload()
+      await reloadStats()
+    } catch (e) {
+      setRowError(e instanceof Error ? e.message : 'Delete failed.')
     } finally {
       setBusyKey(null)
     }
@@ -257,7 +297,9 @@ export default function ImagesTab({ canManage, canModerate }: Props) {
         {canManage
           ? ' Label and tags are what makes an image findable — a tile nobody can search for might as well not exist.'
           : ' You can view the inventory but not change it.'}
-        {' '}Files are only ever written by <span className="font-mono text-xs">scripts/image-ingest.js</span> on the server, never from here.
+        {' '}New image data only ever comes from <span className="font-mono text-xs">scripts/image-ingest.js</span> or
+        an approved upload. Moving and deleting act on files that already exist — both change
+        the public URL or remove it, so a link somebody wrote down elsewhere will break.
       </p>
 
       {/* ---------- figures ---------- */}
@@ -405,6 +447,20 @@ export default function ImagesTab({ canManage, canModerate }: Props) {
       {rowError && <ErrorCard message={rowError} />}
       {error && <ErrorCard message={error} />}
 
+      {notice && (
+        <Card className="flex items-start gap-2 border-[var(--color-warning)]/40 p-4 text-sm" role="alert">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-warning)]" />
+          <span className="flex-1">{notice}</span>
+          <button
+            onClick={() => setNotice(null)}
+            className="tap-target text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]"
+            aria-label="Dismiss"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </Card>
+      )}
+
       {!error && !list && (
         <Card className="flex items-center gap-2 p-6 text-sm text-[var(--color-muted-foreground)]">
           <Loader2 className="h-4 w-4 animate-spin" /> Loading images…
@@ -477,9 +533,30 @@ export default function ImagesTab({ canManage, canModerate }: Props) {
                               <div className="min-w-0">
                                 <div className="font-mono text-xs font-medium break-all">{img.name}</div>
                                 <div className="text-xs text-[var(--color-muted-foreground)]">
-                                  {img.category} · {img.width}×{img.height} · {formatBytes(img.bytes)}
+                                  {editing ? (
+                                    <select
+                                      value={editCategory}
+                                      onChange={e => setEditCategory(e.target.value)}
+                                      aria-label={`Category for ${img.name}`}
+                                      className="mb-1 h-7 rounded-md border border-[var(--color-border)] bg-[var(--color-muted)] px-1.5 text-xs text-[var(--color-foreground)]"
+                                    >
+                                      {stats?.map(s => <option key={s.slug} value={s.slug}>{s.slug}</option>)}
+                                    </select>
+                                  ) : img.category}
+                                  {' '}· {img.width}×{img.height} · {formatBytes(img.bytes)}
                                   {img.version > 1 && <> · v{img.version}</>}
                                 </div>
+                                {editing && editCategory !== img.category && (
+                                  <div className="mt-1 flex items-start gap-1 text-xs text-[var(--color-warning)]">
+                                    <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0" />
+                                    <span>
+                                      Moves the three files. The URL becomes
+                                      {' '}<span className="font-mono break-all">/{editCategory}/{img.name}.{img.ext}</span>{' '}
+                                      and the old one 404s — caches keep it, so anything linking to
+                                      it stays broken.
+                                    </span>
+                                  </div>
+                                )}
                                 {img.source && (
                                   <div className="text-xs text-[var(--color-muted-foreground)]">
                                     source: {img.source}
@@ -549,9 +626,12 @@ export default function ImagesTab({ canManage, canModerate }: Props) {
                                   <Button
                                     size="sm"
                                     disabled={busy}
-                                    onClick={() => patch(img, { label: editLabel, tags: editTags })}
+                                    onClick={() => patch(img, {
+                                      label: editLabel, tags: editTags, category: editCategory,
+                                    })}
                                   >
-                                    <Check className="h-3.5 w-3.5" /> Save
+                                    <Check className="h-3.5 w-3.5" />
+                                    {editCategory !== img.category ? 'Save & move' : 'Save'}
                                   </Button>
                                   <Button variant="outline" size="sm" disabled={busy} onClick={() => setEditKey(null)}>
                                     Cancel
@@ -586,6 +666,35 @@ export default function ImagesTab({ canManage, canModerate }: Props) {
                                     <Button variant="outline" size="sm" disabled={busy} onClick={() => openEdit(img)}>
                                       <Pencil className="h-3.5 w-3.5" /> Edit
                                     </Button>
+                                  )}
+                                  {/*
+                                    A `pending` row is somebody else's submission. Deleting it here
+                                    would throw away the record the Uploads tab needs to tell the
+                                    submitter what happened. The route refuses it anyway, so the
+                                    button never appears in the first place.
+                                  */}
+                                  {canDelete && !pending && (
+                                    confirmKey === key ? (
+                                      <>
+                                        <Button variant="danger" size="sm" disabled={busy} onClick={() => remove(img)}>
+                                          <Trash2 className="h-3.5 w-3.5" /> Delete for good
+                                        </Button>
+                                        <Button variant="outline" size="sm" disabled={busy} onClick={() => setConfirmKey(null)}>
+                                          Cancel
+                                        </Button>
+                                      </>
+                                    ) : (
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        disabled={busy}
+                                        onClick={() => { setConfirmKey(key); setRowError(null) }}
+                                        title="Delete the row and its three files"
+                                      >
+                                        <Trash2 className="h-3.5 w-3.5" />
+                                        <span className="sr-only">Delete {img.name}</span>
+                                      </Button>
+                                    )
                                   )}
                                   <a
                                     href={img.url}

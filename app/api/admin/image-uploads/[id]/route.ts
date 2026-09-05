@@ -7,6 +7,8 @@ import { approveUpload, getUpload, rejectUpload } from '@/lib/imageUploads'
 export const dynamic = 'force-dynamic'
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+/** Same shape the ingest normalizes category slugs to. */
+const SLUG_RE = /^[a-z0-9_-]{1,32}$/
 
 /**
  * Approve or reject one submission.
@@ -17,6 +19,12 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
  *
  * POST rather than PATCH because this is not a field edit: it runs the image
  * pipeline, writes three files and creates an inventory row.
+ *
+ * An approval may carry a `category` to file the image somewhere other than
+ * where it was submitted. The submitter picks from the categories that accept
+ * uploads; sorting it correctly is the moderator's job, and `brand` is not on
+ * the submitter's list at all. A rejection deliberately ignores the field: no
+ * file is written, so the stored category stays what was actually submitted.
  */
 export const POST = adminRoute<{ id: string }>('images.moderate', async ({ req, member, params }) => {
   const { id } = params
@@ -52,11 +60,22 @@ export const POST = adminRoute<{ id: string }>('images.moderate', async ({ req, 
     return NextResponse.json({ ok: true }, { headers: { 'Cache-Control': 'no-store' } })
   }
 
-  const result = await approveUpload(id, member.discordUserId)
+  let category = before.category
+  if ('category' in body && body.category !== null && body.category !== undefined) {
+    if (typeof body.category !== 'string' || !SLUG_RE.test(body.category)) {
+      return NextResponse.json({ error: 'Invalid category.' }, { status: 400 })
+    }
+    category = body.category
+  }
+
+  const result = await approveUpload(id, member.discordUserId, category)
   if (!result.ok) return failureResponse(result.reason)
 
+  // The submitted category is only recoverable from here once the row has been
+  // rewritten, so it goes into the log even when nothing moved.
   await writeAudit(member.discordUserId, 'image_upload.approve', id, {
-    category: before.category, name: before.name, submittedBy: before.submittedBy,
+    category, name: before.name, submittedBy: before.submittedBy,
+    ...(category !== before.category ? { movedFrom: before.category } : {}),
   })
   return NextResponse.json({ ok: true }, { headers: { 'Cache-Control': 'no-store' } })
 })
@@ -81,6 +100,8 @@ function failureResponse(reason: string): NextResponse {
         { error: 'Could not write the image into the CDN directory. The app user needs write access to CDN_ROOT_PATH.' },
         { status: 500 },
       )
+    case 'category_unknown':
+      return NextResponse.json({ error: 'That category does not exist.' }, { status: 400 })
     case 'file_gone':
       return NextResponse.json({ error: 'The quarantined file is gone. Ask for a new submission.' }, { status: 410 })
     default:

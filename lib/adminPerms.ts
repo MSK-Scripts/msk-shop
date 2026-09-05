@@ -17,6 +17,12 @@
  * Tebex. It no longer does, and a comment that describes a smaller world than
  * the code is worse than no comment.
  *
+ * `images.delete` is separate from `images.manage` for the same reason
+ * `images.moderate` is: hiding an image is reversible in one click, deleting it
+ * removes three files from the CDN and the row that knows their address. Anyone
+ * who may fix a typo should not also be able to erase the inventory one row at
+ * a time.
+ *
  * `images.moderate` gates the one decision that is not ours to make casually:
  * resolving a `pending` row, i.e. what a community upload arrives as. The
  * queue is empty until the upload module lands (phase 4, point 20 of
@@ -37,6 +43,7 @@ export const ADMIN_PERMISSIONS = [
   'images.view',
   'images.manage',
   'images.moderate',
+  'images.delete',
   'team.manage',
 ] as const;
 
@@ -56,6 +63,7 @@ export const PERMISSION_LABELS: Record<AdminPermission, { label: string; descrip
   'images.view':      { label: 'View images',    description: 'See the image CDN inventory and its health figures' },
   'images.manage':    { label: 'Manage images',  description: 'Edit label and tags, publish or hide an image' },
   'images.moderate':  { label: 'Moderate uploads', description: 'Approve or reject images awaiting review (community uploads)' },
+  'images.delete':    { label: 'Delete images',  description: 'Permanently remove an image and its files from the CDN' },
   'team.manage':      { label: 'Manage team',     description: 'Add/remove team members and set permissions' },
 };
 

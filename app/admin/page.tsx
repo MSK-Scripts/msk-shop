@@ -1,4 +1,5 @@
 import { cookies }                            from 'next/headers';
+import { getRequestLang }                     from '@/lib/serverLang';
 import { parseAdminSession, ADMIN_SESSION_COOKIE } from '@/lib/adminSession';
 import { loadAdminMember }                      from '@/lib/adminAuth';
 import { Button }                               from '@/components/ui/Button';
@@ -28,6 +29,7 @@ export default async function AdminPage({
 }) {
   const cookieStore = await cookies();
   const token       = cookieStore.get(ADMIN_SESSION_COOKIE)?.value;
+  const { lang }    = await getRequestLang();
   const session     = token ? parseAdminSession(token) : null;
   const member      = session?.discordUserId ? await loadAdminMember(session.discordUserId) : null;
 
@@ -58,8 +60,17 @@ export default async function AdminPage({
           </p>
         )}
 
+        {/*
+          The dashboard is single-language, its address is not: the proxy answers
+          `/de/admin` just the same. Without this parameter the OAuth round trip
+          sends everyone to `/admin`, and somebody who was browsing in German
+          gets English for the rest of the session. Only the language is passed,
+          never a destination: a forwarded path would be an open redirect.
+        */}
         <Button asChild variant="discord" size="lg" className="mt-6 w-full">
-          <a href="/api/admin/auth">Sign in with Discord</a>
+          <a href={lang === 'de' ? '/api/admin/auth?lang=de' : '/api/admin/auth'}>
+            Sign in with Discord
+          </a>
         </Button>
       </Card>
     </div>

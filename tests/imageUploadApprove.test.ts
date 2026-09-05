@@ -24,26 +24,36 @@ const mWrite    = writeVariants  as unknown as ReturnType<typeof vi.fn>
 
 const ID = '11111111-2222-4333-8444-555555555555'
 let inbox: string
+let png: Buffer
 
 beforeAll(async () => {
   inbox = await mkdtemp(join(tmpdir(), 'msk-inbox-'))
   process.env.UPLOAD_INBOX_PATH = inbox
-  const png = await sharp({ create: { width: 128, height: 128, channels: 4, background: { r: 200, g: 30, b: 30, alpha: 1 } } })
+  png = await sharp({ create: { width: 128, height: 128, channels: 4, background: { r: 200, g: 30, b: 30, alpha: 1 } } })
     .png().toBuffer()
-  await writeFile(join(inbox, `${ID}.png`), png)
 })
 
 afterAll(async () => { await rm(inbox, { recursive: true, force: true }) })
 
-beforeEach(() => {
+beforeEach(async () => {
+  // The quarantined file is recreated per test. Without that the tests depend
+  // on their order: a successful approval clears it away, and every test after
+  // that gets `file_gone` instead of its own result.
+  await writeFile(join(inbox, `${ID}.png`), png)
+
   mQuery.mockReset()
   mQueryOne.mockReset()
   mWrite.mockReset()
 
   mQuery.mockResolvedValue([])
-  mQueryOne.mockImplementation(async (sql: string) => {
+  mQueryOne.mockImplementation(async (sql: string, params: unknown[] = []) => {
     // The name-collision probe, re-run at approval time.
     if (sql.includes('FROM msk_images')) return null
+    // Without this branch every category would exist, because the fallback
+    // below answers with the upload row and that is truthy.
+    if (sql.includes('FROM msk_image_categories')) {
+      return ['items', 'props', 'brand'].includes(String(params[0])) ? { slug: params[0] } : null
+    }
     return {
       id: ID, category: 'items', name: 'gold_cards', label: 'Gold Cards', tags: null,
       original_filename: 'gold_cards.png', width: 512, height: 512, bytes: 176_000,
@@ -90,6 +100,77 @@ describe('approveUpload when the CDN cannot be written', () => {
 
     await expect(approveUpload(ID, '1')).resolves.toEqual({ ok: true })
     expect(inserted()).toHaveLength(1)
+    expect(mWrite).toHaveBeenCalledWith('items', 'gold_cards', expect.anything())
+  })
+})
+
+/**
+ * Approving into a category other than the submitted one.
+ *
+ * The category somebody picks while uploading is a suggestion. Filing it
+ * correctly is the decision moderation exists for, and without it a
+ * misfiled submission would have to be rejected and uploaded again.
+ */
+describe('approveUpload with a target category', () => {
+  it('writes the files and the row into the chosen category', async () => {
+    mWrite.mockResolvedValue(undefined)
+
+    await expect(approveUpload(ID, '1', 'props')).resolves.toEqual({ ok: true })
+    expect(mWrite).toHaveBeenCalledWith('props', 'gold_cards', expect.anything())
+
+    const insert = mQuery.mock.calls.find(c => String(c[0]).includes('INSERT INTO msk_images'))
+    expect(insert?.[1]?.[0]).toBe('props')
+  })
+
+  /**
+   * `brand` is not open to submitters (`allows_upload = 0`), but a moderator is
+   * meant to be able to file something there. Checking `allows_upload` here
+   * would make exactly that impossible.
+   */
+  it('allows a category that does not accept submissions', async () => {
+    mWrite.mockResolvedValue(undefined)
+
+    await expect(approveUpload(ID, '1', 'brand')).resolves.toEqual({ ok: true })
+    expect(mWrite).toHaveBeenCalledWith('brand', 'gold_cards', expect.anything())
+  })
+
+  it('rejects a category that does not exist, before touching any file', async () => {
+    mWrite.mockResolvedValue(undefined)
+
+    await expect(approveUpload(ID, '1', 'stickers'))
+      .resolves.toEqual({ ok: false, reason: 'category_unknown' })
+    expect(mWrite).not.toHaveBeenCalled()
+  })
+
+  /**
+   * The collision probe has to run against the TARGET. `UNIQUE (category, name)`
+   * spans two columns; a name taken in `items` says nothing about `props`.
+   */
+  it('checks the name against the target category, not the submitted one', async () => {
+    mWrite.mockResolvedValue(undefined)
+    await approveUpload(ID, '1', 'props')
+
+    const probe = mQueryOne.mock.calls.find(c => String(c[0]).includes('FROM msk_images'))
+    expect(probe?.[1]).toEqual(['props', 'gold_cards'])
+  })
+
+  /**
+   * The Uploads tab's "in the gallery" link is built from this column. If it
+   * stayed on the submitted category, the link would point nowhere.
+   */
+  it('moves the queue row to the category it was filed under', async () => {
+    mWrite.mockResolvedValue(undefined)
+    await approveUpload(ID, '1', 'props')
+
+    const update = mQuery.mock.calls.find(c => String(c[0]).includes('UPDATE msk_image_uploads'))
+    expect(String(update?.[0])).toContain('category = ?')
+    expect(update?.[1]?.[0]).toBe('props')
+  })
+
+  it('leaves the category alone when none is given', async () => {
+    mWrite.mockResolvedValue(undefined)
+    await approveUpload(ID, '1')
+
     expect(mWrite).toHaveBeenCalledWith('items', 'gold_cards', expect.anything())
   })
 })

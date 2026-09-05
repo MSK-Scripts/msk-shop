@@ -1347,7 +1347,7 @@ export const homeTranslations = {
 
     cta_heading: "Support comes from the person who wrote the code.",
     // {count} wird durch die gemessene Käuferzahl ersetzt (lib/shopStats.ts).
-    cta_heading_measured: "{count} buyers since 2022",
+    cta_heading_measured: "{count} unique buyers since 2022",
     cta_subtitle:
       "Discord has help before and after buying, sneak peeks and announcements, straight from the developer.",
     cta_btn_discord: "Join Discord",
@@ -1361,7 +1361,7 @@ export const homeTranslations = {
     // Englisch. Sie bleiben deshalb in beiden Sprachen im Original.
 
     // Belegzeile. Jede Zahl ist gemessen, siehe PRODUCT.md → Evidence on Hand.
-    proof_buyers: "buyers",
+    proof_buyers: "unique buyers",
     proof_servers: "servers running msk_core",
     proof_reversal: "refunded or charged back",
     proof_docs: "documentation pages",
@@ -1481,7 +1481,7 @@ export const homeTranslations = {
     cta_heading:
       "Der Support kommt von der Person, die den Code geschrieben hat.",
     // {count} wird durch die gemessene Käuferzahl ersetzt (lib/shopStats.ts).
-    cta_heading_measured: "{count} Käufer seit 2022",
+    cta_heading_measured: "{count} einzigartige Käufer seit 2022",
     cta_subtitle:
       "Im Discord gibt es Hilfe vor und nach dem Kauf, Vorab-Einblicke und Ankündigungen, direkt vom Entwickler.",
     cta_btn_discord: "Discord beitreten",
@@ -1495,7 +1495,7 @@ export const homeTranslations = {
     // Englisch. Sie bleiben deshalb in beiden Sprachen im Original.
 
     // Belegzeile. Jede Zahl ist gemessen, siehe PRODUCT.md → Evidence on Hand.
-    proof_buyers: "Käufer",
+    proof_buyers: "Einzigartige Käufer",
     proof_servers: "Server auf msk_core",
     proof_reversal: "erstattet oder zurückgebucht",
     proof_docs: "Doku-Seiten",
@@ -2016,7 +2016,20 @@ export const imagesTranslations = {
     usage_body:  'Use the URL directly in your NUI, your website or your script. The files are cached for a year, so they only download once per client.',
 
     legal_title: 'About these images',
-    legal_body:  'The depicted assets are game content by Rockstar Games and Take-Two Interactive. MSK Scripts claims no rights to them and provides the images for non-commercial use in the FiveM community. If you hold rights to any image here and want it removed, write to info@msk-scripts.de and it will be taken down.',
+    // Until 05.09.2026 the second sentence covered the whole gallery and was
+    // therefore the exact opposite of the truth for `brand`: those are our own
+    // works, and rights to them very much are claimed.
+    legal_body:  'The depicted assets are game content by Rockstar Games and Take-Two Interactive. MSK Scripts claims no rights to them and provides the images for non-commercial use in the FiveM community. The Brand collection is the exception: those are our own works, free to use where they refer to MSK Scripts, but not as your own. If you hold rights to any image here and want it removed, write to info@msk-scripts.de and it will be taken down.',
+
+    // For the `brand` category only. Four separate fields instead of one block
+    // on purpose: the waiver above and this reservation here appear on the same
+    // page and must not bleed into each other while translating.
+    brand_notice_title:   'Copyright protected',
+    brand_notice_owner:   'The images in this collection are original works by MSK Scripts, protected under German copyright law as works of applied art (§ 2 (1) no. 4 UrhG). © {year} Moritz Kohm.',
+    brand_notice_allowed: 'You are welcome to use them unchanged wherever they refer to MSK Scripts: in your server\'s Discord, in a forum post, in a guide, or to point people at one of our scripts. No permission needed for that, and we appreciate it.',
+    brand_notice_limits:  'What is not allowed is passing them off as your own work: using them as your own or your server\'s logo, editing them, or using them detached from any reference to MSK Scripts. Nor may they suggest a cooperation with us or an endorsement by us that does not exist.',
+    brand_notice_prohibited: 'Strictly prohibited is any use in connection with pornographic, violence-glorifying, extremist, discriminatory or otherwise unlawful content. This covers the images themselves as much as the sites and services they appear on.',
+    brand_notice_contact: 'Anything beyond that: info@msk-scripts.de',
   },
   de: {
     eyebrow:          'Asset-Bibliothek',
@@ -2066,7 +2079,14 @@ export const imagesTranslations = {
     usage_body:  'Die URL lässt sich direkt in der NUI, auf einer Website oder im Script verwenden. Die Dateien werden ein Jahr lang zwischengespeichert, jeder Client lädt sie also nur einmal.',
 
     legal_title: 'Zu diesen Bildern',
-    legal_body:  'Die abgebildeten Inhalte sind Spielinhalte von Rockstar Games und Take-Two Interactive. MSK Scripts beansprucht daran keine Rechte und stellt die Bilder für die nicht-kommerzielle Nutzung in der FiveM-Community bereit. Wer Rechte an einem Bild hält und dessen Entfernung wünscht, schreibt an info@msk-scripts.de, dann wird es entfernt.',
+    legal_body:  'Die abgebildeten Inhalte sind Spielinhalte von Rockstar Games und Take-Two Interactive. MSK Scripts beansprucht daran keine Rechte und stellt die Bilder für die nicht-kommerzielle Nutzung in der FiveM-Community bereit. Ausgenommen ist die Sammlung Brand: das sind eigene Werke, nutzbar mit Bezug auf MSK Scripts, aber nicht als eigenes. Wer Rechte an einem Bild hält und dessen Entfernung wünscht, schreibt an info@msk-scripts.de, dann wird es entfernt.',
+
+    brand_notice_title:   'Urheberrechtlich geschützt',
+    brand_notice_owner:   'Die Bilder in dieser Sammlung sind eigene Werke von MSK Scripts und als Werke der angewandten Kunst urheberrechtlich geschützt (§ 2 Abs. 1 Nr. 4 UrhG). © {year} Moritz Kohm.',
+    brand_notice_allowed: 'Du darfst sie unverändert überall dort verwenden, wo sie sich auf MSK Scripts beziehen: im Discord deines Servers, in einem Forenbeitrag, in einer Anleitung oder um auf eines unserer Scripts hinzuweisen. Dafür brauchst du keine Erlaubnis, und wir freuen uns darüber.',
+    brand_notice_limits:  'Nicht erlaubt ist es, sie als eigenes Werk auszugeben: als eigenes Logo oder Serverlogo zu führen, sie zu bearbeiten oder sie ohne Bezug auf MSK Scripts zu verwenden. Ebenso wenig dürfen sie eine Zusammenarbeit mit uns oder eine Unterstützung durch uns nahelegen, die nicht besteht.',
+    brand_notice_prohibited: 'Streng untersagt ist jede Verwendung im Zusammenhang mit pornografischen, gewaltverherrlichenden, extremistischen, diskriminierenden oder sonst rechtswidrigen Inhalten. Das gilt für die Bilder selbst ebenso wie für die Seiten und Angebote, auf denen sie erscheinen.',
+    brand_notice_contact: 'Alles darüber hinaus: info@msk-scripts.de',
   },
 } as const
 /**
