@@ -164,18 +164,29 @@ export async function readBotConfigState(
   const secret = process.env.BOT_DASHBOARD_PROXY_SECRET
   if (!port || !secret) return null
 
-  try {
-    const res = await fetch(`http://127.0.0.1:${port}/api/bot/status`, {
-      headers: {
-        'x-dashboard-proxy-secret': secret,
-        'x-dashboard-user':         discordUserId,
-      },
-      cache:  'no-store',
-      signal: AbortSignal.timeout(3_000),
+  const ask = async (path: string, headers: Record<string, string>) => {
+    const res = await fetch(`http://127.0.0.1:${port}${path}`, {
+      headers, cache: 'no-store', signal: AbortSignal.timeout(3_000),
     })
     if (!res.ok) return null
     const body = await res.json() as { status?: string; needsConfig?: boolean }
     return { running: body?.status === 'running', needsConfig: body?.needsConfig === true }
+  }
+
+  try {
+    // The liveness probe first (bot 2.19.0 and up). It is gated on the shared
+    // secret alone, which is the whole point: /api/bot/status resolves the
+    // caller's dashboard permissions, and the person we know as the owner of a
+    // hosted guild is not necessarily staff in the bot's own dashboard. Such an
+    // installation answered 403 and we read it as "not reachable".
+    return await ask('/api/health', { 'x-dashboard-proxy-secret': secret })
+      // Older bots do not have the probe. Falling back keeps every installation
+      // that has not pulled yet readable, at the cost of the 403 above, which is
+      // still better than reporting them all as unreachable.
+      ?? await ask('/api/bot/status', {
+        'x-dashboard-proxy-secret': secret,
+        'x-dashboard-user':         discordUserId,
+      })
   } catch {
     return null
   }

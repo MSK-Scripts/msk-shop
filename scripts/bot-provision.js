@@ -116,24 +116,39 @@ const markFailed = (error, log) => db.execute(
  * This distinction is the whole reason the check exists. dashboard.js is a
  * supervisor that runs the bot as a child and deliberately survives its crash,
  * so PM2 happily reports `online` for an installation whose token Discord
- * rejected. /api/bot/status reports the child's real state, and the
- * trusted-proxy headers get us past its permission check.
+ * rejected. The supervisor reports the child's real state.
+ *
+ * Asked through /api/health, which is gated on the shared secret alone. It used
+ * to go through /api/bot/status with the customer's Discord id attached, and
+ * that was wrong: the route resolves dashboard permissions live, and the person
+ * we know as the owner of a hosted guild is not necessarily the guild owner on
+ * Discord nor staff in the bot's own dashboard. Such an installation answered
+ * 403, we read it as "unreachable", and a bot that had been running for an hour
+ * was recorded as a failed install. A liveness probe must not depend on who is
+ * asking.
  */
 async function botReportsRunning(port, discordUserId) {
   const secret = process.env.BOT_DASHBOARD_PROXY_SECRET;
-  if (!secret || !discordUserId) return null;   // cannot tell — caller falls back
+  if (!secret) return null;   // cannot tell — caller falls back
 
-  try {
-    const res = await fetch(`http://127.0.0.1:${port}/api/bot/status`, {
-      headers: {
-        'x-dashboard-proxy-secret': secret,
-        'x-dashboard-user':         String(discordUserId),
-      },
-      cache: 'no-store',
-    });
+  const ask = async (path, headers) => {
+    const res = await fetch(`http://127.0.0.1:${port}${path}`, { headers, cache: 'no-store' });
     if (!res.ok) return null;
     const body = await res.json();
-    return body && body.status === 'running';
+    return body ? body.status === 'running' : null;
+  };
+
+  try {
+    const viaProbe = await ask('/api/health', { 'x-dashboard-proxy-secret': secret });
+    if (viaProbe !== null) return viaProbe;
+
+    // Bots below 2.19.0 have no probe. Kept so an installation that has not
+    // pulled yet is still readable, with the permission caveat above.
+    if (!discordUserId) return null;
+    return await ask('/api/bot/status', {
+      'x-dashboard-proxy-secret': secret,
+      'x-dashboard-user':         String(discordUserId),
+    });
   } catch {
     return false;   // nothing listening yet
   }
