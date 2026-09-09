@@ -12,9 +12,9 @@ import {
   generateDashboardHost, publishDashboardHost, unpublishDashboardHost, DashboardHostError,
 } from '@/lib/dashboardHost'
 import {
-  allocateBotPort, buildBotEnv, claimHostingJob, discardArchives, discardStagedEnv,
-  failHostingJob, findArchives, mergeWithArchivedEnv, readArchivedEnv, restoreArchive,
-  stageBotEnv, validateHostingForm, type HostingForm,
+  allocateBotPort, buildBotEnv, checkBotMembership, claimHostingJob, discardArchives,
+  discardStagedEnv, failHostingJob, findArchives, mergeWithArchivedEnv, readArchivedEnv,
+  restoreArchive, stageBotEnv, validateHostingForm, type HostingForm,
 } from '@/lib/botProvision'
 
 export const runtime = 'nodejs'
@@ -92,6 +92,15 @@ export async function POST(req: NextRequest) {
 
   const invalid = validateHostingForm(form)
   if (invalid) return NextResponse.json({ error: invalid }, { status: 400 })
+
+  // The form can only be checked for shape; whether the token is real and whether
+  // the bot was ever invited can only be answered by Discord. Asked here, before
+  // the job is claimed and before a single directory exists, so a "no" costs the
+  // customer one second instead of four minutes and a misleading error.
+  const membership = await checkBotMembership(form.token!, guild.guild_id)
+  if (membership !== 'ok') {
+    return NextResponse.json({ error: membership }, { status: 400 })
+  }
 
   // Claimed before anything is created, so two clicks cannot start two runs that
   // clone into the same directory and fight over the same PM2 name.

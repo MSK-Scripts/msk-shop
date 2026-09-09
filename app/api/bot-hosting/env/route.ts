@@ -5,7 +5,7 @@ import { authorizeGuild }            from '@/lib/dashboardAuth'
 import { TIER_CONFIG }               from '@/lib/tiers'
 import { rateLimit, getClientIp }    from '@/lib/rateLimit'
 import { patchBotEnv, readBotEnv, parseEnv } from '@/lib/botEnv'
-import { claimHostingJob, failHostingJob } from '@/lib/botProvision'
+import { checkBotMembership, claimHostingJob, failHostingJob } from '@/lib/botProvision'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -98,6 +98,17 @@ export async function POST(req: NextRequest) {
     ['databaseUrl',  () => !databaseUrl  || /^(mysql|postgres|sqlite):/i.test(databaseUrl)],
   ] as Array<[string, () => boolean]>) {
     if (!check()) return NextResponse.json({ error: `invalid_${key}` }, { status: 400 })
+  }
+
+  // A newly supplied token is checked against Discord for the same reason it is
+  // in /provision: this is the route a customer reaches for after the bot did not
+  // come up, so answering "that token is wrong" or "the bot is not on your server"
+  // now beats another restart that ends in the same unhelpful timeout.
+  if (token) {
+    const membership = await checkBotMembership(token, guild.guild_id)
+    if (membership !== 'ok') {
+      return NextResponse.json({ error: membership }, { status: 400 })
+    }
   }
 
   if (!(await claimHostingJob(guild.guild_id))) {

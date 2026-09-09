@@ -13,7 +13,7 @@ import { tmpdir } from 'os'
 import { join }   from 'path'
 import {
   validateHostingForm, buildBotEnv, tailLines, allocateBotPort,
-  findArchives, restoreArchive, discardArchives,
+  findArchives, restoreArchive, discardArchives, checkBotMembership,
 } from '@/lib/botProvision'
 import { parseEnv } from '@/lib/botEnv'
 
@@ -243,5 +243,65 @@ describe('archived installations', () => {
     expect(await discardArchives(GUILD)).toBe(2)
     expect(await findArchives(GUILD)).toEqual([])
     expect(await readdir(base)).toEqual(['999999999999999999_archived_2026-08-01T10-00-00'])
+  })
+})
+
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('checkBotMembership', () => {
+  // Regression guard for a dead end reported on 09.09.2026: a bot that was never
+  // invited to the guild got cloned, installed and started anyway. Nothing
+  // noticed until the health check timed out ninety seconds later, and what the
+  // customer was then shown blamed the three form fields, all of which were fine.
+  const fetchMock = vi.fn()
+
+  beforeEach(() => {
+    fetchMock.mockReset()
+    vi.stubGlobal('fetch', fetchMock)
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+  })
+  afterEach(() => { vi.unstubAllGlobals(); vi.restoreAllMocks() })
+
+  const answer = (status: number) => fetchMock.mockResolvedValue({ ok: status < 300, status })
+
+  it('accepts a bot that is on the guild', async () => {
+    answer(200)
+    expect(await checkBotMembership('tok', '1512390228546162738')).toBe('ok')
+  })
+
+  it('asks Discord for that guild, with the token as a bot token', async () => {
+    answer(200)
+    await checkBotMembership('tok', '1512390228546162738')
+    const [url, init] = fetchMock.mock.calls[0]
+    expect(url).toContain('/guilds/1512390228546162738')
+    expect((init.headers as Record<string, string>).Authorization).toBe('Bot tok')
+  })
+
+  it('reports a rejected token', async () => {
+    answer(401)
+    expect(await checkBotMembership('tok', '1512390228546162738')).toBe('invalid_token')
+  })
+
+  it('reports a bot that was never invited', async () => {
+    answer(404)
+    expect(await checkBotMembership('tok', '1512390228546162738')).toBe('bot_not_in_guild')
+  })
+
+  // The three below pin down the deliberate fail-open. A Discord outage, a rate
+  // limit or a DNS failure on our side must not stop onboarding: this check is
+  // here to give a good answer sooner, not to be the only one that exists.
+  it('lets a rate limit through rather than blocking the setup', async () => {
+    answer(429)
+    expect(await checkBotMembership('tok', '1512390228546162738')).toBe('ok')
+  })
+
+  it('lets a Discord outage through', async () => {
+    answer(503)
+    expect(await checkBotMembership('tok', '1512390228546162738')).toBe('ok')
+  })
+
+  it('lets a network error through', async () => {
+    fetchMock.mockRejectedValue(new Error('getaddrinfo ENOTFOUND discord.com'))
+    expect(await checkBotMembership('tok', '1512390228546162738')).toBe('ok')
   })
 })

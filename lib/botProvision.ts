@@ -109,6 +109,78 @@ export function validateHostingForm(f: Partial<HostingForm>): string | null {
   return null
 }
 
+/**
+ * Ask Discord whether this token belongs to a bot that is actually on the guild.
+ *
+ * Runs before anything is created, and that placement is the point: without it
+ * the first thing that notices an uninvited bot is the health check, ninety
+ * seconds after a three-minute `npm install`, and it reports the failure as
+ * "the bot did not answer" — which sends the customer hunting through the three
+ * fields of a form where nothing is wrong.
+ *
+ * Costs one request and settles two questions at once, because a token Discord
+ * rejects cannot be a token that is in the guild.
+ *
+ * Deliberately fails OPEN. If Discord is unreachable, or answers something we did
+ * not plan for, provisioning continues: an outage on their side must not stop
+ * onboarding on ours, and the bot itself reports the same problem later anyway.
+ * The check exists to give a good answer faster, not to be the only one.
+ */
+export async function checkBotMembership(
+  token: string, guildId: string,
+): Promise<'ok' | 'invalid_token' | 'bot_not_in_guild'> {
+  try {
+    const res = await fetch(`https://discord.com/api/v10/guilds/${guildId}`, {
+      headers: { Authorization: `Bot ${token}` },
+      cache:   'no-store',
+      signal:  AbortSignal.timeout(10_000),
+    })
+    if (res.ok)             return 'ok'
+    if (res.status === 401) return 'invalid_token'
+    if (res.status === 404) return 'bot_not_in_guild'
+    console.warn(`[hosting] guild check answered ${res.status}, continuing anyway`)
+    return 'ok'
+  } catch (err) {
+    console.warn('[hosting] could not reach Discord for the guild check:', err)
+    return 'ok'
+  }
+}
+
+/**
+ * What the bot's own supervisor says about the bot it is running.
+ *
+ * `needsConfig` is the state that only exists since the bot stopped refusing to
+ * boot on an unfinished config: up, reachable, ticket flow closed. Without asking
+ * for it, a fresh installation reports plain success and the customer is left
+ * wondering why their panel command answers "configuration error".
+ *
+ * Returns null whenever we cannot tell — no port, no shared secret, nothing
+ * listening. The caller shows nothing rather than guessing, because "your
+ * configuration is fine" is the more expensive thing to be wrong about.
+ */
+export async function readBotConfigState(
+  port: number | null, discordUserId: string,
+): Promise<{ running: boolean; needsConfig: boolean } | null> {
+  const secret = process.env.BOT_DASHBOARD_PROXY_SECRET
+  if (!port || !secret) return null
+
+  try {
+    const res = await fetch(`http://127.0.0.1:${port}/api/bot/status`, {
+      headers: {
+        'x-dashboard-proxy-secret': secret,
+        'x-dashboard-user':         discordUserId,
+      },
+      cache:  'no-store',
+      signal: AbortSignal.timeout(3_000),
+    })
+    if (!res.ok) return null
+    const body = await res.json() as { status?: string; needsConfig?: boolean }
+    return { running: body?.status === 'running', needsConfig: body?.needsConfig === true }
+  } catch {
+    return null
+  }
+}
+
 export interface EnvContext {
   guildId:     string
   apiKey:      string

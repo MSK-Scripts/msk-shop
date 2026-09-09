@@ -43,6 +43,10 @@ interface Status {
   host:        string | null
   url:         string | null
   redirectUri: string | null
+  /** The bot is up but still holds example placeholders, so its ticket flow is
+   *  closed. A separate state from `failed`: nothing is broken, something is
+   *  unfinished, and the two need different words. */
+  needsConfig: boolean
   job:         Job | null
 }
 
@@ -78,6 +82,7 @@ function errorText(t: T, key: string | null): string | null {
     invalid_clientSecret:  t.host_err_invalid_client_secret,
     invalid_database_url:  t.host_err_invalid_database_url,
     invalid_databaseUrl:   t.host_err_invalid_database_url,
+    bot_not_in_guild:      t.host_err_bot_not_in_guild,
     health_not_running:    t.host_err_health_not_running,
     health_unreachable:    t.host_err_health_unreachable,
     in_progress:           t.host_err_in_progress,
@@ -294,6 +299,27 @@ function SetupCard({
                   {status.job.log}
                 </pre>
               </>
+            )}
+          </div>
+        )}
+
+        {/* Deliberately not an error. The install worked; what is missing are the
+            channel and role ids, and the only place to enter them is the bot's own
+            dashboard. Saying so here is the difference between a customer who
+            finishes the setup and one who reports a broken bot. */}
+        {hosted && !failed && status?.needsConfig && (
+          <div className="mb-5 rounded-lg border border-[var(--color-warning)]/30 bg-[var(--color-warning)]/10 p-4">
+            <p className="mb-1 flex items-center gap-2 text-sm font-semibold text-[var(--color-warning)]">
+              <Info className="h-4 w-4 shrink-0" /> {t.host_needs_config_title}
+            </p>
+            <p className="text-xs text-[var(--color-muted-foreground)]">
+              {t.host_needs_config_desc}
+            </p>
+            {status.url && (
+              <a href={status.url} target="_blank" rel="noopener noreferrer"
+                 className="tap-target mt-2 inline-flex text-xs font-medium text-[var(--color-primary)] hover:underline">
+                {t.host_needs_config_link}
+              </a>
             )}
           </div>
         )}

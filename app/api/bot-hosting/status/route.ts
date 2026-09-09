@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { authorizeGuild }            from '@/lib/dashboardAuth'
-import { findArchives, getHostingJob } from '@/lib/botProvision'
+import { findArchives, getHostingJob, readBotConfigState } from '@/lib/botProvision'
 import { dashboardRedirectUri, dashboardUrl } from '@/lib/dashboardHost'
 
 export const runtime = 'nodejs'
@@ -28,6 +28,14 @@ export async function GET(req: NextRequest) {
     ? guild.dashboard_domain
     : guild.dashboard_host
 
+  // Asked live rather than remembered from the install, because the answer stops
+  // being true the moment the customer fills the fields in — and that happens in
+  // the bot's dashboard, where nothing writes back to us. One loopback request,
+  // and only once hosting exists at all.
+  const botState = guild.is_hosted
+    ? await readBotConfigState(guild.bot_port, auth.discordUserId)
+    : null
+
   return NextResponse.json({
     // Wrapped under a key because lib/useAdminResource.ts unwraps exactly one,
     // the same shape every other list endpoint in this app answers with.
@@ -37,6 +45,7 @@ export async function GET(req: NextRequest) {
     host,
     url:         host ? dashboardUrl(host) : null,
     redirectUri: host ? dashboardRedirectUri(host) : null,
+    needsConfig: botState?.needsConfig ?? false,
     job: job && {
       status: job.status,
       step:   job.step,
