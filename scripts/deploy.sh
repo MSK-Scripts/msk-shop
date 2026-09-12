@@ -35,8 +35,14 @@ LOG_FILE="${LOG_FILE:-/var/log/msk-shop-deploy.log}"
 COMMIT="${1:-${SSH_ORIGINAL_COMMAND:-}}"
 COMMIT="${COMMIT##* }"   # falls SSH_ORIGINAL_COMMAND mit Pfad-Präfix kam
 
-# tee in Log-Datei, falls schreibbar — sonst nur stdout.
-if [[ -w "$(dirname "$LOG_FILE")" || -w "$LOG_FILE" ]]; then
+# Tee into the log file if it is writable, otherwise stdout only.
+#
+# Only in the first process. When step 1a finds a newer deploy.sh it re-execs
+# with DEPLOY_REEXEC=1, and the new process inherits stdout that already runs
+# through this tee. Setting up a second tee on the same file wrote every line
+# after the re-exec twice (seen on 2026-09-12, the first deploy that changed
+# the script itself).
+if [[ "${DEPLOY_REEXEC:-0}" == "0" ]] && [[ -w "$(dirname "$LOG_FILE")" || -w "$LOG_FILE" ]]; then
   exec > >(tee -a "$LOG_FILE") 2>&1
 fi
 echo "=== Deploy $(date -Iseconds) commit=${COMMIT:-HEAD} ==="
