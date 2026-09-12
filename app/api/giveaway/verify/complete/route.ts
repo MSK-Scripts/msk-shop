@@ -19,13 +19,15 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 });
   }
 
-  // User muss Admin dieser Guild sein (aus seiner OAuth-Guild-Liste).
+  // The guild has to be one the OAuth callback put in the signed list, i.e.
+  // one the user may manage on Discord OR holds the giveaway manager role for.
+  // The distinction is already settled there; here the list is authoritative.
   const guild = session.guilds.find((g) => g.id === guildId);
   if (!/^\d{17,20}$/.test(guildId) || !guild) {
     return NextResponse.json({ error: 'Invalid or unauthorized guild.' }, { status: 403 });
   }
 
-  // Der Giveaway-Bot muss in dieser Guild sein (= GuildSettings-Row existiert).
+  // The giveaway bot has to be in this guild (a GuildSettings row exists).
   const row = await giveawayQueryOne<{ guildId: string }>(
     'SELECT guildId FROM `GuildSettings` WHERE guildId = ?',
     [guildId],
@@ -45,7 +47,7 @@ export async function POST(req: Request) {
     httpOnly: true,
     secure:   true,
     sameSite: 'lax',
-    maxAge:   60 * 60 * 24 * 30, // 30 Tage
+    maxAge:   60 * 60 * 24 * 30, // 30 days
     path:     '/',
   });
   return res;

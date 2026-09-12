@@ -159,6 +159,9 @@ export default function VerifyClient({ session, step: _step, errorCode }: Props)
     invalid_state:         'err_invalid_state',
     discord_token_failed:  'err_discord_token_failed',
     discord_guilds_failed: 'err_discord_guilds_failed',
+    // Sent here by the dashboard when every registered server lost its Discord
+    // rights, so there was nothing left to show.
+    access_revoked:        'err_access_revoked',
   }
   const errorMessage = errorCode ? t[errorMap[errorCode] ?? 'err_invalid_state'] : null
 

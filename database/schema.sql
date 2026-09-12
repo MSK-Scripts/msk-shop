@@ -64,7 +64,22 @@ CREATE TABLE IF NOT EXISTS ticketbot_guilds (
     -- verschickt wurde. Sperre gegen Doppelversand bei erneuter
     -- Zustellung desselben Stripe-Events; ein spaeteres zweites Abo
     -- traegt eine andere Id und bekommt deshalb wieder eine Mail.
-    order_confirmation_sub_id VARCHAR(64) NULL
+    order_confirmation_sub_id VARCHAR(64) NULL,
+    -- Bleibt der Besitzer dieser Zeile auf Discord berechtigt? Siehe
+    -- lib/guildAccess.ts, dort steht die vollstaendige Begruendung.
+    --   access_checked_at = wann Discord uns zuletzt eine belastbare Antwort
+    --                       gegeben hat. NULL heisst "noch nie geprueft", also
+    --                       jede Registrierung vor dem 12.09.2026, und gilt
+    --                       deshalb als veraltet statt als bestaetigt.
+    --   access_lost_at    = wann die Rechte ZUERST fehlten. NULL = alles in
+    --                       Ordnung. Ein Zeitstempel statt eines Flags, weil
+    --                       daraus eine Kulanzfrist laeuft (ACCESS_GRACE_DAYS)
+    --                       und nicht ein sofortiger Entzug: eine
+    --                       versehentlich entfernte Rolle oder ein
+    --                       Discord-Ausfall darf einen zahlenden Kunden nicht
+    --                       in derselben Minute aussperren.
+    access_checked_at      DATETIME     NULL,
+    access_lost_at         DATETIME     NULL
 );
 
 -- Migration (run once on existing databases):
@@ -83,6 +98,14 @@ CREATE TABLE IF NOT EXISTS ticketbot_guilds (
 -- Auftragsverarbeitung (2026-09-02):
 --   ALTER TABLE ticketbot_guilds ADD COLUMN dpa_accepted_at DATETIME NULL;
 --   ALTER TABLE ticketbot_guilds ADD COLUMN order_confirmation_sub_id VARCHAR(64) NULL;
+-- Rueckpruefung der Discord-Rechte (2026-09-12):
+--   ALTER TABLE ticketbot_guilds ADD COLUMN access_checked_at DATETIME NULL;
+--   ALTER TABLE ticketbot_guilds ADD COLUMN access_lost_at    DATETIME NULL;
+--   Beide bleiben bewusst NULL. Der erste Login je Person fuellt sie, und bis
+--   dahin gilt die Zeile als ungeprueft (nicht als entzogen): ein Deploy darf
+--   niemandem den Zugang nehmen, ohne dass Discord einmal gefragt wurde.
+--   Kein Index. Gelesen wird immer schon nach discord_user_id oder guild_id,
+--   und beide haben einen.
 -- Business tier (2026-08-29). MODIFY rewrites the ENUM in place and keeps every
 -- existing value; the new member is appended at the end:
 --   ALTER TABLE ticketbot_guilds MODIFY tier ENUM('basic','premium','premium_plus','business') NOT NULL DEFAULT 'basic';

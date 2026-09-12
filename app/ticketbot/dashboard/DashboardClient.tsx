@@ -52,6 +52,15 @@ interface Guild {
   dashboard_host:          string | null
   dashboard_domain:        string | null
   dashboard_domain_status: 'none' | 'pending_dns' | 'active'
+  /**
+   * Does the logged-in Discord user still administer this server? Derived
+   * server-side in page.tsx; 'revoked' guilds never get here, they are
+   * filtered out before rendering. Only 'grace' is visible, and it is the one
+   * state that needs saying out loud.
+   */
+  access_state:            'ok' | 'grace' | 'revoked'
+  /** End of the grace period as ms epoch; null while access is fine. */
+  access_grace_ends_at:    number | null
 }
 
 interface Props {
@@ -207,6 +216,14 @@ function GuildPanel({
         { day: '2-digit', month: 'long', year: 'numeric' })
     : null
 
+  // Same derivation for the end of the access grace period. Two dates, one
+  // formatter, so they cannot drift apart in wording.
+  const graceEnd      = guild.access_grace_ends_at ? new Date(guild.access_grace_ends_at) : null
+  const graceEndLabel = graceEnd && !Number.isNaN(graceEnd.getTime())
+    ? graceEnd.toLocaleDateString(lang === 'de' ? 'de-DE' : 'en-GB',
+        { day: '2-digit', month: 'long', year: 'numeric' })
+    : null
+
   const [domain, setDomain] = useState(guild.custom_domain ?? '')
   const [domainStatus, setDomainStatus] = useState<Guild['domain_status']>(guild.domain_status)
   const [loading, setLoading] = useState(false)
@@ -337,6 +354,28 @@ function GuildPanel({
         {t.server_id}{' '}
         <code className="font-mono text-xs">{guild.guild_id}</code>
       </p>
+
+      {/* Discord rights for this server are gone and the clock is running.
+          Sits above everything else and carries role="alert": it appears on a
+          load the customer did not ask for, it is the only warning they get
+          before the server disappears from this list, and by then the way back
+          (getting the permission returned) needs someone else's help. */}
+      {guild.access_state === 'grace' && (
+        <div
+          role="alert"
+          className="mb-6 rounded-lg border border-[var(--color-warning)]/30 bg-[var(--color-warning)]/10 p-4"
+        >
+          <p className="mb-1 flex items-center gap-2 text-sm font-semibold text-[var(--color-warning)]">
+            <AlertCircle className="h-4 w-4 shrink-0" />
+            {t.access_lost_title}
+          </p>
+          <p className="text-sm text-[var(--color-muted-foreground)]">
+            {graceEndLabel
+              ? t.access_lost_body.replace('{date}', graceEndLabel)
+              : t.access_lost_body_nodate}
+          </p>
+        </div>
+      )}
 
       {/* Tier Badge + Subscription + Quick Links */}
       <div className="mb-2 flex flex-wrap items-center justify-between gap-3">

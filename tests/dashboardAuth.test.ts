@@ -53,4 +53,40 @@ describe('authorizeGuild', () => {
     expect(sql).toContain('discord_user_id = ?')
     expect(params).toEqual([GUILD, '42'])
   })
+
+  // Owning the row is not the same as still administering the guild on
+  // Discord. Hiding a revoked guild in the dashboard is cosmetic on its own -
+  // every guild-scoped route comes through here, so this is where it has to
+  // bite. Added after a negative cross-check showed that removing the check
+  // broke no test at all.
+  describe('revoked Discord access', () => {
+    const DAY = 86_400_000
+    const owned = (lost: Date | null) => ({
+      guild_id: GUILD, tier: 'basic', access_checked_at: new Date(), access_lost_at: lost,
+    })
+
+    beforeEach(() => { cookieToken = signDashboardSession({ discordUserId: '42' }) })
+
+    it('403 once the grace period has run out', async () => {
+      ;(queryOne as Mock).mockResolvedValue(owned(new Date(Date.now() - 30 * DAY)))
+      expect(await authorizeGuild(GUILD)).toMatchObject({
+        ok: false, status: 403, error: 'access_revoked',
+      })
+    })
+
+    it('still lets a guild through inside the grace period', async () => {
+      ;(queryOne as Mock).mockResolvedValue(owned(new Date(Date.now() - 2 * DAY)))
+      expect((await authorizeGuild(GUILD)).ok).toBe(true)
+    })
+
+    it('reads the access columns out of the ownership query', async () => {
+      ;(queryOne as Mock).mockResolvedValue(owned(null))
+      await authorizeGuild(GUILD)
+      const [sql] = (queryOne as Mock).mock.calls[0]
+      // Without these in the SELECT the check above silently passes every row,
+      // because an absent column reads as "never lost".
+      expect(sql).toContain('access_checked_at')
+      expect(sql).toContain('access_lost_at')
+    })
+  })
 })

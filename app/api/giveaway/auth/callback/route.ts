@@ -3,6 +3,9 @@ import { cookies }                 from 'next/headers';
 import { signGiveawayVerify }      from '@/lib/giveawaySession';
 import type { GiveawayGuild }      from '@/lib/giveawaySession';
 import { canManageGuild }          from '@/lib/discordPermissions';
+import { fetchUserGuilds }         from '@/lib/discordGuilds';
+import type { RawGuild }           from '@/lib/discordGuilds';
+import { resolveManagerGuilds }    from '@/lib/giveawayManager';
 
 export async function GET(req: Request) {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://www.msk-scripts.de';
@@ -39,39 +42,71 @@ export async function GET(req: Request) {
     return NextResponse.redirect(`${baseUrl}/giveaway/verify?error=discord_token_failed`);
   }
 
-  // Fetch the user id and the guild list in parallel.
+  // Fetch the user id and the guild list in parallel. The guild list goes
+  // through lib/discordGuilds.ts so both verify flows paginate identically.
   let discordUserId: string;
-  let rawGuilds: Array<{ id: string; name: string; icon: string | null; owner: boolean; permissions: string }>;
+  let rawGuilds: RawGuild[];
+  let guildsComplete: boolean;
   try {
-    const [userRes, guildsRes] = await Promise.all([
+    const [userRes, userGuilds] = await Promise.all([
       fetch('https://discord.com/api/v10/users/@me', {
         headers: { Authorization: `Bearer ${tokenData.access_token}` },
       }),
-      fetch('https://discord.com/api/v10/users/@me/guilds', {
-        headers: { Authorization: `Bearer ${tokenData.access_token}` },
-      }),
+      fetchUserGuilds(tokenData.access_token),
     ]);
-    if (!userRes.ok || !guildsRes.ok) {
+    if (!userRes.ok) {
       return NextResponse.redirect(`${baseUrl}/giveaway/verify?error=discord_guilds_failed`);
     }
     const discordUser = await userRes.json();
-    rawGuilds         = await guildsRes.json();
     discordUserId     = discordUser?.id;
+    rawGuilds         = userGuilds.guilds;
+    guildsComplete    = userGuilds.complete;
   } catch {
     return NextResponse.redirect(`${baseUrl}/giveaway/verify?error=discord_guilds_failed`);
   }
 
-  if (!Array.isArray(rawGuilds) || !discordUserId) {
+  if (!discordUserId || !guildsComplete) {
     return NextResponse.redirect(`${baseUrl}/giveaway/verify?error=discord_guilds_failed`);
   }
 
-  // Only guilds the user may manage (owner, Administrator or Manage Server).
-  // The owner flag is carried along because the Tebex section of the dashboard
-  // is owner-only, but the authoritative check is the bot's own comparison
-  // against guild.ownerId.
+  // Guilds the user may manage on Discord (owner, Administrator or Manage
+  // Server). The owner flag is carried along because the Tebex section of the
+  // dashboard is owner-only, but the authoritative check is the bot's own
+  // comparison against guild.ownerId.
+  const byPermission = rawGuilds.filter((g) => canManageGuild(g.permissions, g.owner));
+
+  // Plus the guilds where the user holds the configured giveaway manager role.
+  // The bot has always let them run every giveaway command; as of 2026-09-12
+  // they get the dashboard that configures those commands too. Only guilds
+  // that failed the permission check are candidates, so an ordinary admin
+  // login still makes zero extra Discord requests.
+  //
+  // Never fatal: a manager lookup that fails costs the manager path, not the
+  // login. Admins get in either way, and a half-working login is better than
+  // a redirect to an error page.
+  const permitted = new Set(byPermission.map((g) => g.id));
+  let managerIds: string[] = [];
+  try {
+    managerIds = await resolveManagerGuilds(
+      tokenData.access_token,
+      rawGuilds.filter((g) => !permitted.has(g.id)).map((g) => g.id),
+    );
+  } catch (err) {
+    console.error('[giveaway/auth] manager role resolution failed:', err);
+  }
+  const managerSet = new Set(managerIds);
+
   const adminGuilds: GiveawayGuild[] = rawGuilds
-    .filter((g) => canManageGuild(g.permissions, g.owner))
-    .map((g) => ({ id: g.id, name: g.name, icon: g.icon, owner: Boolean(g.owner) }));
+    .filter((g) => permitted.has(g.id) || managerSet.has(g.id))
+    .map((g) => ({
+      id:    g.id,
+      name:  g.name,
+      icon:  g.icon,
+      // A manager is explicitly not the owner. `canManageGuild` already lets
+      // the owner through by flag, so anyone arriving via the manager role has
+      // owner false and stays out of the Tebex section.
+      owner: permitted.has(g.id) ? Boolean(g.owner) : false,
+    }));
 
   // Short-lived intermediate session (guild selection only), with its own
   // cookie name and scope.

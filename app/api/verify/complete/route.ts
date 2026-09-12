@@ -4,9 +4,17 @@ import { randomBytes }    from 'crypto';
 import { parseSession }   from '@/lib/session';
 import { signDashboardSession } from '@/lib/dashboardSession';
 import { query, queryOne } from '@/lib/db';
+import { accessState }    from '@/lib/guildAccess';
 import type { Tier }      from '@/lib/tiers';
 
-interface GuildRow { guild_id: string; api_key: string; tier: Tier; discord_user_id: string | null; }
+interface GuildRow {
+  guild_id:          string;
+  api_key:           string;
+  tier:              Tier;
+  discord_user_id:   string | null;
+  access_checked_at: unknown;
+  access_lost_at:    unknown;
+}
 
 function generateApiKey(): string {
   return randomBytes(32).toString('hex');
@@ -51,13 +59,41 @@ export async function POST(req: Request) {
 
   // Check if this guild is already registered by a DIFFERENT Discord account
   const existingGuild = await queryOne<GuildRow>(
-    `SELECT guild_id, api_key, tier, discord_user_id FROM ticketbot_guilds WHERE guild_id = ?`,
+    `SELECT guild_id, api_key, tier, discord_user_id, access_checked_at, access_lost_at
+       FROM ticketbot_guilds WHERE guild_id = ?`,
     [guildId],
   );
 
-  if (existingGuild && existingGuild.discord_user_id !== null &&
-      existingGuild.discord_user_id !== session.discordUserId) {
+  const foreignOwner = Boolean(
+    existingGuild &&
+    existingGuild.discord_user_id !== null &&
+    existingGuild.discord_user_id !== session.discordUserId,
+  );
+
+  // A guild bound to someone else normally stays theirs. The exception is the
+  // one that used to be a dead end: if that person lost their Discord rights
+  // and the grace period has run out, the row describes a server they can no
+  // longer administer, while the requester just proved they can.
+  //
+  // Without this, the 409 was permanent. A server whose admin team had changed
+  // could never be re-registered by the people actually running it, and the
+  // only way out was someone editing the database by hand.
+  //
+  // Deliberately 'revoked' and not 'grace': a takeover rotates the API key and
+  // hands the transcripts to a different account, so it waits out the same
+  // window the previous owner is warned about. Nothing here is automatic - it
+  // takes a second person completing the wizard.
+  const takeoverAllowed = foreignOwner && existingGuild !== null &&
+    accessState(existingGuild) === 'revoked';
+
+  if (foreignOwner && !takeoverAllowed) {
     return NextResponse.json({ error: 'This server is already registered to another account.' }, { status: 409 });
+  }
+
+  if (takeoverAllowed) {
+    console.warn(
+      `[verify] guild ${guildId} taken over: ${existingGuild?.discord_user_id} -> ${session.discordUserId} (previous owner lost Discord rights)`,
+    );
   }
 
   // The paid tier is now driven entirely by Stripe (checkout + webhook). Re-verify
@@ -77,10 +113,14 @@ export async function POST(req: Request) {
     // `COALESCE` haelt den ersten Zeitpunkt fest: massgeblich ist, wann die
     // Vereinbarung zum ersten Mal geschlossen wurde, nicht wann zuletzt ein
     // neuer API-Schluessel gezogen wurde.
+    // The access columns are reset here because completing the wizard IS a
+    // fresh, authoritative Discord check for this guild: the id only ever gets
+    // this far after passing `canManageGuild` in the callback.
     await query(
       `UPDATE ticketbot_guilds
        SET discord_user_id = ?, api_key = ?, active = TRUE, guild_name = ?,
-           dpa_accepted_at = COALESCE(dpa_accepted_at, NOW())
+           dpa_accepted_at = COALESCE(dpa_accepted_at, NOW()),
+           access_checked_at = NOW(), access_lost_at = NULL
        WHERE guild_id = ?`,
       [session.discordUserId, apiKey, guildName, guildId],
     );
@@ -89,8 +129,9 @@ export async function POST(req: Request) {
     tier = 'basic';
     await query(
       `INSERT INTO ticketbot_guilds
-         (guild_id, api_key, tier, discord_user_id, guild_name, active, dpa_accepted_at)
-       VALUES (?, ?, 'basic', ?, ?, TRUE, NOW())`,
+         (guild_id, api_key, tier, discord_user_id, guild_name, active, dpa_accepted_at,
+          access_checked_at)
+       VALUES (?, ?, 'basic', ?, ?, TRUE, NOW(), NOW())`,
       [guildId, apiKey, session.discordUserId, guildName],
     );
   }

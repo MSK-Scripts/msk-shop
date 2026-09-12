@@ -30,7 +30,7 @@ export const translations = {
     select_warning:     'If you have already verified this server, your current API key will become invalid immediately. You must update the key in your bot\'s .env and restart it.',
     select_no_guilds:   'No servers found that you can manage. You need the Administrator or Manage Server permission.',
     select_btn:         'Continue →',
-    // Auftragsverarbeitung (Art. 28 DSGVO), Pflicht vor dem ersten Upload.
+    // Data processing agreement (Art. 28 GDPR), required before the first upload.
     dpa_accept:         'I conclude the data processing agreement.',
     dpa_link:           'Read the agreement',
     select_btn_loading: 'Checking...',
@@ -63,12 +63,16 @@ export const translations = {
     // Errors
     err_invalid_state:        'Security check failed. Please try again.',
     err_network:              'Network error. Please try again.',
-    // Nur für Screenreader: welcher Schritt erledigt ist, stand bisher
-    // ausschließlich in der Farbe.
+    // Screen readers only: which step is done used to be carried by colour
+    // alone.
     step_completed:           'completed',
     step_current:             'current step',
     err_discord_token_failed: 'Discord authentication failed. Please try again.',
     err_discord_guilds_failed:'Could not retrieve Discord servers.',
+    // Shown when the dashboard had nothing left to display because the Discord
+    // rights for every registered server are gone. Says what to do, since
+    // re-verifying is the way back in once the rights return.
+    err_access_revoked:       'You no longer have Administrator or Manage Server permission on any registered server. Ask for the permission back, then verify again.',
   },
 
   de: {
@@ -136,6 +140,7 @@ export const translations = {
     step_current:             'aktueller Schritt',
     err_discord_token_failed: 'Discord-Authentifizierung fehlgeschlagen. Bitte versuche es erneut.',
     err_discord_guilds_failed:'Discord-Server konnten nicht abgerufen werden.',
+    err_access_revoked:       'Du hast auf keinem registrierten Server mehr das Recht Administrator oder Server verwalten. Lass dir das Recht zurückgeben und verifiziere dann erneut.',
   },
 } as const;
 
@@ -179,7 +184,7 @@ export const statsTranslations = {
     card_max_transcript_sub: 'Biggest single transcript file',
     card_giveaway_keys:      'Giveaway API Keys',
     card_giveaway_keys_sub:  'Premium keys granted via giveaways',
-    // Nur für Screenreader: die Seite hatte außer dem H1 keine Gliederung.
+    // Screen readers only: the page had no outline beyond its H1.
     region_figures:          'Key figures',
     tier_distribution:       'API Key Distribution',
     subscription_distribution: 'Subscriptions by Tier',
@@ -599,9 +604,16 @@ export const dashboardTranslations = {
                           'Your free trial is running. Add a payment method to keep Premium, otherwise the subscription ends automatically when the trial is over.',
     sub_add_payment:      'Add payment method',
     sub_err:              'Could not start checkout. Please try again.',
-    // Auftragsverarbeitung (Art. 28 DSGVO), Pflicht vor dem Bot-Hosting.
-    // Bestellzusammenfassung (§ 312j Abs. 2 BGB) und Bestellschaltflaeche
-    // (§ 312j Abs. 3 BGB). Der deutsche Wortlaut des Knopfes ist vorgegeben.
+    // Discord rights for this server are gone (lib/guildAccess.ts). Worded as
+    // a deadline with a way out, not as a verdict: the usual cause is an admin
+    // reshuffle, and the fix is on Discord's side, not ours.
+    access_lost_title:    'You no longer administer this server on Discord',
+    access_lost_body:     'We could not find the Administrator or Manage Server permission for you on this server any more. You keep access until {date}; after that the server disappears from this dashboard and its API key stops being yours. Have the permission restored and log in again to keep it.',
+    access_lost_body_nodate:
+                          'We could not find the Administrator or Manage Server permission for you on this server any more. Access ends after a short grace period, and the server then disappears from this dashboard. Have the permission restored and log in again to keep it.',
+    // Data processing agreement (Art. 28 GDPR), required before bot hosting.
+    // Order summary (§ 312j (2) BGB) and order button (§ 312j (3) BGB). The
+    // German wording of the button is prescribed by law.
     sub_confirm_title:    'Check your order',
     sub_confirm_service:  'Service',
     sub_confirm_price:    'Total price',
@@ -759,7 +771,7 @@ export const dashboardTranslations = {
     botdash_opening:      'Öffne…',
     botdash_hint:         'Tickets, Statistiken und Einstellungen im vollen Bot-Dashboard verwalten (öffnet in neuem Tab).',
     botdash_error:        'Bot-Dashboard konnte nicht geöffnet werden. Bitte erneut versuchen.',
-    // ── Bot-Hosting in Selbstbedienung ───────────────────────────────────────
+    // ── Self-service bot hosting ─────────────────────────────────────────────
     host_title:           'Wir hosten deinen Bot',
     host_intro:           'Wir installieren den Ticket-Bot auf unserem Server, halten ihn am Laufen und aktualisieren ihn. Du lieferst drei Werte aus dem Discord Developer Portal, um den Rest kümmern wir uns.',
     host_step1:           'Öffne das Discord Developer Portal und wähle deine Anwendung, oder lege eine an.',
@@ -871,6 +883,10 @@ export const dashboardTranslations = {
                           'Deine Testphase läuft. Hinterlege ein Zahlungsmittel, um Premium zu behalten, sonst endet das Abo nach Ablauf der Testphase automatisch.',
     sub_add_payment:      'Zahlungsmittel hinterlegen',
     sub_err:              'Checkout konnte nicht gestartet werden. Bitte erneut versuchen.',
+    access_lost_title:    'Du verwaltest diesen Server auf Discord nicht mehr',
+    access_lost_body:     'Wir haben für dich auf diesem Server das Recht Administrator oder Server verwalten nicht mehr gefunden. Bis zum {date} behältst du den Zugriff, danach verschwindet der Server aus diesem Dashboard und sein API-Key gehört nicht mehr dir. Lass dir das Recht zurückgeben und melde dich neu an, um ihn zu behalten.',
+    access_lost_body_nodate:
+                          'Wir haben für dich auf diesem Server das Recht Administrator oder Server verwalten nicht mehr gefunden. Der Zugriff endet nach einer kurzen Übergangsfrist, danach verschwindet der Server aus diesem Dashboard. Lass dir das Recht zurückgeben und melde dich neu an, um ihn zu behalten.',
     sub_confirm_title:    'Bestellung prüfen',
     sub_confirm_service:  'Leistung',
     sub_confirm_price:    'Gesamtpreis',
@@ -1055,7 +1071,7 @@ export const giveawayDashboardTranslations = {
     // Verify
     v_subtitle:        'Manage your giveaways from the browser. Log in with Discord to continue.',
     v_login_btn:       'Continue with Discord',
-    v_no_guilds:       'None of the servers you manage have the giveaway bot yet. Invite the bot, then come back.',
+    v_no_guilds:       'No servers to manage yet. You need Administrator, Manage Server or the giveaway manager role on a server the bot has already been invited to.',
     v_back:            'Back to giveaway page',
     v_select_server:   'Select a server',
     v_err_unauthorized:'Your session expired. Please log in again.',
@@ -1152,7 +1168,7 @@ export const giveawayDashboardTranslations = {
     s_no_roles:     'Keine Rollen.',
     s_unavailable:  'Einstellungen nicht verfügbar.',
 
-    // Coupons pro Giveaway
+    // Coupons per giveaway
     c_section:        'Gewinner-Gutschein (Tebex)',
     c_percent:        'Rabatt %',
     c_valid_days:     'Gültig (Tage)',
@@ -1170,7 +1186,7 @@ export const giveawayDashboardTranslations = {
     c_manual_note:    'Hinweis für die DM (z. B. wo einzulösen)',
     c_manual_hint:    'Für ein gemeinsames Giveaway mit einem anderen Entwickler: trag hier einen Code aus dessen Shop ein. Der Bot stellt ihn nur zu, er kann ihn nicht erzeugen, prüfen oder widerrufen. Ist oben zusätzlich ein Coupon eingestellt, bekommt der Gewinner beide Codes.',
 
-    // Giveaway-Vorlagen
+    // Giveaway templates
     tab_templates:     'Vorlagen',
     tpl_none:          'Noch keine Vorlagen.',
     tpl_new:           'Neue Vorlage',
@@ -1199,7 +1215,7 @@ export const giveawayDashboardTranslations = {
     tpl_conditions:    'Eigene Bedingungen',
     c_needs_store:    'Erst den Tebex-Store hinterlegen (Reiter Store, nur Server-Besitzer).',
 
-    // Tebex-Store (nur Besitzer)
+    // Tebex store (owner only)
     tab_store:        'Tebex-Store',
     store_title:      'Tebex-Store dieses Servers',
     store_intro:      'Gewinner können automatisch einen Gutscheincode für deinen eigenen Tebex-Shop bekommen.',
@@ -1226,7 +1242,7 @@ export const giveawayDashboardTranslations = {
     // Verify
     v_subtitle:        'Verwalte deine Giveaways im Browser. Melde dich mit Discord an, um fortzufahren.',
     v_login_btn:       'Mit Discord fortfahren',
-    v_no_guilds:       'Auf keinem deiner verwalteten Server ist der Giveaway-Bot. Lade den Bot ein und komm dann zurück.',
+    v_no_guilds:       'Noch keine Server zum Verwalten. Du brauchst Administrator, Server verwalten oder die Giveaway-Manager-Rolle auf einem Server, auf dem der Bot schon eingeladen ist.',
     v_back:            'Zurück zur Giveaway-Seite',
     v_select_server:   'Server auswählen',
     v_err_unauthorized:'Deine Sitzung ist abgelaufen. Bitte melde dich erneut an.',
@@ -1262,14 +1278,14 @@ export const giveawayResultTranslations = {
 } as const;
 
 // ── Homepage (Landing) ───────────────────────────────────────────────────────
-// Genutzt von den Server-Komponenten unter components/home/*. Die Seite löst die
-// Sprache server-seitig auf (Cookie) und reicht `lang` durch; der Navbar-Switch
-// triggert router.refresh(), wodurch diese Server-Komponenten neu rendern.
+// Used by the server components under components/home/*. The page resolves
+// the language server-side (cookie) and passes `lang` down; the navbar
+// switch calls router.refresh(), which re-renders those server components.
 export const homeTranslations = {
   en: {
-    // Fallback, wenn fivestats keine Zahl liefert (kein Key, API down).
+    // Fallback for when fivestats has no number (no key, API down).
     hero_badge: "Live · Trusted by 500+ Servers",
-    // Live-Variante. {resource} und {count} werden in Hero.tsx ersetzt.
+    // Live variant. {resource} and {count} are substituted in Hero.tsx.
     hero_badge_live: "Live · {resource} runs on {count} servers",
     hero_h1_line1: "Premium FiveM",
     hero_h1_line2: "Scripts.",
@@ -1341,8 +1357,8 @@ export const homeTranslations = {
       "Both versions use the FiveM Asset Escrow system, so they need an active CFX.re account and a server that is online.",
     how_btn_docs: "Read the docs",
 
-    // Kostenlose FiveM-Scripts. Die Einträge selbst stehen in
-    // content/custom-packages.ts, hier nur der Rahmen der Sektion.
+    // Free FiveM scripts. The entries themselves live in
+    // content/custom-packages.ts; this is only the section frame.
     free_scripts_heading: "Free FiveM Scripts",
     free_scripts_subtitle:
       "Open source on GitHub, free to use on your server. msk_core is the shared library the paid resources build on.",
@@ -1354,21 +1370,21 @@ export const homeTranslations = {
       "Free tools, Discord bots, and open-source libraries from the MSK ecosystem.",
 
     cta_heading: "Support comes from the person who wrote the code.",
-    // {count} wird durch die gemessene Käuferzahl ersetzt (lib/shopStats.ts).
+    // {count} is replaced with the measured buyer count (lib/shopStats.ts).
     cta_heading_measured: "{count} unique buyers since 2022",
     cta_subtitle:
       "Discord has help before and after buying, sneak peeks and announcements, straight from the developer.",
     cta_btn_discord: "Join Discord",
     cta_btn_github: "Browse GitHub",
 
-    // Release-Protokoll. Quelle ist MSK-Scripts/VERSIONS, siehe lib/releases.ts.
+    // Release log. Sourced from MSK-Scripts/VERSIONS, see lib/releases.ts.
     release_title: "Release log",
     release_count: "last {n}",
     release_docs: "Full changelogs in the documentation",
-    // Die Zusammenfassungen stammen aus den Changelogs und existieren nur auf
-    // Englisch. Sie bleiben deshalb in beiden Sprachen im Original.
+    // The summaries come from the changelogs and exist in English only, so
+    // both languages keep the original wording.
 
-    // Belegzeile. Jede Zahl ist gemessen, siehe PRODUCT.md → Evidence on Hand.
+    // Proof line. Every number is measured, see PRODUCT.md -> Evidence on Hand.
     proof_buyers: "unique buyers",
     proof_servers: "servers running msk_core",
     proof_reversal: "refunded or charged back",
@@ -1474,8 +1490,8 @@ export const homeTranslations = {
       "Beide Versionen nutzen das FiveM Asset Escrow System, brauchen also einen aktiven CFX.re-Account und einen Server, der online ist.",
     how_btn_docs: "Zur Dokumentation",
 
-    // Kostenlose FiveM-Scripts. Die Einträge selbst stehen in
-    // content/custom-packages.ts, hier nur der Rahmen der Sektion.
+    // Free FiveM scripts. The entries themselves live in
+    // content/custom-packages.ts; this is only the section frame.
     free_scripts_heading: "Kostenlose FiveM Scripts",
     free_scripts_subtitle:
       "Open Source auf GitHub, frei nutzbar auf deinem Server. msk_core ist die Bibliothek, auf der die bezahlten Resourcen aufbauen.",
@@ -1488,21 +1504,21 @@ export const homeTranslations = {
 
     cta_heading:
       "Der Support kommt von der Person, die den Code geschrieben hat.",
-    // {count} wird durch die gemessene Käuferzahl ersetzt (lib/shopStats.ts).
+    // {count} is replaced with the measured buyer count (lib/shopStats.ts).
     cta_heading_measured: "{count} einzigartige Käufer seit 2022",
     cta_subtitle:
       "Im Discord gibt es Hilfe vor und nach dem Kauf, Vorab-Einblicke und Ankündigungen, direkt vom Entwickler.",
     cta_btn_discord: "Discord beitreten",
     cta_btn_github: "GitHub ansehen",
 
-    // Release-Protokoll. Quelle ist MSK-Scripts/VERSIONS, siehe lib/releases.ts.
+    // Release log. Sourced from MSK-Scripts/VERSIONS, see lib/releases.ts.
     release_title: "Release-Protokoll",
     release_count: "letzte {n}",
     release_docs: "Vollständige Changelogs in der Dokumentation",
-    // Die Zusammenfassungen stammen aus den Changelogs und existieren nur auf
-    // Englisch. Sie bleiben deshalb in beiden Sprachen im Original.
+    // The summaries come from the changelogs and exist in English only, so
+    // both languages keep the original wording.
 
-    // Belegzeile. Jede Zahl ist gemessen, siehe PRODUCT.md → Evidence on Hand.
+    // Proof line. Every number is measured, see PRODUCT.md -> Evidence on Hand.
     proof_buyers: "Einzigartige Käufer",
     proof_servers: "Server auf msk_core",
     proof_reversal: "erstattet oder zurückgebucht",
@@ -1537,11 +1553,11 @@ export const homeTranslations = {
   },
 } as const;
 
-// ── Paketübersicht (/packages) ───────────────────────────────────────────────
-// Die Facetten stammen ausschließlich aus vorhandenen Daten: die Variante aus
-// der Tebex-Kategorie, die Kompatibilität aus PACKAGE_TAGS in lib/config.ts.
-// Eine Framework-Facette gibt es bewusst nicht, dafür existieren keine
-// strukturierten Angaben, und geraten wäre schlimmer als weggelassen.
+// ── Package catalogue (/packages) ────────────────────────────────────────────
+// The facets come purely from data we already have: the variant from the
+// Tebex category, the compatibility from PACKAGE_TAGS in lib/config.ts.
+// There is deliberately no framework facet - no structured data exists for
+// it, and guessing would be worse than leaving it out.
 export const packagesTranslations = {
   en: {
     heading: "All packages",
@@ -1549,10 +1565,10 @@ export const packagesTranslations = {
     count_one: "{n} package",
     count_many: "{n} packages",
     filters: "Filters",
-    // Nur für Screenreader. Beide Katalogrouten sprangen von H1 auf die H3 der
-    // Karten, es gab keine Zwischenebene, an der man die Seite entlanghangeln
-    // kann. Sichtbar wären die beiden Überschriften Doppelungen: die Filter
-    // stehen beschriftet da, und über dem Raster steht bereits der Zähler.
+    // Screen readers only. Both catalogue routes jumped from H1 straight to the
+    // H3 of the cards, leaving no intermediate level to navigate by. Made
+    // visible, the two headings would be duplication: the filters are labelled
+    // already, and the result count sits above the grid.
     region_filters: "Filters",
     region_results: "Packages",
     facet_more: "Show {n} more",
@@ -1569,9 +1585,9 @@ export const packagesTranslations = {
     escrow_link: "How buying works",
     none_title: "No packages yet",
     none_body: "Check back soon.",
-    // Kartentexte. Stehen hier und nicht in der Komponente, weil PackageCard
-    // von /packages und von /categories/[id] gerendert wird und beide Routen
-    // dieselbe Sprache auflösen müssen.
+    // Card copy. It lives here rather than in the component because PackageCard
+    // is rendered by /packages and by /categories/[id], and both routes have to
+    // resolve the same language.
     card_add: "Add",
     card_login: "Login",
     card_download: "Download",
@@ -1583,8 +1599,8 @@ export const packagesTranslations = {
     variant_source: "Source",
     variant_note:
       "Every script comes in two releases. Encrypted leaves only config.lua, translation.lua and server_discordlog.lua open. Source leaves about 90 percent of the code open and encrypts only the core functions.",
-    // Detailseite /packages/[id] inklusive Galerie und beider Modals. War bis
-    // zum 22.08.2026 fest englisch, auch unter lang="de".
+    // Detail page /packages/[id] including the gallery and both modals. Was
+    // hard-coded English until 2026-08-22, even under lang="de".
     breadcrumb_home:      'Home',
     breadcrumb_packages:  'Packages',
     detail_purchase:      'Purchase',
@@ -1697,10 +1713,10 @@ export const packagesTranslations = {
   },
 } as const;
 
-// ── Kaufabschluss ────────────────────────────────────────────────────────────
-// Warenkorb, Drawer, Checkout-Rückkehr, Login und Konto. Der ganze Pfad war
-// bis zum 22.08.2026 fest englisch, auch auf Seiten, die mit lang="de"
-// ausgeliefert werden. Dieselbe Klasse Fehler wie auf der Kategorieseite.
+// ── Purchase path ────────────────────────────────────────────────────────────
+// Cart, drawer, checkout return, login and account. The whole path was
+// hard-coded English until 2026-08-22, even on pages served with lang="de".
+// The same class of bug as on the category page.
 export const cartTranslations = {
   en: {
     heading:            'Your cart',
@@ -1736,7 +1752,7 @@ export const cartTranslations = {
     err_coupon_active:  'Please remove the active coupon first.',
     err_coupon_scope:   'This coupon cannot be applied to the items in your cart.',
     err_coupon_invalid: 'Invalid or expired coupon code.',
-    // Rueckkehr von Tebex
+    // Return from Tebex
     success_title:      'Payment successful',
     success_body:      'Thank you for your purchase. You will receive a confirmation email shortly, and your download is available right away.',
     cancelled_title:    'Payment cancelled',
@@ -1746,7 +1762,7 @@ export const cartTranslations = {
     view_cart:          'View cart',
     back_to_cart:       'Back to cart',
     back_to_shop:       'Back to shop',
-    // Login und Konto
+    // Login and account
     login_title:        'Login',
     login_body:         'You are logged in automatically when you add a package to your cart and check out through Tebex.',
     account_title:      'My account',
@@ -1787,7 +1803,7 @@ export const cartTranslations = {
     err_coupon_active:  'Bitte zuerst den aktiven Gutschein entfernen.',
     err_coupon_scope:   'Dieser Gutschein gilt nicht für die Artikel in deinem Warenkorb.',
     err_coupon_invalid: 'Ungültiger oder abgelaufener Gutscheincode.',
-    // Rückkehr von Tebex
+    // Return from Tebex
     success_title:      'Zahlung erfolgreich',
     success_body:       'Danke für deinen Kauf. Die Bestätigung per E-Mail kommt gleich, der Download steht sofort bereit.',
     cancelled_title:    'Zahlung abgebrochen',
@@ -1797,7 +1813,7 @@ export const cartTranslations = {
     view_cart:          'Warenkorb ansehen',
     back_to_cart:       'Zurück zum Warenkorb',
     back_to_shop:       'Zurück zum Shop',
-    // Login und Konto
+    // Login and account
     login_title:        'Anmelden',
     login_body:         'Die Anmeldung passiert automatisch, sobald du ein Paket in den Warenkorb legst und über Tebex zur Kasse gehst.',
     account_title:      'Mein Konto',
@@ -1806,9 +1822,9 @@ export const cartTranslations = {
   },
 } as const;
 
-// ── Kategorieseiten ──────────────────────────────────────────────────────────
-// `/categories/[id]` löste bis zum 22.08.2026 gar keine Sprache auf: die Seite
-// lieferte `lang="de"` aus dem Root-Layout und darunter jeden Text auf Englisch.
+// ── Category pages ───────────────────────────────────────────────────────────
+// `/categories/[id]` resolved no language at all until 2026-08-22: the page
+// served `lang="de"` from the root layout with every text below in English.
 export const categoriesTranslations = {
   en: {
     breadcrumb_home:     'Home',
@@ -1831,8 +1847,8 @@ export const categoriesTranslations = {
 } as const;
 
 // ── Site-Chrome (Navbar + Footer) ────────────────────────────────────────────
-// Genutzt von den Client-Komponenten Header/Footer via useLang() (sofortiger
-// Wechsel, kein Reload).
+// Used by the Header/Footer client components via useLang() (switches
+// immediately, no reload).
 export const layoutTranslations = {
   en: {
     nav_home:          'Home',
@@ -1883,9 +1899,9 @@ export const layoutTranslations = {
     footer_rights:     'All rights reserved.',
     footer_powered_by: 'Powered by',
     footer_built_by:   'Built by',
-    // Vertrauenszeile über dem Copyright. Inhalte belegt durch die AGB:
-    // § 2 (Tebex als Merchant of Record), § 3 (Single-Server-Lizenz),
-    // § 4 (Rückerstattung im Einzelfall).
+    // Trust line above the copyright. Every claim is backed by the T&C:
+    //   § 2 (Tebex as merchant of record), § 3 (single-server licence),
+    //   § 4 (refunds case by case).
     footer_trust_checkout: 'Checkout and payment are handled by Tebex Limited as merchant of record.',
     footer_trust_license:  'Single-server license',
     footer_trust_refund:   'Refunds case by case',
@@ -1896,11 +1912,11 @@ export const layoutTranslations = {
     legal_terms:       'Terms & Conditions',
     legal_widerruf:    'Withdrawal Instructions',
     legal_avv:         'Data Processing Agreement',
-    // Die drei Pflichtschaltflächen. Ihre Beschriftung ist nicht frei wählbar:
-    // § 312k Abs. 2 BGB schreibt „Verträge hier kündigen" wörtlich vor, und
-    // § 356a BGB verlangt eine Schaltfläche, die mit nichts anderem als dem
-    // Widerruf beschriftet ist. Die englischen Fassungen sind Übersetzungen —
-    // maßgeblich ist der deutsche Wortlaut.
+    // The three mandatory buttons. Their labels are not ours to choose:
+    // § 312k (2) BGB prescribes "Verträge hier kündigen" verbatim, and § 356a
+    // BGB requires a button labelled with nothing but the withdrawal itself.
+    // The English versions are translations for information; the German
+    // wording is the binding one.
     legal_revoke:      'Withdraw from contract',
     legal_cancel:      'Cancel contracts here',
     legal_report:      'Report content',
@@ -1971,9 +1987,9 @@ export const layoutTranslations = {
 // ---------------------------------------------------------------------------
 // Bildergalerie (/images)
 //
-// Produktnamen und Begriffe der Szene bleiben unuebersetzt: ein deutscher
-// Serverbetreiber sucht nach "props" und "peds", nicht nach "Requisiten" und
-// "Fussgaengern". Uebersetzt wird, was drumherum steht.
+// Product names and scene terminology stay untranslated: a German server
+// owner searches for "props" and "peds", not for "Requisiten" and
+// "Fussgaengern". What gets translated is everything around them.
 // ---------------------------------------------------------------------------
 export const imagesTranslations = {
   en: {
@@ -2098,12 +2114,12 @@ export const imagesTranslations = {
   },
 } as const
 /**
- * Community-Uploads: die Einreichungsseite und ihre Fehlermeldungen.
+  * Community uploads: the submission page and its error messages.
  *
- * Die `err_*`-Schluessel heissen genau wie die Rueckgabewerte von
- * `SubmitFailure` in lib/imageUploads.ts. Die Route antwortet mit dem
- * maschinenlesbaren Grund, nicht mit einem fertigen Satz, damit ein deutscher
- * Einreichender keinen englischen Serverstring vorgesetzt bekommt.
+  * The `err_*` keys are named exactly like the return values of
+  * `SubmitFailure` in lib/imageUploads.ts. The route answers with the
+  * machine-readable reason rather than a finished sentence, so a German
+  * submitter is never shown an English server string.
  */
 export const imageUploadTranslations = {
   en: {
@@ -2251,21 +2267,21 @@ export const imageUploadTranslations = {
 } as const
 
 // ---------------------------------------------------------------------------
-// Pflichtformulare: Widerruf (§ 356a BGB), Kündigung (§ 312k BGB) und
-// DSA-Meldung (Art. 16 der Verordnung (EU) 2022/2065)
+// Mandatory forms: withdrawal (§ 356a BGB), cancellation (§ 312k BGB) and
+// DSA report (Art. 16 of Regulation (EU) 2022/2065)
 //
-// Alle drei sind ohne Anmeldung erreichbar und dürfen keine Hürde aufbauen.
-// Deshalb fragen sie ausschließlich das ab, was das Gesetz nennt, und es gibt
-// bewusst kein Captcha: eine Widerrufserklärung, die an einem Bilderrätsel
-// scheitert, ist eine unzulässige Erschwerung.
+// All three are reachable without signing in and must not put up a hurdle.
+// They therefore ask for nothing beyond what the law names, and there is
+// deliberately no captcha: a withdrawal declaration that fails on a picture
+// puzzle is an unlawful obstruction.
 //
-// Die Beschriftungen der Bestätigungsschaltflächen sind gesetzlich vorgegeben
-// („Widerruf bestätigen", „Jetzt kündigen") und dürfen nicht umformuliert
-// werden. Die englischen Fassungen sind Übersetzungen zur Information.
+// The labels of the confirmation buttons are prescribed by law
+// ("Widerruf bestätigen", "Jetzt kündigen") and must not be reworded. The
+// English versions are translations for information.
 // ---------------------------------------------------------------------------
 export const legalFormTranslations = {
   en: {
-    // Gemeinsam
+    // Shared
     back_home:         'Back to the home page',
     field_name:        'Name',
     field_email:       'Email address',
@@ -2277,7 +2293,7 @@ export const legalFormTranslations = {
     err_email:         'Please enter a valid email address.',
     err_rate:          'Too many requests. Please try again later.',
 
-    // Widerruf
+    // Withdrawal
     revoke_title:      'Withdraw from contract',
     revoke_intro:
       'Use this form to withdraw from a paid subscription (Ticket Bot Premium, Premium+ or Business). '
@@ -2294,7 +2310,7 @@ export const legalFormTranslations = {
       + 'Please keep that email, it contains the content of your declaration together with the date and time it was received.',
     revoke_legal_link: 'Withdrawal instructions',
 
-    // Kündigung
+    // Cancellation
     cancel_title:      'Cancel contracts here',
     cancel_intro:
       'Use this form to cancel a paid subscription. Cancellation takes effect at the end of the current billing period '
@@ -2316,7 +2332,7 @@ export const legalFormTranslations = {
     cancel_portal_hint:
       'If you are signed in to the dashboard you can also cancel directly in the Stripe customer portal under "Manage subscription".',
 
-    // DSA-Meldung
+    // DSA report
     report_title:      'Report illegal content',
     report_intro:
       'Use this form to report content hosted by us that you consider illegal (Art. 16 of Regulation (EU) 2022/2065). '

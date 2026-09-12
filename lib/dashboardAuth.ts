@@ -3,6 +3,7 @@ import { parseDashboardSession } from '@/lib/dashboardSession';
 import { queryOne }              from '@/lib/db';
 import { trustedGuildId }        from '@/lib/guildScope';
 import type { ScopedGuildId }    from '@/lib/guildScope';
+import { accessState }           from '@/lib/guildAccess';
 import type { Tier }             from '@/lib/tiers';
 
 // ── Account-scoped dashboard authorization ───────────────────────────────────
@@ -29,6 +30,9 @@ export interface DashboardGuild {
   /** The customer's own domain for that dashboard; wins over dashboard_host. */
   dashboard_domain:        string | null;
   dashboard_domain_status: 'none' | 'pending_dns' | 'active';
+  /** Raw access columns; interpreted by `accessState()`, see lib/guildAccess.ts. */
+  access_checked_at:       unknown;
+  access_lost_at:          unknown;
 }
 
 /** Discord user id from the signed dashboard session cookie, or null. */
@@ -61,12 +65,22 @@ export async function authorizeGuild(guildId: string | null | undefined): Promis
   const guild = await queryOne<DashboardGuild>(
     `SELECT guild_id, tier, custom_domain, domain_status, is_hosted, active,
             stripe_customer_id, stripe_subscription_id, bot_port,
-            dashboard_host, dashboard_domain, dashboard_domain_status
+            dashboard_host, dashboard_domain, dashboard_domain_status,
+            access_checked_at, access_lost_at
        FROM ticketbot_guilds
       WHERE guild_id = ? AND discord_user_id = ?`,
     [id, discordUserId],
   );
   if (!guild) return { ok: false, status: 403, error: 'Unauthorized guild.' };
+
+  // Owning the row is not enough: the session's Discord user must still
+  // administer the guild. Hiding a revoked guild in the dashboard would be
+  // cosmetic on its own - every route that acts on a guild comes through here,
+  // so this is where it has to bite. A guild inside its grace period still
+  // passes; only 'revoked' is refused, and the dashboard warns long before.
+  if (accessState(guild) === 'revoked') {
+    return { ok: false, status: 403, error: 'access_revoked' };
+  }
 
   // Ab hier ist die Id belegt: sie stammt aus einer Zeile, die auf den
   // Session-Nutzer eingeschränkt war. `guild.guild_id` kommt aus der Datenbank,
