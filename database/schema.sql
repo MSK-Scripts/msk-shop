@@ -1,7 +1,19 @@
 -- ============================================================
 -- MSK Ticket Bot – Database Schema
 -- Run this on your MariaDB/MySQL server once.
+--
+-- Zielzustand fuer eine FRISCHE Datenbank. Bestehende Datenbanken ziehen
+-- seit dem 12.09.2026 ueber database/migrations/ nach, die scripts/deploy.sh
+-- bei jedem Deploy einspielt. Eine Schemaaenderung gehoert an beide Stellen.
+-- Die ALTER-Kommentare weiter unten sind Historie und laengst eingespielt.
 -- ============================================================
+
+-- Applied migrations, written by scripts/deploy.sh (step 3). One row per file
+-- in database/migrations/, recorded only after the file ran through.
+CREATE TABLE IF NOT EXISTS schema_migrations (
+    filename   VARCHAR(190) NOT NULL PRIMARY KEY,
+    applied_at DATETIME     NOT NULL DEFAULT NOW()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Guilds & API Keys
 CREATE TABLE IF NOT EXISTS ticketbot_guilds (
@@ -99,6 +111,8 @@ CREATE TABLE IF NOT EXISTS ticketbot_guilds (
 --   ALTER TABLE ticketbot_guilds ADD COLUMN dpa_accepted_at DATETIME NULL;
 --   ALTER TABLE ticketbot_guilds ADD COLUMN order_confirmation_sub_id VARCHAR(64) NULL;
 -- Rueckpruefung der Discord-Rechte (2026-09-12):
+--   Letzte von Hand eingespielte Aenderung. Ab hier uebernimmt der Deploy,
+--   siehe database/migrations/001-guild-access-columns.sql.
 --   ALTER TABLE ticketbot_guilds ADD COLUMN access_checked_at DATETIME NULL;
 --   ALTER TABLE ticketbot_guilds ADD COLUMN access_lost_at    DATETIME NULL;
 --   Beide bleiben bewusst NULL. Der erste Login je Person fuellt sie, und bis
