@@ -42,8 +42,8 @@ export default function VerifyClient({ step, guilds }: { step: 'login' | 'select
   }
 
   return (
-    // Kein zweites <main>: das Root-Layout rendert bereits eines, und zwei
-    // davon sind im Dokument nicht erlaubt.
+    // No second <main>: the root layout already renders one, and two of
+    // them are not allowed in a document.
     <div className="mx-auto flex min-h-[70vh] w-full max-w-2xl flex-col items-center justify-center px-4 py-16">
       <div className="mb-8 flex flex-col items-center text-center">
         <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--color-primary)]/15 text-[var(--color-primary)]">
@@ -82,7 +82,7 @@ export default function VerifyClient({ step, guilds }: { step: 'login' | 'select
             </Card>
           ) : (
             <div className="flex flex-col gap-2">
-              {/* War ein <p>, ist aber die Überschrift über der Serverliste. */}
+              {/* Was a <p>, but it is the heading above the server list. */}
               <h2
                 className="mb-1 font-mono text-[0.6875rem] font-bold uppercase tracking-widest text-[var(--color-muted-foreground)]"
               >

@@ -22,9 +22,9 @@ function StepIndicator({ current, t }: {
   t: { step_discord: string; step_select: string; step_done: string; step_completed: string; step_current: string }
 }) {
   const steps = [t.step_discord, t.step_select, t.step_done]
-  // Welcher Schritt gerade dran und welcher erledigt ist, stand bis zum
-  // 22.08.2026 ausschließlich in der Farbe: grüner Ring gegen graue Umrandung.
-  // Wer die nicht sieht, hörte drei gleichwertige Wörter.
+  // Which step is current and which is done was shown, until
+  // 22.08.2026, exclusively by color: a green ring versus a gray outline.
+  // Anyone who cannot see that heard three equal-ranking words.
   return (
     <ol className="mx-auto mb-8 flex w-full max-w-md items-center justify-center gap-0">
       {steps.map((label, i) => {
@@ -53,7 +53,7 @@ function StepIndicator({ current, t }: {
                   'whitespace-nowrap text-[10px] font-medium',
                   active && 'text-[var(--color-primary)]',
                   done && !active && 'text-[var(--color-muted-foreground)]',
-                  // `opacity-70` lag hier bei rund 3,1:1 auf 10-px-Text.
+                  // `opacity-70` sat at about 3.1:1 on 10 px text here.
                   !done && !active && 'text-[var(--color-muted-foreground)]',
                 )}
               >
@@ -149,8 +149,8 @@ export default function VerifyClient({ session, step: _step, errorCode }: Props)
   const [completeError, setCompleteError] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
   const [existingGuild, setExistingGuild] = useState<{ tier: Tier } | null>(null)
-  // Zustimmung zur Auftragsverarbeitung. Startet bewusst auf false: eine
-  // vorangekreuzte Vereinbarung ist keine Vereinbarung.
+  // Consent to the data processing agreement. Deliberately starts at false: a
+  // pre-ticked agreement is no agreement.
   const [dpaAccepted, setDpaAccepted] = useState(false)
   const [discordChecking, setDiscordChecking] = useState(false)
   const [discordStatus, setDiscordStatus] = useState<'none' | 'minor' | 'major' | 'critical' | 'unknown' | null>(null)
@@ -218,11 +218,11 @@ export default function VerifyClient({ session, step: _step, errorCode }: Props)
       })
       const data = await res.json()
       if (!res.ok) { setCompleteError(data.error ?? 'Error'); return }
-      // Hard-Navigation: das gerade gesetzte msk_dashboard_session-Cookie muss
-      // server-seitig gelesen werden. router.push() würde ggf. einen im
-      // Router-Cache liegenden (ausgeloggten) Redirect zurück auf /verify abspielen.
-      // Die Lint-Regel kennt diesen Fall nicht: sie sieht ein internes Ziel und
-      // schlägt router.push() vor, das hier nachweislich den Login zerlegt hat.
+      // Hard navigation: the msk_dashboard_session cookie that was just set must
+      // be read server-side. router.push() might replay a (logged-out) redirect
+      // sitting in the router cache back to /verify.
+      // The lint rule does not know this case: it sees an internal target and
+      // suggests router.push(), which demonstrably broke the login here.
       // eslint-disable-next-line @next/next/no-location-assign-relative-destination
       window.location.href = '/ticketbot/dashboard'
     } catch { setCompleteError(t.err_network) }
@@ -237,9 +237,9 @@ export default function VerifyClient({ session, step: _step, errorCode }: Props)
       const data = await res.json()
       const indicator = data.indicator as typeof discordStatus
       if (indicator === 'none') {
-        // Route Handler, keine Seite: der Endpunkt antwortet mit einem Redirect
-        // zu Discord. Der Next-Router kann das nicht, er erwartet eine Route im
-        // App-Router. Die Regel prüft nur den führenden Slash.
+        // Route handler, not a page: the endpoint answers with a redirect
+        // to Discord. The Next router cannot handle that, it expects a route in
+        // the App Router. The rule only checks the leading slash.
         // eslint-disable-next-line @next/next/no-location-assign-relative-destination
         window.location.href = '/api/auth/discord-verify'
         return
@@ -254,9 +254,9 @@ export default function VerifyClient({ session, step: _step, errorCode }: Props)
 
   const handleCopy = async () => {
     if (!result) return
-    // In einem unsicheren Kontext lehnt die Zwischenablage ab. Ohne `catch`
-    // bleibt eine unbehandelte Ablehnung stehen und der Haken erscheint
-    // trotzdem, obwohl nichts kopiert wurde.
+    // In an insecure context the clipboard rejects. Without `catch` an
+    // unhandled rejection is left behind and the checkmark appears
+    // anyway, even though nothing was copied.
     try {
       await navigator.clipboard.writeText(result.apiKey)
       setCopied(true)
@@ -285,7 +285,7 @@ export default function VerifyClient({ session, step: _step, errorCode }: Props)
 
           {errorMessage && <ErrorBanner message={errorMessage as string} />}
 
-          {/* Step 1 — Discord */}
+          {/* Step 1: Discord */}
           {currentStep === 1 && (
             <div className="text-center">
               <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-[var(--color-discord)]/30 bg-[var(--color-discord)]/15 text-[var(--color-discord)]">
@@ -333,7 +333,7 @@ export default function VerifyClient({ session, step: _step, errorCode }: Props)
             </div>
           )}
 
-          {/* Step 2 — Select Server */}
+          {/* Step 2: Select Server */}
           {currentStep === 2 && !result && !existingGuild && (
             <div>
               <h2 className="mb-1 text-lg font-bold">{t.select_title}</h2>
@@ -376,11 +376,11 @@ export default function VerifyClient({ session, step: _step, errorCode }: Props)
                 ))}
               </div>
 
-              {/* Auftragsverarbeitungsvertrag (Art. 28 DSGVO).
-                  Fuer den Inhalt der Transkripte ist der Serverbetreiber
-                  Verantwortlicher, wir sind Auftragsverarbeiter. Ohne diese
-                  Vereinbarung darf der Dienst nicht starten, deshalb sperrt
-                  der Haken den Knopf und die Route prueft ihn noch einmal. */}
+              {/* Data processing agreement (Art. 28 DSGVO).
+                  For the content of the transcripts the server operator is the
+                  controller, we are the processor. Without this agreement
+                  the service must not start, which is why the checkbox locks
+                  the button and the route checks it once more. */}
               <label className="mb-4 flex min-h-11 items-start gap-2.5 text-sm text-[var(--color-muted-foreground)]">
                 <input
                   type="checkbox"
@@ -407,7 +407,7 @@ export default function VerifyClient({ session, step: _step, errorCode }: Props)
             </div>
           )}
 
-          {/* Step 2 — Already registered */}
+          {/* Step 2: Already registered */}
           {currentStep === 2 && !result && existingGuild && (
             <div>
               <div className="mb-4 flex items-center gap-2.5">
@@ -423,7 +423,7 @@ export default function VerifyClient({ session, step: _step, errorCode }: Props)
               {completeError && <ErrorBanner message={completeError} />}
 
               <div className="mb-5 space-y-3">
-                {/* Option A — Generate new key */}
+                {/* Option A: Generate new key */}
                 <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-muted)] p-4">
                   <div className="mb-1 flex items-center gap-2">
                     <RefreshCw className="h-3.5 w-3.5 shrink-0 text-[var(--color-muted-foreground)]" />
@@ -444,7 +444,7 @@ export default function VerifyClient({ session, step: _step, errorCode }: Props)
                   </Button>
                 </div>
 
-                {/* Option B — Go to Dashboard */}
+                {/* Option B: Go to Dashboard */}
                 {/* Every paid tier, asked negatively on purpose. Enumerating
                     them meant Business silently lost this shortcut when it was
                     added, and the next tier would have lost it too. */}
@@ -479,7 +479,7 @@ export default function VerifyClient({ session, step: _step, errorCode }: Props)
             </div>
           )}
 
-          {/* Step 4 — Done */}
+          {/* Step 4: Done */}
           {result && (
             <div className="text-center">
               <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-[var(--color-primary)]/30 bg-[var(--color-primary)]/20">
@@ -507,9 +507,9 @@ export default function VerifyClient({ session, step: _step, errorCode }: Props)
                   <button
                     onClick={handleCopy}
                     className="tap-target shrink-0 rounded p-1.5 text-[var(--color-muted-foreground)] transition-colors hover:bg-[var(--color-card)] hover:text-[var(--color-foreground)]"
-                    // Der Knopf trägt nur ein Symbol. Der Name wechselt mit dem
-                    // Zustand mit, sonst bleibt das Kopieren unbestätigt, wenn
-                    // man den Haken nicht sieht.
+                    // The button carries only an icon. The name changes along with the
+                    // state, otherwise the copy stays unconfirmed if you
+                    // cannot see the checkmark.
                     aria-label={copied ? t.done_copied : t.done_copy}
                     title={copied ? t.done_copied : t.done_copy}
                   >

@@ -2,22 +2,22 @@ import { describe, it, expect } from 'vitest'
 import { trustedGuildId } from '@/lib/guildScope'
 
 /**
- * Laufzeitseite von `lib/guildScope.ts`.
+ * Runtime side of `lib/guildScope.ts`.
  *
- * Der Brand selbst ist reine Compile-Zeit und lässt sich hier nicht prüfen —
- * dafür gibt es den Negativtest mit `tsc` (siehe Kommentar unten). Was ein Test
- * abdecken kann und muss, ist die Formatprüfung: ohne sie wäre
- * `trustedGuildId()` ein `as ScopedGuildId` mit besserer Presse, also eine
- * Behauptung ohne Deckung.
+ * The brand itself is pure compile time and cannot be checked here; that is
+ * what the negative test with `tsc` is for (see comment below). What a test
+ * can and must cover is the format check: without it,
+ * `trustedGuildId()` would be an `as ScopedGuildId` with better press, i.e. a
+ * claim without backing.
  *
- * Compile-Zeit gegengeprüft am 02.08.2026 mit einer Wegwerf-Route, die
- * `teardownCustomDomain(body.guildId as string)` aufrief:
+ * Compile time cross-checked on 02.08.2026 with a throwaway route that
+ * called `teardownCustomDomain(body.guildId as string)`:
  *   TS2345: Argument of type 'string' is not assignable to parameter of
  *   type 'ScopedGuildId'.
- * Der Weg über `authorizeGuild()` kompilierte im selben Lauf fehlerfrei.
+ * The path via `authorizeGuild()` compiled without errors in the same run.
  */
 
-const VALID = '123456789012345678' // 18-stellige Snowflake
+const VALID = '123456789012345678' // 18-digit snowflake
 
 describe('trustedGuildId', () => {
   it('nimmt eine gültige Snowflake an und gibt sie unverändert zurück', () => {
@@ -45,8 +45,8 @@ describe('trustedGuildId', () => {
   })
 
   it('nennt die Quelle in der Fehlermeldung', () => {
-    // Ohne die Quelle steht im Log nur, dass irgendwo eine kaputte Id ankam —
-    // die Frage ist aber immer, welcher der vier Kanäle sie geliefert hat.
+    // Without the source the log only says that a broken id arrived somewhere,
+    // but the question is always which of the four channels delivered it.
     expect(() => trustedGuildId('nope', 'api-key')).toThrow(/api-key/)
     expect(() => trustedGuildId('nope', 'stripe-webhook')).toThrow(/stripe-webhook/)
   })

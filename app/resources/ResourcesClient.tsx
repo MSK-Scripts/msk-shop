@@ -45,9 +45,9 @@ function Sparkline({ history, id }: { history: HistoryPoint[]; id: string }) {
       viewBox={`0 0 ${W} ${H}`}
       preserveAspectRatio="none"
       className="h-16 w-full"
-      // Dekorativ: Serverzahl und Veränderung stehen als Text direkt darüber.
-      // `role="img"` und `aria-hidden` zusammen widersprachen sich, das eine
-      // meldet ein Bild an, das andere nimmt es aus dem Baum.
+      // Decorative: server count and change are shown as text right above it.
+      // `role="img"` and `aria-hidden` together contradicted each other; one
+      // announces an image, the other removes it from the tree.
       aria-hidden="true"
     >
       <defs>
@@ -92,9 +92,9 @@ function ResourceLinkButton({ link }: { link: ResourceLink }) {
     </>
   )
   return (
-    // `tap-target` statt einer größeren Schaltfläche: die Karte trägt zwei
-    // Knöpfe nebeneinander, sichtbar höher würde das Raster verschieben. Die
-    // Trefferfläche liegt danach bei 44 px, gemessen waren es 32.
+    // `tap-target` instead of a larger button: the card carries two buttons
+    // side by side, and visibly taller ones would shift the grid. The hit
+    // area is then 44 px; measured, it was 32.
     <Button asChild variant={link.variant} size="sm" className="tap-target flex-1">
       {link.external ? (
         <a href={link.href} target="_blank" rel="noopener noreferrer">{content}</a>

@@ -17,8 +17,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default function ReportPage() {
-  // `useSearchParams` (die vorbelegte URL) braucht eine Suspense-Grenze,
-  // sonst verweigert Next den Build der Seite.
+  // `useSearchParams` (the prefilled URL) needs a Suspense boundary,
+  // otherwise Next refuses to build the page.
   return (
     <Suspense>
       <ReportClient />

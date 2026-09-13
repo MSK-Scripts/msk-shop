@@ -4,11 +4,11 @@ import { parseGiveawaySession, GIVEAWAY_SESSION_COOKIE } from '@/lib/giveawaySes
 import { controlGet }                        from '@/lib/giveawayControl';
 import { query }                             from '@/lib/db';
 
-// Lese-Proxy zum Bot-Steuer-Endpunkt. guildId kommt IMMER aus der Session.
+// Read proxy to the bot control endpoint. guildId ALWAYS comes from the session.
 const ALLOWED = new Set(['giveaways', 'giveaway', 'settings', 'roles', 'channels', 'templates', 'tebex', 'tebexPackages']);
 
-// Diese Abfragen prüft der Bot gegen guild.ownerId, dafür braucht er die
-// Discord-ID des Users. Sie kommt aus der signierten Session, nie aus der Query.
+// The bot checks these queries against guild.ownerId, for which it needs the
+// user's Discord ID. It comes from the signed session, never from the query.
 const OWNER_KINDS = new Set(['tebex', 'tebexPackages']);
 const KIND_PATH: Record<string, string> = {
   giveaways:     '/giveaways',
@@ -31,7 +31,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'invalid_kind' }, { status: 400 });
   }
 
-  // Nur für /giveaway wird eine id durchgereicht.
+  // An id is only passed through for /giveaway.
   const search: Record<string, string> = {};
   if (kind === 'giveaway') {
     const id = String(searchParams.get('id') ?? '').trim().toUpperCase();
@@ -40,8 +40,8 @@ export async function GET(req: Request) {
 
   if (OWNER_KINDS.has(kind)) {
     if (!session.userId) {
-      // Session aus der Zeit vor dem Besitzer-Flag: neu anmelden, statt den
-      // Bot mit einer leeren userId zu behelligen.
+      // Session from before the owner flag existed: sign in again instead of
+      // bothering the bot with an empty userId.
       return NextResponse.json({ error: 'reauth_required' }, { status: 401 });
     }
     search.userId = session.userId;
@@ -50,8 +50,8 @@ export async function GET(req: Request) {
   const path = KIND_PATH[kind] ?? `/${kind}`;
   const { status, data } = await controlGet(session.guildId, path, search);
 
-  // Liste mit dem Link zur öffentlichen Ergebnis-Seite anreichern (Token liegt
-  // in der Shop-DB, nicht beim Bot) — für beendete Giveaways im Dashboard.
+  // Enrich the list with the link to the public result page (the token lives
+  // in the shop DB, not with the bot), for finished giveaways in the dashboard.
   if (kind === 'giveaways' && status === 200) {
     const payload = data as { giveaways?: GwListItem[] } | null;
     if (payload?.giveaways?.length) {

@@ -6,12 +6,12 @@ import { ticketBotAppJsonLd, ticketBotMetadata } from '@/lib/botSeo'
 import { getRequestLang } from '@/lib/serverLang'
 
 /**
- * Landingpage des Ticket-Bots, zweisprachig über den Pfad.
+ * Landing page of the ticket bot, bilingual via the path.
  *
- * `/ticketbot` und `/de/ticketbot` sind zwei indexierbare Adressen mit
- * reziprokem hreflang. Bis zum 22.08.2026 gab es dafür zwei Dateien; seit der
- * Proxy `/de/…` intern umschreibt, reicht diese eine, und die Sprache kommt
- * aus dem Request.
+ * `/ticketbot` and `/de/ticketbot` are two indexable addresses with
+ * reciprocal hreflang. Until 22.08.2026 there were two files for this; since
+ * the proxy rewrites `/de/…` internally, this one is enough, and the language
+ * comes from the request.
  */
 export async function generateMetadata(): Promise<Metadata> {
   const { lang } = await getRequestLang()

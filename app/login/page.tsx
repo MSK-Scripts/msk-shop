@@ -7,9 +7,9 @@ import type { Metadata } from 'next'
 import { pageSeo } from '@/lib/pageSeo'
 
 /**
- * Eigener Titel statt des Vorgabewerts aus dem Root-Layout. Kein `alternates`:
- * die Seite ist noindex, ein Canonical oder hreflang darauf wäre ein Signal
- * für etwas, das gar nicht in den Index soll.
+ * Own title instead of the default from the root layout. No `alternates`:
+ * the page is noindex; a canonical or hreflang on it would be a signal
+ * for something that is not meant to be in the index at all.
  */
 export async function generateMetadata(): Promise<Metadata> {
   const { lang } = await getRequestLang()
@@ -28,8 +28,8 @@ export default async function LoginPage() {
   return (
     <div className="container-page py-20 md:py-24">
       <div className="mx-auto max-w-lg text-center">
-        {/* Kein Eyebrow mehr: eine Karte, ein Abschnitt, und "Account" über
-            "Anmelden" sagte nichts, was die Überschrift nicht schon sagt. */}
+        {/* No eyebrow any more: one card, one section, and "Account" above
+            "Sign in" said nothing the heading does not already say. */}
         <Card className="p-8">
           <h1 className="mb-3 text-2xl font-bold tracking-tight">{t.login_title}</h1>
           <p className="mb-8 text-sm text-[var(--color-muted-foreground)]">

@@ -2,9 +2,9 @@ import { describe, it, expect } from 'vitest'
 import { resolveVariant } from '@/lib/config'
 
 /**
- * Die Zuordnung stammt aus den echten Tebex-Daten, abgerufen am 22.08.2026:
- * Kategorie 2105296 = Encrypted Version, 2228937 = Source Version,
- * 3392436 = Subscriptions, dort liegen beide Varianten nebeneinander.
+ * The mapping comes from the real Tebex data, fetched on 22.08.2026:
+ * category 2105296 = Encrypted Version, 2228937 = Source Version,
+ * 3392436 = Subscriptions, where both variants sit side by side.
  */
 describe('resolveVariant', () => {
   it('erkennt die Variante an der Katalogkategorie', () => {
@@ -18,7 +18,7 @@ describe('resolveVariant', () => {
   })
 
   it('lässt die Kategorie gewinnen, wenn der Name etwas anderes sagt', () => {
-    // Die Kategorie ist gepflegte Struktur, der Name ist Freitext.
+    // The category is maintained structure, the name is free text.
     expect(resolveVariant({ name: 'Irgendwas Source', category: { id: 2105296 } })).toBe('encrypted')
   })
 
@@ -29,7 +29,7 @@ describe('resolveVariant', () => {
   })
 
   it('greift nur auf ganze Wörter, nicht auf Teiltreffer', () => {
-    // "resourced" enthält "source", ist aber keine Variantenangabe.
+    // "resourced" contains "source", but is not a variant indication.
     expect(resolveVariant({ name: 'Fully resourced pack' })).toBeNull()
   })
 })

@@ -4,18 +4,18 @@ import { validateCancellation, storeCancellation } from '@/lib/legalForms'
 import { buildCancellationReceipt, buildInternalNotice, formatReceiptTime } from '@/lib/emails/legalReceipts'
 import { originAllowed, mailLangFrom, clientIpOrNull, deliverReceipts, badRequest } from '../shared'
 
-// ── Kündigungsschaltfläche (§ 312k BGB) ─────────────────────────────────────
+// ── Cancellation button (§ 312k BGB) ────────────────────────────────────────
 //
-// Der Weg über das Stripe-Kundenportal im Dashboard bleibt bestehen, genügt
-// aber allein nicht: § 312k verlangt eine Schaltfläche auf der Website, die
-// **ohne Anmeldung** unmittelbar zu einer Bestätigungsseite führt.
+// The route via the Stripe customer portal in the dashboard remains, but on
+// its own it is not enough: § 312k requires a button on the website that leads
+// **without sign-in** directly to a confirmation page.
 //
-// Die Kündigung wird hier nicht ausgeführt, sondern **entgegengenommen**. Das
-// ist kein Versäumnis: die Erklärung wird mit ihrem Zugang wirksam, und ohne
-// Anmeldung lässt sich nicht feststellen, welches Stripe-Abo gemeint ist. Ein
-// automatischer Abbruch auf Zuruf einer nicht authentifizierten Angabe wäre
-// die gefährlichere Variante — jeder mit einer Discord-Server-Id könnte fremde
-// Abos beenden.
+// The cancellation is not carried out here but **received**. That is not an
+// omission: the declaration takes effect upon receipt, and without sign-in
+// there is no way to tell which Stripe subscription is meant. An automatic
+// termination on the say-so of unauthenticated input would be the more
+// dangerous option: anyone with a Discord server id could end other people's
+// subscriptions.
 
 export const dynamic = 'force-dynamic'
 

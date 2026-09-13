@@ -9,16 +9,16 @@ import { alternatePaths } from '@/lib/lang'
 import { getRequestLang } from '@/lib/serverLang'
 
 /**
- * „Welchen Discord Ticket Bot nehmen" — die Frage, die Leute wirklich stellen.
+ * "Which Discord ticket bot should I pick": the question people really ask.
  *
- * Die Landingpage sagt, was der Bot kann. Diese Seite beantwortet die
- * Kaufentscheidung und nennt dabei die Fälle, in denen ein anderes Projekt
- * besser passt. Das ist das Format, aus dem Sprachmodelle zitieren, und der
- * Grund, warum die Gegenargumente hier nicht kosmetisch sind.
+ * The landing page says what the bot can do. This page answers the
+ * buying decision and names the cases in which another project fits
+ * better. That is the format language models quote from, and the
+ * reason why the counterarguments here are not cosmetic.
  *
- * Zweisprachig über den Pfad wie die Landingpages: `/ticketbot/compare` und
- * `/de/ticketbot/compare` sind zwei indexierbare Adressen mit reziprokem
- * hreflang, die Sprache kommt aus dem Request.
+ * Bilingual via the path like the landing pages: `/ticketbot/compare` and
+ * `/de/ticketbot/compare` are two indexable addresses with reciprocal
+ * hreflang, the language comes from the request.
  */
 export async function generateMetadata(): Promise<Metadata> {
   const { lang } = await getRequestLang()
@@ -29,9 +29,9 @@ export default async function TicketBotComparePage() {
   const { lang } = await getRequestLang()
   const copy     = ticketBotCompareCopy(lang)
 
-  // Die Breadcrumb nennt die Pfade der laufenden Sprachfassung. `alternatePaths`
-  // ist die einzige Stelle, die das Sprachpraefix kennt; von Hand gesetzt waere
-  // es die naechste Stelle, die bei einer Routenaenderung stehen bleibt.
+  // The breadcrumb names the paths of the current language version. `alternatePaths`
+  // is the only place that knows the language prefix; set by hand, it would be
+  // the next place that gets left behind when a route changes.
   const path   = (p: string) => alternatePaths(p)[lang]
   const crumbs = breadcrumbJsonLd([
     { name: 'MSK Scripts', path: path('/') },

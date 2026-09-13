@@ -33,10 +33,10 @@ export default async function AdminPage({
   const session     = token ? parseAdminSession(token) : null;
   const member      = session?.discordUserId ? await loadAdminMember(session.discordUserId) : null;
 
-  // `tab` wird hier server-seitig gelesen und nicht im Client aus `window`.
-  // Sonst renderte der Server "Overview" und der Client nach einem Reload
-  // etwas anderes, und genau das ist ein Hydration-Unterschied. Geprueft wird
-  // der Wunsch trotzdem erst drueben gegen die Rechte des Mitglieds.
+  // `tab` is read here on the server and not in the client from `window`.
+  // Otherwise the server would render "Overview" and the client something else
+  // after a reload, and that is exactly a hydration mismatch. The request is
+  // still only checked over there against the member's permissions.
   const { error, tab } = await searchParams;
 
   if (member) {

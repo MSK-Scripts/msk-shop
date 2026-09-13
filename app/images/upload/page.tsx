@@ -6,16 +6,16 @@ import { pageSeo } from '@/lib/pageSeo'
 import { getRequestLang } from '@/lib/serverLang'
 
 /**
- * Einreichungsseite fuer Community-Uploads.
+ * Submission page for community uploads.
  *
- * `force-dynamic`, weil die Seite an der Sitzung des Einreichenden haengt:
- * angemeldet sieht sie das Formular und die eigenen Einreichungen, ohne
- * Anmeldung die Discord-Schaltflaeche. Ein gecachter Zwischenstand waere hier
- * schlimmer als eine Abfrage mehr.
+ * `force-dynamic`, because the page depends on the submitter's session:
+ * signed in, it shows the form and the user's own submissions; without
+ * signing in, the Discord button. A cached intermediate state would be
+ * worse here than one extra query.
  *
- * Sie ist bewusst **nicht** auf noindex. Die Seite erklaert, was der Bestand
- * braucht, und ist damit selbst ein Einstieg; wer nach "fivem prop image"
- * sucht, ist genau die Person, die eins beisteuern koennte.
+ * It is deliberately **not** set to noindex. The page explains what the inventory
+ * needs and is therefore an entry point itself; whoever searches for "fivem prop image"
+ * is exactly the person who could contribute one.
  */
 export const dynamic = 'force-dynamic'
 
@@ -37,8 +37,8 @@ export default async function UploadPage({
   const { lang } = await getRequestLang()
   const { error } = await searchParams
 
-  // Der OAuth-Rueckkanal haengt seinen Fehlergrund an die Adresse. Er kommt aus
-  // unserer eigenen Umleitung, wird aber trotzdem nicht roh angezeigt, sondern
-  // im Client gegen die bekannten Schluessel aufgeloest.
+  // The OAuth return channel appends its failure reason to the address. It comes
+  // from our own redirect, but it is still not displayed raw; instead it is
+  // resolved in the client against the known keys.
   return <UploadClient lang={lang} initialError={typeof error === 'string' ? error : undefined} />
 }

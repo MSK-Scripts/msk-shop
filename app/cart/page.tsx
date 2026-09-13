@@ -46,9 +46,9 @@ export default function CartPage() {
 
   return (
     <div className="container-page py-10 md:py-14">
-      {/* Kein Eyebrow: die Seite hat einen Abschnitt, und „Checkout“ über
-          „Dein Warenkorb“ war eine Verdopplung. DESIGN.md rationiert das
-          Element auf höchstens eins pro drei Abschnitten. */}
+      {/* No eyebrow: the page has one section, and "Checkout" above
+          "Your cart" was a duplication. DESIGN.md rations the element
+          to at most one per three sections. */}
       <header className="mb-10">
         <h1 className="text-3xl font-bold tracking-tight md:text-4xl">{t.heading}</h1>
       </header>
@@ -222,8 +222,8 @@ export default function CartPage() {
                 </Button>
               )}
 
-              {/* Der Knopf verlaesst die Domain. Wer das erst auf der fremden
-                  Seite merkt, bricht ab, deshalb steht es vorher da. */}
+              {/* The button leaves the domain. Anyone who only notices that on
+                  the other site gives up, so it is stated beforehand. */}
               <p className="mt-2 text-center text-xs text-[var(--color-muted-foreground)]">
                 {t.checkout_note}
               </p>

@@ -10,10 +10,10 @@ import {
 } from '@/lib/emails/legalReceipts'
 import { buildOrderConfirmation } from '@/lib/emails/orderConfirmation'
 
-// Diese Tests decken den Teil ab, an dem die Rechtsfolge haengt: welche
-// Eingaben angenommen werden und ob die Eingangsbestaetigung das enthaelt, was
-// § 356a BGB und § 312k BGB verlangen. Die Datenbank bleibt aussen vor, sie
-// wuerde genau den Teil wegabstrahieren, um den es hier geht.
+// These tests cover the part the legal consequence depends on: which
+// inputs are accepted and whether the acknowledgement of receipt contains what
+// § 356a BGB and § 312k BGB require. The database stays out of it, it
+// would abstract away exactly the part this is about.
 
 const ok = { name: 'Max Mustermann', contractRef: '821125865101328384', email: 'max@example.com' }
 
@@ -43,8 +43,8 @@ describe('validateWithdrawal', () => {
   })
 
   it('schneidet ueberlange Eingaben ab, statt sie abzulehnen', () => {
-    // Eine Erklaerung wegen eines zu langen Namens zurueckzuweisen waere genau
-    // die Huerde, die § 356a verbietet.
+    // Rejecting a declaration because of a name that is too long would be exactly
+    // the hurdle that § 356a prohibits.
     const r = validateWithdrawal({ ...ok, name: 'a'.repeat(MAX_NAME + 500) })
     expect(r.ok).toBe(true)
     if (r.ok) expect(r.value.name).toHaveLength(MAX_NAME)
@@ -100,8 +100,8 @@ describe('validateReport', () => {
   })
 
   it('lehnt sie ohne Richtigkeitserklaerung ab', () => {
-    // Art. 16 Abs. 2 lit. d DSA: ohne diese Erklaerung ist es keine Meldung im
-    // Sinne der Verordnung und begruendet keine Kenntnis nach Art. 6.
+    // Art. 16 Abs. 2 lit. d DSA: without this declaration it is not a notice within
+    // the meaning of the regulation and does not establish knowledge under Art. 6.
     const r = validateReport({ ...report, declaredTrue: false })
     expect(r.ok).toBe(false)
     if (!r.ok) expect(r.errors.declaredTrue).toBe('required')
@@ -130,9 +130,9 @@ describe('Eingangsbestaetigungen', () => {
   const at = new Date('2026-09-02T12:34:56Z')
 
   it('nennt Datum, Uhrzeit und Zeitzone', () => {
-    // Die Zone ist kein Detail: die Bestaetigung belegt die Wahrung einer
-    // Frist, und eine Uhrzeit ohne Zone beantwortet nicht, ob der letzte Tag
-    // noch lief.
+    // The zone is not a detail: the acknowledgement proves that a deadline
+    // was met, and a time without a zone does not answer whether the last day
+    // was still running.
     const s = formatReceiptTime(at, 'de')
     expect(s).toContain('02.09.2026')
     expect(s).toContain('Europe/Berlin')
@@ -186,8 +186,8 @@ describe('Bestellbestaetigung (§ 312f BGB)', () => {
   })
 
   it('verlinkt fuer englische Kunden die Wurzelfassung', () => {
-    // Die Sprache steckt im Pfad: Englisch liegt auf der Wurzel. Ein Link auf
-    // /de/terms in einer englischen Mail fuehrt auf einen deutschen Text.
+    // The language lives in the path: English sits at the root. A link to
+    // /de/terms in an English mail leads to a German text.
     const mail = buildOrderConfirmation({ lang: 'en', ...base })
     expect(mail.text).toContain('https://www.msk-scripts.de/terms')
     expect(mail.text).not.toContain('/de/terms')

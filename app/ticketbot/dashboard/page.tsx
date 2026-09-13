@@ -8,7 +8,7 @@ import { RECHECK_COOKIE }        from '@/lib/accessRecheck';
 import DashboardClient           from './DashboardClient';
 import type { Tier }             from '@/lib/tiers';
 
-// Session-/Cookie-abhängig + server-seitiger redirect() → niemals statisch/route-cachen.
+// Session/cookie dependent + server-side redirect() → never cache statically/per route.
 export const dynamic = 'force-dynamic';
 
 export const metadata = {

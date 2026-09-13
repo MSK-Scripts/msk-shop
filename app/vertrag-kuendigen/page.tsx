@@ -5,8 +5,8 @@ import { pageSeo } from '@/lib/pageSeo'
 import { getRequestLang } from '@/lib/serverLang'
 import { CancellationClient } from './CancellationClient'
 
-// Indexierbar wie die Widerrufsseite: § 312k verlangt eine Schaltfläche, die
-// ständig und unmittelbar verfügbar ist.
+// Indexable like the withdrawal page: § 312k requires a button that is
+// permanently and directly available.
 export async function generateMetadata(): Promise<Metadata> {
   const { lang } = await getRequestLang()
   const seo = pageSeo('/vertrag-kuendigen', lang)

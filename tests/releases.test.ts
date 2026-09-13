@@ -2,9 +2,9 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { summarize, newestVersion, loadReleases } from '@/lib/releases'
 
 /**
- * Der Loader zieht aus einer fremden Quelle (GitHub) und darf die Startseite
- * unter keinen Umständen kippen. Die Tests decken deshalb vor allem die
- * Fehlerpfade ab, nicht den Glücksfall.
+ * The loader pulls from a third-party source (GitHub) and must not take down
+ * the home page under any circumstances. The tests therefore mainly cover the
+ * error paths, not the happy path.
  */
 
 describe('summarize', () => {
@@ -70,7 +70,7 @@ describe('loadReleases', () => {
     globalThis.fetch = vi.fn(async (url: string | URL | Request) => {
       const u = String(url)
       if (u.includes('/commits')) {
-        // Absteigende Jahre, damit die Sortierung nachweisbar greift.
+        // Descending years, so that the sorting demonstrably takes effect.
         return ok(commit(`20${10 + (n++ % 8)}-01-01T00:00:00Z`))
       }
       return ok([{ version: '1.0.0', changelogs: ['- Etwas gemacht'] }])

@@ -33,11 +33,11 @@ interface FormState {
 }
 
 /**
- * Die Texte einer Sprache, mit auf `string` verbreiterten Literaltypen.
+ * The texts of one language, with literal types widened to `string`.
  *
- * `as const` in lib/i18n.ts macht aus jedem Wert seinen eigenen Literaltyp,
- * damit waere der deutsche Block nicht dem englischen zuweisbar und eine
- * Hilfsfunktion koennte nur eine der beiden Sprachen annehmen.
+ * `as const` in lib/i18n.ts turns every value into its own literal type,
+ * so the German block would not be assignable to the English one and a
+ * helper function could only accept one of the two languages.
  */
 type UploadCopy = (typeof imageUploadTranslations)['en']
 type T = {
@@ -66,8 +66,8 @@ export default function UploadClient({ lang, initialError }: { lang: Lang; initi
   )
   const [done, setDone]       = useState(false)
 
-  // Nur Aufraeumen, kein setState: der Objekt-URL haelt sonst die Datei im
-  // Speicher, solange der Tab offen ist.
+  // Cleanup only, no setState: otherwise the object URL keeps the file in
+  // memory for as long as the tab is open.
   useEffect(() => () => { if (preview) URL.revokeObjectURL(preview) }, [preview])
 
   const pickFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -82,9 +82,9 @@ export default function UploadClient({ lang, initialError }: { lang: Lang; initi
     if (busy || !formRef.current) return
 
     const body = new FormData(formRef.current)
-    // Ein nicht angehaktes Kontrollkaestchen taucht in FormData gar nicht auf.
-    // Der Server verlangt ausdruecklich 'true', also wird das Feld hier
-    // eindeutig gesetzt statt sich auf die Abwesenheit zu verlassen.
+    // An unchecked checkbox does not appear in FormData at all.
+    // The server explicitly requires 'true', so the field is set
+    // unambiguously here instead of relying on its absence.
     body.set('license', body.get('license') ? 'true' : 'false')
 
     setBusy(true)
@@ -144,11 +144,11 @@ export default function UploadClient({ lang, initialError }: { lang: Lang; initi
               )}
               <Button asChild variant="discord" className="mt-5">
                 {/* eslint-disable-next-line @next/next/no-html-link-for-pages --
-                    Ziel ist ein Route-Handler, keine Seite: er antwortet mit
-                    einer Umleitung zu Discord. `next/link` wuerde daraus eine
-                    Client-Navigation machen und eine RSC-Nutzlast erwarten, die
-                    es dort nie gibt. Kein LocaleLink aus demselben Grund, die
-                    Adresse traegt kein Sprachpraefix. */}
+                    The target is a route handler, not a page: it responds with
+                    a redirect to Discord. `next/link` would turn that into a
+                    client navigation and expect an RSC payload that never
+                    exists there. No LocaleLink for the same reason, the
+                    address carries no language prefix. */}
                 <a href="/api/images/upload/auth">{t.signin_button}</a>
               </Button>
             </Card>
@@ -226,9 +226,9 @@ export default function UploadClient({ lang, initialError }: { lang: Lang; initi
                     {preview && (
                       <div className="checker-bg mt-3 flex max-h-56 items-center justify-center overflow-hidden rounded-lg p-3">
                         {/* eslint-disable-next-line @next/next/no-img-element --
-                            Eine blob:-URL aus der lokalen Dateiauswahl. next/image
-                            kann sie nicht optimieren und soll es auch nicht: die
-                            Datei hat den Rechner noch gar nicht verlassen. */}
+                            A blob: URL from the local file picker. next/image
+                            cannot optimize it and is not supposed to: the
+                            file has not even left the computer yet. */}
                         <img src={preview} alt="" className="max-h-52 object-contain" />
                       </div>
                     )}

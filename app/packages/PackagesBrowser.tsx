@@ -18,7 +18,7 @@ import type { TebexPackage } from '@/types/tebex'
  * The facets are built from data that already exists and is already maintained:
  * the variant comes from the Tebex category a package sits in, and the
  * compatibility entries from PACKAGE_TAGS in lib/config.ts. There is
- * deliberately no framework facet — nothing in the data models which framework
+ * deliberately no framework facet: nothing in the data models which framework
  * a resource supports, and a filter that guesses is worse than one that is
  * missing.
  *
@@ -50,16 +50,16 @@ function FacetGroup({
   selected: Set<string>
   onToggle: (value: string) => void
   label?: (value: string) => string
-  /** Liest die nackte Zahl für Screenreader aus, siehe unten. */
+  /** Reads the bare number out for screen readers, see below. */
   countLabel: (count: number) => string
   moreLabel: (count: number) => string
   lessLabel: string
 }) {
   const [expanded, setExpanded] = useState(false)
   const { rest } = splitFacets(facets)
-  // Ein angehakter Eintrag bleibt sichtbar, auch wenn er in den Schwanz
-  // gehört. Ein Filter, der wirkt und den man nicht sieht, ist schlimmer als
-  // eine lange Liste.
+  // A checked entry stays visible even if it belongs in the tail.
+  // A filter that is in effect but cannot be seen is worse than
+  // a long list.
   const hidden = expanded ? [] : rest.filter(f => !selected.has(f.value))
   const visible = facets.filter(f => !hidden.includes(f))
 
@@ -96,9 +96,9 @@ function FacetGroup({
             <span className="peer-checked:font-semibold peer-checked:text-[var(--color-foreground)]">
               {label ? label(f.value) : f.value}
             </span>
-            {/* Die nackte Zahl stand im <label> und wurde als „Encrypted
-                Version 4" vorgelesen. Sichtbar bleibt sie eine Zahl, gehört
-                wird sie zu „4 Pakete". */}
+            {/* The bare number sat inside the <label> and was read out as „Encrypted
+                Version 4". Visually it stays a number; audibly it becomes
+                „4 Pakete". */}
             <span aria-hidden className="ml-auto font-mono text-xs tabular-nums">{f.count}</span>
             <span className="sr-only">{countLabel(f.count)}</span>
           </label>
@@ -124,9 +124,9 @@ export function PackagesBrowser({ lang, packages }: Props) {
   const [variants, setVariants] = useState<Set<string>>(new Set())
   const [compat, setCompat] = useState<Set<string>>(new Set())
   const [buckets, setBuckets] = useState<Set<string>>(new Set())
-  // Wirkt nur unterhalb von lg. Am Telefon stand die Filterspalte 852 px hoch
-  // vor der ersten Produktkarte (gemessen am 22.08.2026 bei 375 × 812: erste
-  // Karte bei y = 1114), also anderthalb Bildschirme Kästen vor der Ware.
+  // Only has an effect below lg. On a phone the filter column stood 852 px tall
+  // in front of the first product card (measured on 22.08.2026 at 375 × 812: first
+  // card at y = 1114), i.e. one and a half screens of boxes before the goods.
   const [filtersOpen, setFiltersOpen] = useState(false)
 
   const facets = useMemo(() => ({
@@ -137,8 +137,8 @@ export function PackagesBrowser({ lang, packages }: Props) {
 
   const shown = useMemo(() => packages.filter(p => {
     if (variants.size > 0 && !variants.has(p.category?.name ?? '')) return false
-    // Mehrere Kompatibilitäts-Haken heißen „alle davon", nicht „irgendeins":
-    // wer ox_inventory und msk_core anklickt, sucht etwas, das mit beidem läuft.
+    // Several compatibility checkboxes mean "all of them", not "any of them":
+    // someone who ticks ox_inventory and msk_core wants something that runs with both.
     if (compat.size > 0 && ![...compat].every(c => tagsOf(p).includes(c))) return false
     if (buckets.size > 0 && !buckets.has(priceBucket(priceOf(p)))) return false
     return true
@@ -177,9 +177,9 @@ export function PackagesBrowser({ lang, packages }: Props) {
   return (
     <div className="grid gap-0 border-t border-[var(--color-border)] lg:grid-cols-[232px_minmax(0,1fr)]">
       <div className="lg:border-r lg:border-[var(--color-border)] lg:pr-7">
-        {/* Ab lg ist die Spalte immer offen und der Schalter verschwindet.
-            Deshalb steht er außerhalb des <aside>: das wird am Telefon
-            ausgeblendet, der Schalter muss aber sichtbar bleiben. */}
+        {/* From lg up the column is always open and the toggle disappears.
+            That is why it sits outside the <aside>: that one is hidden on
+            phones, but the toggle has to stay visible. */}
         <button
           type="button"
           onClick={() => setFiltersOpen(o => !o)}
@@ -252,8 +252,8 @@ export function PackagesBrowser({ lang, packages }: Props) {
 
       <section className="py-7 lg:pl-8" aria-labelledby="package-results-heading">
         <h2 id="package-results-heading" className="sr-only">{t.region_results}</h2>
-        {/* Der Lizenzunterschied ist Schritt 1 des Kaufablaufs und stand bis
-            zum 22.08.2026 nur in der Meta-Description, also fuer Google. */}
+        {/* The licence difference is step 1 of the purchase flow and until
+            22.08.2026 it only appeared in the meta description, i.e. for Google. */}
         <p className="mb-5 rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)] px-4 py-3 text-xs leading-relaxed text-[var(--color-muted-foreground)]">
           {t.variant_note}
         </p>
@@ -283,9 +283,9 @@ export function PackagesBrowser({ lang, packages }: Props) {
               </button>
             </>
           ) : null}
-          {/* role="status" meldet die neue Trefferzahl nach jedem Filterklick.
-              Ohne das ändert sich das Raster still, und wer es nicht sieht,
-              erfährt nicht, dass überhaupt etwas passiert ist. */}
+          {/* role="status" announces the new result count after every filter click.
+              Without it the grid changes silently, and anyone who cannot see it
+              never learns that anything happened at all. */}
           <span role="status" className="ml-auto font-mono text-xs tabular-nums">
             {t.showing.replace('{shown}', String(shown.length)).replace('{total}', String(packages.length))}
           </span>
@@ -304,12 +304,12 @@ export function PackagesBrowser({ lang, packages }: Props) {
             </button>
           </div>
         ) : (
-          // Spaltenzahl kommt aus der verfügbaren Breite, nicht aus
-          // Breakpoints: `auto-fill` legt so viele 300-px-Spalten an, wie
-          // hineinpassen. Damit skaliert das Raster stufenlos vom Telefon bis
-          // zum Ultrawide, ohne dass für jede Fenstergröße eine eigene Klasse
-          // gepflegt werden muss. `min(100%, …)` verhindert einen Überlauf,
-          // wenn der Viewport schmaler als die Mindestspalte ist.
+          // The column count comes from the available width, not from
+          // breakpoints: `auto-fill` creates as many 300 px columns as
+          // fit. That way the grid scales smoothly from phone to
+          // ultrawide without a separate class having to be maintained
+          // for every window size. `min(100%, …)` prevents an overflow
+          // when the viewport is narrower than the minimum column.
           <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,300px),1fr))] gap-6">
             {shown.map(pkg => (
               <PackageCard

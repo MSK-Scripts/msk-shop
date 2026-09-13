@@ -27,8 +27,8 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const category = await findCategory(slug, lang)
   if (!category) return {}
 
-  // Kuratiert wie die Paketseiten: der rohe Kategoriename ("Vehicles") ist als
-  // Titel wertlos, gesucht wird nach dem, was die Bilder sind.
+  // Curated like the package pages: the raw category name ("Vehicles") is
+  // worthless as a title; people search for what the images are.
   const title = lang === 'de'
     ? `${category.name} Bilder für FiveM`
     : `FiveM ${category.name} Images`
@@ -65,9 +65,9 @@ export default async function CategoryPage(
 
   const num = (n: number) => new Intl.NumberFormat(lang === 'de' ? 'de-DE' : 'en-US').format(n)
 
-  // Der Seitenzustand steht in der URL, damit jede Filterkombination teilbar
-  // ist und der Zurueck-Knopf funktioniert. Die Links unten bauen ihn wieder
-  // zusammen, statt ihn in einem State zu halten.
+  // The page state lives in the URL so that every filter combination is shareable
+  // and the back button works. The links below rebuild it
+  // instead of holding it in state.
   const hrefFor = (p: number) => {
     const sp = new URLSearchParams()
     if (q) sp.set('q', q)
@@ -103,8 +103,8 @@ export default async function CategoryPage(
       <section aria-labelledby="gallery-heading">
         <h2 id="gallery-heading" className="sr-only">{t.gallery_title}</h2>
 
-        {/* Die Trefferzahl aendert sich nach jeder Suche und stand sonst nur
-            still da. role="status" macht sie fuer einen Screenreader hoerbar. */}
+        {/* The result count changes after every search and otherwise just sat
+            there silently. role="status" makes it audible to a screen reader. */}
         <p role="status" className="mb-4 font-mono text-xs text-[var(--color-muted-foreground)]">
           {t.results.replace('{shown}', num(result.items.length)).replace('{total}', num(result.total))}
         </p>

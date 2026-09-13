@@ -16,10 +16,10 @@ import { breadcrumbJsonLd } from '@/lib/jsonLd'
 export const revalidate = 60
 
 export async function generateStaticParams() {
-  // Fail-soft: ist die Tebex-API zur Build-Zeit nicht erreichbar/autorisiert
-  // (z. B. CI-Builds ohne Secrets wie bei Dependabot-PRs), wird kein Prerender
-  // erzeugt — die Seiten rendern weiterhin on-demand. Verhindert, dass der
-  // gesamte Build an der Storefront-API scheitert.
+  // Fail-soft: if the Tebex API is unreachable/unauthorized at build time
+  // (e.g. CI builds without secrets, as with Dependabot PRs), no prerender
+  // is generated; the pages still render on demand. Prevents the
+  // entire build from failing on the storefront API.
   try {
     const categories = await getCategories()
     return categories.map(cat => ({ id: String(cat.id) }))
@@ -38,10 +38,10 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     const count = cat.packages?.length ?? 0
     const snippet = CATEGORY_SEO[cat.id]?.[lang]
 
-    // `plainExcerpt(cat.description)` liefert bei diesen Kategorien den
-    // **deutschen** Teil, weil die Tebex-Texte als [GER]-Block beginnen und
-    // erst danach [ENG] folgt. Auf einer englischen Seite ist das falsch,
-    // deshalb hat das kuratierte Snippet Vorrang.
+    // `plainExcerpt(cat.description)` returns the **German** part for these
+    // categories, because the Tebex texts start with a [GER] block and
+    // [ENG] only follows after it. On an English page that is wrong,
+    // so the curated snippet takes precedence.
     const description =
       snippet?.description ||
       plainExcerpt(cat.description) ||
@@ -76,9 +76,9 @@ export default async function CategoryPage({
 }) {
   const { id } = await params
 
-  // Diese Seite hat bis zum 22.08.2026 gar keine Sprache aufgeloest: sie erbte
-  // `lang="de"` aus dem Root-Layout und lieferte darunter jeden Text auf
-  // Englisch. Aufloesung jetzt wie in `app/packages/page.tsx`.
+  // Until 22.08.2026 this page resolved no language at all: it inherited
+  // `lang="de"` from the root layout and delivered every text below it in
+  // English. Resolution now works as in `app/packages/page.tsx`.
   const [{ lang }, category] = await Promise.all([
     getRequestLang(),
     getCategory(id).catch(() => null),
@@ -86,8 +86,8 @@ export default async function CategoryPage({
   if (!category) notFound()
 
   const t = categoriesTranslations[lang]
-  // Nur auf den beiden Varianten-Kategorien: dort erklaert der Hinweis, dass
-  // es dasselbe Script auch in der anderen Fassung gibt.
+  // Only on the two variant categories: there the notice explains that
+  // the same script also exists in the other edition.
   const showVariantNote = resolveVariant({ category: { id: Number(id) } }) !== null
 
   const packageCount = category.packages?.length ?? 0
@@ -95,11 +95,11 @@ export default async function CategoryPage({
     .replace('{n}', packageCount.toLocaleString(lang === 'de' ? 'de-DE' : 'en-US'))
 
   return (
-    // `container-page` wie `/packages`: beide Routen sind reine Kartenraster,
-    // und DESIGN.md nennt den breiten Container genau dafuer. Beim
-    // Container-Aufraeumen am 22.08. war diese Seite uebersehen worden.
+    // `container-page` like `/packages`: both routes are pure card grids,
+    // and DESIGN.md names the wide container for exactly that. During the
+    // container cleanup on 22.08. this page had been overlooked.
     <div className="container-page py-10 md:py-14">
-      {/* Muss mit der sichtbaren Breadcrumb darunter übereinstimmen. */}
+      {/* Must match the visible breadcrumb below. */}
       <JsonLd
         data={breadcrumbJsonLd([
           { name: 'Home',     path: '/' },
@@ -117,19 +117,19 @@ export default async function CategoryPage({
         <span className="text-[var(--color-foreground)]">{category.name}</span>
       </nav>
 
-      {/* Kein Eyebrow mehr: die Seite hat genau einen Abschnitt, das Wort
-          verdoppelte die Navigationsgruppe und trug keine Information.
-          DESIGN.md rationiert das Element auf hoechstens eins pro drei
-          Abschnitten. */}
+      {/* No eyebrow any more: the page has exactly one section, the word
+          duplicated the navigation group and carried no information.
+          DESIGN.md rations the element to at most one per three
+          sections. */}
       <header className="mb-10">
         <h1 className="text-3xl font-bold tracking-tight md:text-4xl">{category.name}</h1>
         {category.description && (
           <div
             className="tebex-description mt-3 max-w-3xl"
             dangerouslySetInnerHTML={{
-              // Die Tebex-Texte pflegen beide Sprachen in einem HTML als
-              // [GER]-Block gefolgt von [ENG]. Ohne den Schnitt stehen sie
-              // untereinander auf der Seite.
+              // The Tebex texts maintain both languages in one HTML as a
+              // [GER] block followed by [ENG]. Without the cut they appear
+              // one below the other on the page.
               __html: sanitizeTebexHtml(pickLanguageBlock(category.description, lang)),
             }}
           />
@@ -145,9 +145,9 @@ export default async function CategoryPage({
 
       {category.packages && category.packages.length > 0 ? (
         <section aria-labelledby="category-results-heading">
-          {/* Nur für Screenreader: die Seite sprang von H1 auf die H3 der
-              Karten. Sichtbar wäre die Überschrift eine Doppelung, der
-              Kategoriename steht schon als H1 darüber. */}
+          {/* Screen readers only: the page jumped from H1 to the cards'
+              H3. Visible, the heading would be a duplicate; the
+              category name already sits above it as H1. */}
           <h2 id="category-results-heading" className="sr-only">{t.region_results}</h2>
           <div className="grid gap-6 grid-cols-[repeat(auto-fill,minmax(min(100%,300px),1fr))]">
             {category.packages.map(pkg => (

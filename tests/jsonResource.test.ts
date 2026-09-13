@@ -2,12 +2,12 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { readJsonResource } from '@/lib/useAdminResource'
 
 /**
- * Die Fehlerbehandlung des Lade-Helfers, den alle Admin-Tabs und die
- * Bild-Einreichungsseite benutzen.
+ * The error handling of the loading helper that all admin tabs and the
+ * image submission page use.
  *
- * Anlass ist ein echter Fund vom 27.08.2026: `res.json()` wurde bedingungslos
- * gerufen. Bei einer 500 liefert Next eine HTML-Fehlerseite, bei 429 und 413
- * antwortet `proxy.ts` mit reinem Text -- das Parsen warf, und im UI stand
+ * The trigger was a real finding from 27.08.2026: `res.json()` was called
+ * unconditionally. On a 500 Next returns an HTML error page, on 429 and 413
+ * `proxy.ts` answers with plain text -- parsing threw, and the UI showed
  * "Failed to execute 'json' on 'Response': Unexpected end of JSON input".
  */
 
@@ -36,7 +36,7 @@ describe('readJsonResource', () => {
   })
 
   it('falls back to the caller sentence when an error page is not JSON', async () => {
-    // Genau der Fall aus dem Bug: eine 500 mit HTML im Koerper.
+    // Exactly the case from the bug: a 500 with HTML in the body.
     respond({ status: 500, body: '<!DOCTYPE html><html>…</html>' })
     await expect(readJsonResource('/x', 'items', FAIL)).rejects.toThrow(FAIL)
   })
@@ -52,7 +52,7 @@ describe('readJsonResource', () => {
   })
 
   it('treats a 200 without a usable body as a failure, not as empty data', async () => {
-    // Sonst kaeme `undefined` zurueck und die Oberflaeche bliebe im Ladezustand.
+    // Otherwise `undefined` would come back and the UI would stay in its loading state.
     respond({ status: 200, body: '' })
     await expect(readJsonResource('/x', 'items', FAIL)).rejects.toThrow(FAIL)
   })

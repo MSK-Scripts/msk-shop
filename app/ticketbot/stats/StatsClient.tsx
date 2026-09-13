@@ -68,10 +68,10 @@ function StatCard({
 }
 
 /**
- * Spaltenraster nach Anzahl der Stufen. Die Klassennamen stehen ausgeschrieben,
- * weil Tailwind zusammengesetzte Namen (`grid-cols-${n}`) beim Bauen nicht
- * findet und wegwirft. Vier Stufen bekommen auf schmalen Displays zwei Spalten,
- * nebeneinander waeren die Kacheln zu schmal fuer die Prozentzeile.
+ * Column grid by number of tiers. The class names are written out in full,
+ * because Tailwind does not find composed names (`grid-cols-${n}`) at build
+ * time and drops them. Four tiers get two columns on narrow displays; side
+ * by side the tiles would be too narrow for the percentage line.
  */
 const TIER_GRID: Record<number, string> = {
   1: 'grid-cols-1',
@@ -199,9 +199,9 @@ export default function StatsClient({ stats }: { stats: Stats }) {
           </div>
         </div>
 
-        {/* Stat Cards. Die Überschrift ist `sr-only`: sichtbar wäre sie eine
-            Doppelung des Seitentitels, im Baum fehlte bisher jede Zwischenebene
-            zwischen H1 und den 14 Kacheln. */}
+        {/* Stat Cards. The heading is `sr-only`: visible, it would duplicate
+            the page title; until now the tree lacked any intermediate level
+            between the H1 and the 14 tiles. */}
         <section aria-labelledby="figures-heading">
           <h2 id="figures-heading" className="sr-only">{t.region_figures}</h2>
           <div className="mb-4 grid grid-cols-[repeat(auto-fill,minmax(min(100%,300px),1fr))] gap-4">

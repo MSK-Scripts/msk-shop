@@ -85,10 +85,10 @@ function Breakdown({
         <div className="mb-4 h-3 rounded-full bg-[var(--color-muted)]" />
       )}
 
-      {/* Vier Spalten unabhängig von der Anzahl. Die Regel hing bis zum
-          25.08.2026 an `items.length === 4` und fiel bei jeder anderen Zahl auf
-          drei Spalten zurück. Mit der siebten Sprache stand PT allein in einer
-          dritten Reihe, und die Karte war fast doppelt so hoch wie die daneben. */}
+      {/* Four columns regardless of the count. Until 25.08.2026 the rule
+          depended on `items.length === 4` and fell back to three columns for
+          any other number. With the seventh language PT stood alone in a
+          third row, and the card was almost twice as tall as the one beside it. */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {items.map(({ key, label: itemLabel, text }) => (
           <div key={key} className="flex flex-col gap-1 rounded-lg bg-[var(--color-muted)] px-3 py-2.5">
@@ -195,9 +195,9 @@ export default function StatsClient({
           </div>
         </div>
 
-        {/* Stat Cards. Die Überschrift ist `sr-only`: sichtbar wäre sie eine
-            Doppelung des Seitentitels, im Baum fehlte bisher jede Zwischenebene
-            zwischen H1 und den 14 Kacheln. */}
+        {/* Stat Cards. The heading is `sr-only`: visible, it would duplicate
+            the page title; until now the tree lacked any intermediate level
+            between the H1 and the 14 tiles. */}
         <section aria-labelledby="figures-heading">
           <h2 id="figures-heading" className="sr-only">{t.region_figures}</h2>
           <div className="mb-4 grid grid-cols-[repeat(auto-fill,minmax(min(100%,300px),1fr))] gap-4">

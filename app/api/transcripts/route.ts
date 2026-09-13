@@ -2,14 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { authorizeGuild }            from '@/lib/dashboardAuth';
 import { query, queryOne }           from '@/lib/db';
 
-// Session-/Cookie-abhängig → niemals cachen.
+// Session/cookie dependent → never cache.
 export const dynamic = 'force-dynamic';
 
 interface TranscriptRow {
   id:              string;
   ticket_id:       number;
   transcript_url:  string;
-  file_size_bytes: string | number;   // BIGINT kommt als string aus mysql2
+  file_size_bytes: string | number;   // BIGINT comes back from mysql2 as a string
   has_attachments: number;
   created_at:      Date | string;
   expires_at:      Date | string;
@@ -17,14 +17,14 @@ interface TranscriptRow {
 
 const MAX_PAGE_SIZE = 100;
 
-/** Parst einen positiven Integer aus einem Query-Param, sonst null. */
+/** Parses a positive integer from a query param, otherwise null. */
 function parsePositiveInt(value: string | null): number | null {
   if (!value) return null;
   const n = Number(value);
   return Number.isInteger(n) && n >= 0 ? n : null;
 }
 
-/** Validiert ein YYYY-MM-DD-Datum und gibt es zurück, sonst null. */
+/** Validates a YYYY-MM-DD date and returns it, otherwise null. */
 function parseDate(value: string | null): string | null {
   if (!value) return null;
   return /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : null;
@@ -33,7 +33,7 @@ function parseDate(value: string | null): string | null {
 export async function GET(req: NextRequest): Promise<NextResponse> {
   const sp = req.nextUrl.searchParams;
 
-  // Auth — guildId comes from the request but must be OWNED by the session's
+  // Auth: guildId comes from the request but must be OWNED by the session's
   // Discord user (account-scoped dashboard).
   const auth = await authorizeGuild(sp.get('guildId'));
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status });
@@ -45,12 +45,12 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   const to             = parseDate(sp.get('to'));
   const attachmentsOnly = sp.get('attachments') === '1';
 
-  // Pagination (validierte Ints → sicher inline; mysql2 erlaubt keine LIMIT-Platzhalter)
+  // Pagination (validated ints → safe inline; mysql2 does not allow LIMIT placeholders)
   const page     = Math.max(1, parsePositiveInt(sp.get('page')) ?? 1);
   const pageSize = Math.min(MAX_PAGE_SIZE, Math.max(1, parsePositiveInt(sp.get('pageSize')) ?? 20));
   const offset   = (page - 1) * pageSize;
 
-  // WHERE-Klausel dynamisch aufbauen — guild_id immer aus der Session.
+  // Build the WHERE clause dynamically; guild_id always from the session.
   const where: string[] = ['guild_id = ?'];
   const params: unknown[] = [guildId];
 

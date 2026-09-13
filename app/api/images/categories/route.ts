@@ -5,14 +5,14 @@ import { isLang, DEFAULT_LANG } from '@/lib/lang'
 import { publicJson, corsPreflight } from '@/lib/publicApi'
 
 /**
- * Kategorien mit Anzahl, oeffentlich.
+ * Categories with counts, public.
  *
  *   /api/images/categories?lang=de
  *
- * Die Sprache steht hier als Parameter und kommt nicht aus dem Request-Header:
- * die Route liegt unter `/api` und ist damit vom Sprach-Rewrite des Proxys
- * ausgenommen (siehe `istEinmaligeAdresse` in lib/lang.ts). Eine API-Adresse
- * gibt es genau einmal, sie traegt kein `/de/`-Praefix.
+ * The language is a parameter here and does not come from the request header:
+ * the route lives under `/api` and is therefore excluded from the proxy's
+ * language rewrite (see `istEinmaligeAdresse` in lib/lang.ts). An API address
+ * exists exactly once, it carries no `/de/` prefix.
  */
 export const revalidate = 300
 

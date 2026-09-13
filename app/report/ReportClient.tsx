@@ -9,16 +9,16 @@ import { legalFormTranslations, layoutTranslations } from '@/lib/i18n'
 import { Button } from '@/components/ui/Button'
 import { LegalFormShell, Field, INPUT_CLASS } from '@/components/legal/LegalFormShell'
 
-// ── Meldeverfahren nach Art. 16 DSA ─────────────────────────────────────────
+// ── Notice procedure under Art. 16 DSA──────────────────────────────────────
 //
-// Die vier Pflichtangaben der Norm: hinreichend begründete Erläuterung, klare
-// Angabe des Orts (URL), Name und E-Mail, und die Erklärung über Richtigkeit
-// und Vollständigkeit.
+// The four mandatory details of the provision: a sufficiently substantiated
+// explanation, a clear statement of the location (URL), name and email, and
+// the statement of accuracy and completeness.
 //
-// Die URL wird aus `?url=` vorbelegt, damit ein „Melden"-Link neben einem Bild
-// oder einer Ergebnisseite den Ort schon mitbringt. Der Wert ist trotzdem
-// editierbar und wird server-seitig geprüft — er kommt aus der Adresszeile und
-// ist damit Nutzereingabe, egal wer den Link gesetzt hat.
+// The URL is prefilled from `?url=` so that a "Report" link next to an image
+// or a results page already carries the location. The value is still
+// editable and is checked server-side: it comes from the address bar and is
+// therefore user input, no matter who set the link.
 
 interface Done { title: string; text: string }
 
@@ -28,8 +28,8 @@ export function ReportClient() {
   const t  = legalFormTranslations[lang]
   const tl = layoutTranslations[lang]
 
-  // Abgeleiteter Ausgangswert statt `setState` in einem Effect: der
-  // Query-Parameter steht beim ersten Render fest.
+  // Derived initial value instead of `setState` in an effect: the
+  // query parameter is already fixed on the first render.
   const [contentUrl, setContentUrl] = useState(() => params.get('url') ?? '')
   const [reason,     setReason]     = useState('')
   const [name,       setName]       = useState('')
@@ -61,7 +61,7 @@ export function ReportClient() {
       if (res.status === 429) { setErrors({ _: t.err_rate }); return }
 
       let data: { errors?: Record<string, string>; timestamp?: string } | null = null
-      try { data = await res.json() } catch { /* kein verwertbarer Körper */ }
+      try { data = await res.json() } catch { /* no usable body */ }
 
       if (!res.ok) {
         if (data?.errors) setErrors(data.errors)
@@ -132,9 +132,9 @@ export function ReportClient() {
           />
         </Field>
 
-        {/* Art. 16 Abs. 2 lit. d DSA. Ohne diese Erklärung ist die Meldung
-            keine Meldung im Sinne der Verordnung, deshalb ist sie Pflicht und
-            wird zusätzlich in der Route geprüft. */}
+        {/* Art. 16 Abs. 2 lit. d DSA. Without this statement the notice is
+            not a notice within the meaning of the regulation, so it is
+            mandatory and is additionally checked in the route. */}
         <div className="mb-5">
           <label className="flex min-h-11 items-start gap-2.5 text-sm text-[var(--color-muted-foreground)]">
             <input

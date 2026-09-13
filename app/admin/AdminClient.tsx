@@ -29,9 +29,9 @@ import AuditTab from './AuditTab'
 export default function AdminClient({ member, initialTab }: { member: AdminTeamMember; initialTab?: string }) {
   const tabs = visibleTabs(member)
 
-  // Der Server hat `?tab=` bereits gelesen und reicht ihn als Prop herein, es
-  // gibt hier also nichts aus `window` zu holen und keinen Unterschied
-  // zwischen Server-Render und Hydration.
+  // The server has already read `?tab=` and passes it in as a prop, so there
+  // is nothing to fetch from `window` here and no difference
+  // between server render and hydration.
   const [active, setActive] = useState(() => resolveTab(tabs, initialTab))
   const router = useRouter()
   // The dashboard itself is single-language, its ADDRESS is not: the proxy
@@ -41,15 +41,15 @@ export default function AdminClient({ member, initialTab }: { member: AdminTeamM
   const { localize } = useLang()
 
   /**
-   * Reiter wechseln und die Adresszeile mitziehen, damit F5 nicht auf
-   * "Overview" zurueckfaellt.
+   * Switch tabs and update the address bar along with it, so that F5 does not
+   * fall back to "Overview".
    *
-   * `history.replaceState` statt `router.replace`: die Seite ist
-   * `force-dynamic`, eine echte Navigation wuerde also Sitzungspruefung und
-   * Datenbankabfrage ausloesen und jeden Reiter neu aufbauen, nur um eine
-   * Zeichenkette in der Adresszeile zu aendern. Und `replace` statt `push`,
-   * weil sonst zehn Reiterwechsel zehn Eintraege im Verlauf hinterlassen und
-   * der Zurueck-Knopf nicht mehr aus dem Dashboard herausfuehrt.
+   * `history.replaceState` instead of `router.replace`: the page is
+   * `force-dynamic`, so a real navigation would trigger the session check and
+   * database query and rebuild every tab, just to change a
+   * string in the address bar. And `replace` instead of `push`,
+   * because otherwise ten tab switches leave ten entries in the history and
+   * the back button no longer leads out of the dashboard.
    */
   const selectTab = (id: string) => {
     setActive(id)
@@ -60,8 +60,8 @@ export default function AdminClient({ member, initialTab }: { member: AdminTeamM
     try {
       await fetch('/api/admin/logout', { method: 'POST' })
     } catch { /* leave even on network error */ }
-    // refresh() nach push(): die Seite entscheidet server-seitig am Cookie,
-    // ob sie das Panel oder den Login zeigt, und das Cookie ist gerade weg.
+    // refresh() after push(): the page decides server-side from the cookie
+    // whether it shows the panel or the login, and the cookie has just gone.
     router.push(localize('/admin'))
     router.refresh()
   }

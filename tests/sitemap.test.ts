@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi, type Mock } from 'vitest'
 
-// Tebex wird gemockt, damit die Sitemap ohne Netzwerk und ohne Token läuft.
+// Tebex is mocked so that the sitemap runs without network and without a token.
 vi.mock('@/lib/tebex', () => ({ getPackages: vi.fn(), getCategories: vi.fn() }))
 
 import { getPackages, getCategories } from '@/lib/tebex'
@@ -8,7 +8,7 @@ import { buildSitemapEntries, renderSitemapXml, type SitemapEntry } from '@/lib/
 
 const BASE = 'https://www.msk-scripts.de'
 
-/** Minimales Paket. Nur die Felder, die die Sitemap anfasst. */
+/** Minimal package. Only the fields the sitemap touches. */
 function pkg(id: number, updatedAt: string | null) {
   return { id, updated_at: updatedAt }
 }
@@ -52,7 +52,7 @@ describe('buildSitemapEntries', () => {
         id: 2105296,
         packages: [
           pkg(1, '2026-06-14T10:14:22+00:00'),
-          pkg(2, '2026-07-28T12:22:45+00:00'), // das jüngste
+          pkg(2, '2026-07-28T12:22:45+00:00'), // the most recent
           pkg(3, null),
         ],
       },
@@ -62,7 +62,7 @@ describe('buildSitemapEntries', () => {
     const entries = await buildSitemapEntries()
     expect(find(entries, `${BASE}/categories/2105296`)?.lastModified)
       .toEqual(new Date('2026-07-28T12:22:45+00:00'))
-    // Kategorie ohne Pakete: lieber kein Datum als ein erfundenes.
+    // Category without packages: better no date than a made-up one.
     expect(find(entries, `${BASE}/categories/3392436`)?.lastModified).toBeUndefined()
   })
 
@@ -98,7 +98,7 @@ describe('renderSitemapXml', () => {
   it('verweist auf das XSL-Stylesheet, sonst ist die Datei im Browser unlesbar', () => {
     const xml = renderSitemapXml([{ url: `${BASE}/` }])
     expect(xml).toContain('<?xml-stylesheet type="text/xsl" href="/sitemap.xsl"?>')
-    // Die Deklaration muss vor der Stylesheet-Anweisung stehen.
+    // The declaration must come before the stylesheet instruction.
     expect(xml.indexOf('<?xml version')).toBeLessThan(xml.indexOf('<?xml-stylesheet'))
   })
 

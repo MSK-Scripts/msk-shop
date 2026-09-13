@@ -26,15 +26,15 @@ describe('plainExcerpt', () => {
     expect(plainExcerpt('it&apos;s')).toBe("it's")
   })
 
-  // CodeQL js/double-escaping: `&amp;` vor `&lt;` aufzulösen würde `&amp;lt;`
-  // über zwei Schritte zu einem echten `<` machen.
+  // CodeQL js/double-escaping: resolving `&amp;` before `&lt;` would turn `&amp;lt;`
+  // into a real `<` over two steps.
   it('löst jede Entity nur einmal auf (kein Double-Unescaping)', () => {
     expect(plainExcerpt('&amp;lt;script&amp;gt;')).toBe('&lt;script&gt;')
     expect(plainExcerpt('&amp;amp;')).toBe('&amp;')
   })
 
-  // CodeQL js/incomplete-multi-character-sanitization: ein einzelner
-  // Strip-Durchlauf lässt aus `<scr<b>ipt>` ein `<script>` zurück.
+  // CodeQL js/incomplete-multi-character-sanitization: a single
+  // strip pass leaves a `<script>` behind from `<scr<b>ipt>`.
   it('entfernt Tags auch bei Verschachtelung vollständig', () => {
     expect(plainExcerpt('<scr<b>ipt>alert(1)')).toBe('alert(1)')
     expect(plainExcerpt('<<div>div>Text')).toBe('Text')
@@ -48,9 +48,9 @@ describe('plainExcerpt', () => {
     const long = 'Wort '.repeat(60).trim()
     const out = plainExcerpt(long, 40)
 
-    expect(out.length).toBeLessThanOrEqual(41) // 40 + Auslassungszeichen
+    expect(out.length).toBeLessThanOrEqual(41) // 40 + ellipsis
     expect(out.endsWith('…')).toBe(true)
-    expect(out).not.toMatch(/ …$/) // kein Leerzeichen vor dem Zeichen
+    expect(out).not.toMatch(/ …$/) // no space before the character
   })
 
   it('kürzt nicht, wenn der Text unter der Grenze liegt', () => {
@@ -87,20 +87,20 @@ describe('packageImage', () => {
 
   it('fällt auf das Seiten-Banner zurück', () => {
     expect(packageImage({ image: undefined, media: [] })).toBe(DEFAULT_OG_IMAGE)
-    // media kann laut Tebex-Response fehlen
+    // media can be missing according to the Tebex response
     expect(packageImage({ image: undefined, media: undefined as never })).toBe(DEFAULT_OG_IMAGE)
   })
 })
 
 describe('openGraphFor', () => {
-  // Next.js merged metadata nur flach: Ohne mitgegebene Defaults verliert jede
-  // Seite, die openGraph setzt, das og:image aus dem Root-Layout.
+  // Next.js merges metadata only shallowly: without passed-in defaults every
+  // page that sets openGraph loses the og:image from the root layout.
   it('gibt die Defaults inklusive Bild mit', () => {
     const og = openGraphFor({ url: '/packages' })
 
     expect(og.siteName).toBe('MSK Scripts')
-    // `type` diskriminiert die OpenGraph-Union, ist ohne Narrowing also nicht
-    // direkt zugreifbar.
+    // `type` discriminates the OpenGraph union, so without narrowing it is not
+    // directly accessible.
     expect((og as { type?: string }).type).toBe('website')
     expect(og.images).toEqual([
       { url: DEFAULT_OG_IMAGE, width: 1920, height: 1080, alt: 'MSK Scripts' },

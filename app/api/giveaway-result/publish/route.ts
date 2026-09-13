@@ -2,9 +2,9 @@ import { NextResponse }              from 'next/server';
 import { randomBytes, timingSafeEqual } from 'crypto';
 import { query, queryOne }           from '@/lib/db';
 
-// Nimmt das Ergebnis eines beendeten Giveaways vom Bot entgegen und hostet eine
-// öffentliche Ergebnis-Seite. Auth: Bearer GIVEAWAY_RESULT_SECRET (timing-safe).
-// Datenschutz: NUR Gewinner (Username) + anonyme Teilnehmerzahl.
+// Receives the result of a finished giveaway from the bot and hosts a public
+// result page. Auth: Bearer GIVEAWAY_RESULT_SECRET (timing-safe).
+// Privacy: ONLY winners (username) + anonymous participant count.
 const SECRET = process.env.GIVEAWAY_RESULT_SECRET ?? '';
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://www.msk-scripts.de';
 
@@ -47,11 +47,11 @@ export async function POST(req: Request) {
   const endedAt      = new Date(endedAtRaw);
   const endedAtSql   = Number.isNaN(endedAt.getTime()) ? new Date() : endedAt;
 
-  // Datenminimierung: nur den Anzeigenamen speichern, KEINE Discord-User-IDs.
-  // (userId wird nur zur Eingangsvalidierung der Gewinner genutzt.)
+  // Data minimisation: store only the display name, NO Discord user IDs.
+  // (userId is only used to validate the incoming winners.)
   //
-  // `prize` schickt der Bot nur mit, wenn jeder Gewinner einen eigenen Preis
-  // bekommt. Es steht im winners-JSON und braucht deshalb keine neue Spalte.
+  // The bot only sends `prize` when every winner gets their own prize. It is
+  // stored in the winners JSON and therefore needs no new column.
   const winners = Array.isArray(body.winners)
     ? (body.winners as WinnerIn[])
         .filter((w) => /^\d{17,20}$/.test(String(w.userId ?? '')))
@@ -62,7 +62,7 @@ export async function POST(req: Request) {
         }))
     : [];
 
-  // Idempotent: existiert schon eine Seite für dieses Giveaway, denselben Token behalten.
+  // Idempotent: if a page for this giveaway already exists, keep the same token.
   const existing = await queryOne<ResultRow>(
     'SELECT token FROM giveaway_results WHERE giveaway_id = ?',
     [giveawayId],

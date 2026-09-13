@@ -4,15 +4,16 @@ import { validateReport, storeReport } from '@/lib/legalForms'
 import { buildReportReceipt, buildInternalNotice, formatReceiptTime } from '@/lib/emails/legalReceipts'
 import { originAllowed, mailLangFrom, clientIpOrNull, deliverReceipts, badRequest } from '../shared'
 
-// ── Meldeverfahren nach Art. 16 DSA ─────────────────────────────────────────
+// ── Notice and action mechanism under Art. 16 DSA ───────────────────────────
 //
-// Eine Meldung ist erst dann eine Meldung im Sinne der Verordnung, wenn sie
-// URL, Begründung, Kontaktangaben **und** die Richtigkeitserklärung enthält.
-// Erst dann begründet sie Kenntnis im Sinne des Art. 6 DSA. Deshalb erzwingt
-// `validateReport` die Erklärung serverseitig und nicht nur im Formular.
+// A notice only counts as a notice within the meaning of the regulation once
+// it contains the URL, the reasoning, contact details **and** the statement of
+// accuracy. Only then does it establish knowledge within the meaning of Art. 6
+// DSA. That is why `validateReport` enforces the statement on the server and
+// not just in the form.
 //
-// Kein Login, aus demselben Grund wie bei den anderen beiden: melden können
-// muss jede Person, nicht nur Kunden.
+// No login, for the same reason as with the other two: every person must be
+// able to report, not only customers.
 
 export const dynamic = 'force-dynamic'
 

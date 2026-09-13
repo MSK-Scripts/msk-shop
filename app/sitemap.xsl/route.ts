@@ -1,15 +1,15 @@
 /**
- * Stylesheet für `/sitemap.xml`.
+ * Stylesheet for `/sitemap.xml`.
  *
- * Reine Lesehilfe für Menschen: Browser rendern eine Sitemap ohne
- * `<?xml-stylesheet?>` als aneinandergehängten Text aller Tags, was jede
- * Sichtprüfung von Hand wertlos macht. Suchmaschinen ignorieren das Stylesheet,
- * sie lesen das XML.
+ * Purely a reading aid for humans: browsers render a sitemap without
+ * `<?xml-stylesheet?>` as the concatenated text of all tags, which makes any
+ * manual visual check worthless. Search engines ignore the stylesheet,
+ * they read the XML.
  *
- * Als Route-Handler statt als Datei in `public/`, damit der Content-Type
- * garantiert `text/xsl` ist. Mit `X-Content-Type-Options: nosniff` im Spiel
- * verweigert der Browser die Transformation, wenn der Typ nicht stimmt, und
- * die Sitemap sähe wieder aus wie vorher.
+ * As a route handler instead of a file in `public/`, so that the content type
+ * is guaranteed to be `text/xsl`. With `X-Content-Type-Options: nosniff` in play
+ * the browser refuses the transformation if the type is wrong, and
+ * the sitemap would look the way it did before.
  */
 
 const XSL = `<?xml version="1.0" encoding="UTF-8"?>
@@ -117,7 +117,7 @@ const XSL = `<?xml version="1.0" encoding="UTF-8"?>
 </xsl:stylesheet>
 `
 
-// Konstanter Text, also einmal beim Build erzeugen statt bei jeder Anfrage.
+// Constant text, so generate it once at build time instead of on every request.
 export const dynamic = 'force-static'
 
 export function GET() {

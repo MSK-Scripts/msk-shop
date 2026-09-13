@@ -27,10 +27,10 @@ interface MaxRow   { max_bytes: number | null }
 interface TierRow  { tier: string; count: number }
 
 /**
- * Alle Stufen auf 0. Die Abfragen liefern nur Zeilen fuer Stufen, die es
- * wirklich gibt; ohne diese Vorbelegung fehlt der Schluessel und die Anzeige
- * rendert `NaN` statt einer 0. Aus `TIER_CONFIG` abgeleitet, damit eine
- * kuenftige Stufe den Fehler nicht erneut einschleppt.
+ * All tiers at 0. The queries only return rows for tiers that actually
+ * exist; without this preset the key is missing and the display renders
+ * `NaN` instead of a 0. Derived from `TIER_CONFIG` so that a future tier
+ * does not bring the bug back in.
  */
 const zeroTiers = (): Record<string, number> =>
   Object.fromEntries(Object.keys(TIER_CONFIG).map(tier => [tier, 0]))

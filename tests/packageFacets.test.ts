@@ -4,9 +4,9 @@ import {
 } from '@/lib/packageFacets'
 
 /**
- * Der Anlass: die Preisfacette stand live als "10-20 EUR, unter 10 EUR,
- * 20-40 EUR", weil sie sich die Sortierung nach Haeufigkeit mit den anderen
- * beiden Facetten geteilt hat. Preise haben aber eine natuerliche Reihenfolge.
+ * The trigger: the price facet showed live as "10-20 EUR, unter 10 EUR,
+ * 20-40 EUR", because it shared the sort-by-frequency with the other
+ * two facets. Prices, however, have a natural order.
  */
 
 const price = (n: number) => ({ price: n })
@@ -33,7 +33,7 @@ describe('priceBucket', () => {
 
 describe('countPriceBuckets', () => {
   it('sortiert nach Preis, nicht nach Haeufigkeit', () => {
-    // Genau die Lage aus dem Katalog: die mittlere Stufe ist die häufigste.
+    // Exactly the situation from the catalog: the middle tier is the most frequent.
     const packages = [
       price(14.99), price(16.99), price(12.99), price(19.99),
       price(4.99),
@@ -100,8 +100,8 @@ describe('splitFacets', () => {
   const f = (value: string, count: number) => ({ value, count })
 
   it('schiebt die Einträge hinter den Ausklapper, die nur ein Produkt treffen', () => {
-    // Die echte Lage der Gruppe "Funktioniert mit": drei Einträge tragen,
-    // sieben stehen für je ein Produkt, das doppelt im Regal liegt.
+    // The real situation of the group "Funktioniert mit": three entries carry weight,
+    // seven each stand for one product that sits on the shelf twice.
     const facets = [
       f('msk_core', 8), f('ox_inventory', 4), f('oxmysql', 4),
       f('AdvancedParking', 2), f('Chezza Inventory', 2), f('Jaksam Vehicle Keys', 2),

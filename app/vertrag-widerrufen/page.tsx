@@ -5,9 +5,9 @@ import { pageSeo } from '@/lib/pageSeo'
 import { getRequestLang } from '@/lib/serverLang'
 import { WithdrawalClient } from './WithdrawalClient'
 
-// Bewusst **kein** `robots: noindex`. Die Schaltfläche muss während der
-// gesamten Widerrufsfrist ohne Hürde auffindbar sein; eine Seite, die niemand
-// über eine Suche findet, arbeitet gegen genau diesen Zweck.
+// Deliberately **no** `robots: noindex`. The button must be findable without
+// any obstacle for the whole withdrawal period; a page that nobody finds
+// through a search works against exactly that purpose.
 export async function generateMetadata(): Promise<Metadata> {
   const { lang } = await getRequestLang()
   const seo = pageSeo('/vertrag-widerrufen', lang)

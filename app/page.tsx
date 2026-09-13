@@ -16,10 +16,10 @@ import { loadDocPageCount } from '@/lib/docsPages'
 import { loadReleases } from '@/lib/releases'
 import { loadShopStats } from '@/lib/shopStats'
 
-// Die Startseite sammelt Impressionen auf generische Anfragen nach
-// FiveM-Scripts, deshalb trägt sie den Titel selbst statt über das
-// '%s | MSK Scripts'-Template zu laufen. Beide Fassungen stehen in
-// lib/pageSeo.ts, seit es die Seite zweimal gibt.
+// The home page collects impressions on generic queries for
+// FiveM scripts, so it carries its title itself instead of going through the
+// '%s | MSK Scripts' template. Both versions live in
+// lib/pageSeo.ts, since the page exists twice.
 export async function generateMetadata(): Promise<Metadata> {
   const { lang } = await getRequestLang()
   const seo = pageSeo('/', lang)
@@ -32,26 +32,26 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /**
- * Reihenfolge der Sektionen, und warum sie so ist:
+ * Order of the sections, and why it is this way:
  *
- *   Hero + Belege  → wer und was, mit nachrechenbaren Zahlen statt Behauptungen
- *   Katalog        → das Produkt, direkt danach statt bei 40 % Scrolltiefe
- *   Warum MSK      → warum ausgerechnet hier kaufen
- *   So läuft es ab → die Escrow-/Keymaster-Mechanik, die Support-Tickets spart
- *   Bots           → zwei eigene Produkte, vorher im Gratis-Raster vergraben
- *   Gratis-Scripts → die kostenlosen FiveM-Resourcen, msk_core zuerst
- *   Tools          → Web-Nebenprojekte, hinter dem Kaufpfad
- *   CTA            → Abschluss
+ *   Hero + proof   → who and what, with verifiable numbers instead of claims
+ *   Catalog        → the product, right after instead of at 40 % scroll depth
+ *   Why MSK        → why buy here of all places
+ *   How it works   → the escrow/Keymaster mechanics, which saves support tickets
+ *   Bots           → two products of our own, previously buried in the free grid
+ *   Free scripts   → the free FiveM resources, msk_core first
+ *   Tools          → web side projects, behind the purchase path
+ *   CTA            → closing
  *
- * „Warum" steht vor „Wie": erst die Kaufentscheidung, dann die Mechanik der
- * Abwicklung. Umgekehrt erklärt die Seite den Ablauf für einen Kauf, zu dem
- * sie noch gar nicht überzeugt hat.
+ * "Why" comes before "How": first the purchase decision, then the mechanics of
+ * fulfilment. The other way round, the page explains the process for a purchase
+ * it has not yet convinced anyone of.
  */
 export default async function HomePage() {
   const [{ lang }, headline, releases, stats, docPages] = await Promise.all([
     getRequestLang(),
-    // Fail-soft: keine dieser Quellen darf die Startseite kippen. Fällt eine
-    // aus, verschwindet die zugehörige Angabe — es wird nichts geschätzt.
+    // Fail-soft: none of these sources may take down the home page. If one
+    // fails, the corresponding figure disappears; nothing is estimated.
     loadHeadlineStat().catch(err => {
       console.warn('[home] fivestats headline stat nicht verfügbar:', err)
       return null
@@ -72,8 +72,8 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* Die Belegzeile steht im Hero, nicht darunter: sie ist der Beleg für
-          dessen Behauptung und muss deshalb ohne Scrollen sichtbar sein. */}
+      {/* The proof line sits inside the hero, not below it: it is the proof for
+          the hero's claim and must therefore be visible without scrolling. */}
       <Hero lang={lang} stat={headline} releases={releases}>
         <ProofLine lang={lang} stats={stats} servers={headline} docPages={docPages} />
       </Hero>

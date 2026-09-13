@@ -2,9 +2,9 @@ import { describe, it, expect } from 'vitest'
 import { alternatePaths, isLang, istEinmaligeAdresse, langFromHeader, localePath, splitLangPath } from '@/lib/lang'
 
 /**
- * Die Sprache steckt seit dem 22.08.2026 im Pfad. Vorher prüfte diese Datei
- * das Cookie und den Accept-Language-Header; beides gibt es nicht mehr, weil
- * zwei Quellen für dieselbe Frage an einem Tag drei Fehler produziert haben.
+ * Since 22.08.2026 the language lives in the path. Before, this file tested
+ * the cookie and the Accept-Language header; neither exists any more, because
+ * two sources for the same question produced three bugs in one day.
  */
 
 describe('splitLangPath', () => {
@@ -24,7 +24,7 @@ describe('splitLangPath', () => {
   })
 
   it('prüft das ganze Segment, nicht die ersten drei Zeichen', () => {
-    // Ein Paket namens "deals" darf nicht als deutsche Fassung von "als" gelten.
+    // A package named "deals" must not count as the German version of "als".
     expect(splitLangPath('/deals')).toEqual({ lang: 'en', path: '/deals' })
     expect(splitLangPath('/design')).toEqual({ lang: 'en', path: '/design' })
   })
@@ -78,10 +78,10 @@ describe('isLang', () => {
 
 describe('istEinmaligeAdresse', () => {
   /**
-   * Der Rewrite beantwortete sonst jede Adresse ein zweites Mal unter `/de/`.
-   * Live gemessen am 23.08.2026: `/de/sitemap.xml` lieferte byteidentisch
-   * dieselben 17 774 Bytes wie `/sitemap.xml`, dasselbe galt für robots.txt,
-   * das XSL, jede API-Route, Favicon, Logo und die `_next`-Assets.
+   * Otherwise the rewrite answered every address a second time under `/de/`.
+   * Measured live on 23.08.2026: `/de/sitemap.xml` returned byte-identically
+   * the same 17 774 bytes as `/sitemap.xml`, and the same held for robots.txt,
+   * the XSL, every API route, favicon, logo and the `_next` assets.
    */
   it('erkennt die Dateien, die es pro Site nur einmal gibt', () => {
     for (const p of ['/robots.txt', '/sitemap.xml', '/sitemap.xsl', '/favicon.ico', '/logo.png']) {
@@ -104,14 +104,14 @@ describe('istEinmaligeAdresse', () => {
   })
 
   it('prüft das ganze Segment, nicht den Wortanfang', () => {
-    // Ein künftiges `/apifoo` oder `/authentisch` ist eine normale Seite.
+    // A future `/apifoo` or `/authentisch` is a normal page.
     expect(istEinmaligeAdresse('/apifoo')).toBe(false)
     expect(istEinmaligeAdresse('/authentisch')).toBe(false)
     expect(istEinmaligeAdresse('/sitemap.xml.bak')).toBe(false)
   })
 
   it('greift genau auf dem Pfad, den splitLangPath aus einer /de-Adresse macht', () => {
-    // So sieht der Proxy die Anfrage: erst zerlegen, dann fragen.
+    // This is how the proxy sees the request: split first, then ask.
     expect(istEinmaligeAdresse(splitLangPath('/de/sitemap.xml').path)).toBe(true)
     expect(istEinmaligeAdresse(splitLangPath('/de/packages').path)).toBe(false)
   })

@@ -3,10 +3,10 @@ import { getRequestLang } from '@/lib/serverLang'
 import { pageSeo } from '@/lib/pageSeo'
 
 /**
- * Die Discord-Callback-Seite ist eine Client-Komponente und kann selbst keine
- * Metadaten exportieren, deshalb hängt der Titel am Segment-Layout.
+ * The Discord callback page is a client component and cannot export
+ * metadata itself, so the title hangs on the segment layout.
  *
- * Kein `alternates`: die Seite ist noindex und steht zusätzlich in der
+ * No `alternates`: the page is noindex and is also listed in
  * robots.txt.
  */
 export async function generateMetadata(): Promise<Metadata> {

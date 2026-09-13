@@ -21,9 +21,9 @@ import type { BadgeVariant } from '@/components/ui/Badge'
 export const revalidate = 60
 
 export async function generateStaticParams() {
-  // Fail-soft: ist die Tebex-API zur Build-Zeit nicht erreichbar/autorisiert
-  // (z. B. CI-Builds ohne Secrets wie bei Dependabot-PRs), wird kein Prerender
-  // erzeugt — die Seiten rendern weiterhin on-demand.
+  // Fail-soft: if the Tebex API is unreachable/unauthorized at build time
+  // (e.g. CI builds without secrets, as with Dependabot PRs), no prerender
+  // is generated; the pages still render on demand.
   try {
     const packages = await getPackages()
     return packages.map(pkg => ({ id: String(pkg.id) }))
@@ -42,10 +42,10 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     const image = packageImage(pkg)
     const snippet = PACKAGE_SEO[pkg.id]?.[lang]
 
-    // Reihenfolge: kuratiertes Such-Snippet, dann der sichtbare Kartentext,
-    // dann der Tebex-Auszug. Der rohe Tebex-Name enthält das Wort "FiveM"
-    // nirgends, und Encrypted/Source unterscheiden sich in ihm nur durch ein
-    // Wort — beides ist genau das, was PACKAGE_SEO geradezieht.
+    // Order: curated search snippet, then the visible card text,
+    // then the Tebex excerpt. The raw Tebex name contains the word "FiveM"
+    // nowhere, and Encrypted/Source differ in it only by one
+    // word; both are exactly what PACKAGE_SEO straightens out.
     const description =
       snippet?.description ??
       PACKAGE_DESCRIPTIONS[pkg.id] ??
@@ -100,8 +100,8 @@ export default async function PackageDetailPage({
 
   return (
     <div className="container-page py-10 md:py-14">
-      {/* Strukturierte Daten. Die Breadcrumb-Werte müssen mit der sichtbaren
-          Navigation direkt darunter übereinstimmen. */}
+      {/* Structured data. The breadcrumb values must match the visible
+          navigation directly below. */}
       <JsonLd
         data={[
           productJsonLd(pkg, configDescription),

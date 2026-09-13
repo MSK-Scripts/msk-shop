@@ -6,23 +6,23 @@ import { TICKETBOT_COPY } from '@/content/ticketbot-copy'
 import { BOT_LANDING_PATHS, giveawayMetadata, ticketBotMetadata } from '@/lib/botSeo'
 
 /**
- * Die beiden Bot-Landingpages rendern ihre Texte aus `content/*-copy.ts` und
- * ihre Icons aus positionsgleichen Arrays in `components/bots/*`. Bricht eine
- * der beiden Reihenfolgen, rendert die Seite ein falsches oder gar kein Icon,
- * ohne dass TypeScript etwas merkt: Ein Zugriff über den Index liefert für
- * `readonly [...]`-Tupel `undefined`, und `undefined` als Komponente wirft erst
- * zur Laufzeit.
+ * The two bot landing pages render their texts from `content/*-copy.ts` and
+ * their icons from position-matched arrays in `components/bots/*`. If one
+ * of the two orders breaks, the page renders a wrong icon or none at all,
+ * without TypeScript noticing: an index access on
+ * `readonly [...]` tuples yields `undefined`, and `undefined` as a component only throws
+ * at runtime.
  *
- * Deshalb prüft dieser Test zwei Dinge:
- *   1. EN und DE haben in jeder Liste gleich viele Einträge.
- *   2. Die Icon-Arrays in der Komponente sind genauso lang wie die Textlisten.
+ * That is why this test checks two things:
+ *   1. EN and DE have the same number of entries in every list.
+ *   2. The icon arrays in the component are as long as the text lists.
  *
- * Punkt 2 liest den Quelltext der Komponente. Das ist bewusst grob: Es fängt
- * den häufigen Fehler (Eintrag in einer der beiden Dateien ergänzt, in der
- * anderen vergessen) und verlangt keine JSX-Auswertung im Node-Testlauf.
+ * Point 2 reads the component's source. That is deliberately crude: it catches
+ * the common mistake (entry added in one of the two files, forgotten in the
+ * other) and needs no JSX evaluation in the Node test run.
  */
 
-/** Zählt die Elemente eines `const NAME = [ … ] as const` im Quelltext. */
+/** Counts the elements of a `const NAME = [ … ] as const` in the source. */
 function countArrayEntries(source: string, name: string): number {
   const match = source.match(new RegExp(`const ${name}\\s*=\\s*\\[([\\s\\S]*?)\\]\\s*as const`))
   if (!match) throw new Error(`Array ${name} nicht gefunden`)
@@ -73,11 +73,11 @@ describe('ticket bot landing copy', () => {
   })
 
   it('keeps the target keyword in the H1', () => {
-    // Der Grund für den ganzen Umbau: „Discord Ticket Bot" stand vorher nur im
-    // <title> und in einem Badge, nicht in der Überschrift.
+    // The reason for the whole rework: "Discord Ticket Bot" used to appear only in the
+    // <title> and in a badge, not in the heading.
     for (const copy of [en, de]) {
-      // Genau so setzt die Komponente die Überschrift zusammen: der Trenner
-      // vor dem Rest steckt im Text, damit Deutsch dort ein Komma nutzen kann.
+      // This is exactly how the component assembles the heading: the separator
+      // before the rest is part of the text, so German can use a comma there.
       const h1 = `${copy.headline.lead} ${copy.headline.accent}${copy.headline.tail}`
       expect(h1.toLowerCase()).toContain('discord')
       expect(h1.toLowerCase()).toContain('ticket bot')
@@ -119,8 +119,8 @@ describe('giveaway landing copy', () => {
 
   it('keeps the target keyword in the H1', () => {
     for (const copy of [en, de]) {
-      // Genau so setzt die Komponente die Überschrift zusammen: der Trenner
-      // vor dem Rest steckt im Text, damit Deutsch dort ein Komma nutzen kann.
+      // This is exactly how the component assembles the heading: the separator
+      // before the rest is part of the text, so German can use a comma there.
       const h1 = `${copy.headline.lead} ${copy.headline.accent}${copy.headline.tail}`
       expect(h1.toLowerCase()).toContain('discord')
       expect(h1.toLowerCase()).toContain('giveaway bot')
@@ -129,8 +129,8 @@ describe('giveaway landing copy', () => {
 })
 
 describe('hreflang pairing', () => {
-  // Ein einseitiges hreflang-Paar ist schlimmer als keins: Google verlangt, dass
-  // jede Fassung beide Fassungen nennt, sonst wertet es die Angabe nicht.
+  // A one-sided hreflang pair is worse than none: Google requires that
+  // each version names both versions, otherwise it ignores the annotation.
   it.each([
     ['ticketbot', ticketBotMetadata, BOT_LANDING_PATHS.ticketbot],
     ['giveaway',  giveawayMetadata,  BOT_LANDING_PATHS.giveaway],

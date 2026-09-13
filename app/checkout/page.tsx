@@ -5,9 +5,9 @@ import { getRequestLang } from '@/lib/serverLang'
 import { pageSeo } from '@/lib/pageSeo'
 
 /**
- * Eigener Titel statt des Vorgabewerts aus dem Root-Layout. Kein `alternates`:
- * die Seite ist noindex, ein Canonical oder hreflang darauf wäre ein Signal
- * für etwas, das gar nicht in den Index soll.
+ * Own title instead of the default from the root layout. No `alternates`:
+ * the page is noindex; a canonical or hreflang on it would be a signal
+ * for something that is not meant to be in the index at all.
  */
 export async function generateMetadata(): Promise<Metadata> {
   const { lang } = await getRequestLang()

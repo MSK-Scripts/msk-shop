@@ -3,26 +3,26 @@ import { absoluteUrl } from '@/lib/siteUrl'
 import { alternatePaths } from '@/lib/lang'
 
 /**
- * Bilder-Sitemap.
+ * Image sitemap.
  *
- * Getrennt von `/sitemap.xml`, aus zwei Gruenden:
+ * Separate from `/sitemap.xml`, for two reasons:
  *
- * 1. **Menge.** Eine Sitemap fasst 50.000 URLs. Die Detailseiten der Galerie
- *    gehen in die Tausende und wuerden die Hauptdatei dominieren, in der heute
- *    46 wirklich wichtige Adressen stehen.
- * 2. **Namespace.** Google wertet fuer die Bildersuche `image:image` aus. Das
- *    gehoert nur hierher, in `renderSitemapXml()` waere es fuer jede andere
- *    Seite Ballast.
+ * 1. **Volume.** A sitemap holds 50,000 URLs. The gallery's detail pages
+ *    run into the thousands and would dominate the main file, which today
+ *    holds 46 truly important addresses.
+ * 2. **Namespace.** For image search Google evaluates `image:image`. That
+ *    only belongs here; in `renderSitemapXml()` it would be dead weight for
+ *    every other page.
  *
- * `lastmod` fehlt bewusst, wie bei den statischen Seiten der Hauptsitemap: die
- * Bilder aendern sich nach dem Import praktisch nie, und ein Datum, das mit
- * jedem Ingest-Lauf weiterwandert, waere genau das falsche Signal. Google nutzt
- * `lastmod` nur, wenn es nachweisbar stimmt.
+ * `lastmod` is deliberately missing, as with the static pages of the main sitemap:
+ * the images practically never change after import, and a date that moves on with
+ * every ingest run would be exactly the wrong signal. Google only uses
+ * `lastmod` when it is verifiably accurate.
  */
 
 export const revalidate = 3600
 
-/** Sicherheitsnetz: keine Datei ueber das Sitemap-Limit hinaus erzeugen. */
+/** Safety net: never generate a file beyond the sitemap limit. */
 const MAX_URLS = 45_000
 
 function escapeXml(value: string): string {
@@ -43,8 +43,8 @@ export async function GET() {
   for (const category of categories) {
     if (count >= MAX_URLS) break
 
-    // Seitenweise lesen statt alles auf einmal: der Bestand soll wachsen
-    // duerfen, ohne dass diese Route irgendwann den Speicher sprengt.
+    // Read page by page instead of all at once: the inventory should be allowed
+    // to grow without this route eventually blowing the memory.
     for (let page = 1; ; page++) {
       const result = await listImages({ category: category.slug, page, per: MAX_PER_PAGE })
       if (!result.items.length) break

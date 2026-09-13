@@ -4,9 +4,9 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import sharp from 'sharp'
 
-// Nur die Datenbank wird ersetzt. sharp laeuft echt: der ganze Punkt dieser
-// Tests ist, was die Bildverarbeitung mit fremden Bytes macht, und ein
-// nachgebautes sharp wuerde genau das wegabstrahieren.
+// Only the database is replaced. sharp runs for real: the whole point of these
+// tests is what the image processing does with foreign bytes, and a
+// fake sharp would abstract away exactly that.
 vi.mock('@/lib/db', () => ({ query: vi.fn(), queryOne: vi.fn() }))
 
 import { query, queryOne } from '@/lib/db'
@@ -25,23 +25,23 @@ afterAll(async () => {
 })
 
 /**
- * Die Datenbank so einstellen, dass ein Upload durchgeht: Kategorie erlaubt,
- * Name frei, nichts in der Schlange, Tageslimit nicht erreicht.
+ * Set up the database so that an upload goes through: category allowed,
+ * name free, nothing in the queue, daily limit not reached.
  *
- * `queryOne` wird in `submitUpload` fuenfmal in fester Reihenfolge gerufen:
- * Kategorie, Bestand, Schlange, Tageszaehler, und nach dem INSERT das
- * Zurueckelesen der geschriebenen Zeile.
+ * `queryOne` is called five times in `submitUpload`, in a fixed order:
+ * category, inventory, queue, daily counter, and after the INSERT the
+ * read-back of the written row.
  */
 function happyPath() {
   (queryOne as Mock)
     .mockResolvedValueOnce({ slug: 'props' })   // categoryAllowsUpload
-    .mockResolvedValueOnce(null)                // msk_images name frei
-    .mockResolvedValueOnce(null)                // nichts in der Schlange
+    .mockResolvedValueOnce(null)                // msk_images name free
+    .mockResolvedValueOnce(null)                // nothing in the queue
     .mockResolvedValueOnce({ total: 0 })        // recentUploadCount
-    .mockResolvedValueOnce(storedRow())         // getUpload nach dem INSERT
+    .mockResolvedValueOnce(storedRow())         // getUpload after the INSERT
 }
 
-/** Eine Zeile, wie sie nach dem INSERT zurueckkaeme. */
+/** A row as it would come back after the INSERT. */
 function storedRow(overrides: Record<string, unknown> = {}) {
   return {
     id: '00000000-0000-4000-8000-000000000000',
@@ -127,7 +127,7 @@ describe('submitUpload: the cheap checks come first', () => {
       .mockResolvedValueOnce({ total: 10 })
     const r = await submitUpload(await input())
     expect(r).toEqual({ ok: false, reason: 'rate_limited' })
-    // Nichts geschrieben: weder Datei noch Zeile.
+    // Nothing written: neither file nor row.
     expect(query as Mock).not.toHaveBeenCalled()
   })
 })
@@ -168,8 +168,8 @@ describe('submitUpload: what lands in quarantine', () => {
   it('stores our own PNG, not the submitted bytes', async () => {
     happyPath()
 
-    // Ein JPEG mit EXIF: das Format wechselt bei der Neukodierung, und die
-    // Metadaten muessen verschwinden.
+    // A JPEG with EXIF: the format changes on re-encoding, and the
+    // metadata has to disappear.
     const jpeg = await sharp({
       create: { width: 300, height: 200, channels: 3, background: { r: 200, g: 30, b: 30 } },
     })
@@ -189,7 +189,7 @@ describe('submitUpload: what lands in quarantine', () => {
     const meta   = await sharp(stored).metadata()
     expect(meta.format).toBe('png')
     expect(meta.exif).toBeUndefined()
-    // Byte-fuer-Byte etwas anderes als das Eingereichte.
+    // Byte for byte something other than what was submitted.
     expect(stored.equals(jpeg)).toBe(false)
   })
 
@@ -211,7 +211,7 @@ describe('submitUpload: what lands in quarantine', () => {
 
     const insert = (query as Mock).mock.calls.find(c => String(c[0]).includes('INSERT INTO msk_image_uploads'))
     expect(insert).toBeDefined()
-    // Reihenfolge der Platzhalter: id, category, name, ...
+    // Order of the placeholders: id, category, name, ...
     expect(insert![1][2]).toBe('grosse_kiste_01')
     expect(String(insert![0])).toContain('license_declared')
   })
@@ -261,9 +261,9 @@ describe('normaliseName', () => {
 
 describe('the pipeline rules mirror the ingest script', () => {
   it('has the same numbers as scripts/image-ingest.js', async () => {
-    // Der Ingest ist Plain-JS und laeuft ausserhalb von Next, er kann das
-    // TypeScript-Modul nicht importieren. Laufen die beiden auseinander, hat
-    // der Bestand zwei Looks, und das faellt erst am fertigen Raster auf.
+    // The ingest is plain JS and runs outside of Next, it cannot import the
+    // TypeScript module. If the two drift apart, the inventory has
+    // two looks, and that only shows up in the finished grid.
     const script = await readFile(join(process.cwd(), 'scripts', 'image-ingest.js'), 'utf8')
     for (const [key, value] of Object.entries(PIPELINE_RULES)) {
       expect(script).toMatch(new RegExp(`${key}:\\s*${String(value).replace('.', '\\.')}`))

@@ -93,8 +93,8 @@ export default async function ImageDetailPage({ params }: { params: Params }) {
         <div>
           <Card className="checker-bg flex min-h-[20rem] items-center justify-center overflow-hidden p-6">
             {/* eslint-disable-next-line @next/next/no-img-element --
-                Siehe components/images/ImageCard.tsx: die CDN-Datei ist bereits
-                die fertige Fassung, next/image haette hier nichts zu tun. */}
+                See components/images/ImageCard.tsx: the CDN file already is
+                the finished version, next/image would have nothing to do here. */}
             <img
               src={image.url}
               alt={display}
@@ -152,8 +152,8 @@ export default async function ImageDetailPage({ params }: { params: Params }) {
             </div>
           </dl>
 
-          {/* Die URL steht sichtbar da und nicht nur hinter dem Knopf: wer sie
-              braucht, will sie oft auch lesen und von Hand anpassen. */}
+          {/* The URL is shown visibly and not only behind the button: whoever
+              needs it often also wants to read it and adjust it by hand. */}
           {/* Above the copy button and not below it: whoever takes the address
               should have read what they may do with it first. */}
           {slug === OWN_WORK_CATEGORY && <BrandNotice lang={lang} className="mt-6" />}
@@ -170,10 +170,10 @@ export default async function ImageDetailPage({ params }: { params: Params }) {
           <div className="mt-4 flex flex-wrap gap-3">
             <CopyUrlButton url={image.card} lang={lang} />
             <Button asChild variant="ghost" size="sm">
-              {/* Kein `download`-Attribut: die Datei liegt auf einem anderen
-                  Host, und cross-origin ignoriert der Browser es ohnehin. Ein
-                  Link, der etwas anderes verspricht als er tut, ist schlechter
-                  als einer, der das Bild einfach oeffnet. */}
+              {/* No `download` attribute: the file lives on a different
+                  host, and the browser ignores it cross-origin anyway. A
+                  link that promises something other than what it does is worse
+                  than one that simply opens the image. */}
               <a href={image.url} target="_blank" rel="noopener noreferrer">
                 <Download className="h-4 w-4" aria-hidden="true" />
                 {t.open_original}
@@ -196,9 +196,9 @@ export default async function ImageDetailPage({ params }: { params: Params }) {
             </Link>
           </Button>
 
-          {/* Meldeweg nach Art. 16 DSA. Die Galerie enthaelt von Nutzern
-              eingereichte Bilder; ein Meldeformular, das nur im Fusszeilen-Menue
-              steht, ist nicht "leicht zugaenglich" im Sinne der Norm. */}
+          {/* Reporting channel under Art. 16 DSA. The gallery contains images
+              submitted by users; a report form that only sits in the footer menu
+              is not "leicht zugaenglich" (easily accessible) within the meaning of the provision. */}
           <div className="mt-4">
             <ReportLink path={`/images/${slug}/${image.name}`} />
           </div>

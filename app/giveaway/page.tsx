@@ -6,8 +6,8 @@ import { giveawayAppJsonLd, giveawayMetadata } from '@/lib/botSeo'
 import { getRequestLang } from '@/lib/serverLang'
 
 /**
- * Landingpage des Giveaway-Bots, zweisprachig über den Pfad.
- * Siehe `app/ticketbot/page.tsx`, hier gilt dasselbe.
+ * Landing page of the giveaway bot, bilingual via the path.
+ * See `app/ticketbot/page.tsx`, the same applies here.
  */
 export async function generateMetadata(): Promise<Metadata> {
   const { lang } = await getRequestLang()

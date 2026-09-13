@@ -13,12 +13,12 @@ import { imagesTranslations } from '@/lib/i18n'
 import { listCategories, countPublished, cdnBase } from '@/lib/images'
 
 /**
- * Uebersicht der Bildergalerie.
+ * Overview of the image gallery.
  *
- * `revalidate` statt `force-dynamic`: der Bestand aendert sich beim Ingest,
- * also selten und nie waehrend eines Besuchs. Fuenf Minuten sind genug, damit
- * ein frisch importierter Schwung zeitnah auftaucht, ohne dass jeder Aufruf
- * die Datenbank fragt.
+ * `revalidate` instead of `force-dynamic`: the inventory changes on ingest,
+ * so rarely and never during a visit. Five minutes are enough for
+ * a freshly imported batch to show up promptly without every request
+ * querying the database.
  */
 export const revalidate = 300
 
@@ -80,8 +80,8 @@ export default async function ImagesPage() {
         </div>
       </section>
 
-      {/* Der Weg zum Mitmachen steht ueber dem Rechtehinweis und nicht darunter:
-          wer bis hierher gescrollt hat, sucht etwas, das es noch nicht gibt. */}
+      {/* The way to contribute sits above the rights notice and not below it:
+          whoever has scrolled this far is looking for something that does not exist yet. */}
       <section aria-labelledby="contribute-heading" className="mt-14">
         <Card className="flex flex-wrap items-center justify-between gap-4 p-6">
           <div className="max-w-xl">
@@ -100,9 +100,9 @@ export default async function ImagesPage() {
         </Card>
       </section>
 
-      {/* Der Hinweis auf die Herkunft der Assets steht bewusst auf der Seite
-          selbst und nicht nur in den AGB: wer die Bilder benutzt, soll ohne
-          Suche sehen, woran er ist, und wo eine Entfernung anzufragen waere. */}
+      {/* The notice about where the assets come from is deliberately on the page
+          itself and not only in the terms: whoever uses the images should see without
+          searching where they stand, and where a removal could be requested. */}
       <section aria-labelledby="legal-heading" className="mt-14 max-w-3xl">
         <h2 id="legal-heading" className="mb-2 font-mono text-xs font-bold uppercase tracking-widest text-[var(--color-muted-foreground)]">
           {t.legal_title}

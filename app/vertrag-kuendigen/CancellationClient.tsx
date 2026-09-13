@@ -8,14 +8,15 @@ import { legalFormTranslations, layoutTranslations } from '@/lib/i18n'
 import { Button } from '@/components/ui/Button'
 import { LegalFormShell, Field, INPUT_CLASS } from '@/components/legal/LegalFormShell'
 
-// ── Kündigungsschaltfläche (§ 312k BGB) ─────────────────────────────────────
+// ── Cancellation button (§ 312k BGB) ────────────────────────────────────────
 //
-// Die Norm zählt die Angaben auf, die die Bestätigungsseite abfragen darf und
-// muss: Art der Kündigung, Bezeichnung des Vertrags, Name, Kontaktdaten und
-// der Zeitpunkt. Genau diese fünf stehen hier, keines mehr.
+// The provision lists the details the confirmation page may and must ask
+// for: type of cancellation, name of the contract, name, contact details and
+// the date. Exactly these five are here, not one more.
 //
-// „Zum nächstmöglichen Zeitpunkt" ist vorbelegt, weil es der gesetzliche
-// Regelfall ist. Wer ein Datum nennen will, kann es, muss aber nicht.
+// „Zum nächstmöglichen Zeitpunkt" (at the earliest possible date) is
+// preselected because it is the statutory default. Anyone who wants to
+// give a date can, but does not have to.
 
 interface Done { title: string; text: string }
 
@@ -58,7 +59,7 @@ export function CancellationClient() {
       if (res.status === 429) { setErrors({ _: t.err_rate }); return }
 
       let data: { errors?: Record<string, string>; timestamp?: string } | null = null
-      try { data = await res.json() } catch { /* kein verwertbarer Körper */ }
+      try { data = await res.json() } catch { /* no usable body */ }
 
       if (!res.ok) {
         if (data?.errors) setErrors(data.errors)
@@ -90,7 +91,7 @@ export function CancellationClient() {
       footnote={<p>{t.cancel_portal_hint}</p>}
     >
       <form onSubmit={submit} noValidate>
-        {/* Art der Kündigung — § 312k Abs. 2 Satz 2 Nr. 1 BGB */}
+        {/* Type of cancellation: § 312k Abs. 2 Satz 2 Nr. 1 BGB */}
         <fieldset className="mb-5">
           <legend className="mb-1.5 text-sm font-medium text-[var(--color-foreground)]">
             {t.cancel_kind}
@@ -141,7 +142,7 @@ export function CancellationClient() {
           />
         </Field>
 
-        {/* Kündigungszeitpunkt — § 312k Abs. 2 Satz 2 Nr. 3 BGB */}
+        {/* Cancellation date: § 312k Abs. 2 Satz 2 Nr. 3 BGB */}
         <fieldset className="mb-5">
           <legend className="mb-1.5 text-sm font-medium text-[var(--color-foreground)]">
             {t.cancel_when}
@@ -184,8 +185,8 @@ export function CancellationClient() {
           <p role="alert" className="mb-4 text-sm text-[var(--color-danger)]">{errors._}</p>
         )}
 
-        {/* „Jetzt kündigen" ist der gesetzlich vorgeschriebene Wortlaut der
-            Bestätigungsschaltfläche (§ 312k Abs. 2 Satz 4 BGB). */}
+        {/* „Jetzt kündigen" is the wording of the confirmation button
+            prescribed by law (§ 312k Abs. 2 Satz 4 BGB). */}
         <Button type="submit" disabled={sending}>
           {sending && <Loader2 className="h-4 w-4 animate-spin" />}
           {sending ? t.submitting : t.cancel_submit}

@@ -8,11 +8,11 @@ import {
 } from '@/lib/uploadSession'
 
 /**
- * Discord-Rueckkanal des Upload-Logins.
+ * Discord return channel of the upload login.
  *
- * Der `state`-Abgleich ist der CSRF-Schutz; sein Cookie wird in **jedem**
- * Ausgang geloescht, auch im Fehlerfall, damit ein abgebrochener Versuch keinen
- * gueltigen State liegen laesst.
+ * The `state` comparison is the CSRF protection; its cookie is deleted on
+ * **every** exit, including the error case, so that an aborted attempt does not
+ * leave a valid state behind.
  */
 export async function GET(req: Request) {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://www.msk-scripts.de'
@@ -60,8 +60,8 @@ export async function GET(req: Request) {
     if (!userRes.ok) return fail('discord_user_failed')
     const user = await userRes.json()
     discordUserId = typeof user?.id === 'string' ? user.id : undefined
-    // global_name ist der heutige Anzeigename, username der Login-Name. Beides
-    // kann fehlen, dann bleibt der Name leer statt "undefined" zu heissen.
+    // global_name is the current display name, username the login name. Both
+    // can be missing, in which case the name stays empty instead of reading "undefined".
     const name = user?.global_name ?? user?.username
     displayName = typeof name === 'string' ? name.slice(0, 64) : null
   } catch {

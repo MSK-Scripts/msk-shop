@@ -2,7 +2,7 @@ import { cookies }          from 'next/headers';
 import { parseSession }     from '@/lib/session';
 import VerifyClient         from './VerifyClient';
 
-// Session-/Cookie-abhängig → niemals statisch/route-cachen.
+// Session/cookie dependent → never cache statically/per route.
 export const dynamic = 'force-dynamic';
 
 export const metadata = {

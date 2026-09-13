@@ -4,18 +4,18 @@ import { listImages, categoryExists, DEFAULT_PER_PAGE } from '@/lib/images'
 import { publicJson, corsPreflight } from '@/lib/publicApi'
 
 /**
- * Bildliste, oeffentlich.
+ * Image list, public.
  *
  *   /api/images?category=vehicles&q=zentorno&tag=sports&page=1&per=60
  *
- * Zwei sehr verschiedene Verbraucher: die eigene Galerie und fremde Scripts,
- * die nachschlagen wollen, ob es ein Bild zu einem Modellnamen gibt. Deshalb
- * bleibt die Antwort schlank und die URLs sind absolut, damit ein Consumer
- * nichts zusammenbauen muss.
+ * Two very different consumers: our own gallery and third-party scripts that
+ * want to look up whether there is an image for a model name. That is why the
+ * response stays lean and the URLs are absolute, so a consumer does not have
+ * to assemble anything.
  *
- * Die Antwort ist fuer alle Aufrufer gleich und aendert sich selten, sie darf
- * also oeffentlich zwischengespeichert werden. `stale-while-revalidate` haelt
- * einen Cache-Ablauf von den Nutzern fern.
+ * The response is the same for every caller and rarely changes, so it may be
+ * cached publicly. `stale-while-revalidate` keeps a cache expiry away from
+ * the users.
  */
 export const revalidate = 300
 

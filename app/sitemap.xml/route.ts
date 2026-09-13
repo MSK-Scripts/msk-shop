@@ -1,7 +1,7 @@
 import { buildSitemapEntries, renderSitemapXml } from '@/lib/sitemap'
 
-// Gleiche Revalidierung wie die Katalogseiten, damit neue Pakete zeitnah in
-// der Sitemap stehen.
+// Same revalidation as the catalogue pages, so that new packages show up in
+// the sitemap promptly.
 export const revalidate = 3600
 
 export async function GET() {
@@ -9,9 +9,9 @@ export async function GET() {
 
   return new Response(xml, {
     headers: {
-      // XSLT wendet der Browser nur an, wenn das Dokument als XML ausgeliefert
-      // wird. `text/plain` oder ein fehlender Typ lassen die Sitemap wieder als
-      // Textwüste erscheinen.
+      // The browser only applies XSLT when the document is delivered as
+      // XML. `text/plain` or a missing type make the sitemap appear as a
+      // wall of text again.
       'Content-Type':  'application/xml; charset=utf-8',
       'Cache-Control': 'public, max-age=0, must-revalidate',
     },

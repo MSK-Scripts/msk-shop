@@ -3,23 +3,23 @@ import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { join, relative, sep } from 'node:path'
 
 /**
- * Repo-Form statt Logik: prüft, dass interne Links das Sprachpräfix nicht
- * verlieren und es nicht doppelt bekommen.
+ * Repo shape instead of logic: checks that internal links do not lose the
+ * language prefix and do not get it twice.
  *
- * Warum ein Test und keine Sorgfalt: der Umbau vom 22.08.2026 hat die
- * Import-Zeile in 17 Dateien getauscht und **vier übersehen**
- * (`ResourcesClient`, `Bots`, `ProofLine`, `NewsPopup`). Jede davon warf einen
- * deutschen Besucher beim Klick zurück auf Englisch. Umgekehrt blieben drei
- * Stellen aus der Zeit stehen, als `/de/ticketbot` noch eine eigene Route war,
- * und bauten mit `LocaleLink` zusammen `/de/de/ticketbot`.
+ * Why a test and not care: the rework of 22.08.2026 swapped the
+ * import line in 17 files and **missed four**
+ * (`ResourcesClient`, `Bots`, `ProofLine`, `NewsPopup`). Each of them threw a
+ * German visitor back to English on click. Conversely, three
+ * places were left over from the time when `/de/ticketbot` was still a route of its own,
+ * and together with `LocaleLink` they built `/de/de/ticketbot`.
  *
- * Beides ist keine Frage der Logik, sondern der Frage, welche Datei was
- * importiert. Genau das lässt sich nur so prüfen.
+ * Neither is a question of logic, but of which file imports
+ * what. That can only be checked this way.
  */
 
 const WURZELN = ['app', 'components']
 
-/** `LocaleLink` selbst muss `next/link` importieren, es wickelt es ein. */
+/** `LocaleLink` itself has to import `next/link`, it wraps it. */
 const DARF_NEXT_LINK = join('components', 'i18n', 'LocaleLink.tsx')
 
 function dateien(dir: string): string[] {
@@ -49,8 +49,8 @@ describe('interne Links behalten die Sprache', () => {
   })
 
   it('kein Sprachpräfix von Hand in einem String-Literal', () => {
-    // Backticks sind ausgenommen: die Kommentare in diesen Dateien nennen
-    // Beispieladressen wie `/de/packages`, und die sind erwünscht.
+    // Backticks are excluded: the comments in these files mention
+    // example addresses like `/de/packages`, and those are wanted.
     const suender = ALLE.filter(p => /['"]\/de(\/|['"])/.test(readFileSync(p, 'utf8')))
     expect(suender, `Präfix von Hand, LocaleLink setzt es bereits: ${suender.join(', ')}`).toEqual([])
   })

@@ -53,7 +53,7 @@ describe('breadcrumbJsonLd', () => {
     expect(items.map(i => i.position)).toEqual([1, 2, 3])
     expect(items[1].item).toMatch(/\/packages$/)
 
-    // Das letzte Element ist die aktuelle Seite und bekommt bewusst kein `item`.
+    // The last element is the current page and deliberately gets no `item`.
     expect(items[2].item).toBeUndefined()
     expect(items[2].name).toBe('MSK Garage')
   })
@@ -72,8 +72,8 @@ describe('productJsonLd', () => {
     expect(String(offer.url)).toMatch(/\/packages\/5732587$/)
   })
 
-  // Der Crawler sieht nie einen authentifizierten Basket, also nie den Sale.
-  // Das Markup muss dem entsprechen, was ausgeloggt gerendert wird.
+  // The crawler never sees an authenticated basket, so never the sale.
+  // The markup must match what is rendered when logged out.
   it('nutzt den Katalogpreis, nicht einen user-spezifischen Sale', () => {
     const product = productJsonLd(makePackage({ base_price: 29.99, total_price: 29.99 }))
     expect((product.offers as Record<string, unknown>).price).toBe('29.99')
@@ -98,15 +98,15 @@ describe('productJsonLd', () => {
     expect(productJsonLd(makePackage()).category).toBe('Encrypted Version')
   })
 
-  // Der JSON-Block landet in einem <script>-Element. Ein `<` im Wert dürfte den
-  // Block nicht verlassen können.
+  // The JSON block ends up in a <script> element. A `<` in the value must not
+  // be able to break out of the block.
   it('bleibt nach dem Escaping ein gültiger, ausbruchsicherer Script-Inhalt', () => {
     const product = productJsonLd(makePackage({ name: '</script><img src=x onerror=alert(1)>' }))
     const serialized = JSON.stringify(product).replace(/</g, '\\u003c')
 
     expect(serialized).not.toContain('</script>')
     expect(serialized).not.toContain('<img')
-    // Trotz Escaping muss der Wert unverfälscht zurückparsen.
+    // Despite escaping, the value must parse back unaltered.
     expect(JSON.parse(serialized).name).toBe('</script><img src=x onerror=alert(1)>')
   })
 })
@@ -146,8 +146,8 @@ describe('softwareApplicationJsonLd', () => {
     expect(app.isAccessibleForFree).toBe(true)
   })
 
-  // Ohne echte Bewertungen wäre aggregateRating erfunden. Das ist ein
-  // Richtlinienverstoß und fliegt sonst irgendwann als manuelle Maßnahme auf.
+  // Without real reviews, aggregateRating would be made up. That is a
+  // policy violation and would otherwise surface at some point as a manual action.
   it('erfindet keine Bewertungen', () => {
     expect(app.aggregateRating).toBeUndefined()
     expect(app.review).toBeUndefined()

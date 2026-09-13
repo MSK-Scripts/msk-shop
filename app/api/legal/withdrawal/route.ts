@@ -4,17 +4,17 @@ import { validateWithdrawal, storeWithdrawal } from '@/lib/legalForms'
 import { buildWithdrawalReceipt, buildInternalNotice, formatReceiptTime } from '@/lib/emails/legalReceipts'
 import { originAllowed, mailLangFrom, clientIpOrNull, deliverReceipts, badRequest } from '../shared'
 
-// ── Widerrufsfunktion (§ 356a BGB) ──────────────────────────────────────────
+// ── Withdrawal function (§ 356a BGB) ────────────────────────────────────────
 //
-// Bewusst **ohne Anmeldung**. Die Norm verlangt eine Schaltfläche, die während
-// der gesamten Widerrufsfrist ohne Hürde erreichbar ist; ein Login wäre eine
-// solche Hürde, und wer gerade widerrufen will, hat womöglich genau deshalb
-// keinen Zugang mehr.
+// Deliberately **without sign-in**. The statute requires a button that stays
+// reachable without any hurdle for the entire withdrawal period; a login would
+// be such a hurdle, and someone who wants to withdraw may have lost access for
+// exactly that reason.
 //
-// Es findet deshalb auch **kein Abgleich gegen `ticketbot_guilds`** statt. Der
-// Erklärende muss den Vertrag identifizierbar bezeichnen, nicht beweisen. Ob
-// die Angabe zu einem echten Abo gehört, klärt die Bearbeitung, nicht das
-// Formular.
+// For the same reason there is **no lookup against `ticketbot_guilds`**. The
+// declaring person has to identify the contract, not prove it. Whether the
+// details belong to a real subscription is settled during processing, not by
+// the form.
 
 export const dynamic = 'force-dynamic'
 
@@ -42,9 +42,8 @@ export async function POST(req: Request): Promise<NextResponse> {
   try {
     stored = await storeWithdrawal(parsed.value, declaration, clientIpOrNull(req))
   } catch (err) {
-    // Hier und nur hier ist ein 500 richtig: ohne gespeicherte Zeile gibt es
-    // keinen Nachweis, und dann muss der Absender es wirklich noch einmal
-    // versuchen.
+    // Here and only here a 500 is right: without a stored row there is no
+    // record, and then the sender really does have to try again.
     console.error('[legal/withdrawal] Speichern fehlgeschlagen:', err)
     return NextResponse.json({ error: 'server_error' }, { status: 500 })
   }

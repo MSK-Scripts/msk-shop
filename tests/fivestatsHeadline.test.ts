@@ -3,9 +3,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { loadHeadlineStat } from '@/lib/fivestats'
 
 /**
- * Der Hero der Startseite hängt an diesem Aufruf. Jeder Fehlerpfad MUSS `null`
- * liefern, damit der Hero auf seinen statischen Text zurückfällt statt eine
- * kaputte oder genullte Zahl anzuzeigen.
+ * The home page hero depends on this call. Every error path MUST return `null`
+ * so that the hero falls back to its static text instead of showing a
+ * broken or zeroed number.
  */
 function mockJson(body: unknown, ok = true, status = 200) {
   return vi.fn().mockResolvedValue({ ok, status, json: async () => body })
@@ -67,7 +67,7 @@ describe('loadHeadlineStat', () => {
     expect(await loadHeadlineStat()).toBeNull()
   })
 
-  // Lieber gar keine Zahl als „läuft auf 0 Servern".
+  // Better no number at all than „läuft auf 0 Servern" ("running on 0 servers").
   it('gibt null zurück bei einer Server-Anzahl von 0', async () => {
     vi.stubGlobal('fetch', mockJson({ server_count: 0 }))
     expect(await loadHeadlineStat()).toBeNull()

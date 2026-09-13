@@ -21,7 +21,7 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 /**
- * POST /api/bot-hosting/provision — set up hosting for this guild.
+ * POST /api/bot-hosting/provision: set up hosting for this guild.
  *
  * Does the fast, reversible half inline and hands the slow half to a detached
  * worker (scripts/bot-provision.js). The customer therefore learns about a bad
@@ -64,11 +64,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'invalid_body' }, { status: 400 })
   }
 
-  // Auftragsverarbeitung (Art. 28 DSGVO). Beim Hosting verarbeiten wir mehr als
-  // die Transkripte: die komplette Bot-Datenbank samt Discord-Ids des Teams
-  // liegt auf unseren Systemen. Die Vereinbarung wird deshalb hier eigens
-  // bestaetigt und nicht aus dem Verify-Schritt uebernommen, auch wenn die
-  // Spalte dieselbe ist.
+  // Data processing (Art. 28 DSGVO). With hosting we process more than the
+  // transcripts: the complete bot database, including the team's Discord ids,
+  // sits on our systems. The agreement is therefore confirmed separately here
+  // and not carried over from the verify step, even though the column is the
+  // same.
   if (!dpaAccepted) {
     return NextResponse.json({ error: 'dpa_required' }, { status: 400 })
   }
@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
 
   // On a restore, empty fields fall back to the archived .env. Read here rather
   // than after restoring so the merged form can still be rejected without having
-  // moved anything on disk. Anything the customer typed wins — they may be
+  // moved anything on disk. Anything the customer typed wins; they may be
   // coming back exactly because they rotated a secret.
   if (archiveChoice === 'restore') {
     form = mergeWithArchivedEnv(form, await readArchivedEnv(guild.guild_id, archives[0].name))
@@ -125,8 +125,8 @@ export async function POST(req: NextRequest) {
     }
     port = await allocateBotPort()
     await publishDashboardHost(host, port)
-    // `COALESCE`: der frueheste Abschluss zaehlt, ein zweites Hosting-Setup
-    // schreibt kein neues Datum ueber die alte Vereinbarung.
+    // `COALESCE`: the earliest conclusion counts, a second hosting setup does
+    // not write a new date over the old agreement.
     await query(
       'UPDATE ticketbot_guilds SET bot_port = ?, dashboard_host = ?, '
       + 'dpa_accepted_at = COALESCE(dpa_accepted_at, NOW()) WHERE guild_id = ?',
@@ -157,7 +157,7 @@ export async function POST(req: NextRequest) {
 
   // Detached, with its own session: the installation must survive a deploy
   // restarting this process. stdio is discarded because the worker records its
-  // own progress in the database — nobody would ever read a pipe we kept open.
+  // own progress in the database; nobody would ever read a pipe we kept open.
   const child = spawn(process.execPath, [join(process.cwd(), 'scripts', 'bot-provision.js'), guild.guild_id], {
     detached: true,
     stdio:    'ignore',

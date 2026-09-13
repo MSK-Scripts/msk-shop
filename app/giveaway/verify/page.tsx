@@ -16,12 +16,12 @@ export default async function GiveawayVerifyPage() {
   const cookieStore = await cookies();
   const session = parseGiveawayVerify(cookieStore.get('msk_gw_verify')?.value);
 
-  // Noch nicht via Discord eingeloggt → Login-Schritt.
+  // Not logged in via Discord yet → login step.
   if (!session?.guilds || !session.discordUserId) {
     return <VerifyClient step="login" guilds={[]} />;
   }
 
-  // Admin-Guilds auf die einschränken, in denen der Bot ist (GuildSettings-Row).
+  // Restrict admin guilds to those the bot is in (GuildSettings row).
   const adminGuilds = session.guilds;
   let botGuilds: BotGuild[] = [];
   if (adminGuilds.length > 0) {

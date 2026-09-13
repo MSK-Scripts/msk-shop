@@ -1,7 +1,7 @@
-// Gemeinsames für die drei Pflichtformular-Routen.
+// Shared code for the three mandatory form routes.
 //
-// Die Routen selbst bleiben dadurch kurz genug, dass man auf einen Blick sieht,
-// was sie prüfen und in welcher Reihenfolge sie schreiben und versenden.
+// This keeps the routes themselves short enough to see at a glance what they
+// check and in which order they write and send.
 
 import { NextResponse } from 'next/server'
 import { getClientIp }  from '@/lib/rateLimit'
@@ -9,14 +9,14 @@ import { sendMail }     from '@/lib/mail'
 import { markConfirmed } from '@/lib/legalForms'
 import type { MailLang, BuiltEmail } from '@/lib/emails/legalReceipts'
 
-/** Wohin die interne Benachrichtigung geht. Der DSA-Kontakt ist dieselbe
- *  Adresse, ein eigenes `dsa@`-Postfach gibt es (noch) nicht. */
+/** Where the internal notification goes. The DSA contact is the same
+ *  address, there is no separate `dsa@` mailbox (yet). */
 export const NOTICE_RECIPIENT = 'info@msk-scripts.de'
 
 /**
- * Origin-Prüfung wie in `adminRoute` und beim Bild-Upload: Browser senden bei
- * einem POST immer einen Origin, fälschen kann ihn ein fremder Ursprung nicht.
- * Ein fehlender Origin ist erlaubt (server-seitiger Aufruf).
+ * Origin check as in `adminRoute` and the image upload: browsers always send an
+ * Origin on a POST, and a foreign origin cannot forge it.
+ * A missing Origin is allowed (server-side call).
  */
 export function originAllowed(req: Request): boolean {
   const origin  = req.headers.get('origin')
@@ -24,8 +24,8 @@ export function originAllowed(req: Request): boolean {
   return !origin || origin === baseUrl
 }
 
-/** Sprache der Bestätigungsmail aus dem Body. Kein Rateraten über Header:
- *  die Seite kennt ihre eigene Sprache und schickt sie mit. */
+/** Language of the confirmation mail, taken from the body. No guessing via
+ *  headers: the page knows its own language and sends it along. */
 export function mailLangFrom(body: unknown): MailLang {
   const raw = (body as Record<string, unknown> | null)?.lang
   return raw === 'de' ? 'de' : 'en'
@@ -37,14 +37,14 @@ export function clientIpOrNull(req: Request): string | null {
 }
 
 /**
- * Bestätigung an den Erklärenden und Benachrichtigung an uns.
+ * Confirmation to the declaring person and notification to us.
  *
- * Das Ergebnis wird **nicht** in den HTTP-Status gehoben: die Erklärung liegt
- * zu diesem Zeitpunkt bereits mit Zeitstempel in der Datenbank, die Frist ist
- * gewahrt, und ein 500 nach erfolgreicher Speicherung würde den Absender zum
- * Wiederholen einladen und dieselbe Erklärung ein zweites Mal erzeugen.
- * Scheitert der Versand, bleibt `confirmed_at` NULL — das ist die Liste, die
- * von Hand nachgearbeitet werden muss.
+ * The result is **not** lifted into the HTTP status: at this point the
+ * declaration is already stored with a timestamp in the database, the deadline
+ * is met, and a 500 after a successful save would invite the sender to retry
+ * and create the same declaration a second time.
+ * If sending fails, `confirmed_at` stays NULL; that is the list that has to be
+ * followed up by hand.
  */
 export async function deliverReceipts(opts: {
   table:     'msk_withdrawals' | 'msk_cancellations' | 'msk_content_reports'
@@ -70,7 +70,7 @@ export async function deliverReceipts(opts: {
   }
 }
 
-/** Einheitliche Antwort auf einen Validierungsfehler. */
+/** Uniform response to a validation error. */
 export function badRequest(errors: Record<string, string>): NextResponse {
   return NextResponse.json({ errors }, { status: 400 })
 }

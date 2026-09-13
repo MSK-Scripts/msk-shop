@@ -3,8 +3,8 @@ import { cookies }                           from 'next/headers';
 import { parseGiveawaySession, GIVEAWAY_SESSION_COOKIE } from '@/lib/giveawaySession';
 import { controlPost }                       from '@/lib/giveawayControl';
 
-// Schreib-Proxy zum Bot-Steuer-Endpunkt. guildId kommt IMMER aus der Session,
-// nie aus dem Client-Body. Nur whitelisted Aktionen sind erlaubt.
+// Write proxy to the bot control endpoint. guildId ALWAYS comes from the session,
+// never from the client body. Only whitelisted actions are allowed.
 const ACTION_PATH: Record<string, string> = {
   create:   '/giveaway/create',
   edit:     '/giveaway/edit',
@@ -15,15 +15,15 @@ const ACTION_PATH: Record<string, string> = {
   resume:   '/giveaway/resume',
   reroll:   '/giveaway/reroll',
   settings: '/settings',
-  // Giveaway-Vorlagen. Derselbe Service wie /gtemplate im Bot, deshalb prüft
-  // der Bot auch hier, was eine gültige Vorlage ist.
+  // Giveaway templates. The same service as /gtemplate in the bot, so the bot
+  // also checks here what a valid template is.
   templateSave:   '/template/save',
   templateDelete: '/template/delete',
-  // Ein bestehendes Giveaway als Vorlage sichern. Der Bot baut die Vorlage aus
-  // dem Datensatz, hier gehen nur die Giveaway-ID und der Name hin.
+  // Save an existing giveaway as a template. The bot builds the template from
+  // the record, only the giveaway ID and the name are sent from here.
   templateFrom:   '/template/from',
-  // Tebex-Store der Guild. Der Bot lässt diese Pfade nur für den Guild-Besitzer
-  // zu und prüft das selbst gegen guild.ownerId.
+  // The guild's Tebex store. The bot only allows these paths for the guild
+  // owner and checks that itself against guild.ownerId.
   tebexSecret: '/tebex/secret',
   tebexReveal: '/tebex/reveal',
   tebexClear:  '/tebex/clear',
@@ -52,9 +52,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'invalid_action' }, { status: 400 });
   }
 
-  // action, guildId und userId aus dem Client-Body entfernen. Alle drei setzt
-  // ausschließlich der Server aus der signierten Session — sonst könnte sich
-  // jemand mit einer fremden userId als Guild-Besitzer ausgeben.
+  // Strip action, guildId and userId from the client body. All three are set
+  // exclusively by the server from the signed session; otherwise someone could
+  // pose as the guild owner with somebody else's userId.
   const { action: _a, guildId: _g, userId: _u, ...payload } = body;
   void _a; void _g; void _u;
 

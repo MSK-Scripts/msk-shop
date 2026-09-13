@@ -4,18 +4,18 @@ import { istEinmaligeAdresse, localePath } from '@/lib/lang'
 import { siteUrl } from '@/lib/siteUrl'
 
 /**
- * robots.txt — von Next.js zur Build-Zeit unter /robots.txt ausgeliefert.
+ * robots.txt: served by Next.js at build time under /robots.txt.
  *
- * Alles was hinter einer Session steht (Dashboards, Verify-Flows, Account,
- * Checkout) oder rein funktional ist (API, Botproxy) wird ausgeschlossen: Diese
- * Routen rendern für Crawler ohnehin nur einen Redirect und würden das
- * Crawl-Budget auf Seiten verbrennen, die nie in den Index gehören.
+ * Everything behind a session (dashboards, verify flows, account,
+ * checkout) or purely functional (API, Botproxy) is excluded: for crawlers
+ * these routes only render a redirect anyway and would burn the crawl
+ * budget on pages that never belong in the index.
  *
- * **Jede Sperre gilt in beiden Sprachen.** Seit die Sprache im Pfad steht, ist
- * `/de/cart` eine eigene Adresse, und eine Zeile `Disallow: /cart` sagt über
- * sie nichts. Nachgemessen am 23.08.2026: `/de/login` und `/de/cart` waren
- * crawlbar und trugen `index, follow`. Deshalb wird die Liste aus einer Quelle
- * für beide Fassungen erzeugt, statt sie von Hand doppelt zu pflegen.
+ * **Every block applies in both languages.** Since the language is in the path,
+ * `/de/cart` is an address of its own, and a line `Disallow: /cart` says nothing
+ * about it. Measured on 23.08.2026: `/de/login` and `/de/cart` were
+ * crawlable and carried `index, follow`. That is why the list is generated from
+ * one source for both versions instead of maintaining it twice by hand.
  */
 const GESPERRT = [
   '/api/',
@@ -34,11 +34,11 @@ const GESPERRT = [
 ]
 
 export default function robots(): MetadataRoute.Robots {
-  // `localePath` hängt kein Präfix an einen Pfad der Standardsprache, die
-  // englische Fassung bleibt also wörtlich stehen. Was es ohnehin nur einmal
-  // gibt (API, Auth, Botproxy), bekommt keine zweite Zeile: unter `/de/` liefert
-  // das seit dem 23.08.2026 ein 404, und eine Sperre auf eine Adresse, die es
-  // nicht gibt, ist nur Rauschen in einer Datei, die jemand lesen können soll.
+  // `localePath` adds no prefix to a path in the default language, so the
+  // English version stays exactly as written. What exists only once anyway
+  // (API, Auth, Botproxy) gets no second line: under `/de/` that has returned
+  // a 404 since 23.08.2026, and blocking an address that does not exist is
+  // just noise in a file that someone is supposed to be able to read.
   const disallow = GESPERRT.flatMap(p =>
     istEinmaligeAdresse(p) ? [p] : [localePath('en', p), localePath('de', p)])
 
@@ -50,9 +50,9 @@ export default function robots(): MetadataRoute.Robots {
         disallow,
       },
     ],
-    // Zwei Dateien, weil die Bilder-Sitemap einen eigenen Namespace trägt und
-    // in die Tausende geht. Beide müssen hier stehen, sonst findet ein Crawler
-    // die zweite nur über die Search Console.
+    // Two files, because the image sitemap carries its own namespace and
+    // runs into the thousands. Both must be listed here, otherwise a crawler
+    // only finds the second one through the Search Console.
     sitemap: [`${siteUrl()}/sitemap.xml`, `${siteUrl()}/sitemap-images.xml`],
     host:    siteUrl(),
   }

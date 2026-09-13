@@ -42,14 +42,14 @@ function tierBadgeClass(tier: Tier): string {
 }
 
 /**
- * Registrierungsdatum fuer die Tabelle.
+ * Registration date for the table.
  *
- * Nur der Tag in der Zelle, die volle Zeit haengt im `title`. Die Uhrzeit
- * braucht man im Supportfall, aber sie in jeder Zeile mitzudrucken macht die
- * Spalte doppelt so breit als die Information wert ist.
+ * Only the day in the cell, the full time sits in the `title`. The time of day
+ * is needed in support cases, but printing it in every row makes the
+ * column twice as wide as the information is worth.
  *
- * Ein unlesbarer Wert wird durchgereicht statt zu "Invalid Date" zu werden:
- * die Rohform sagt wenigstens, was in der Datenbank steht.
+ * An unreadable value is passed through instead of becoming "Invalid Date":
+ * the raw form at least says what is in the database.
  */
 function formatRegistered(iso: string): { day: string; full: string } {
   const d = new Date(iso)

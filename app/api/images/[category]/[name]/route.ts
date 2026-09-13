@@ -2,14 +2,14 @@ import { getImage } from '@/lib/images'
 import { publicJson, corsPreflight } from '@/lib/publicApi'
 
 /**
- * Einzelnes Bild, oeffentlich.
+ * Single image, public.
  *
  *   /api/images/vehicles/zentorno
  *
- * Gedacht fuer Scripts, die vor dem Anzeigen wissen wollen, ob es zu einem
- * Modellnamen ueberhaupt ein Bild gibt, und in welchen Massen. Wer das Bild
- * nur einbinden will, braucht diese Route nicht: die CDN-Adresse laesst sich
- * aus Kategorie und Modellname direkt bauen, genau dafuer ist sie flach.
+ * Meant for scripts that want to know, before displaying anything, whether a
+ * model name has an image at all, and in which dimensions. Anyone who only
+ * wants to embed the image does not need this route: the CDN address can be
+ * built directly from category and model name, which is exactly why it is flat.
  */
 export const revalidate = 300
 

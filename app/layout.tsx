@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from 'next'
 import { headers } from 'next/headers'
 
-// Fonts werden 100% lokal über @fontsource-variable geladen.
-// Keine Kommunikation zu fonts.googleapis.com — auch nicht zur Build-Zeit.
+// Fonts are loaded 100% locally via @fontsource-variable.
+// No communication with fonts.googleapis.com, not even at build time.
 import '@fontsource-variable/inter'
 import '@fontsource-variable/jetbrains-mono'
 
@@ -25,8 +25,8 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   themeColor: [
-    // Muss --color-background aus app/globals.css entsprechen, sonst zeigt die
-    // Browserleiste am Telefon einen anderen Ton als die Seite darunter.
+    // Must match --color-background from app/globals.css, otherwise the
+    // browser bar on a phone shows a different tone than the page below it.
     { media: '(prefers-color-scheme: light)', color: '#f3f3f4' },
     { media: '(prefers-color-scheme: dark)',  color: '#161a20' },
   ],
@@ -36,15 +36,15 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
   title: {
-    // Reine Notbremse. Seit dem 24.08.2026 setzt jede Seite ihren eigenen
-    // Titel, auch die fünf des Kaufpfads. Vorher stand hier der blosse
-    // Markenname, den der SEO-Durchgang vom 22.08. auf der Startseite
-    // abgeschafft hatte, weil er nichts aussagt; die Seiten ohne eigene
-    // Metadaten erbten ihn und hiessen live alle gleich.
+    // Pure emergency brake. Since 24.08.2026 every page sets its own
+    // title, including the five of the purchase path. Before, this held the
+    // bare brand name, which the SEO pass of 22.08. had removed from the
+    // home page because it says nothing; the pages without their own
+    // metadata inherited it and were all named the same live.
     default: "FiveM Scripts, Tools & Discord Bots | MSK Scripts",
-    // Unterseiten setzen nur ihren eigenen Namen und bekommen das Suffix von
-    // hier. Wer bewusst einen komplett eigenen Titel will (Landingpages),
-    // nutzt `title: { absolute: '…' }`.
+    // Subpages only set their own name and get the suffix from
+    // here. Anyone who deliberately wants a completely custom title (landing pages)
+    // uses `title: { absolute: '…' }`.
     template: "%s | MSK Scripts",
   },
   description:
@@ -63,9 +63,9 @@ export const metadata: Metadata = {
     apple: "/logo.png",
   },
   robots: { index: true, follow: true },
-  // Bewusst KEIN `alternates.canonical` und kein `openGraph.url` hier: Beides
-  // würde an jede Unterseite vererbt, die nichts eigenes setzt, und dort auf
-  // die Startseite zeigen. Canonicals werden pro Seite gesetzt.
+  // Deliberately NO `alternates.canonical` and no `openGraph.url` here: both
+  // would be inherited by every subpage that sets nothing of its own, and there
+  // point to the home page. Canonicals are set per page.
   openGraph: {
     type: "website",
     siteName: "MSK Scripts",
@@ -93,45 +93,45 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  // headers() opt-in zu Dynamic Rendering — Voraussetzung dafür, dass Next.js
-  // den Nonce aus proxy.ts in seine internen Hydration-Scripts injiziert.
-  // Ohne diesen Aufruf bliebe das Root-Layout statisch und die CSP würde alle
-  // Next.js-Scripts blockieren.
+  // headers() opts in to dynamic rendering: a precondition for Next.js
+  // injecting the nonce from proxy.ts into its internal hydration scripts.
+  // Without this call the root layout would stay static and the CSP would block
+  // all Next.js scripts.
   const hdrs = await headers()
   const nonce = hdrs.get('x-nonce') ?? undefined
 
-  // Sprache und sprachloser Pfad kommen aus proxy.ts. Server Components sehen
-  // die Adresse sonst nicht, und der Umschalter braucht den Pfad, um zur
-  // Gegenstück-URL zu navigieren.
+  // Language and language-less path come from proxy.ts. Server Components do
+  // not see the address otherwise, and the switcher needs the path to navigate
+  // to the counterpart URL.
   const lang = langFromHeader(hdrs.get(LANG_HEADER))
   const path = hdrs.get(PATH_HEADER) || '/'
   const t = layoutTranslations[lang]
 
-  // Auf den beiden Bot-Landingpages traegt die Organization-Auszeichnung keine
-  // Branchenbeschreibung. Die seitenweite Zeile nennt zuerst FiveM, und genau
-  // daraus haben Sprachmodelle geschlossen, der Ticket-Bot sei eine
-  // FiveM-Erweiterung. Weggelassen statt ersetzt, siehe organizationJsonLd().
+  // On the two bot landing pages the Organization markup carries no
+  // industry description. The site-wide line names FiveM first, and exactly
+  // from that language models concluded that the ticket bot was a
+  // FiveM extension. Omitted rather than replaced, see organizationJsonLd().
   const botLanding = path.startsWith('/ticketbot') || path.startsWith('/giveaway')
 
   return (
-    // `data-scroll-behavior="smooth"` ist keine Deko, sondern eine Anforderung
-    // von Next: sein Router schaltet `scroll-behavior: smooth` waehrend eines
-    // Routenwechsels nur ab, wenn dieses Attribut gesetzt ist
-    // (disable-smooth-scroll.js prueft `htmlElement.dataset.scrollBehavior`).
-    // Ohne das animiert der Browser Nexts `scrollTop = 0` ueber eine halbe
-    // Sekunde, und das sieht aus, als scrolle die Seite beim Seitenwechsel von
-    // selbst. Fuer Ankerspruenge bleibt das weiche Scrollen erhalten.
+    // `data-scroll-behavior="smooth"` is not decoration but a requirement
+    // of Next: its router only switches off `scroll-behavior: smooth` during a
+    // route change if this attribute is set
+    // (disable-smooth-scroll.js checks `htmlElement.dataset.scrollBehavior`).
+    // Without it the browser animates Next's `scrollTop = 0` over half a
+    // second, and that looks as if the page scrolls by itself on a page
+    // change. Smooth scrolling is kept for anchor jumps.
     <html lang={lang} data-scroll-behavior="smooth" suppressHydrationWarning>
       <body className="flex min-h-screen flex-col bg-[var(--color-background)] text-[var(--color-foreground)] antialiased">
         {/*
-          Sprungmarke, WCAG 2.4.1 (Level A). Bewusst hier und nicht im Header:
-          der liegt hinter einer <Suspense>-Grenze (HeaderInner nutzt
-          useSearchParams), waere also im gestreamten Markup zeitweise nicht da
-          — und eine Sprungmarke, die erst spaeter erscheint, ist keine.
-          Server-gerendert, damit sie ohne JavaScript funktioniert.
+          Skip link, WCAG 2.4.1 (Level A). Deliberately here and not in the header:
+          that sits behind a <Suspense> boundary (HeaderInner uses
+          useSearchParams), so it would at times be missing from the streamed markup,
+          and a skip link that only appears later is not one.
+          Server-rendered so that it works without JavaScript.
 
-          Die Darstellung steckt komplett in `.skip-link` (app/globals.css) und
-          nicht in Utility-Klassen. Warum, steht dort.
+          The styling lives entirely in `.skip-link` (app/globals.css) and
+          not in utility classes. The reason is given there.
         */}
         <a href="#main" className="skip-link">
           {t.skip_to_content}

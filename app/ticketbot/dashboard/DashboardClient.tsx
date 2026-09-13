@@ -84,7 +84,7 @@ function StatusBadge({ status, t }: { status: Guild['domain_status']; t: { activ
   return null
 }
 
-/** Aufsteigende Reihenfolge der Stufen. Steuert, was als Upgrade angeboten wird. */
+/** Ascending order of the tiers. Controls what is offered as an upgrade. */
 const TIER_ORDER: Tier[] = ['basic', 'premium', 'premium_plus', 'business']
 
 type PaidTier = Exclude<Tier, 'basic'>
@@ -120,8 +120,8 @@ export default function DashboardClient({ guilds, serverIp }: Props) {
     try {
       await fetch('/api/dashboard/logout', { method: 'POST' })
     } catch { /* leave even on network error */ }
-    // refresh() nach push(): /ticketbot/verify liest das Session-Cookie
-    // server-seitig, und das ist gerade gelöscht worden.
+    // refresh() after push(): /ticketbot/verify reads the session cookie
+    // server-side, and that has just been deleted.
     router.push('/ticketbot/verify')
     router.refresh()
   }
@@ -159,7 +159,7 @@ export default function DashboardClient({ guilds, serverIp }: Props) {
           </div>
         )}
 
-        {/* Per-guild panel — keyed so all local state resets on server switch */}
+        {/* Per-guild panel, keyed so all local state resets on server switch */}
         {selected && (
           <GuildPanel
             key={selected.guild_id}
@@ -204,7 +204,7 @@ function GuildPanel({
   ]
 
   const hasPremium = guild.tier !== 'basic'
-  // Alles oberhalb der aktuellen Stufe ist ein moegliches Upgrade.
+  // Everything above the current tier is a possible upgrade.
   const upgradeTargets = TIER_ORDER.slice(TIER_ORDER.indexOf(guild.tier) + 1) as PaidTier[]
 
   // While a trial runs, expires_at carries its end. Derived during render, not
@@ -235,10 +235,10 @@ function GuildPanel({
   // Subscription (Stripe)
   const [billingLoading, setBillingLoading] = useState<null | PaidTier | 'manage'>(null)
   const [billingError, setBillingError] = useState<string | null>(null)
-  // § 312j Abs. 2 BGB verlangt die wesentlichen Angaben unmittelbar VOR der
-  // Bestellschaltflaeche. Der Klick auf eine Stufe bestellt deshalb nicht mehr
-  // direkt, sondern klappt die Zusammenfassung auf; erst der Knopf darin
-  // startet den Checkout.
+  // § 312j Abs. 2 BGB requires the essential information immediately BEFORE the
+  // order button. Clicking a tier therefore no longer orders directly, but
+  // expands the summary; only the button inside it starts the
+  // checkout.
   const [pendingTier, setPendingTier] = useState<PaidTier | null>(null)
 
   const showMsg = (type: 'success' | 'error' | 'info', text: string) => setMessage({ type, text })
@@ -254,9 +254,9 @@ function GuildPanel({
       })
       const data = await res.json()
       if (!res.ok || !data.url) { setBillingError(data.error ?? t.sub_err); return }
-      // assign() statt der Zuweisung an window.location.href: react-hooks/immutability
-      // wertet die Zuweisung als Aenderung einer ausserhalb der Komponente
-      // definierten Variable. Der Aufruf macht dasselbe, inklusive History-Eintrag.
+      // assign() instead of assigning to window.location.href: react-hooks/immutability
+      // treats the assignment as mutating a variable defined outside the
+      // component. The call does the same, including the history entry.
       window.location.assign(data.url)
     } catch { setBillingError(t.sub_err) }
     finally   { setBillingLoading(null) }
@@ -273,9 +273,9 @@ function GuildPanel({
       })
       const data = await res.json()
       if (!res.ok || !data.url) { setBillingError(data.error ?? t.sub_err); return }
-      // assign() statt der Zuweisung an window.location.href: react-hooks/immutability
-      // wertet die Zuweisung als Aenderung einer ausserhalb der Komponente
-      // definierten Variable. Der Aufruf macht dasselbe, inklusive History-Eintrag.
+      // assign() instead of assigning to window.location.href: react-hooks/immutability
+      // treats the assignment as mutating a variable defined outside the
+      // component. The call does the same, including the history entry.
       window.location.assign(data.url)
     } catch { setBillingError(t.sub_err) }
     finally   { setBillingLoading(null) }
@@ -438,13 +438,13 @@ function GuildPanel({
         </div>
       </div>
 
-      {/* Bestellzusammenfassung (§ 312j Abs. 2 BGB).
-          Steht unmittelbar vor der Bestellschaltflaeche und nennt Leistung,
-          Gesamtpreis und Laufzeit, dazu die Links auf AGB und
-          Widerrufsbelehrung. Bewusst als aufklappender Block und nicht als
-          Modal: ein `position: fixed`-Overlay in einem Teilbaum mit `sticky`
-          landet unter fremden Elementen, das hat am 18.08.2026 schon einmal
-          die Galerie ueber den Dialog gelegt. */}
+      {/* Order summary (§ 312j Abs. 2 BGB).
+          Sits immediately before the order button and names the service,
+          total price and term, plus the links to the terms (AGB) and the
+          cancellation policy. Deliberately an expanding block and not a
+          modal: a `position: fixed` overlay in a subtree with `sticky`
+          ends up beneath other elements, which on 18.08.2026 already once
+          put the gallery over the dialog. */}
       {pendingTier && (
         <div className="mb-6 rounded-lg border border-[var(--color-primary)]/30 bg-[color-mix(in_oklab,var(--color-primary)_6%,transparent)] p-4">
           <h2 className="text-sm font-bold text-[var(--color-foreground)]">{t.sub_confirm_title}</h2>
@@ -476,8 +476,8 @@ function GuildPanel({
             {t.sub_confirm_legal_post}
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
-            {/* Der Wortlaut ist gesetzlich vorgegeben (§ 312j Abs. 3 BGB) und
-                darf nicht zu "Abonnieren" oder "Weiter" verkuerzt werden. */}
+            {/* The wording is prescribed by law (§ 312j Abs. 3 BGB) and
+                must not be shortened to "Abonnieren" or "Weiter". */}
             <Button size="sm" onClick={() => handleCheckout(pendingTier)} disabled={billingLoading !== null}>
               {billingLoading === pendingTier
                 ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -578,8 +578,8 @@ function GuildPanel({
           <>
             {message && (
               <div
-                // Die Meldung erscheint nach einer Aktion. Fehler unterbrechen,
-                // Erfolg und Hinweis melden sich höflich.
+                // The message appears after an action. Errors interrupt,
+                // success and notices announce themselves politely.
                 role={message.type === 'error' ? 'alert' : 'status'}
                 className={cn(
                   'mb-4 flex items-start gap-2 rounded-lg border px-3 py-2.5 text-xs',
@@ -662,7 +662,7 @@ function GuildPanel({
       </Card>
 
       {/* Second card on the same tab: the customer's own domain in front of the
-          hosted bot's DASHBOARD. Same idea as the card above, different vhost —
+          hosted bot's DASHBOARD. Same idea as the card above, different vhost:
           that one serves transcript files, this one proxies to the bot's port
           and needs its own certificate. */}
       <DashboardDomainCard
@@ -676,10 +676,10 @@ function GuildPanel({
       </div>
       )}
 
-      {/* Transcripts overview — für alle eingeloggten Nutzer (nur die eigenen) */}
+      {/* Transcripts overview: for all logged-in users (only their own) */}
       {tab === 'transcripts' && <TranscriptsCard lang={lang} guildId={guildId} />}
 
-      {/* Bot Config Editor — nur für hosted customers */}
+      {/* Bot Config Editor: only for hosted customers */}
       {tab === 'hosting' && (
         // The gap lives here, not on the individual cards. Each of these
         // components used to carry its own margin, and they disagreed: the
@@ -708,7 +708,7 @@ function GuildPanel({
 //     permissions, so the customer's SUPPORT TEAM can sign in. This is the
 //     address that belongs in their handbook.
 //   • The handoff through msk-scripts.de. Authenticated by msk-shop, which only
-//     ever knows the guild's OWNER — nobody else can use it. Kept as the
+//     ever knows the guild's OWNER; nobody else can use it. Kept as the
 //     recovery path for when the Discord redirect URI is wrong, because that is
 //     precisely when the first route is unusable.
 function BotDashboardAddress({ guild, t }: { guild: Guild; t: T }) {

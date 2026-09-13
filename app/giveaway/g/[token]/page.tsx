@@ -12,8 +12,8 @@ interface ResultRow {
   token: string; giveaway_id: string; title: string; prize: string | null;
   winners_count: number; entry_count: number; winners: unknown; ended_at: string | Date;
 }
-// `prize` ist nur gesetzt, wenn jeder Gewinner seinen eigenen Preis bekommt.
-// Sonst gilt die gemeinsame Liste in `row.prize`.
+// `prize` is only set when every winner gets their own prize.
+// Otherwise the shared list in `row.prize` applies.
 interface Winner { username: string; prize: string | null }
 
 function parseWinners(raw: unknown): Winner[] {
@@ -28,9 +28,9 @@ function parseWinners(raw: unknown): Winner[] {
     }));
 }
 
-// Bewusst KEINE SEO/OpenGraph für die Ergebnis-Seiten: nicht indexieren und
-// keine Link-Vorschau. (In Discord wird die Vorschau zusätzlich bot-seitig per
-// SuppressEmbeds unterdrückt.)
+// Deliberately NO SEO/OpenGraph for the results pages: no indexing and
+// no link preview. (In Discord the preview is additionally suppressed on the
+// bot side via SuppressEmbeds.)
 export const metadata = {
   title: 'Giveaway Results',
   robots: { index: false, follow: false },
@@ -49,8 +49,8 @@ export default async function GiveawayResultPage({ params }: { params: Promise<{
   const t = giveawayResultTranslations[lang];
   const winners = parseWinners(row.winners);
   const endedAt = new Date(row.ended_at);
-  // Trägt jeder Gewinner seinen eigenen Preis, steht die gemeinsame Zeile oben
-  // nur doppelt da.
+  // If every winner has their own prize, the shared line at the top would
+  // only be there twice.
   const perWinnerPrizes = winners.some((w) => w.prize);
 
   return (
@@ -105,8 +105,8 @@ export default async function GiveawayResultPage({ params }: { params: Promise<{
 
       <p className="mt-6 text-center font-mono text-[0.625rem] uppercase tracking-widest text-[var(--color-muted-foreground)]">{t.footer}</p>
 
-      {/* Meldeweg nach Art. 16 DSA. Titel, Beschreibung und Gewinnernamen
-          stammen vom Serverbetreiber, nicht von uns. */}
+      {/* Reporting channel under Art. 16 DSA. Title, description and winner
+          names come from the server operator, not from us. */}
       <div className="mt-3 text-center">
         <ReportLink path={`/giveaway/g/${row.token}`} />
       </div>

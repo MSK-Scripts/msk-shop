@@ -6,8 +6,8 @@ vi.mock('@/lib/db', () => ({ queryOne: (...a: unknown[]) => queryOne(...a) }))
 const { loadShopStats, formatReversalRate } = await import('@/lib/shopStats')
 
 /**
- * Die Zahlen ersetzen unbelegte Behauptungen auf der Startseite. Diese Tests
- * halten fest, dass lieber gar nichts angezeigt wird als etwas Falsches.
+ * The numbers replace unsupported claims on the home page. These tests
+ * pin down that showing nothing at all is preferred over showing something wrong.
  */
 
 const frisch = (over: Record<string, unknown> = {}) => ({

@@ -2,12 +2,12 @@ import { AlertCircle } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 
 /**
- * Fehlerkasten der Admin-Tabs.
+ * Error box of the admin tabs.
  *
- * Stand bis zum 22.08.2026 achtmal byteidentisch in acht Dateien, und in
- * keiner davon mit `role="alert"`. Jeder dieser Fehler erscheint nach einer
- * Anfrage, also genau dann, wenn niemand auf die Stelle schaut, an der er
- * auftaucht.
+ * Until 22.08.2026 it existed eight times, byte-identical, in eight files, and
+ * in none of them with `role="alert"`. Every one of these errors appears after
+ * a request, i.e. exactly when nobody is looking at the spot where it
+ * shows up.
  */
 export function ErrorCard({ message }: { message: string }) {
   return (

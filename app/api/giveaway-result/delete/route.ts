@@ -2,8 +2,8 @@ import { NextResponse }   from 'next/server';
 import { timingSafeEqual } from 'crypto';
 import { query }           from '@/lib/db';
 
-// Löscht alle öffentlichen Ergebnis-Seiten einer Guild — aufgerufen vom Bot,
-// wenn er aus einem Server entfernt wird (Datenlöschung). Auth wie /publish.
+// Deletes all public result pages of a guild, called by the bot when it is
+// removed from a server (data deletion). Auth as in /publish.
 const SECRET = process.env.GIVEAWAY_RESULT_SECRET ?? '';
 
 function authorized(req: Request): boolean {

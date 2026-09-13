@@ -41,12 +41,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 });
   }
 
-  // Auftragsverarbeitungsvertrag (Art. 28 DSGVO).
+  // Data processing agreement (Art. 28 DSGVO).
   //
-  // Fuer den Inhalt der Transkripte ist der Serverbetreiber Verantwortlicher
-  // und wir sind Auftragsverarbeiter. Ohne geschlossene Vereinbarung waere die
-  // Verarbeitung nach Art. 28 Abs. 3 DSGVO nicht zulaessig, deshalb ist die
-  // Zustimmung hier eine echte Bedingung und nicht nur ein Haken im Formular.
+  // For the content of the transcripts the server operator is the controller
+  // and we are the processor. Without a concluded agreement the processing
+  // would not be permitted under Art. 28 Abs. 3 DSGVO, which is why consent is
+  // a real condition here and not just a checkbox in the form.
   if (!dpaAccepted) {
     return NextResponse.json({ error: 'dpa_required' }, { status: 400 });
   }
@@ -107,12 +107,12 @@ export async function POST(req: Request) {
   const guildName = session.guilds.find(g => g.id === guildId)?.name?.slice(0, 120) ?? null;
 
   if (existingGuild) {
-    // Guild exists — rotate the API key and (re)bind ownership; do NOT touch
+    // Guild exists: rotate the API key and (re)bind ownership; do NOT touch
     // tier / expires_at / stripe_* so an active subscription survives re-verify.
     tier = existingGuild.tier;
-    // `COALESCE` haelt den ersten Zeitpunkt fest: massgeblich ist, wann die
-    // Vereinbarung zum ersten Mal geschlossen wurde, nicht wann zuletzt ein
-    // neuer API-Schluessel gezogen wurde.
+    // `COALESCE` keeps the first timestamp: what counts is when the agreement
+    // was concluded for the first time, not when a new API key was last
+    // issued.
     // The access columns are reset here because completing the wizard IS a
     // fresh, authoritative Discord check for this guild: the id only ever gets
     // this far after passing `canManageGuild` in the callback.
@@ -125,7 +125,7 @@ export async function POST(req: Request) {
       [session.discordUserId, apiKey, guildName, guildId],
     );
   } else {
-    // New guild — create record on the free tier
+    // New guild: create record on the free tier
     tier = 'basic';
     await query(
       `INSERT INTO ticketbot_guilds
@@ -136,7 +136,7 @@ export async function POST(req: Request) {
     );
   }
 
-  // Clear the verify session cookie — flow is complete. The dashboard session is
+  // Clear the verify session cookie; flow is complete. The dashboard session is
   // account-scoped (covers all of this user's guilds).
   const dashboardToken = signDashboardSession({ discordUserId: session.discordUserId });
   const res = NextResponse.json({ success: true, apiKey, tier });

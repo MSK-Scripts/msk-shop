@@ -3,16 +3,16 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 /**
- * Kontrast der Design-Tokens gegen WCAG AA.
+ * Contrast of the design tokens against WCAG AA.
  *
- * Liest die Werte direkt aus `app/globals.css`, damit der Test die echten
- * Tokens prüft und nicht eine Kopie, die still auseinanderläuft. Vorher lagen
- * neun Paare unter AA, am schwersten der Primärbutton (3,15:1 hell, 2,69:1
- * dunkel) und gedämpfter Text auf getönter Fläche (4,40:1).
+ * Reads the values straight from `app/globals.css`, so the test checks the real
+ * tokens and not a copy that silently drifts apart. Before, nine pairs were
+ * below AA, worst of all the primary button (3.15:1 light, 2.69:1
+ * dark) and muted text on a tinted surface (4.40:1).
  *
- * Bewusst nicht im Browser gemessen: `color-mix()` kommt dort als
- * `color(srgb …)` zurück und CSS-Übergänge frieren in headless laufenden
- * Renderern auf ihrem Startwert ein. Beides erzeugt Falschbefunde.
+ * Deliberately not measured in the browser: `color-mix()` comes back there as
+ * `color(srgb …)`, and CSS transitions freeze at their start value in renderers
+ * running headless. Both produce false findings.
  */
 
 const CSS = readFileSync(join(process.cwd(), 'app', 'globals.css'), 'utf8')
@@ -42,21 +42,21 @@ export function contrast(a: string, b: string): number {
   return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05)
 }
 
-/** srgb-Mischung, entspricht `color-mix(in srgb, a p%, b)`. */
+/** sRGB mix, equivalent to `color-mix(in srgb, a p%, b)`. */
 function mix(a: string, b: string, p: number): string {
   const A = channels(a), B = channels(b)
   return '#' + A.map((v, i) => Math.round(v * p + B[i] * (1 - p)).toString(16).padStart(2, '0')).join('')
 }
 
 const light = readTokens('light')
-// Dark überschreibt nur einen Teil der Tokens, der Rest wird geerbt.
+// Dark overrides only some of the tokens, the rest is inherited.
 const dark = { ...light, ...readTokens('dark') }
 
 describe.each([
   ['Light-Mode', light],
   ['Dark-Mode', dark],
 ])('%s: Textkontrast erreicht WCAG AA', (_name, t) => {
-  // Footer und einige Sektionen liegen auf einer gemischten Fläche.
+  // The footer and some sections sit on a mixed surface.
   const gemischt = mix(t.muted, t.background, 0.4)
 
   const paare: Array<[string, string, string, number]> = [
@@ -68,9 +68,9 @@ describe.each([
     ['Label auf Primärfüllung',        t['primary-foreground'],  t.primary,    4.5],
     ['Primärgrün als Text',            t.primary,                t.background, 4.5],
     ['Primärgrün als Text auf Fläche', t.primary,                t.muted,      4.5],
-    // Links in Tebex-Beschreibungen und Rechtstexten stehen auf einer Karte,
-    // nicht auf dem Seitengrund. Seit die Karte im hellen Theme nicht mehr
-    // weiß ist, ist das ein eigenes Paar und keine Wiederholung.
+    // Links in Tebex descriptions and legal texts sit on a card,
+    // not on the page background. Since the card in the light theme is no longer
+    // white, this is a pair of its own and not a repeat.
     ['Primärgrün als Text auf Karte',  t.primary,                t.card,       4.5],
     ['Label auf Erfolgsfüllung',       t['success-foreground'],  t.success,    4.5],
     ['Label auf Warnfüllung',          t['warning-foreground'],  t.warning,    4.5],
@@ -81,11 +81,11 @@ describe.each([
     ['Text auf Karte',                 t['card-foreground'],     t.card,       4.5],
     ['Text auf Sekundärfüllung',       t['secondary-foreground'], t.secondary, 4.5],
     ['Text auf Akzentfüllung',         t['accent-foreground'],   t.accent,     4.5],
-    // Die vier Farben der Aufteilungsdiagramme auf beiden Statistikseiten.
-    // Sie stehen als Text auf der getönten Kachel, nicht nur als Balkenfläche.
-    // Vorher waren es rohe Tailwind-Klassen, die dieser Test nicht sehen konnte:
-    // `yellow-400` mass dort 1,39:1, `sky-400` 1,95:1, `rose-400` 2,45:1. Alle
-    // drei waren nur fürs dunkle Theme gewählt.
+    // The four colours of the breakdown charts on both statistics pages.
+    // They appear as text on the tinted tile, not only as bar fill.
+    // Before, they were raw Tailwind classes this test could not see:
+    // `yellow-400` measured 1.39:1 there, `sky-400` 1.95:1, `rose-400` 2.45:1. All
+    // three had been chosen for the dark theme only.
     ['Diagrammfarbe Grün auf Kachel',      t.primary,               t.muted,      4.5],
     ['Diagrammfarbe Bernstein auf Kachel', t.warning,               t.muted,      4.5],
     ['Diagrammfarbe Blau auf Kachel',      t.info,                  t.muted,      4.5],
@@ -95,10 +95,10 @@ describe.each([
     ['Diagrammfarbe Magenta auf Kachel',  t['chart-fuchsia'],      t.muted,      4.5],
     ['Gefahrfarbe als Text auf Kachel',    t.danger,                t.muted,      4.5],
     ['Gefahrfarbe als Text auf Karte',     t.danger,                t.card,       4.5],
-    // Live-Log-Konsole des gehosteten Bots. Ihre Fläche ist in beiden Themes
-    // dunkel, deshalb stehen hier in beiden Durchläufen dieselben Zahlen.
-    // Vorher stand die Konsole auf `--color-background`, im hellen Theme also
-    // auf Weiß, wo die normale Zeile 1,48:1 mass.
+    // Live log console of the hosted bot. Its surface is dark in both themes,
+    // so both runs show the same numbers here.
+    // Before, the console sat on `--color-background`, so in the light theme
+    // on white, where the normal line measured 1.48:1.
     ['Logzeile auf der Konsole',        t['log-text'],           t.console,    4.5],
     ['Gedämpfte Logzeile',              t['log-dim'],            t.console,    4.5],
     ['Fehlerzeile im Log',              t['log-error'],          t.console,    4.5],
@@ -114,23 +114,23 @@ describe.each([
   })
 
   /**
-   * Ökosystem-Badges.
+   * Ecosystem badges.
    *
-   * Sie standen bis zum 22.08.2026 als rohe Tailwind-Klassen in
-   * `components/ui/Badge.tsx` und waren damit für diesen Test unsichtbar, der
-   * nur `--color-*` aus `globals.css` liest. Im Light-Theme lagen alle neun
-   * unter AA, am schlimmsten `js` mit 1,46:1.
+   * Until 22.08.2026 they were raw Tailwind classes in
+   * `components/ui/Badge.tsx` and therefore invisible to this test, which
+   * only reads `--color-*` from `globals.css`. In the light theme all nine were
+   * below AA, worst of all `js` at 1.46:1.
    *
-   * Geprüft wird der Fall, der auch gerendert wird: der Text sitzt nicht auf
-   * der Karte, sondern auf seiner eigenen 12-Prozent-Fläche darüber. Die ist
-   * dem Text ähnlicher als die Karte, der Kontrast also niedriger. Wer nur
-   * gegen die Karte rechnet, misst sich zu gut.
+   * The case checked is the one that is actually rendered: the text does not sit on
+   * the card but on its own 12 percent surface above it. That surface is
+   * closer to the text than the card, so the contrast is lower. Anyone who only
+   * calculates against the card measures themselves too kindly.
    */
   /**
-   * Tier-Badge Premium+ im Ticketbot-Dashboard. Eigener Fall, weil es mit 10 %
-   * getönt wird und nicht mit 12 % wie die Ökosystem-Badges. Es war bis zum
-   * 24.08.2026 die letzte Farbe ausserhalb des Tokenblocks und lag deshalb
-   * ungesehen in beiden Themes unter AA.
+   * Premium+ tier badge in the ticketbot dashboard. A case of its own, because it is
+   * tinted at 10 % and not at 12 % like the ecosystem badges. Until
+   * 24.08.2026 it was the last colour outside the token block and therefore sat
+   * unseen below AA in both themes.
    */
   it('Tier-Badge Premium+ ist auf seiner eigenen Fläche lesbar', () => {
     expect(t['tier-plus'], 'Token --color-tier-plus fehlt').toBeTruthy()

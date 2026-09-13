@@ -9,15 +9,15 @@ import { legalFormTranslations, layoutTranslations } from '@/lib/i18n'
 import { Button } from '@/components/ui/Button'
 import { LegalFormShell, Field, INPUT_CLASS } from '@/components/legal/LegalFormShell'
 
-// ── Widerrufsfunktion (§ 356a BGB) ──────────────────────────────────────────
+// ── Withdrawal function (§ 356a BGB)────────────────────────────────────────
 //
-// Drei Felder, ein Knopf, kein Login und kein Captcha. Die Norm erlaubt genau
-// die Abfrage von Name, Angaben zur Identifizierung des Vertrags und
-// Kontaktdaten — mehr zu verlangen wäre eine unzulässige Erschwerung, und
-// jedes zusätzliche Feld ist ein Grund mehr, abzubrechen.
+// Three fields, one button, no login and no captcha. The provision allows
+// asking for exactly the name, details identifying the contract and
+// contact details; asking for more would be an unlawful obstacle, and
+// every additional field is one more reason to give up.
 //
-// Kein `setState` in einem Effect: der ganze Zustand entsteht in
-// Event-Handlern, und die Erfolgsmeldung wird erst nach dem `await` gesetzt.
+// No `setState` in an effect: all of the state comes from event
+// handlers, and the success message is only set after the `await`.
 
 interface Done { title: string; text: string }
 
@@ -51,11 +51,11 @@ export function WithdrawalClient() {
 
       if (res.status === 429) { setErrors({ _: t.err_rate }); return }
 
-      // 400 liefert unsere Route als JSON mit Feldfehlern, alles andere kann
-      // auch eine HTML-Fehlerseite sein. Deshalb wird das Parsen versucht und
-      // darf scheitern — dieselbe Lehre wie bei `readJsonResource`.
+      // For a 400 our route returns JSON with field errors, anything else can
+      // also be an HTML error page. So parsing is attempted and is allowed
+      // to fail, the same lesson as with `readJsonResource`.
       let data: { errors?: Record<string, string>; timestamp?: string } | null = null
-      try { data = await res.json() } catch { /* kein verwertbarer Körper */ }
+      try { data = await res.json() } catch { /* no usable body */ }
 
       if (!res.ok) {
         if (data?.errors) setErrors(data.errors)
@@ -126,8 +126,8 @@ export function WithdrawalClient() {
           <p role="alert" className="mb-4 text-sm text-[var(--color-danger)]">{errors._}</p>
         )}
 
-        {/* Der Wortlaut ist gesetzlich vorgegeben und darf nicht mit einem
-            allgemeinen „Absenden" ersetzt werden. */}
+        {/* The wording is prescribed by law and must not be replaced with a
+            generic "Submit". */}
         <Button type="submit" disabled={sending}>
           {sending && <Loader2 className="h-4 w-4 animate-spin" />}
           {sending ? t.submitting : t.revoke_submit}

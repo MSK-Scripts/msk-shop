@@ -191,24 +191,24 @@ async function handleTrialWillEnd(sub: Stripe.Subscription): Promise<void> {
 
 /** Downgrade a guild to basic and archive its hosted bot (if any). */
 /**
- * Bestellbestaetigung nach § 312f BGB.
+ * Order confirmation under § 312f BGB.
  *
- * Stripe schickt eine Zahlungsquittung, aber keine Vertragsbestaetigung: dort
- * stehen weder Laufzeit noch Kuendigung noch die AGB, und ueber den Widerruf
- * sagt sie nichts. Ohne diese Mail fehlt dem Kunden der Vertragsinhalt auf
- * einem dauerhaften Datentraeger.
+ * Stripe sends a payment receipt, but no contract confirmation: it states
+ * neither the term nor cancellation nor the terms and conditions, and it says
+ * nothing about withdrawal. Without this mail the customer lacks the contract
+ * content "auf einem dauerhaften Datenträger" (on a durable medium).
  *
- * Doppelversand-Schutz wie bei der Trial-Erinnerung ueber eine Spalte, nicht
- * ueber den Handler: Stripe stellt Events auch mehrfach zu, und eine Mail
- * laesst sich nicht wie ein Zustand ueberschreiben. Gespeichert wird die
- * Abo-Id, damit ein spaeteres zweites Abo derselben Guild wieder eine
- * Bestaetigung bekommt.
+ * Protection against double sending works like the trial reminder, via a
+ * column, not via the handler: Stripe also delivers events more than once, and
+ * a mail cannot be overwritten like a state. The subscription id is stored so
+ * that a later second subscription of the same guild gets a confirmation
+ * again.
  */
 async function sendOrderConfirmation(sub: Stripe.Subscription): Promise<void> {
-  // `trustedGuildId` wirft bei einer unbrauchbaren Id. Hier wird das gefangen
-  // statt durchgereicht: eine fehlende Bestaetigungsmail darf den Webhook nicht
-  // scheitern lassen, sonst stellt Stripe endlos neu zu und der Abo-Zustand,
-  // der bereits geschrieben ist, wird jedes Mal erneut verarbeitet.
+  // `trustedGuildId` throws on an unusable id. It is caught here instead of
+  // passed on: a missing confirmation mail must not make the webhook fail,
+  // otherwise Stripe redelivers endlessly and the subscription state, which
+  // has already been written, gets processed again every time.
   let guildId: string;
   try {
     guildId = trustedGuildId(sub.metadata?.guild_id ?? '', 'stripe-webhook');
@@ -260,8 +260,8 @@ async function sendOrderConfirmation(sub: Stripe.Subscription): Promise<void> {
       }),
     });
   } catch (err) {
-    // Sperre wieder freigeben, damit ein erneuter Zustellversuch von Stripe
-    // die Bestaetigung nachholt.
+    // Release the lock again so that a new delivery attempt by Stripe sends
+    // the confirmation after all.
     await withTransaction(async (conn) => {
       await conn.execute(
         'UPDATE ticketbot_guilds SET order_confirmation_sub_id = NULL WHERE guild_id = ? AND order_confirmation_sub_id = ?',
@@ -272,7 +272,7 @@ async function sendOrderConfirmation(sub: Stripe.Subscription): Promise<void> {
   }
 }
 
-/** Anzeigenamen der Stufen fuer die Bestellbestaetigung. */
+/** Display names of the tiers for the order confirmation. */
 const TIER_LABELS: Record<Tier, string> = {
   basic:        'Basic',
   premium:      'Premium',
@@ -293,7 +293,7 @@ async function downgradeGuild(guildId: string): Promise<void> {
     );
     // Clamp existing transcripts so paid-tier retention (e.g. 180d) never
     // outlives the paid membership, but grant a basic-length grace period from
-    // the downgrade instant (NOW() + basic days), not from upload — so a customer
+    // the downgrade instant (NOW() + basic days), not from upload, so a customer
     // never loses transcripts the moment they cancel. LEAST() only ever shortens.
     await conn.execute(
       `UPDATE ticketbot_transcripts
@@ -306,9 +306,9 @@ async function downgradeGuild(guildId: string): Promise<void> {
   // Reclaim premium-only resources: stop the hosted bot and tear down the custom
   // domain vhost/cert (custom_domain is kept but demoted to pending_dns so a later
   // re-subscribe restores it). Both are best-effort and never throw.
-  // Die Id stammt aus `metadata.guild_id` eines Events, dessen Signatur gegen
-  // STRIPE_WEBHOOK_SECRET geprueft wurde. Es gibt hier keine Nutzersession,
-  // also wird die Herkunft explizit benannt statt stillschweigend angenommen.
+  // The id comes from `metadata.guild_id` of an event whose signature was
+  // verified against STRIPE_WEBHOOK_SECRET. There is no user session here,
+  // so the origin is named explicitly instead of silently assumed.
   const scoped = trustedGuildId(guildId, 'stripe-webhook');
   await archiveHostedBot(scoped);
   await teardownCustomDomain(scoped);
@@ -321,7 +321,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     return NextResponse.json({ error: 'Webhook not configured.' }, { status: 500 });
   }
 
-  // Raw body is required for signature verification — read before any parsing.
+  // Raw body is required for signature verification: read before any parsing.
   const rawBody   = await req.text();
   const signature = req.headers.get('stripe-signature') ?? '';
 
@@ -347,8 +347,8 @@ export async function POST(req: Request): Promise<NextResponse> {
         if (typeof session.subscription === 'string') {
           const sub = await getStripe().subscriptions.retrieve(session.subscription);
           await applySubscription(sub);
-          // Nach dem Freischalten, nicht davor: die Bestaetigung soll einen
-          // Vertrag beschreiben, der auch wirklich steht.
+          // After unlocking, not before: the confirmation should describe a
+          // contract that actually exists.
           await sendOrderConfirmation(sub);
         }
         break;
@@ -382,7 +382,7 @@ export async function POST(req: Request): Promise<NextResponse> {
       }
 
       case 'invoice.payment_succeeded': {
-        // Renewal — roll the guild's expiry forward to the new period end. The
+        // Renewal: roll the guild's expiry forward to the new period end. The
         // subscription reference lives in different places across Stripe API
         // versions, so resolve it defensively.
         const invoice = event.data.object as Stripe.Invoice;

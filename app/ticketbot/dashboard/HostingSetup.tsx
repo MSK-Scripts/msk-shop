@@ -179,14 +179,14 @@ function SetupCard({
   const [touched, setTouched]           = useState<Record<string, boolean>>({})
   const [busy, setBusy]                 = useState(false)
   const [error, setError]               = useState<string | null>(null)
-  // Auftragsverarbeitung (Art. 28 DSGVO). Nur bei der Ersteinrichtung
-  // gefragt: ein spaeteres Speichern der .env schliesst keinen neuen
-  // Vertrag, deshalb gilt der Haken bei `hosted` als gesetzt.
+  // Data processing (Art. 28 DSGVO). Only asked during the initial
+  // setup: saving the .env later does not conclude a new agreement,
+  // which is why the checkbox counts as ticked when `hosted`.
   const [dpaAccepted, setDpaAccepted]   = useState(false)
   // What the customer decided about an existing archive. The question is asked
   // BEFORE the form, not after a rejected submit: restoring must not require
   // typing a bot token, and demanding one to even reach the question would mean
-  // resetting it in Discord — which is a reinstallation, not a comeback.
+  // resetting it in Discord, which is a reinstallation, not a comeback.
   const [archiveChoice, setArchiveChoice] = useState<'restore' | 'discard' | null>(null)
 
   // While this is true the form stays hidden: the question comes first.
@@ -354,9 +354,9 @@ function SetupCard({
           </p>
         )}
 
-        {/* Beim Hosting liegt mehr auf unseren Systemen als beim reinen
-            Transcript-Service: die komplette Bot-Datenbank samt Discord-Ids des
-            Teams. Die Vereinbarung wird deshalb hier eigens bestaetigt. */}
+        {/* With hosting, more sits on our systems than with the plain
+            transcript service: the complete bot database including the team's
+            Discord ids. The agreement is therefore confirmed separately here. */}
         {!hosted && (
           <label className="mt-4 flex min-h-11 items-start gap-3">
             <input type="checkbox" checked={dpaAccepted}
@@ -407,9 +407,9 @@ function SetupCard({
  * still on disk.
  *
  * Deliberately a blocking question with no preselected answer. Both outcomes are
- * destructive in opposite directions — restoring resurrects data the customer
+ * destructive in opposite directions: restoring resurrects data the customer
  * may have wanted gone, starting fresh destroys the ticket history they may have
- * come back for — and only they know which.
+ * come back for, and only they know which.
  */
 function ArchiveChoice({
   archive, t, busy, onRestore, onDiscard,

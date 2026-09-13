@@ -52,12 +52,12 @@ interface CategoryStat {
 }
 
 /**
- * Was `/api/admin/images/stats` liefert.
+ * What `/api/admin/images/stats` returns.
  *
- * `uploadQueue` steht bewusst neben den Kategoriezahlen und nicht darin: eine
- * Einreichung liegt in `msk_image_uploads`, hat also weder eine Kategorie-Zeile
- * in `msk_images` noch Derivate im CDN. Sie unter `pending` einer Kategorie zu
- * mischen haette den Eindruck erweckt, die Datei sei schon da.
+ * `uploadQueue` deliberately sits next to the category counts, not inside them: a
+ * submission lives in `msk_image_uploads`, so it has neither a category row
+ * in `msk_images` nor derivatives on the CDN. Mixing it into a category's `pending`
+ * would have given the impression that the file is already there.
  */
 interface Figures {
   categories:  CategoryStat[]
@@ -86,10 +86,10 @@ interface SyncReport {
 
 const FILTERS = [
   { id: 'all',      label: 'All' },
-  // Absichtlich nicht "Awaiting review": dieser Filter zeigt Zeilen aus
-  // `msk_images` mit `status = 'pending'`, nicht die Einreichungen aus dem
-  // Uploads-Tab. Zwei Zahlen mit demselben Namen waren genau der Grund, warum
-  // die leere Kachel oben niemandem auffiel.
+  // Deliberately not "Awaiting review": this filter shows rows from
+  // `msk_images` with `status = 'pending'`, not the submissions from the
+  // Uploads tab. Two numbers with the same name were exactly the reason why
+  // nobody noticed the empty tile above.
   { id: 'pending',  label: 'Pending rows' },
   { id: 'no_label', label: 'Missing label' },
   { id: 'no_tags',  label: 'Missing tags' },
@@ -148,7 +148,7 @@ export default function ImagesTab({ canManage, canModerate, canDelete }: Props) 
   const stats = figures?.categories ?? null
 
   // Inline editor, one row at a time. Keyed by "category/name" because a name
-  // alone is not unique — `police` exists as a vehicle and as a ped, which is
+  // alone is not unique: `police` exists as a vehicle and as a ped, which is
   // the whole reason the category sits in the path.
   const [editKey, setEditKey]     = useState<string | null>(null)
   const [editLabel, setEditLabel] = useState('')
@@ -183,19 +183,19 @@ export default function ImagesTab({ canManage, canModerate, canDelete }: Props) 
   const queue = figures?.uploadQueue ?? 0
 
   /**
-   * Der `pending`-Chip erscheint nur, wenn es etwas zu finden gibt.
+   * The `pending` chip only appears when there is something to find.
    *
-   * Kein Codepfad schreibt heute `msk_images.status = 'pending'`: der Ingest
-   * laesst die Spalte auf ihrem Default `published`, und die Upload-Freigabe
-   * setzt den Wert ausdruecklich. Der Zustand ist also nur ueber ein UPDATE
-   * von Hand erreichbar. Der Chip bleibt trotzdem, denn eine solche Zeile
-   * waere in der Galerie unsichtbar (dort gilt `status = 'published'`) und
-   * ohne ihn im Admin nicht auffindbar: er ist der Ausweg aus dem Zustand,
-   * nicht seine Anzeige.
+   * No code path writes `msk_images.status = 'pending'` today: the ingest
+   * leaves the column at its default `published`, and the upload approval
+   * sets the value explicitly. The state can therefore only be reached through
+   * a manual UPDATE. The chip stays anyway, because such a row
+   * would be invisible in the gallery (where `status = 'published'` applies) and
+   * impossible to find in the admin without it: it is the way out of the state,
+   * not its display.
    *
-   * Der aktive Filter bleibt sichtbar, auch wenn die Zahl auf 0 faellt. Ein
-   * Filter, der wirkt und den man nicht sieht, ist schlimmer als ein Chip zu
-   * viel.
+   * The active filter stays visible even if the count drops to 0. A
+   * filter that is in effect but cannot be seen is worse than one chip too
+   * many.
    */
   const visibleFilters = FILTERS.filter(
     f => f.id !== 'pending' || (totals?.pending ?? 0) > 0 || filter === 'pending',
@@ -238,7 +238,7 @@ export default function ImagesTab({ canManage, canModerate, canDelete }: Props) 
       setEditKey(null)
       setConfirmKey(null)
       await reload()
-      // The counters move with every edit — a fixed label is one less in
+      // The counters move with every edit: a fixed label is one less in
       // "missing label", and that is the number this screen exists for.
       await reloadStats()
     } catch (e) {
@@ -319,10 +319,10 @@ export default function ImagesTab({ canManage, canModerate, canDelete }: Props) 
             <div className="mt-1 text-xs text-[var(--color-muted-foreground)]">{stats.length} categories</div>
           </Card>
           {/*
-            Zaehlt die Moderationsschlange aus `msk_image_uploads`, nicht die
-            `pending`-Zeilen der Tabelle darunter. Das war der Fehler: die
-            Kachel versprach "community uploads" und las eine Spalte, die eine
-            Einreichung nie erreicht.
+            Counts the moderation queue from `msk_image_uploads`, not the
+            `pending` rows of the table below. That was the bug: the
+            tile promised "community uploads" and read a column that a
+            submission never reaches.
           */}
           <Card className={cn('p-4', queue > 0 && 'border-[var(--color-warning)]/40')}>
             <div className="text-xs font-medium uppercase tracking-wide text-[var(--color-muted-foreground)]">Awaiting review</div>
@@ -519,10 +519,10 @@ export default function ImagesTab({ canManage, canModerate, canDelete }: Props) 
                             <div className="flex items-start gap-3">
                               <div className="checker-bg flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-md">
                                 {/* eslint-disable-next-line @next/next/no-img-element --
-                                    Bewusst kein next/image: die Datei liegt bereits als
-                                    160-px-Derivat auf dem CDN, vom Ingest mit sharp erzeugt.
-                                    Der Optimizer wuerde sie ein zweites Mal durch den
-                                    Node-Prozess schicken, um dasselbe Ergebnis zu bekommen. */}
+                                    Deliberately no next/image: the file already sits on the CDN as a
+                                    160 px derivative, generated by the ingest with sharp.
+                                    The optimizer would send it through the Node process a second
+                                    time just to get the same result. */}
                                 <img
                                   src={img.thumb}
                                   alt=""

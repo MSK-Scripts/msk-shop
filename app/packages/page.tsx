@@ -14,8 +14,8 @@ export async function generateMetadata(): Promise<Metadata> {
     description: seo.description,
     alternates:  alternatesFor(lang, '/packages'),
     openGraph:   openGraphFor({ url: '/packages', title: seo.title, description: seo.description }),
-    // `twitter` wird genauso flach ersetzt wie `openGraph` und muss darum
-    // explizit mitgesetzt werden, sonst bleiben die Root-Layout-Texte stehen.
+    // `twitter` is replaced just as flatly as `openGraph` and therefore has to
+    // be set explicitly as well, otherwise the root layout texts remain.
     twitter: {
       card:        'summary_large_image' as const,
       title:       seo.title,
@@ -26,7 +26,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function PackagesPage() {
-  // Die Sprache steckt in einem Cookie, die Seite ist damit ohnehin dynamisch.
+  // The language lives in a cookie, so the page is dynamic anyway.
   const [{ lang }, packages] = await Promise.all([getRequestLang(), getPackages()])
   const t = packagesTranslations[lang]
 

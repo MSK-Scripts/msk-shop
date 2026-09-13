@@ -4,11 +4,11 @@ import { randomBytes }  from 'crypto'
 import { UPLOAD_STATE_COOKIE } from '@/lib/uploadSession'
 
 /**
- * Startet den Discord-Login fuer Community-Uploads.
+ * Starts the Discord login for community uploads.
  *
- * Dieselbe Discord-App wie Verify und Giveaway, aber mit eigener Redirect-URI
- * und **nur `identify`**: fuer eine Einreichung braucht niemand die Guild-Liste
- * des Einreichenden. Die URI muss im Discord-Developer-Portal hinterlegt sein:
+ * The same Discord app as Verify and Giveaway, but with its own redirect URI
+ * and **only `identify`**: nobody needs the submitter's guild list for a
+ * submission. The URI must be registered in the Discord Developer Portal:
  *   {NEXT_PUBLIC_BASE_URL}/api/images/upload/auth/callback
  */
 export async function GET() {

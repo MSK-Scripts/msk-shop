@@ -34,16 +34,16 @@ interface Giveaway {
   endAt: string | null; createdAt: string | null; endedAt: string | null;
   entryCount: number; winnerIds?: string[]; winners?: GiveawayWinner[]; resultUrl?: string;
   couponPercent: number | null; couponPackages: number[]; couponValidDays: number | null;
-  /** Paketauswahl je Preis-Slot, gleich indiziert wie `prizes`. */
+  /** Package selection per prize slot, indexed the same as `prizes`. */
   couponPackagesPerPrize?: number[][];
-  /** Fest eingetragene Codes aus einem fremden Shop. */
+  /** Fixed codes entered from a third-party shop. */
   couponManualCode?: string | null;
   couponManualCodesPerPrize?: string[];
   couponManualNote?: string | null;
   /**
-   * Bedingungen dieses Giveaways. Sie ERSETZEN die serverweiten, jedes Feld für
-   * sich. `null` heißt "nichts Eigenes", dann gilt die Server-Einstellung —
-   * eine leere Liste dagegen heißt "für dieses Giveaway gilt keine".
+   * Conditions of this giveaway. They REPLACE the server-wide ones, each field
+   * on its own. `null` means "nothing of its own", then the server setting
+   * applies; an empty list, on the other hand, means "none applies to this giveaway".
    */
   blacklistRoles?: string[] | null;
   whitelistRoles?: string[] | null;
@@ -51,20 +51,20 @@ interface Giveaway {
 }
 
 /**
- * Ein vorbereitetes Giveaway ohne Kanal und ohne Endzeitpunkt.
- * Trägt seit Bot v1.7.0 die Preisliste und seit v1.9.0 die Bedingungen — ohne
- * sie könnte eine Vorlage nicht abbilden, was ein Giveaway ausmacht.
+ * A prepared giveaway without a channel and without an end time.
+ * Carries the prize list since bot v1.7.0 and the conditions since v1.9.0;
+ * without them a template could not represent what makes up a giveaway.
  */
 interface Template {
   id: number; name: string; title: string; description: string;
   duration: string; winnersCount: number; prizes: string[]; prizeMode: PrizeMode; winnerMode: WinnerMode;
-  /** null = die Vorlage sagt nichts dazu, das Giveaway erbt die Server-Einstellung. */
+  /** null = the template says nothing about it, the giveaway inherits the server setting. */
   blacklistRoles?: string[] | null;
   whitelistRoles?: string[] | null;
   bonusRoles?: Record<string, number> | null;
 }
 
-/** Ein Preis pro Zeile, gleiche Regel wie im Bot (src/utils/prizes.js). */
+/** One prize per line, same rule as in the bot (src/utils/prizes.js). */
 const MAX_PRIZES = 20;
 function splitPrizes(text: string): string[] {
   return text.split(/\r?\n|\|/).map((p) => p.trim()).filter(Boolean).slice(0, MAX_PRIZES);
@@ -79,11 +79,11 @@ interface Settings {
   minAccountDays: number; minMemberDays: number; reminderMinutes: number;
   managerRole: string | null; notifyRole: string | null; logChannel: string | null;
   claimMessage: string | null; blacklist: string[]; whitelist: string[];
-  /** Rollen-ID zu zusätzlichen Losen (gewichtete Ziehung), serverweit. */
+  /** Role ID to additional entries (weighted draw), server-wide. */
   bonusRoles: Record<string, number>;
 }
 
-/** Bonus-Lose je Rolle, wie der Bot sie annimmt (ganze Zahl von 1 bis 100). */
+/** Bonus entries per role, as the bot accepts them (integer from 1 to 100). */
 const MIN_BONUS = 1;
 const MAX_BONUS = 100;
 function clampBonus(value: Record<string, number> | undefined): Record<string, number> {
@@ -147,8 +147,8 @@ export default function DashboardClient({ guildId, owner }: { guildId: string; o
   // extra render pass (`loading` and `error` already start out correct).
   const runLoadAll = useCallback(async () => {
     try {
-      // Der Tebex-Status wird nur für Besitzer geladen — für alle anderen
-      // antwortet der Bot ohnehin mit 403.
+      // The Tebex status is only loaded for owners; for everyone else
+      // the bot answers with 403 anyway.
       const [gw, st, rl, ch, tp, tx] = await Promise.all([
         get('giveaways'), get('settings'), get('roles'), get('channels'), get('templates'),
         owner ? get('tebex') : Promise.resolve(null),
@@ -160,7 +160,7 @@ export default function DashboardClient({ guildId, owner }: { guildId: string; o
       if (ch?.channels) setChannels(ch.channels);
       if (tx?.tebex) {
         setTebex(tx.tebex);
-        // Die Paketliste hängt am öffentlichen Token, nicht am Secret.
+        // The package list depends on the public token, not on the secret.
         if (tx.tebex.publicToken) {
           const pk = await get('tebexPackages');
           if (pk?.packages) setPackages(pk.packages);
@@ -173,7 +173,7 @@ export default function DashboardClient({ guildId, owner }: { guildId: string; o
     }
   }, [get, t, owner]);
 
-  /** Refresh from a user action — shows the spinner right away. */
+  /** Refresh from a user action: shows the spinner right away. */
   const loadAll = useCallback(() => {
     setLoading(true);
     setError(null);
@@ -200,12 +200,12 @@ export default function DashboardClient({ guildId, owner }: { guildId: string; o
 
   return (
     <Ctx.Provider value={{ t, lang }}>
-      {/* Bewusst gedeckelt: der Inhalt ist eine Einstellungsmaske plus
-          Giveaway-Liste. Ein 1920 px breites Formularfeld ist nicht
-          benutzbarer als ein 1000 px breites, nur schwerer zu lesen.
-          Seit 22.08.2026 `container-page` statt eines eigenen max-w-6xl,
-          damit dieses Dashboard und das Ticketbot-Dashboard gleich breit
-          sind. Vorher standen sie auf 1152 gegen 2560 px. */}
+      {/* Capped on purpose: the content is a settings form plus a
+          giveaway list. A 1920 px wide form field is not more usable
+          than a 1000 px wide one, only harder to read.
+          Since 22.08.2026 `container-page` instead of its own max-w-6xl,
+          so that this dashboard and the ticketbot dashboard are equally
+          wide. Before that they stood at 1152 versus 2560 px. */}
       <main className="container-page w-full py-10">
         <div className="mb-6 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
@@ -232,7 +232,7 @@ export default function DashboardClient({ guildId, owner }: { guildId: string; o
             ['giveaways', t.tab_giveaways],
             ['templates', t.tab_templates],
             ['settings', t.tab_settings],
-            // Der Store-Reiter existiert nur für den Server-Besitzer.
+            // The store tab only exists for the server owner.
             ...(owner ? [['store', t.tab_store] as const] : []),
           ] as const).map(([key, label]) => (
             <button
@@ -269,7 +269,7 @@ export default function DashboardClient({ guildId, owner }: { guildId: string; o
   );
 }
 
-// ── Giveaways-Tab ─────────────────────────────────────────────────────────────
+// ── Giveaways tab ─────────────────────────────────────────────────────────────
 
 function GiveawaysTab({ giveaways, channels, roles, reload, setError, packages, couponReady, ownerHint, templates, settings, reloadTemplates }: {
   giveaways: Giveaway[]; channels: Channel[]; roles: Role[]; reload: () => Promise<void>; setError: (e: string | null) => void;
@@ -279,8 +279,8 @@ function GiveawaysTab({ giveaways, channels, roles, reload, setError, packages, 
   const { t, lang } = useCtx();
   const [busy, setBusy] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
-  // Welches Giveaway zuletzt als Vorlage gesichert wurde, nur für die Rückmeldung
-  // an der Karte. Der Vorlagen-Reiter zeigt das Ergebnis.
+  // Which giveaway was last saved as a template, only for the feedback
+  // on the card. The templates tab shows the result.
   const [savedTemplate, setSavedTemplate] = useState<string | null>(null);
 
   async function action(payload: Record<string, unknown>, key: string) {
@@ -301,11 +301,11 @@ function GiveawaysTab({ giveaways, channels, roles, reload, setError, packages, 
   }
 
   /**
-   * Ein Giveaway als Vorlage sichern.
+   * Save a giveaway as a template.
    *
-   * Eigene Funktion statt `action`: hier ist danach die Vorlagen-Liste veraltet,
-   * nicht die Giveaway-Liste. Der Bot baut die Vorlage aus dem Datensatz, von
-   * hier gehen nur ID und Name hin.
+   * Its own function instead of `action`: afterwards the template list is stale
+   * here, not the giveaway list. The bot builds the template from the record,
+   * only the ID and name are sent from here.
    */
   async function saveAsTemplate(g: Giveaway) {
     const name = window.prompt(t.tpl_from_ask, g.title);
@@ -403,8 +403,8 @@ function GiveawaysTab({ giveaways, channels, roles, reload, setError, packages, 
                   disabled={busy?.startsWith(g.id)}
                 />
               )}
-              {/* Für jeden Status: auch ein laufendes Giveaway darf man sichern,
-                  wenn man es wiederholen will. */}
+              {/* For every status: a running giveaway may be saved too,
+                  if you want to repeat it. */}
               <Button variant="ghost" size="sm" disabled={busy?.startsWith(g.id)} onClick={() => saveAsTemplate(g)}>
                 <LayoutTemplate className="mr-1.5 h-3.5 w-3.5" /> {savedTemplate === g.id ? t.tpl_from_done : t.tpl_from}
               </Button>
@@ -422,8 +422,8 @@ function GiveawaysTab({ giveaways, channels, roles, reload, setError, packages, 
             {g.status === 'ENDED' && g.winnerIds && g.winnerIds.length > 0 && (
               <p className="text-xs text-[var(--color-muted-foreground)]">
                 {t.winners_label}{' '}
-                {/* Bei einem Preis pro Gewinner steht der Preis direkt dahinter,
-                    sonst wäre die Zuordnung im Dashboard nicht ablesbar. */}
+                {/* With one prize per winner the prize follows directly after it,
+                    otherwise the assignment could not be read in the dashboard. */}
                 {g.prizeMode === 'INDIVIDUAL' && g.winners?.length
                   ? g.winners.map((w) => `@${w.userId}${w.prizeIndex != null && g.prizes[w.prizeIndex] ? ` (${g.prizes[w.prizeIndex]})` : ''}`).join(', ')
                   : g.winnerIds.map((w) => `@${w}`).join(', ')}
@@ -437,9 +437,9 @@ function GiveawaysTab({ giveaways, channels, roles, reload, setError, packages, 
 }
 
 /**
- * Coupon-Konfiguration eines Giveaways. Leeres Prozentfeld = kein Coupon.
- * Die Paketauswahl gibt es nur, wenn ein öffentlicher Token hinterlegt ist,
- * sonst wäre die Liste leer und der Rabatt gilt für den ganzen Warenkorb.
+ * Coupon configuration of a giveaway. Empty percent field = no coupon.
+ * The package selection only exists when a public token is stored,
+ * otherwise the list would be empty and the discount applies to the whole basket.
  */
 function PackagePicker({ packages, selected, onToggle }: {
   packages: TebexPackage[]; selected: number[]; onToggle: (id: number) => void;
@@ -464,11 +464,11 @@ function PackagePicker({ packages, selected, onToggle }: {
 }
 
 /**
- * Fest eingetragene Codes aus einem FREMDEN Shop.
+ * Fixed codes entered from a THIRD-PARTY shop.
  *
- * Steht bewusst außerhalb der Store-Prüfung: der Sinn ist ja gerade das
- * gemeinsame Giveaway mit einem anderen Entwickler, bei dem der Bot keinen
- * Zugriff auf dessen Shop hat und deshalb auch keinen eigenen Store braucht.
+ * Deliberately outside the store check: the whole point is the joint
+ * giveaway with another developer, where the bot has no access to their
+ * shop and therefore does not need a store of its own either.
  */
 function ManualCodeFields({ code, setCode, perPrize, setPerPrize, note, setNote, prizes, mode }: {
   code: string; setCode: (v: string) => void;
@@ -529,10 +529,10 @@ function CouponFields({ percent, setPercent, validDays, setValidDays, selected, 
   const { t } = useCtx();
 
   if (!couponReady) {
-    // Ohne hinterlegten Store kann der Bot keine eigenen Coupons erzeugen — der
-    // Hinweis darauf ist nur für Besitzer nützlich, alle anderen können daran
-    // nichts ändern. Die festen Codes eines fremden Shops hängen davon nicht ab
-    // und stehen deshalb im Aufrufer, nicht hier.
+    // Without a stored store the bot cannot create coupons of its own; the
+    // hint about that is only useful for owners, nobody else can change
+    // anything about it. The fixed codes of a third-party shop do not depend
+    // on it and therefore live in the caller, not here.
     return ownerHint
       ? <p className="text-xs text-[var(--color-muted-foreground)]">{t.c_needs_store}</p>
       : null;
@@ -542,8 +542,8 @@ function CouponFields({ percent, setPercent, validDays, setValidDays, selected, 
     setSelected(selected.includes(id) ? selected.filter((p) => p !== id) : [...selected, id]);
   };
 
-  // Eine Auswahl je Gewinner gibt es nur mit Preis-Slots: ohne sie ist die
-  // Ziehungsreihenfolge willkürlich, ein "Gewinner 2" existiert also nicht.
+  // A selection per winner only exists with prize slots: without them the
+  // draw order is arbitrary, so a "winner 2" does not exist.
   const perWinner = mode === 'INDIVIDUAL' && prizes.length > 0;
   const slotOf = (i: number) => perPrize[i] ?? [];
   const toggleSlot = (i: number, id: number) => {
@@ -595,11 +595,11 @@ function CouponFields({ percent, setPercent, validDays, setValidDays, selected, 
 }
 
 /**
- * Preisliste, Verteilmodus und Gewinnerzahl.
+ * Prize list, distribution mode and number of winners.
  *
- * Bei "ein Preis pro Gewinner" ist die Gewinnerzahl keine eigene Angabe mehr,
- * sondern die Länge der Liste. Das Feld wird deshalb gesperrt und mitgeführt,
- * statt den Nutzer erst absenden und dann eine Fehlermeldung lesen zu lassen.
+ * With "one prize per winner" the number of winners is no longer a separate
+ * input but the length of the list. The field is therefore locked and kept in
+ * sync, instead of letting the user submit first and then read an error message.
  */
 function PrizeFields({ prizes, setPrizes, mode, setMode, winnersCount, setWinnersCount }: {
   prizes: string; setPrizes: (v: string) => void;
@@ -685,22 +685,22 @@ function DrawBadge({ mode }: { mode: WinnerMode | undefined }) {
   );
 }
 
-/** Preis-Eingaben in das Format des Steuer-Endpunkts bringen. */
+/** Bring prize inputs into the format of the control endpoint. */
 function prizePayload(prizes: string, mode: PrizeMode, winnersCount: number) {
   const list = splitPrizes(prizes);
   return {
     prizes: list,
-    prizeMode: list.length ? mode : 'ALL', // ohne Preise ist der Modus bedeutungslos
+    prizeMode: list.length ? mode : 'ALL', // without prizes the mode is meaningless
     winnersCount: mode === 'INDIVIDUAL' && list.length ? list.length : winnersCount,
   };
 }
 
 /**
- * Coupon-Eingaben in das Format des Steuer-Endpunkts bringen.
+ * Bring coupon inputs into the format of the control endpoint.
  *
- * Die Auswahl je Gewinner wird auf die Anzahl der Preise gekürzt: streicht
- * jemand einen Preis, soll dessen Paketauswahl nicht als toter Eintrag
- * weiterleben und beim nächsten Hinzufügen wieder auftauchen.
+ * The selection per winner is trimmed to the number of prizes: if someone
+ * removes a prize, its package selection should not live on as a dead entry
+ * and reappear the next time one is added.
  */
 function couponPayload(
   percent: string, validDays: string, selected: number[], perPrize: number[][], prizeCount: number,
@@ -739,10 +739,10 @@ function CreateForm({ channels, roles, busy, onCreate, packages, couponReady, ow
   const [manualCode, setManualCode] = useState('');
   const [manualPerPrize, setManualPerPrize] = useState<string[]>([]);
   const [manualNote, setManualNote] = useState('');
-  // Die Bedingungen ersetzen die serverweiten, deshalb stehen sie hier von
-  // Anfang an drin: was im Formular steht, gilt danach für dieses Giveaway.
-  // Leer vorbelegt würde das Anlegen jede Server-Einstellung stillschweigend
-  // abschalten.
+  // The conditions replace the server-wide ones, which is why they are in here
+  // from the start: whatever is in the form then applies to this giveaway.
+  // Prefilled empty, creating it would silently switch off every server
+  // setting.
   const [blacklistRoles, setBlacklistRoles] = useState<string[]>(settings?.blacklist ?? []);
   const [whitelistRoles, setWhitelistRoles] = useState<string[]>(settings?.whitelist ?? []);
   const [bonusRoles, setBonusRoles] = useState<Record<string, number>>(settings?.bonusRoles ?? {});
@@ -755,15 +755,15 @@ function CreateForm({ channels, roles, busy, onCreate, packages, couponReady, ow
   }
 
   /**
-   * Vorlage übernehmen: die Felder werden GEFÜLLT, nicht gesperrt.
+   * Apply a template: the fields are FILLED, not locked.
    *
-   * Eine Vorlage ist ein Startpunkt, kein Vertrag. Wer sie wählt und dann den
-   * Titel ändert, meint das auch so — und der Kanal steht ohnehin nie drin.
-   * Coupons bleiben unangetastet: die trägt eine Vorlage bewusst nicht, sie
-   * hängen an Paket-IDs eines konkreten Stores und wären schnell veraltet.
+   * A template is a starting point, not a contract. Whoever picks it and then
+   * changes the title means it that way (and the channel is never in it anyway).
+   * Coupons stay untouched: a template deliberately does not carry them, they
+   * depend on package IDs of a specific store and would quickly be outdated.
    *
-   * Bedingungen, zu denen die Vorlage nichts sagt (null), fallen zurück auf die
-   * Server-Einstellungen — dieselbe Vorbelegung wie ohne Vorlage.
+   * Conditions the template says nothing about (null) fall back to the
+   * server settings: the same prefill as without a template.
    */
   function applyTemplate(id: string) {
     setFromTemplate(id);
@@ -898,8 +898,8 @@ function EditButton({ giveaway, roles, settings, onSave, disabled, packages, cou
   const [manualCode, setManualCode] = useState(giveaway.couponManualCode ?? '');
   const [manualPerPrize, setManualPerPrize] = useState<string[]>(giveaway.couponManualCodesPerPrize ?? []);
   const [manualNote, setManualNote] = useState(giveaway.couponManualNote ?? '');
-  // null heißt "das Giveaway erbt" — dann stehen hier die Server-Einstellungen,
-  // also das, was gerade tatsächlich gilt. Leer wäre schlicht falsch.
+  // null means "the giveaway inherits"; then the server settings are shown here,
+  // i.e. what actually applies right now. Empty would simply be wrong.
   const [blacklistRoles, setBlacklistRoles] = useState<string[]>(giveaway.blacklistRoles ?? settings?.blacklist ?? []);
   const [whitelistRoles, setWhitelistRoles] = useState<string[]>(giveaway.whitelistRoles ?? settings?.whitelist ?? []);
   const [bonusRoles, setBonusRoles] = useState<Record<string, number>>(giveaway.bonusRoles ?? settings?.bonusRoles ?? {});
@@ -960,7 +960,7 @@ function EditButton({ giveaway, roles, settings, onSave, disabled, packages, cou
   );
 }
 
-// ── Vorlagen-Tab ──────────────────────────────────────────────────────────────
+// ── Templates tab ─────────────────────────────────────────────────────────────
 
 function TemplatesTab({ templates, roles, settings, reload, setError }: {
   templates: Template[]; roles: Role[]; settings: Settings | null;
@@ -971,9 +971,9 @@ function TemplatesTab({ templates, roles, settings, reload, setError }: {
   const [editing, setEditing] = useState<number | 'new' | null>(null);
 
   /**
-   * Fehler des Bots in einen Satz übersetzen, den man lesen kann.
-   * Alles Unbekannte behält den Rohwert: eine erfundene Beschriftung wäre
-   * schlimmer als ein technischer Code, den man suchen kann.
+   * Translate the bot's errors into a sentence one can read.
+   * Anything unknown keeps the raw value: a made-up label would be
+   * worse than a technical code one can search for.
    */
   function message(error: unknown): string {
     const known: Record<string, string> = {
@@ -1050,8 +1050,8 @@ function TemplatesTab({ templates, roles, settings, reload, setError }: {
                       : tpl.prizes.join(', ')}
                   </p>
                 )}
-                {/* Nur der Hinweis, dass die Vorlage eigene Bedingungen trägt.
-                    Welche das sind, steht im Formular. */}
+                {/* Only the hint that the template carries its own conditions.
+                    Which ones they are is shown in the form. */}
                 {(tpl.blacklistRoles || tpl.whitelistRoles || tpl.bonusRoles) && (
                   <span className="mt-1 inline-flex items-center gap-1 rounded bg-[var(--color-muted)] px-1.5 py-0.5 font-mono text-[0.625rem] text-[var(--color-muted-foreground)]">
                     <ShieldCheck className="h-3 w-3" /> {t.tpl_conditions}
@@ -1062,9 +1062,9 @@ function TemplatesTab({ templates, roles, settings, reload, setError }: {
                 <Button variant="outline" size="sm" onClick={() => setEditing(editing === tpl.id ? null : tpl.id)}>
                   <Pencil className="mr-2 h-4 w-4" /> {t.tpl_edit}
                 </Button>
-                {/* Als einzige Aktion im Dashboard mit Rückfrage: ein Giveaway
-                    abzubrechen bleibt sichtbar und steht im Log, eine gelöschte
-                    Vorlage ist samt ihrem getippten Text weg. */}
+                {/* The only action in the dashboard with a confirmation: cancelling
+                    a giveaway stays visible and is in the log, a deleted
+                    template is gone together with its typed text. */}
                 <Button
                   variant="danger" size="sm"
                   disabled={busy === `del-${tpl.id}`}
@@ -1091,11 +1091,11 @@ function TemplatesTab({ templates, roles, settings, reload, setError }: {
 }
 
 /**
- * Formular zum Anlegen und Bearbeiten.
+ * Form for creating and editing.
  *
- * Bewusst dieselben Preis-Felder wie beim Giveaway (`PrizeFields`): eine
- * Vorlage, die Preise anders eingibt als das Giveaway, das aus ihr entsteht,
- * wäre eine zweite Vorstellung davon, was ein Preis ist.
+ * Deliberately the same prize fields as for the giveaway (`PrizeFields`): a
+ * template that enters prizes differently than the giveaway created from it
+ * would be a second notion of what a prize is.
  */
 function TemplateForm({ template, roles, settings, busy, onSave, onCancel }: {
   template?: Template; roles: Role[]; settings: Settings | null; busy: boolean;
@@ -1112,12 +1112,12 @@ function TemplateForm({ template, roles, settings, busy, onSave, onCancel }: {
   const [duration, setDuration] = useState(template?.duration ?? '1d');
 
   /**
-   * Anders als beim Giveaway ist "erben" hier die Voreinstellung.
+   * Unlike for the giveaway, "inherit" is the default here.
    *
-   * Eine Vorlage lebt Monate. Die Server-Einstellungen hier einzufrieren würde
-   * heißen, dass jedes Giveaway aus ihr eine spätere Änderung daran nicht
-   * mitbekommt — genau der Grund, warum auch die Coupons nicht in eine Vorlage
-   * gehören. Wer eigene Bedingungen will, schaltet sie ein.
+   * A template lives for months. Freezing the server settings here would mean
+   * that every giveaway created from it misses a later change to them, which
+   * is exactly the reason why the coupons do not belong in a template either.
+   * Whoever wants their own conditions switches them on.
    */
   const [ownConditions, setOwnConditions] = useState(
     Boolean(template?.blacklistRoles || template?.whitelistRoles || template?.bonusRoles),
@@ -1170,8 +1170,8 @@ function TemplateForm({ template, roles, settings, busy, onSave, onCancel }: {
             name: name.trim(), title: title.trim(), description: description.trim(), duration: duration.trim(),
             winnerMode,
             ...prizePayload(prizes, prizeMode, winnersCount),
-            // Ausgeschaltet heißt null, nicht leere Liste: leer wäre eine eigene
-            // Bedingung ("hier gilt keine"), null lässt die Server-Einstellung gelten.
+            // Switched off means null, not an empty list: empty would be a condition
+            // of its own ("none applies here"), null lets the server setting apply.
             ...(ownConditions
               ? eligibilityPayload(blacklistRoles, whitelistRoles, bonusRoles)
               : { blacklistRoles: null, whitelistRoles: null, bonusRoles: null }),
@@ -1184,7 +1184,7 @@ function TemplateForm({ template, roles, settings, busy, onSave, onCancel }: {
   );
 }
 
-// ── Settings-Tab ──────────────────────────────────────────────────────────────
+// ── Settings tab ──────────────────────────────────────────────────────────────
 
 function SettingsTab({ settings, roles, channels, onSaved, setError }: {
   settings: Settings | null; roles: Role[]; channels: Channel[];
@@ -1292,16 +1292,16 @@ function SettingsTab({ settings, roles, channels, onSaved, setError }: {
   );
 }
 
-// ── Tebex-Store-Tab (nur Server-Besitzer) ─────────────────────────────────────
+// ── Tebex store tab (server owner only) ───────────────────────────────────────
 
 /**
- * Verwaltung des Tebex-Stores dieser Guild.
+ * Management of this guild's Tebex store.
  *
- * Der Plugin-Schlüssel ist Vollzugriff auf den Shop des Besitzers. Er wird
- * verschlüsselt beim Bot gespeichert, kommt hier nur maskiert an (letzte vier
- * Zeichen) und wird im Klartext ausschließlich auf ausdrücklichen Klick
- * nachgeladen. Die eigentliche Berechtigungsprüfung macht der Bot gegen
- * guild.ownerId — dieses Formular ist nur die Oberfläche dazu.
+ * The plugin key is full access to the owner's shop. It is stored encrypted
+ * at the bot, only arrives here masked (last four characters) and is loaded
+ * in plain text exclusively on an explicit click. The actual permission
+ * check is done by the bot against guild.ownerId; this form is only the
+ * interface for it.
  */
 function StoreTab({ tebex, packages, onChanged, setError }: {
   tebex: TebexStatus | null; packages: TebexPackage[];
@@ -1458,11 +1458,11 @@ function StoreTab({ tebex, packages, onChanged, setError }: {
 }
 
 /**
- * Bonus-Lose je Rolle.
+ * Bonus entries per role.
  *
- * Anders als Blacklist und Whitelist ist das keine Mehrfachauswahl, sondern eine
- * Zuordnung: jede Rolle trägt eine Anzahl. Deshalb eine Zeile pro Rolle statt
- * einer Chip-Wolke, sonst wäre nirgends abzulesen, wie viele Lose dranhängen.
+ * Unlike blacklist and whitelist this is not a multi-select but a mapping:
+ * each role carries a count. Hence one row per role instead of a chip cloud,
+ * otherwise nowhere would show how many entries are attached.
  */
 function BonusRoleEditor({ roles, value, onChange }: {
   roles: Role[]; value: Record<string, number>; onChange: (v: Record<string, number>) => void;
@@ -1499,7 +1499,7 @@ function BonusRoleEditor({ roles, value, onChange }: {
         </div>
       ))}
       {available.length > 0 && (
-        // Der Wert bleibt leer: die Auswahl ist ein Knopf zum Hinzufügen, kein Zustand.
+        // The value stays empty: the select is a button for adding, not a state.
         <select value="" className={selectCls} onChange={(e) => { if (e.target.value) set(e.target.value, MIN_BONUS); }}>
           <option value="">{t.s_bonus_add}</option>
           {available.map((r) => <option key={r.id} value={r.id}>@ {r.name}</option>)}
@@ -1510,13 +1510,13 @@ function BonusRoleEditor({ roles, value, onChange }: {
 }
 
 /**
- * Bedingungen für ein einzelnes Giveaway.
+ * Conditions for a single giveaway.
  *
- * Sie ERSETZEN die serverweiten Einstellungen für dieses Giveaway, jedes Feld
- * für sich. Deshalb sind die Felder mit genau diesen Einstellungen vorbelegt:
- * so ändert nichts anzufassen auch nichts, und wer eine serverweite Rolle
- * herausnimmt, hebt sie hier gezielt auf. Der Hinweis über den Feldern sagt
- * dasselbe, sonst liest sich das Formular wie eine Ergänzung.
+ * They REPLACE the server-wide settings for this giveaway, each field on its
+ * own. That is why the fields are prefilled with exactly those settings:
+ * that way touching nothing also changes nothing, and whoever removes a
+ * server-wide role lifts it here on purpose. The hint above the fields says
+ * the same, otherwise the form reads like an addition.
  */
 function EligibilityFields({ roles, blacklist, setBlacklist, whitelist, setWhitelist, bonus, setBonus, onReset }: {
   roles: Role[];
@@ -1550,13 +1550,13 @@ function EligibilityFields({ roles, blacklist, setBlacklist, whitelist, setWhite
   );
 }
 
-/** Bedingungs-Eingaben in das Format des Steuer-Endpunkts bringen. */
+/** Bring condition inputs into the format of the control endpoint. */
 function eligibilityPayload(blacklist: string[], whitelist: string[], bonus: Record<string, number>) {
   return {
     blacklistRoles: blacklist,
     whitelistRoles: whitelist,
-    // Der Bot lehnt alles außerhalb von 1 bis 100 ab. Beim Tippen darf im Feld
-    // trotzdem kurz etwas anderes stehen, geklemmt wird deshalb erst hier.
+    // The bot rejects anything outside 1 to 100. While typing, the field may
+    // still briefly hold something else, which is why clamping only happens here.
     bonusRoles: clampBonus(bonus),
   };
 }
@@ -1593,7 +1593,7 @@ function RoleMultiSelect({ roles, value, onChange }: { roles: Role[]; value: str
   );
 }
 
-// ── kleine UI-Helfer ──────────────────────────────────────────────────────────
+// ── small UI helpers ──────────────────────────────────────────────────────────
 
 const selectCls = 'w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm outline-none focus:border-[var(--color-primary)]';
 

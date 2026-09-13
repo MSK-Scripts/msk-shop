@@ -37,7 +37,7 @@ describe('sanitizeTebexHtml', () => {
 })
 
 describe('pickLanguageBlock', () => {
-  // Die echte Struktur der Tebex-Kategorietexte, abgerufen am 22.08.2026.
+  // The real structure of the Tebex category texts, fetched on 22.08.2026.
   const REAL =
     '<p><strong>[GER]</strong></p>'
     + '<p>In diesen Paketen ist alles verschlüsselt außer config.lua</p>'
@@ -59,8 +59,8 @@ describe('pickLanguageBlock', () => {
   })
 
   it('lässt verwaiste Tag-Ränder nicht stehen', () => {
-    // Der Schnitt beginnt hinter `[GER]` und endet vor `[ENG]`, also direkt
-    // zwischen `</strong></p>` und `<p><strong>`.
+    // The cut starts after `[GER]` and ends before `[ENG]`, i.e. directly
+    // between `</strong></p>` and `<p><strong>`.
     const out = pickLanguageBlock(REAL, 'de')
     expect(out.startsWith('</strong>')).toBe(false)
     expect(out.endsWith('<strong>')).toBe(false)
@@ -74,14 +74,14 @@ describe('pickLanguageBlock', () => {
   })
 
   it('bleibt bei einem Text schnell, der die Randbereinigung sabotiert', () => {
-    // CodeQL js/redos, Alert 69: die Randbereinigung trug `\s*` auf beiden
-    // Seiten ihrer Wiederholung. Derselbe Leerraum konnte damit zur einen oder
-    // zur nächsten Wiederholung gehören, und wenn der Text am Ende doch nicht
-    // passt, probiert die Maschine alle Aufteilungen durch. Mit 26
-    // Wiederholungen brauchte das gemessene 25,7 Sekunden.
+    // CodeQL js/redos, alert 69: the edge cleanup carried `\s*` on both
+    // sides of its repetition. The same whitespace could therefore belong to one
+    // or to the next repetition, and if the text does not match in the end
+    // after all, the engine tries every split. With 26
+    // repetitions that took a measured 25.7 seconds.
     //
-    // Der Test misst bewusst keine Zeit, sondern verlässt sich auf das
-    // Zeitlimit: mit der alten Fassung läuft er nicht durch.
+    // The test deliberately measures no time but relies on the
+    // timeout: with the old version it does not complete.
     const boese = '<p><strong>[GER]</strong></p><a>' + ' <a>'.repeat(26) + '!'
     const t0 = Date.now()
     const out = pickLanguageBlock(boese + '<p><strong>[ENG]</strong></p><p>x</p>', 'de')
