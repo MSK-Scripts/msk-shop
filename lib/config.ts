@@ -291,14 +291,14 @@ export const NEWS_POPUP = {
   text: "Support services will be limited from September 14 through September 18 due to Musiker15's absence.\n\nThe Discord Ticket Bot will remain functional, but support requests may be delayed during this period.",
 
   // Optional button, set to null to hide it
-  // button: null as { label: string; href: string } | null,
+  button: null as { label: string; href: string } | null,
   // button: {
   //   label: "Get API Key",
   //   href: "/ticketbot/verify",
   // } as { label: string; href: string } | null,
 
   // Optional second button, set to null to hide it
-  // secondButton: null as { label: string; href: string } | null,
+  secondButton: null as { label: string; href: string } | null,
   // secondButton: {
   //   label: "Dashboard",
   //   href: "/ticketbot/dashboard",
