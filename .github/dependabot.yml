@@ -9,8 +9,17 @@ updates:
       day: "monday"
       time: "08:00"
       timezone: "Europe/Berlin"
-    # Group all non-breaking updates into a single PR to reduce noise
+    # Groups are matched in order, the first match wins.
     groups:
+      # @vitest/coverage-v8 requires the same vitest major as a peer, so one
+      # without the other can never install (npm ci fails with ERESOLVE, as
+      # #47 and #48 did). No update-types filter on purpose: the major bumps
+      # are exactly the case where they must travel together.
+      vitest:
+        patterns:
+          - "vitest"
+          - "@vitest/*"
+      # Group all remaining non-breaking updates into a single PR to reduce noise
       dependencies:
         update-types:
           - "minor"
