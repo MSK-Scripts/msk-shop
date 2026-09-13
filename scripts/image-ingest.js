@@ -1,32 +1,32 @@
 #!/usr/bin/env node
 /**
- * image-ingest.js — Bilder in das CDN aufnehmen.
+ * image-ingest.js: ingest images into the CDN.
  *
- *   node scripts/image-ingest.js <kategorie> <quellordner> [optionen]
+ *   node scripts/image-ingest.js <category> <source-dir> [options]
  *
- * Optionen:
- *   --dry-run              nichts schreiben, nur berichten
- *   --force                Derivate neu bauen, auch wenn die Quelle unveraendert ist
- *   --allow-opaque         Bilder ohne Alphakanal zulassen (Standard: ablehnen)
- *   --source=<text>        Herkunft, landet in msk_images.source
- *   --license=<text>       Lizenzhinweis, bei Fremdquellen Pflicht
- *   --limit=<n>            nur die ersten n Dateien (fuer Probelaeufe)
+ * Options:
+ *   --dry-run              write nothing, only report
+ *   --force                rebuild derivatives, even if the source is unchanged
+ *   --allow-opaque         allow images without an alpha channel (default: reject)
+ *   --source=<text>        origin, ends up in msk_images.source
+ *   --license=<text>       license note, mandatory for third-party sources
+ *   --limit=<n>            only the first n files (for trial runs)
  *
- * Umgebung (aus /opt/msk-shop/.env.local sourcen, wie bei cleanup.js):
+ * Environment (source from /opt/msk-shop/.env.local, as with cleanup.js):
  *   DB_HOST DB_PORT DB_USER DB_PASSWORD DB_NAME
- *   CDN_ROOT_PATH   Zielverzeichnis, Default /var/www/cdn.msk-scripts.de
+ *   CDN_ROOT_PATH   target directory, default /var/www/cdn.msk-scripts.de
  *
- * Aufruf auf dem Server:
+ * Invocation on the server:
  *   set -a; . /opt/msk-shop/.env.local; set +a
  *   NODE_PATH=/opt/msk-shop/node_modules node /opt/msk-shop/scripts/image-ingest.js \
  *     vehicles /srv/staging/vehicles --source=msk_garage --dry-run
  *
- * Warum das Script auf dem Server laeuft und nicht lokal: der Quellbestand geht
- * in die Gigabyte, und das Zielverzeichnis wird oeffentlich ausgeliefert. Beides
- * ueber OneDrive zu synchronisieren waere langsam und fehleranfaellig.
+ * Why the script runs on the server and not locally: the source material runs
+ * into gigabytes, and the target directory is served publicly. Syncing both
+ * over OneDrive would be slow and error-prone.
  *
- * Warum immer zuerst --dry-run: das Script schreibt in ein oeffentlich
- * erreichbares Verzeichnis. Ein Tippfehler im Quellpfad ist teuer.
+ * Why always --dry-run first: the script writes into a publicly
+ * reachable directory. A typo in the source path is expensive.
  */
 
 'use strict'
@@ -37,31 +37,31 @@ const crypto  = require('node:crypto')
 const sharp   = require('sharp')
 const mysql   = require('mysql2/promise')
 
-// ── Aufbereitungsregeln. Bewusst hier oben und nicht verstreut: sie sind der
-//    Grund, warum der Bestand einheitlich aussieht. Wer sie aendert, aendert
-//    das Aussehen der ganzen Galerie.
+// ── Processing rules. Deliberately up here and not scattered: they are the
+//    reason the collection looks uniform. Whoever changes them changes
+//    the look of the whole gallery.
 const RULES = {
-  originalMaxEdge: 1024,   // laengste Kante des Originals
-  cardWidth:       400,    // Kachel in der Galerie und in NUIs
-  thumbWidth:      160,    // Vorschau in dichten Rastern
+  originalMaxEdge: 1024,   // longest edge of the original
+  cardWidth:       400,    // tile in the gallery and in NUIs
+  thumbWidth:      160,    // preview in dense grids
   cardQuality:     82,
   thumbQuality:    78,
-  paddingPercent:  0.04,   // einheitlicher Rand NACH dem Trimmen
-  minEdge:         32,     // alles darunter ist kein brauchbares Asset
+  paddingPercent:  0.04,   // uniform margin AFTER trimming
+  minEdge:         32,     // anything below is not a usable asset
 }
 
-// Ausnahmen je Kategorie. Die Regeln oben existieren, damit Spiel-Assets im
-// Raster einheitlich aussehen: gleicher Rand, vergleichbare Groesse, ein Deckel
-// gegen Ausreisser. `brand` taucht in keinem Raster auf (die Kategorie steht auf
-// is_public = 0), dort richten sie nur Schaden an. Gemessen am 26.08.2026 waere
-// aus einem 1920 x 1080 grossen Banner ein 1024 x 609 grosses mit transparentem
-// Rahmen geworden, und der Trim haette den Quicksale-Bannern erst 162 px
-// abgeschnitten.
+// Exceptions per category. The rules above exist so that game assets look
+// uniform in the grid: same margin, comparable size, a cap against
+// outliers. `brand` does not appear in any grid (the category is set to
+// is_public = 0), there they only do damage. Measured on 26.08.2026, a
+// 1920 x 1080 banner would have become a 1024 x 609 one with a transparent
+// frame, and the trim would first have cut 162 px off the Quicksale
+// banners.
 const CATEGORY_RULES = {
   brand: { trim: false, paddingPercent: 0, originalMaxEdge: 1920 },
 }
 
-/** Regeln fuer eine Kategorie: Standard, ueberschrieben von der Ausnahme. */
+/** Rules for a category: default, overridden by the exception. */
 function rulesFor(category) {
   return { trim: true, ...RULES, ...(CATEGORY_RULES[category] || {}) }
 }
@@ -69,7 +69,7 @@ function rulesFor(category) {
 const SOURCE_EXT = new Set(['.png', '.jpg', '.jpeg', '.webp'])
 
 // ---------------------------------------------------------------------------
-// Argumente
+// Arguments
 // ---------------------------------------------------------------------------
 function parseArgs(argv) {
   const positional = []
@@ -86,25 +86,25 @@ function parseArgs(argv) {
 }
 
 /**
- * Dateiname auf das Schema bringen, das die URL vertraegt.
+ * Bring a file name into the scheme the URL tolerates.
  *
- * Ein Bild heisst so, wie ein Script das Modell kennt: kleingeschrieben, ohne
- * Leerzeichen, ohne Umlaute. Nur dann kann ein Consumer die URL aus dem
- * Modellnamen bauen, ohne vorher irgendwo nachzuschlagen.
+ * An image is named the way a script knows the model: lowercase, without
+ * spaces, without umlauts. Only then can a consumer build the URL from the
+ * model name without looking anything up first.
  */
 function normaliseName(raw) {
   return raw
-    // Umlaute VOR normalize('NFD') ersetzen: NFD zerlegt sie in Grundbuchstabe
-    // plus Diakritikum, und der naechste Schritt wirft das Diakritikum weg.
-    // Umgekehrt herum waere aus "Baeckerei" ein "backerei" geworden, und die
-    // Umlautregel darunter haette nie gegriffen.
+    // Replace umlauts BEFORE normalize('NFD'): NFD splits them into base letter
+    // plus diacritic, and the next step throws the diacritic away.
+    // The other way round, "Baeckerei" would have become "backerei", and the
+    // umlaut rule below would never have applied.
     .replace(/ä/gi, 'ae').replace(/ö/gi, 'oe').replace(/ü/gi, 'ue').replace(/ß/g, 'ss')
-    .normalize('NFD').replace(/[̀-ͯ]/g, '')  // restliche Akzente weg
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')  // remove remaining accents
     .toLowerCase()
-    // Plus ausschreiben, bevor die Zeile darunter es zu einem Unterstrich macht
-    // und der Schnitt am Wortende ihn entfernt: sonst werden `coiloversS+` und
-    // `coiloversS` derselbe Name und eines der Bilder faellt still weg.
-    // Spiegel von normaliseName in lib/imagePipeline.ts.
+    // Spell out plus before the line below turns it into an underscore
+    // and the trim at the end of the word removes it: otherwise `coiloversS+` and
+    // `coiloversS` become the same name and one of the images silently drops out.
+    // Mirror of normaliseName in lib/imagePipeline.ts.
     .replace(/\+/g, '_plus')
     .replace(/[^a-z0-9_-]+/g, '_')
     .replace(/_{2,}/g, '_')
@@ -126,18 +126,18 @@ async function walk(dir, out = []) {
 }
 
 // ---------------------------------------------------------------------------
-// Bildverarbeitung
+// Image processing
 // ---------------------------------------------------------------------------
 /**
- * Trimmen, dann einheitlich umranden.
+ * Trim, then pad uniformly.
  *
- * Der Trim ist der Schritt, der optisch am meisten ausmacht: ungetrimmte
- * Screenshots ergeben ein Raster, in dem jedes Fahrzeug eine andere Groesse
- * hat, weil jedes Bild anders viel Leerraum mitbringt. Erst trimmen und dann
- * einen prozentualen Rand setzen macht sie vergleichbar.
+ * The trim is the step that matters most visually: untrimmed
+ * screenshots produce a grid in which every vehicle has a different size,
+ * because every image brings a different amount of empty space. Trimming first
+ * and then setting a percentage margin makes them comparable.
  *
- * Der Rand wird aus der getrimmten Groesse berechnet, nicht aus der originalen,
- * sonst wandert er mit dem Leerraum mit, den wir gerade entfernt haben.
+ * The margin is calculated from the trimmed size, not from the original one,
+ * otherwise it moves along with the empty space we just removed.
  */
 async function trimAndPad(inputBuffer, regeln = rulesFor(null)) {
   let working = inputBuffer
@@ -145,8 +145,8 @@ async function trimAndPad(inputBuffer, regeln = rulesFor(null)) {
     try {
       working = await sharp(inputBuffer).trim({ threshold: 0 }).toBuffer()
     } catch {
-      // Ein Bild ohne beschneidbaren Rand (oder ein komplett leeres) laesst sharp
-      // werfen. Dann bleibt das Original stehen, das ist kein Fehlerfall.
+      // An image without a trimmable margin (or a completely empty one) makes sharp
+      // throw. Then the original stays as it is, that is not an error case.
     }
   }
 
@@ -168,11 +168,11 @@ async function buildVariants(padded, regeln = rulesFor(null)) {
       width: regeln.originalMaxEdge, height: regeln.originalMaxEdge,
       fit: 'inside', withoutEnlargement: true,
     })
-    // effort: 10 ist hier kein Feinschliff, sondern der Unterschied zwischen
-    // 358 KB und 93 KB pro Fahrzeugbild (nachgemessen an adder.png). Ohne den
-    // Wert liefert sharp ein PNG, das GROESSER ist als die Quelle, und der
-    // Bestand waere um Faktor vier aufgeblaeht. Kostet Rechenzeit beim Ingest,
-    // die genau einmal pro Bild anfaellt.
+    // effort: 10 is not fine-tuning here, but the difference between
+    // 358 KB and 93 KB per vehicle image (re-measured on adder.png). Without the
+    // value sharp produces a PNG that is LARGER than the source, and the
+    // collection would be bloated by a factor of four. Costs computing time during
+    // ingest, which is spent exactly once per image.
     .png({ compressionLevel: 9, effort: 10 })
     .toBuffer()
 
@@ -191,7 +191,7 @@ async function buildVariants(padded, regeln = rulesFor(null)) {
 }
 
 // ---------------------------------------------------------------------------
-// Hauptlauf
+// Main run
 // ---------------------------------------------------------------------------
 async function main() {
   const { positional, flags } = parseArgs(process.argv)
@@ -221,8 +221,8 @@ async function main() {
     database: process.env.DB_NAME,
   })
 
-  // Kategorie muss existieren. Ein Tippfehler im ersten Argument wuerde sonst
-  // ein neues Verzeichnis anlegen, das nie jemand ausliefert.
+  // The category must exist. A typo in the first argument would otherwise
+  // create a new directory that nobody ever serves.
   const [cats] = await db.execute(
     'SELECT slug FROM msk_image_categories WHERE slug = ?', [category],
   )
@@ -242,10 +242,10 @@ async function main() {
 
   const stats = { created: 0, updated: 0, skipped: 0, rejected: 0 }
   const rejected = []
-  /** Inhaltsgleiche Dateien: nur ein Hinweis, kein Ausschluss (siehe unten). */
+  /** Content-identical files: only a notice, not an exclusion (see below). */
   const duplicates = []
-  // Dubletten sind in fremden Packs die Regel, nicht die Ausnahme. Wer sie
-  // beim Ingest nicht herauswirft, hat sie fuer immer.
+  // Duplicates are the rule in third-party packs, not the exception. Whoever
+  // does not throw them out during ingest has them forever.
   const seenHashes = new Map()
 
   for (const file of files) {
@@ -268,16 +268,16 @@ async function main() {
       continue
     }
 
-    // Inhaltsgleiche Dateien werden gemeldet, aber NICHT abgelehnt.
+    // Content-identical files are reported, but NOT rejected.
     //
-    // Beim Erstimport der Fahrzeuge lag genau dieser Fall vor: `issi4.png` ist
-    // byteidentisch mit `issi3.png`. Zwei verschiedene Spawnnamen, dasselbe
-    // Bild — im Garagen-UI ist das seit jeher so und voellig in Ordnung.
+    // The initial import of the vehicles had exactly this case: `issi4.png` is
+    // byte-identical to `issi3.png`. Two different spawn names, the same
+    // image; in the garage UI it has always been like that and is perfectly fine.
     //
-    // Ein Consumer baut die URL aus dem Modellnamen, ein fehlendes
-    // `issi4.webp` waere dort ein 404 und damit ein echter Funktionsverlust.
-    // Platz kostet die Dublette drei Dateien, das ist der falsche Preis fuer
-    // ein kaputtes Bild.
+    // A consumer builds the URL from the model name, a missing
+    // `issi4.webp` would be a 404 there and thus a real loss of function.
+    // The duplicate costs three files of space, that is the wrong price for
+    // a broken image.
     if (seenHashes.has(hash)) {
       duplicates.push([file, seenHashes.get(hash)])
     } else {
@@ -307,8 +307,8 @@ async function main() {
       continue
     }
 
-    // Eine ersetzte Datei braucht eine neue URL, weil der vhost mit
-    // max-age=1 Jahr + immutable ausliefert. Dafuer zaehlt version hoch.
+    // A replaced file needs a new URL, because the vhost serves with
+    // max-age=1 year + immutable. That is what the version counter is for.
     const version = existing ? (existing.sha256 === hash ? existing.version : existing.version + 1) : 1
 
     if (dryRun) {
@@ -354,8 +354,8 @@ async function main() {
   console.log(`  uebersprungen:${stats.skipped}  (Quelle unveraendert)`)
   console.log(`  abgelehnt:    ${stats.rejected}`)
 
-  // Abgelehnte Dateien werden benannt, nicht stillschweigend verschluckt.
-  // Sonst haelt man einen halben Bestand fuer einen ganzen.
+  // Rejected files are named, not silently swallowed.
+  // Otherwise you mistake half a collection for a whole one.
   if (duplicates.length) {
     console.log(`
 Inhaltsgleich (trotzdem aufgenommen): ${duplicates.length}`)

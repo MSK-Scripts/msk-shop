@@ -78,8 +78,8 @@ function aggregate(payments) {
     if (status !== 'complete') continue;
 
     complete += 1;
-    // player.uuid ist der CFX.re-Account. E-Mail liefert dieselbe Zahl, taugt
-    // aber als Fallback, falls ein Kauf ohne Spielerbindung durchläuft.
+    // player.uuid is the CFX.re account. Email yields the same number, but it
+    // works as a fallback in case a purchase goes through without a player link.
     const key = p.player?.uuid || p.email;
     if (key) buyers.add(String(key).toLowerCase());
 
@@ -93,7 +93,7 @@ function aggregate(payments) {
     completed_payments: complete,
     refunds: refunded,
     chargebacks: chargeback,
-    // Anteil rückabgewickelter an allen zustande gekommenen Zahlungen.
+    // Share of reversed payments among all payments that went through.
     reversal_rate: settled > 0 ? (refunded + chargeback) / settled : 0,
     first_payment_at: earliest ? new Date(earliest) : null,
   };
@@ -117,8 +117,8 @@ async function main() {
     `Quote: ${(stats.reversal_rate * 100).toFixed(2)} %`
   );
 
-  // Eine leere Antwort darf den vorhandenen Wert nicht überschreiben. Lieber
-  // eine Nacht alte Zahl als plötzlich null Käufer auf der Startseite.
+  // An empty response must not overwrite the existing value. Better a number
+  // that is one night old than suddenly zero buyers on the homepage.
   if (stats.unique_buyers === 0) {
     log('Keine Käufer ermittelt, Schreiben übersprungen.');
     process.exit(1);

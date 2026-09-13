@@ -75,25 +75,25 @@ export function countPriceBuckets<T>(items: T[], priceOf: (item: T) => number): 
 }
 
 /**
- * Kurze Gruppen bleiben immer ganz sichtbar. Erst darueber lohnt ein
- * Ausklapper, sonst versteckt er zwei Zeilen hinter einer dritten.
+ * Short groups always stay fully visible. Only above this size is a collapser
+ * worth it, otherwise it hides two rows behind a third.
  */
 const COLLAPSE_FROM = 6
 
 /**
- * Trennt die Facetten, die wirklich einengen, von ihrem Schwanz.
+ * Separates the facets that actually narrow things down from their tail.
  *
- * Anlass: "Funktioniert mit" hatte elf Einträge, acht davon mit Zähler 2.
- * Zwei heißt im heutigen Katalog "genau ein Produkt", weil jedes Script
- * doppelt im Regal steht, encrypted und source. So ein Haken engt nichts ein,
- * er springt zu einem einzelnen Produkt, das auf derselben Seite ohnehin schon
- * sichtbar ist.
+ * Reason: "Works with" had eleven entries, eight of them with a count of 2.
+ * In today's catalogue two means "exactly one product", because every script
+ * sits on the shelf twice, encrypted and source. A checkbox like that narrows
+ * nothing, it jumps to a single product that is already visible on the same
+ * page anyway.
  *
- * Die Grenze kommt deshalb aus den Daten und nicht aus einer festen Zahl:
- * alles, was so selten vorkommt wie der seltenste Eintrag, wandert hinter den
- * Ausklapper. Das überlebt auch die geplante Zusammenfassung der Paare, nach
- * der die Zähler sich halbieren. Sind alle Einträge gleich häufig, gibt es
- * keinen Schwanz und die Gruppe bleibt vollständig stehen.
+ * The threshold therefore comes from the data and not from a fixed number:
+ * everything that occurs as rarely as the rarest entry moves behind the
+ * collapser. That also survives the planned merging of the pairs, after which
+ * the counts halve. If all entries are equally common, there is no tail and the
+ * group stays fully visible.
  */
 export function splitFacets(facets: Facet[]): { primary: Facet[]; rest: Facet[] } {
   if (facets.length < COLLAPSE_FROM) return { primary: facets, rest: [] }

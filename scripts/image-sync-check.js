@@ -1,28 +1,28 @@
 #!/usr/bin/env node
 /**
- * image-sync-check.js — Dateisystem und Datenbank gegeneinander pruefen.
+ * image-sync-check.js: check the file system and the database against each other.
  *
- *   node scripts/image-sync-check.js [kategorie] [--json]
+ *   node scripts/image-sync-check.js [category] [--json]
  *
- * Ohne Kategorie werden alle Kategorien aus msk_image_categories geprueft.
+ * Without a category, all categories from msk_image_categories are checked.
  *
- * Meldet vier Zustaende, die alle beim Ausliefern weh tun, aber keiner davon
- * faellt im Normalbetrieb auf:
+ * Reports four states that all hurt when serving, but none of them
+ * is noticed in normal operation:
  *
- *   1. Zeile ohne Datei   Die Galerie zeigt eine Kachel, das Bild ist 404.
- *   2. Datei ohne Zeile   Liegt im CDN, wird ausgeliefert, taucht nirgends auf.
- *   3. Derivat fehlt      Kachel oder Vorschau fehlt, das Original ist da.
- *   4. Groesse weicht ab  Die DB-Angabe passt nicht zur Datei, also wurde
- *                         ausserhalb des Ingest-Scripts geschrieben.
+ *   1. Row without file   The gallery shows a tile, the image is 404.
+ *   2. File without row   Sits in the CDN, is served, shows up nowhere.
+ *   3. Derivative missing Tile or preview is missing, the original is there.
+ *   4. Size differs       The DB value does not match the file, so something
+ *                         was written outside the ingest script.
  *
- * Reines Lesen, dieses Script aendert nichts. Was es findet, wird von Hand
- * oder mit einem erneuten image-ingest.js --force geradegezogen.
+ * Read-only, this script changes nothing. Whatever it finds is straightened
+ * out by hand or with another image-ingest.js --force run.
  *
- * Aufruf auf dem Server:
+ * Invocation on the server:
  *   set -a; . /opt/msk-shop/.env.local; set +a
  *   NODE_PATH=/opt/msk-shop/node_modules node /opt/msk-shop/scripts/image-sync-check.js
  *
- * Sinnvoll als monatlicher Cron und nach jedem groesseren Ingest.
+ * Useful as a monthly cron and after every larger ingest.
  */
 
 'use strict'
@@ -40,7 +40,7 @@ async function listFiles(dir) {
   try {
     return await fs.readdir(dir)
   } catch (err) {
-    if (err.code === 'ENOENT') return null   // Verzeichnis gibt es gar nicht
+    if (err.code === 'ENOENT') return null   // the directory does not exist at all
     throw err
   }
 }
@@ -92,7 +92,7 @@ async function main() {
     }
 
     if (files === null) {
-      // Kein Verzeichnis: nur ein Problem, wenn die DB Zeilen dafuer fuehrt.
+      // No directory: only a problem if the DB has rows for it.
       if (rows.length) problems++
       report.push(entry)
       continue
@@ -108,9 +108,9 @@ async function main() {
       if (!present.has(original)) {
         entry.missingFile.push(row.name)
       } else {
-        // Groessenabgleich nur, wenn die Datei da ist. Weicht sie ab, hat
-        // jemand am Ingest vorbei geschrieben, und dann stimmt womoeglich
-        // auch der sha256 nicht mehr, an dem die Aenderungserkennung haengt.
+        // Size comparison only if the file is there. If it differs, someone
+        // wrote past the ingest, and then the sha256 that change detection
+        // depends on may no longer match either.
         const stat = await fs.stat(path.join(dir, original))
         if (stat.size !== row.bytes) {
           entry.sizeMismatch.push({ name: row.name, db: row.bytes, disk: stat.size })
@@ -170,7 +170,7 @@ async function main() {
   }
 
   console.log(`\nGefundene Abweichungen insgesamt: ${problems}`)
-  // Exit 1 bei Befunden, damit ein Cron per Mail meckert statt still zu laufen.
+  // Exit 1 on findings, so a cron complains by mail instead of running silently.
   process.exit(problems ? 1 : 0)
 }
 

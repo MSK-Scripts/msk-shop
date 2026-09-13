@@ -5,18 +5,18 @@ import { packageImage, plainExcerpt } from '@/lib/seo'
 import type { TebexPackage } from '@/types/tebex'
 
 /**
- * Strukturierte Daten (JSON-LD, schema.org) für Suchmaschinen.
+ * Structured data (JSON-LD, schema.org) for search engines.
  *
- * Die Blöcke werden von `components/JsonLd.tsx` als
- * `<script type="application/ld+json">` ausgegeben. Das ist ein Datenblock, der
- * vom Browser nicht ausgeführt wird, die Nonce-CSP greift hier also nicht.
+ * The blocks are emitted by `components/JsonLd.tsx` as
+ * `<script type="application/ld+json">`. That is a data block that the
+ * browser does not execute, so the nonce CSP does not apply here.
  *
- * Grundregel: Nur auszeichnen, was auf der Seite auch wirklich steht. Markup,
- * das vom sichtbaren Inhalt abweicht (v. a. beim Preis), wertet Google als
- * Mismatch und ignoriert es im besten Fall.
+ * Ground rule: only mark up what is actually on the page. Markup that
+ * differs from the visible content (especially the price) is treated by
+ * Google as a mismatch and, at best, ignored.
  */
 
-/** Minimaler JSON-Werttyp, damit die Builder ohne `any` auskommen. */
+/** Minimal JSON value type, so the builders get by without `any`. */
 export type JsonLdValue =
   | string
   | number
@@ -30,10 +30,10 @@ export type JsonLdObject = { [key: string]: JsonLdValue }
 const SCHEMA = 'https://schema.org'
 
 /**
- * Die Marke hinter der Seite. Gehört einmal ins Root-Layout.
+ * The brand behind the site. Belongs in the root layout once.
  *
- * `sameAs` listet die offiziellen Profile: Damit kann Google die Marke als
- * Entität zusammenführen, statt „MSK Scripts" für ein beliebiges Wort zu halten.
+ * `sameAs` lists the official profiles: this lets Google consolidate the brand
+ * as an entity instead of taking "MSK Scripts" for an arbitrary word.
  */
 /**
  * The publisher, as structured data.
@@ -66,29 +66,29 @@ export function organizationJsonLd(opts: { describe?: boolean } = {}): JsonLdObj
 
 export interface SoftwareApplicationInput {
   name:         string
-  /** Interner Pfad der Landingpage, z. B. `/ticketbot` oder `/de/giveaway`. */
+  /** Internal path of the landing page, e.g. `/ticketbot` or `/de/giveaway`. */
   path:         string
   description:  string
-  /** Interner Pfad oder absolute URL des Vorschaubilds. */
+  /** Internal path or absolute URL of the preview image. */
   image:        string
-  /** BCP-47-Tag der Seitensprache. */
+  /** BCP-47 tag of the page language. */
   inLanguage:   string
-  /** Wo der Quellcode liegt. Landet als zusätzliches `sameAs`. */
+  /** Where the source code lives. Ends up as an additional `sameAs`. */
   codeRepository?: string
 }
 
 /**
- * Eine der beiden Discord-Bot-Landingpages als SoftwareApplication.
+ * One of the two Discord bot landing pages as a SoftwareApplication.
  *
- * `Product` wäre hier falsch: Die Bots sind keine Shop-Artikel, sondern
- * Software, die man einlädt oder selbst hostet. Der Preis steht trotzdem als
- * `Offer` mit `0` drin, weil „kostenlos" eine Aussage ist, die Google sonst
- * raten müsste.
+ * `Product` would be wrong here: the bots are not shop items but software
+ * that you invite or host yourself. The price is still included as an
+ * `Offer` with `0`, because "free" is a statement Google would otherwise
+ * have to guess.
  *
- * **Kein `aggregateRating`.** Ohne Bewertungen zeigt Google für diesen Typ kein
- * Sterne-Snippet, das Markup hilft aber trotzdem beim Zuordnen der Entität.
- * Bewertungen zu erfinden wäre ein Richtlinienverstoß, und echte gibt es noch
- * nicht (Punkt 8 der Website-Liste, zurückgestellt).
+ * **No `aggregateRating`.** Without ratings Google shows no star snippet for
+ * this type, but the markup still helps with identifying the entity.
+ * Making up ratings would be a policy violation, and real ones do not exist
+ * yet (item 8 of the website list, deferred).
  */
 export function softwareApplicationJsonLd(input: SoftwareApplicationInput): JsonLdObject {
   const url = absoluteUrl(input.path)
@@ -100,8 +100,8 @@ export function softwareApplicationJsonLd(input: SoftwareApplicationInput): Json
     url,
     description: input.description,
     image:       input.image.startsWith('http') ? input.image : absoluteUrl(input.image),
-    // Discord-Bots laufen nicht auf einem klassischen Betriebssystem. Beide
-    // Angaben beschreiben, was ein Nutzer tatsächlich braucht.
+    // Discord bots do not run on a classic operating system. Both values
+    // describe what a user actually needs.
     applicationCategory: 'CommunicationApplication',
     operatingSystem:     'Discord, Node.js 18+',
     inLanguage:          input.inLanguage,
@@ -129,14 +129,14 @@ export function softwareApplicationJsonLd(input: SoftwareApplicationInput): Json
 
 export interface Crumb {
   name: string
-  /** Interner Pfad. Beim letzten Element weglassen, das ist die aktuelle Seite. */
+  /** Internal path. Omit for the last element, that is the current page. */
   path?: string
 }
 
 /**
- * Breadcrumb-Pfad. Muss der sichtbaren Breadcrumb der Seite entsprechen.
+ * Breadcrumb trail. Must match the visible breadcrumb of the page.
  *
- * Google ersetzt damit die nackte URL im Treffer durch den Pfad
+ * Google uses it to replace the bare URL in the result with the trail
  * (`msk-scripts.de › Packages › …`).
  */
 export function breadcrumbJsonLd(crumbs: Crumb[]): JsonLdObject {
@@ -149,7 +149,7 @@ export function breadcrumbJsonLd(crumbs: Crumb[]): JsonLdObject {
         position: index + 1,
         name:     crumb.name,
       }
-      // Das letzte Element (aktuelle Seite) bekommt bewusst kein `item`.
+      // The last element (current page) deliberately gets no `item`.
       if (crumb.path) entry.item = absoluteUrl(crumb.path)
       return entry
     }),
@@ -162,16 +162,16 @@ export interface FaqEntry {
 }
 
 /**
- * FAQ-Auszeichnung einer Seite.
+ * FAQ markup for a page.
  *
- * **Pflicht:** Jede Frage und jede Antwort muss auf der Seite auch sichtbar
- * stehen. Google verlangt das ausdrücklich, und ein Markup mit Antworten, die
- * im gerenderten HTML fehlen, ist ein Richtlinienverstoß, kein Trick.
+ * **Required:** every question and every answer must also be visible on the
+ * page. Google explicitly demands this, and markup with answers that are
+ * missing from the rendered HTML is a policy violation, not a trick.
  *
- * Das Rich-Result für FAQ zeigt Google seit 2023 nur noch für wenige
- * Regierungs- und Gesundheitsseiten. Der Nutzen liegt heute woanders: die
- * Auszeichnung macht ein Frage-Antwort-Paar sauber extrahierbar, und genau in
- * dieser Form werden Antworten von Sprachmodellen zitiert.
+ * Since 2023 Google shows the FAQ rich result only for a few government and
+ * health sites. The benefit today lies elsewhere: the markup makes a
+ * question-answer pair cleanly extractable, and it is exactly in this form
+ * that answers get cited by language models.
  */
 export function faqPageJsonLd(entries: FaqEntry[]): JsonLdObject {
   return {
@@ -189,14 +189,14 @@ export function faqPageJsonLd(entries: FaqEntry[]): JsonLdObject {
 }
 
 /**
- * Ein Tebex-Paket als Product + Offer.
+ * A Tebex package as Product + Offer.
  *
- * **Preis:** bewusst der Katalogpreis aus der unauthentifizierten Tebex-API,
- * also exakt der Wert, den ein ausgeloggter Besucher (und damit auch der
- * Googlebot) auf der Seite sieht. Die user-spezifischen Sales hängen an einem
- * authentifizierten Basket-Ident, den ein Crawler nie hat. Sie hier zu
- * berücksichtigen würde ein Markup erzeugen, das nicht zur gerenderten Seite
- * passt. Siehe `resolveDisplayPrice` in `lib/price.ts`.
+ * **Price:** deliberately the catalog price from the unauthenticated Tebex API,
+ * i.e. exactly the value a logged-out visitor (and therefore also
+ * Googlebot) sees on the page. The user-specific sales depend on an
+ * authenticated basket ident that a crawler never has. Taking them into
+ * account here would produce markup that does not match the rendered page.
+ * See `resolveDisplayPrice` in `lib/price.ts`.
  */
 export function productJsonLd(pkg: TebexPackage, description?: string): JsonLdObject {
   const { price } = resolveDisplayPrice(pkg.base_price ?? 0, pkg.total_price ?? pkg.base_price ?? 0)
@@ -218,7 +218,7 @@ export function productJsonLd(pkg: TebexPackage, description?: string): JsonLdOb
       price:           price.toFixed(2),
       priceCurrency:   pkg.currency || 'EUR',
       availability:    `${SCHEMA}/InStock`,
-      // Digitales Produkt, Auslieferung über Tebex.
+      // Digital product, delivered via Tebex.
       itemCondition:   `${SCHEMA}/NewCondition`,
       seller: {
         '@type': 'Organization',

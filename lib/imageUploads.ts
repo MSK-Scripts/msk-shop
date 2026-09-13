@@ -15,34 +15,33 @@ import {
 } from '@/lib/imagePipeline'
 
 /**
- * Community-Uploads: Quarantaene, Schlange, Freigabe.
+ * Community uploads: quarantine, queue, approval.
  *
- * Der riskanteste Teil des ganzen Bild-Projekts, deshalb hier die Grenze in
- * einem Satz: **eine hochgeladene Datei erreicht das oeffentliche Verzeichnis
- * niemals.** Sie wird beim Upload von sharp neu kodiert, das Ergebnis liegt
- * unter einer UUID in einem Verzeichnis ausserhalb jedes DocumentRoot, und
- * erst eine Freigabe durch einen Menschen erzeugt daraus die drei Fassungen im
- * CDN. Weder der Dateiname noch der Inhalt des Einreichenden wird je Teil
- * eines Pfades.
+ * The riskiest part of the whole image project, so here is the boundary in
+ * one sentence: **an uploaded file never reaches the public directory.**
+ * It is re-encoded by sharp on upload, the result lives under a UUID in a
+ * directory outside every DocumentRoot, and only an approval by a human turns
+ * it into the three variants on the CDN. Neither the file name nor the
+ * submitter's content ever becomes part of a path.
  */
 
-/** Groesster akzeptierter Upload. Der Proxy weist alles darueber schon am Header ab. */
+/** Largest accepted upload. The proxy already rejects anything above it at the header. */
 export const MAX_UPLOAD_BYTES = 8 * 1024 * 1024
 
-/** Kleinste und groesste Kantenlaenge, die ueberhaupt Sinn ergibt. */
+/** Smallest and largest edge length that makes any sense at all. */
 export const MIN_UPLOAD_EDGE = 64
 export const MAX_UPLOAD_EDGE = 4096
 
-/** Einreichungen je Person und Tag. Bremst Flutung, ohne echte Beitraege zu stoeren. */
+/** Submissions per person per day. Slows down flooding without getting in the way of real contributions. */
 export const UPLOADS_PER_DAY = 10
 
 export function inboxPath(): string {
   return process.env.UPLOAD_INBOX_PATH || '/var/lib/msk-image-uploads'
 }
 
-// turbopackIgnore an jeder Pfadbildung: die Wurzel kommt aus der Umgebung und
-// zeigt aus dem Repo heraus. Ohne den Hinweis traced Turbopack das ganze
-// Projekt in die Build-Ausgabe.
+// turbopackIgnore on every path construction: the root comes from the environment
+// and points out of the repo. Without the hint Turbopack traces the whole
+// project into the build output.
 function quarantineFile(id: string): string {
   return join(/*turbopackIgnore: true*/ inboxPath(), `${id}.png`)
 }
@@ -68,7 +67,7 @@ export interface ImageUpload {
   reviewedBy:       string | null
   reviewedAt:       string | null
   createdAt:        string
-  /** Nur bei `pending` vorhanden: die Quarantaenedatei wird danach geloescht. */
+  /** Only present for `pending`: the quarantine file is deleted afterwards. */
   hasFile:          boolean
 }
 
@@ -108,7 +107,7 @@ const COLUMNS = `id, category, name, label, tags, original_filename, width, heig
                  bytes, sha256, submitted_by, submitted_name, note, status,
                  reject_reason, reviewed_by, reviewed_at, created_at`
 
-// ── Kategorien, die Einreichungen annehmen ───────────────────────────────────
+// ── Categories that accept submissions ───────────────────────────────────────
 
 export interface UploadCategory {
   slug: string
@@ -116,9 +115,9 @@ export interface UploadCategory {
 }
 
 /**
- * Welche Kategorien offenstehen, entscheidet die Spalte `allows_upload`, nicht
- * eine Liste im Code. Eine weitere private Kategorie soll nicht bedeuten, dass
- * jemand daran denken muss, sie hier auszuschliessen.
+ * Which categories are open is decided by the `allows_upload` column, not by
+ * a list in the code. Adding another private category should not mean that
+ * someone has to remember to exclude it here.
  */
 export async function uploadCategories(lang: 'de' | 'en'): Promise<UploadCategory[]> {
   const rows = await query<{ slug: string; name_en: string; name_de: string }>(
@@ -135,7 +134,7 @@ export async function categoryAllowsUpload(slug: string): Promise<boolean> {
   return Boolean(row)
 }
 
-// ── Einreichen ───────────────────────────────────────────────────────────────
+// ── Submitting ───────────────────────────────────────────────────────────────
 
 export type SubmitFailure =
   | 'category_unknown'
@@ -169,12 +168,12 @@ export type SubmitResult =
   | { ok: false; reason: SubmitFailure }
 
 /**
- * Eine Einreichung pruefen, neu kodieren und in die Quarantaene legen.
+ * Check a submission, re-encode it and put it into quarantine.
  *
- * Die Reihenfolge der Pruefungen ist Absicht: erst die billigen (Recht,
- * Kategorie, Name, Groesse), dann das Tageslimit, und erst zum Schluss laesst
- * die Funktion sharp auf fremde Bytes los. Wer mit einer kaputten Datei um sich
- * wirft, kostet damit keine Bildverarbeitung.
+ * The order of the checks is intentional: first the cheap ones (rights,
+ * category, name, size), then the daily limit, and only at the very end does
+ * the function let sharp loose on foreign bytes. Anyone throwing broken files
+ * around therefore costs no image processing.
  */
 export async function submitUpload(input: SubmitInput): Promise<SubmitResult> {
   if (!input.licenseOk) return { ok: false, reason: 'license_required' }
@@ -186,10 +185,10 @@ export async function submitUpload(input: SubmitInput): Promise<SubmitResult> {
   const name = normaliseName(input.rawName)
   if (!name || !/^[a-z0-9_-]{1,128}$/.test(name)) return { ok: false, reason: 'name_invalid' }
 
-  // Der Bestand gewinnt: eine Einreichung ersetzt nie ein vorhandenes Bild.
-  // Ein Upload, der ein gepflegtes Fahrzeugrendering ueberschreiben koennte,
-  // waere ein Weg, die Galerie zu verunstalten, und der Nutzen waere null --
-  // was fehlt, sind Luecken, nicht Ersatz.
+  // The existing collection wins: a submission never replaces an existing image.
+  // An upload that could overwrite a curated vehicle render would be a way to
+  // deface the gallery, and the benefit would be zero --
+  // what is missing are gaps, not replacements.
   const taken = await queryOne<{ id: number }>(
     `SELECT id FROM msk_images WHERE category = ? AND name = ?`, [input.category, name],
   )
@@ -208,15 +207,15 @@ export async function submitUpload(input: SubmitInput): Promise<SubmitResult> {
     return { ok: false, reason: 'rate_limited' }
   }
 
-  // Format und Masse aus dem INHALT, nicht aus Endung oder Content-Type. sharp
-  // lehnt alles ab, was kein Bild ist; ein als PNG deklariertes Archiv kommt
-  // hier nicht durch.
+  // Format and dimensions from the CONTENT, not from extension or Content-Type.
+  // sharp rejects anything that is not an image; an archive declared as PNG does
+  // not get through here.
   //
-  // `limitInputPixels` deckelt die Dekodierung auf die Flaeche, die MAX_UPLOAD_EDGE
-  // im Quadrat ergibt. Die Masspruefung darunter faengt eine Dekompressionsbombe
-  // ohnehin ab, weil `metadata()` den Header liest und nicht die Pixel -- aber
-  // dann haengt der Schutz daran, dass die Reihenfolge dieser Zeilen so bleibt.
-  // Der Deckel haengt an nichts.
+  // `limitInputPixels` caps decoding at the area that MAX_UPLOAD_EDGE squared
+  // gives. The dimension check below catches a decompression bomb anyway,
+  // because `metadata()` reads the header and not the pixels -- but then the
+  // protection depends on the order of these lines staying as it is.
+  // The cap depends on nothing.
   const bounded = { limitInputPixels: MAX_UPLOAD_EDGE * MAX_UPLOAD_EDGE }
 
   let meta: Metadata
@@ -236,19 +235,18 @@ export async function submitUpload(input: SubmitInput): Promise<SubmitResult> {
   if (w < MIN_UPLOAD_EDGE || h < MIN_UPLOAD_EDGE) return { ok: false, reason: 'too_small' }
   if (w > MAX_UPLOAD_EDGE || h > MAX_UPLOAD_EDGE) return { ok: false, reason: 'too_large' }
 
-  // Neu kodieren, und zwar SOFORT, nicht erst bei der Freigabe.
+  // Re-encode, and do it IMMEDIATELY, not only on approval.
   //
-  // Was in der Quarantaene liegt, sind damit von sharp erzeugte Bytes und nicht
-  // die des Einreichenden. Das raeumt in einem Schritt mehrere Klassen von
-  // Problemen ab: EXIF und andere Metadaten fallen weg (sharp behaelt sie nur
-  // mit `withMetadata()`, und das steht hier bewusst nicht), ein an ein
-  // gueltiges Bild angehaengter Polyglot-Rest ueberlebt die Dekodierung nicht,
-  // und eine animierte Datei wird auf ihr erstes Einzelbild reduziert, weil
-  // `animated: true` nicht gesetzt ist.
+  // What lies in quarantine is therefore bytes produced by sharp and not the
+  // submitter's. That clears several classes of problems in one step: EXIF and
+  // other metadata are dropped (sharp only keeps them with `withMetadata()`,
+  // and that is deliberately absent here), a polyglot remainder appended to a
+  // valid image does not survive decoding, and an animated file is reduced to
+  // its first frame, because `animated: true` is not set.
   //
-  // Der Moderierende sieht danach unser eigenes PNG, nicht die eingereichte
-  // Datei -- sonst waere die Vorschau im Dashboard der Ort, an dem fremde Bytes
-  // doch noch in einem Browser landen.
+  // The moderator then sees our own PNG, not the submitted file -- otherwise
+  // the preview in the dashboard would be the place where foreign bytes still
+  // end up in a browser after all.
   let normalized: Buffer
   try {
     normalized = await sharp(input.file, bounded).png({ compressionLevel: 9 }).toBuffer()
@@ -279,13 +277,13 @@ export async function submitUpload(input: SubmitInput): Promise<SubmitResult> {
   )
 
   const upload = await getUpload(id)
-  // Der Datensatz wurde gerade geschrieben; fehlt er, ist etwas grundlegend
-  // kaputt und ein stiller Erfolg waere die schlechteste Antwort.
+  // The row was just written; if it is missing, something is fundamentally
+  // broken and a silent success would be the worst possible answer.
   if (!upload) throw new Error('upload row vanished right after insert')
   return { ok: true, upload }
 }
 
-/** Wie viele Einreichungen diese Person in den letzten 24 Stunden gemacht hat. */
+/** How many submissions this person has made in the last 24 hours. */
 export async function recentUploadCount(discordUserId: string): Promise<number> {
   const row = await queryOne<{ total: number }>(
     `SELECT COUNT(*) AS total FROM msk_image_uploads
@@ -295,7 +293,7 @@ export async function recentUploadCount(discordUserId: string): Promise<number> 
   return Number(row?.total ?? 0)
 }
 
-// ── Lesen ────────────────────────────────────────────────────────────────────
+// ── Reading ──────────────────────────────────────────────────────────────────
 
 export async function getUpload(id: string): Promise<ImageUpload | null> {
   const row = await queryOne<UploadRow>(
@@ -331,7 +329,7 @@ export async function countPendingUploads(): Promise<number> {
   return Number(row?.total ?? 0)
 }
 
-/** Die Quarantaenedatei fuer die Vorschau im Dashboard. */
+/** The quarantine file for the preview in the dashboard. */
 export async function readQuarantine(id: string): Promise<Buffer | null> {
   try {
     return await readFile(quarantineFile(id))
@@ -340,7 +338,7 @@ export async function readQuarantine(id: string): Promise<Buffer | null> {
   }
 }
 
-// ── Entscheiden ──────────────────────────────────────────────────────────────
+// ── Deciding ─────────────────────────────────────────────────────────────────
 
 export type DecisionFailure =
   | 'not_found' | 'not_pending' | 'file_gone' | 'name_taken'
@@ -351,19 +349,18 @@ export type DecisionResult =
   | { ok: false; reason: DecisionFailure }
 
 /**
- * Eine Einreichung freigeben: Fassungen bauen, ins CDN schreiben, Zeile in
- * `msk_images` anlegen, Quarantaene raeumen.
+ * Approve a submission: build the variants, write them to the CDN, create the
+ * row in `msk_images`, clear the quarantine.
  *
- * Der Namenskonflikt wird HIER noch einmal geprueft und nicht nur beim Upload.
- * Zwischen Einreichung und Freigabe koennen Wochen liegen, und in der Zeit kann
- * derselbe Name ueber den regulaeren Ingest hereingekommen sein. Ohne die
- * zweite Pruefung wuerde die Freigabe ein gepflegtes Bild ueberschreiben.
+ * The name conflict is checked again HERE, not only on upload. Weeks can pass
+ * between submission and approval, and during that time the same name may have
+ * come in through the regular ingest. Without the second check the approval
+ * would overwrite a curated image.
  *
- * Reihenfolge mit Absicht: erst die Dateien, dann die Datenbankzeile. Bricht
- * das Schreiben ab, gibt es Dateien ohne Zeile — das meldet der Sync-Check und
- * ist harmlos, weil ohne Zeile niemand die Adresse kennt. Andersherum gaebe es
- * eine Kachel in der Galerie, deren Bild 404 liefert.
- *
+ * Order on purpose: files first, then the database row. If writing breaks off,
+ * there are files without a row. The sync check reports that, and it is
+ * harmless, because without a row nobody knows the address. The other way round
+ * there would be a tile in the gallery whose image returns 404.
  * `targetCategory` allows refiling on approval. The category a submitter picked
  * is a suggestion, and sorting it correctly is precisely the decision that
  * moderation exists for. Only the existence of the category is checked, **not**
@@ -397,13 +394,13 @@ export async function approveUpload(
 
   const variants = await buildVariants(await trimAndPad(source))
 
-  // Das Schreiben ist der einzige Schritt, der an der Umgebung scheitern kann
-  // statt an den Daten: das Zielverzeichnis gehoert dem Ingest, nicht der
-  // Anwendung. Ein durchgereichter EACCES kam als blankes
-  // "Internal server error" an, und der Grund stand nur im journal des
-  // Servers. Als eigener Fehlerfall sagt die Oberflaeche, wonach zu suchen
-  // ist. Die Datenbankzeile bleibt bewusst ungeschrieben: eine Kachel ohne
-  // Datei liefert in der Galerie 404, umgekehrt kennt niemand die Adresse.
+  // Writing is the only step that can fail because of the environment rather
+  // than the data: the target directory belongs to the ingest, not to the
+  // application. A passed-through EACCES arrived as a bare
+  // "Internal server error", and the reason was only in the server's
+  // journal. As its own failure case, the UI says what to look for. The
+  // database row deliberately stays unwritten: a tile without a file returns
+  // 404 in the gallery, the other way round nobody knows the address.
   try {
     await writeVariants(category, upload.name, variants)
   } catch (e) {
@@ -444,12 +441,11 @@ export async function approveUpload(
 }
 
 /**
- * Ablehnen: Datei weg, Zeile bleibt.
+ * Reject: file gone, row stays.
  *
- * Die Zeile ist der Grund, warum die Tabelle abgelehnte Eintraege ueberhaupt
- * behaelt. Sie beantwortet zwei Fragen, die sonst niemand beantworten kann:
- * warum ein Bild nicht erschienen ist (der Einreichende sieht seinen Grund),
- * und wer wiederholt Unbrauchbares schickt.
+ * The row is the reason the table keeps rejected entries at all. It answers
+ * two questions nobody else can answer: why an image did not appear (the
+ * submitter sees their reason), and who repeatedly sends unusable material.
  */
 export async function rejectUpload(id: string, reviewerId: string, reason: string): Promise<DecisionResult> {
   const upload = await getUpload(id)
@@ -471,7 +467,7 @@ async function dropQuarantine(id: string): Promise<void> {
   await rm(quarantineFile(id), { force: true }).catch(() => {})
 }
 
-/** Nur fuer Tests und Diagnose: die Grenzwerte an einer Stelle ablesbar. */
+/** Only for tests and diagnostics: the limits readable in one place. */
 export const UPLOAD_LIMITS = {
   maxBytes: MAX_UPLOAD_BYTES,
   minEdge:  MIN_UPLOAD_EDGE,

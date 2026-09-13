@@ -110,16 +110,15 @@ export function useCart() {
   }, [setBasket, setIdent, setLoading, openCart, triggerDiscordAuth, setSubtotal])
 
   /**
-   * Legt ein Paket in den Warenkorb.
+   * Adds a package to the cart.
    *
-   * Gibt `true` zurueck, wenn es geklappt hat, sonst `false`. Bis zum
-   * 22.08.2026 endete jeder Fehlschlag in einem `console.error` und die
-   * Oberflaeche zeigte nichts: der Spinner hoerte auf, kein Warenkorb ging auf,
-   * keine Meldung erschien. Genau auf diesem Pfad ist am 18.08. schon einmal
-   * ein Tebex-422 unbemerkt verschwunden.
+   * Returns `true` if it worked, otherwise `false`. Until 22.08.2026 every
+   * failure ended in a `console.error` and the UI showed nothing: the spinner
+   * stopped, no cart opened, no message appeared. Exactly on this path a
+   * Tebex 422 had already vanished unnoticed once on 18.08.
    *
-   * Ein Weiterleiten zur Anmeldung zaehlt als Erfolg: die Seite navigiert
-   * gleich weg, eine Fehlermeldung waere dort falsch.
+   * A redirect to login counts as success: the page navigates away right
+   * after, an error message would be wrong there.
    */
   const addPackage = useCallback(async (packageId: number, packageType: string = 'single', variableData?: Record<string, string>): Promise<boolean> => {
     if (!username) {

@@ -1,68 +1,67 @@
 /**
- * Eine Guild-Id, deren Herkunft geprüft ist.
+ * A guild id whose origin has been verified.
  *
- * Das Problem, das dieser Typ löst: `query()` in `lib/db.ts` ist bewusst
- * ungescopet, die Mandanten-Isolation sitzt eine Ebene darüber. Bisher war das
- * reine Konvention — `authorizeGuild()` gab einen `string` zurück, und
- * `body.guildId` ist auch ein `string`. Ein neuer Aufruf, der den Prüfschritt
- * überspringt, kompilierte fehlerfrei.
+ * The problem this type solves: `query()` in `lib/db.ts` is deliberately
+ * unscoped, tenant isolation sits one level above it. Until now that was
+ * pure convention: `authorizeGuild()` returned a `string`, and
+ * `body.guildId` is a `string` too. A new call that skipped the check
+ * compiled without errors.
  *
- * `ScopedGuildId` ist ein Branded Type: zur Laufzeit weiterhin ein String, für
- * den Compiler aber nur über zwei Wege erreichbar.
+ * `ScopedGuildId` is a branded type: at runtime still a string, but for the
+ * compiler reachable only through two paths.
  *
- *   1. `authorizeGuild()` in `lib/dashboardAuth.ts` — Session plus
+ *   1. `authorizeGuild()` in `lib/dashboardAuth.ts`: session plus
  *      `WHERE guild_id = ? AND discord_user_id = ?`.
- *   2. `trustedGuildId(id, reason)` hier — für Kontexte ohne Nutzersession, in
- *      denen die Id aus einer anderen geprüften Quelle stammt.
+ *   2. `trustedGuildId(id, reason)` here: for contexts without a user session
+ *      in which the id comes from another verified source.
  *
- * Eine Funktion, die `ScopedGuildId` verlangt, lässt sich damit nicht mehr
- * versehentlich mit einem Wert aus dem Request-Body füttern.
+ * A function that requires `ScopedGuildId` can therefore no longer be fed a
+ * value from the request body by accident.
  *
- * Ehrlich zur Reichweite: der Brand beweist die **Herkunft** der Id, nicht dass
- * das SQL sie auch benutzt. `teardownCustomDomain(scope)` könnte intern immer
- * noch die falsche Zeile anfassen. Er schließt genau die Lücke, die
- * `tests/routeGuards.test.ts` nur von außen abtasten kann, und keine andere.
+ * To be honest about its reach: the brand proves the **origin** of the id, not
+ * that the SQL actually uses it. `teardownCustomDomain(scope)` could internally
+ * still touch the wrong row. It closes exactly the gap that
+ * `tests/routeGuards.test.ts` can only probe from the outside, and no other.
  */
 
 declare const GUILD_SCOPE: unique symbol
 
 export type ScopedGuildId = string & { readonly [GUILD_SCOPE]: true }
 
-/** Discord-Snowflake. Dieselbe Prüfung wie in `authorizeGuild()`. */
+/** Discord snowflake. Same check as in `authorizeGuild()`. */
 const GUILD_ID_RE = /^\d{17,20}$/
 
 /**
- * Kontexte, in denen es keine Nutzersession gibt und die Id trotzdem geprüft
- * ist. Die Liste ist absichtlich eine geschlossene Union statt eines freien
- * Strings: ein neuer Umgehungsgrund muss hier eingetragen werden, und damit
- * wird er im Review sichtbar, statt in einem Kommentar zu verschwinden.
+ * Contexts in which there is no user session and the id is still verified.
+ * The list is intentionally a closed union instead of a free-form string: a
+ * new bypass reason has to be added here, and that makes it visible in
+ * review instead of disappearing into a comment.
  */
 export type TrustedGuildSource =
   /**
-   * `authorizeGuild()` selbst. Die Id stammt aus einer Zeile, die bereits auf
-   * `discord_user_id` der Session eingeschränkt war — der Hauptweg, kein
-   * Umgehungsgrund. Steht hier, weil `authorizeGuild()` denselben Konstruktor
-   * benutzt statt ein eigenes `as ScopedGuildId` zu schreiben.
+   * `authorizeGuild()` itself. The id comes from a row that was already
+   * restricted to the session's `discord_user_id`. This is the main path, not
+   * a bypass reason. It is listed here because `authorizeGuild()` uses the same
+   * constructor instead of writing its own `as ScopedGuildId`.
    */
   | 'dashboard-session'
-  /** Stripe-Webhook, Signatur gegen STRIPE_WEBHOOK_SECRET geprüft, Id aus `metadata.guild_id`. */
+  /** Stripe webhook, signature verified against STRIPE_WEBHOOK_SECRET, id from `metadata.guild_id`. */
   | 'stripe-webhook'
-  /** API-Key des Bots — die Guild wird aus dem Key abgeleitet, nie aus dem Body. */
+  /** The bot's API key: the guild is derived from the key, never from the body. */
   | 'api-key'
-  /** Admin-Dashboard, `adminRoute()` hat Session, Recht und Origin bereits geprüft. */
+  /** Admin dashboard, `adminRoute()` has already checked session, permission and origin. */
   | 'admin-route'
-  /** Wartungs-Cron ohne Request-Kontext (cleanup.js, stripe-reconcile.js). */
+  /** Maintenance cron without a request context (cleanup.js, stripe-reconcile.js). */
   | 'maintenance-cron'
 
 /**
- * Markiert eine Guild-Id als geprüft, ohne Dashboard-Session.
+ * Marks a guild id as verified, without a dashboard session.
  *
- * Das Format wird zur Laufzeit validiert und wirft bei einem Fehlschlag: der
- * Brand ist reine Compile-Zeit, ein `as ScopedGuildId` an dieser Stelle wäre
- * eine Behauptung ohne Deckung. Der Wurf ist gewollt — an keinem der
- * aufrufenden Orte ist eine unbrauchbare Guild-Id ein erwarteter Zustand, und
- * ein stiller `null`-Rückgabewert würde nur eine Ebene später zu einem
- * Update ohne `WHERE`-Treffer führen.
+ * The format is validated at runtime and throws on failure: the brand is
+ * compile-time only, an `as ScopedGuildId` at this point would be a claim
+ * without backing. The throw is intended: at none of the calling sites is an
+ * unusable guild id an expected state, and a silent `null` return value would
+ * only lead to an update without a `WHERE` match one level later.
  */
 export function trustedGuildId(guildId: string, source: TrustedGuildSource): ScopedGuildId {
   const id = String(guildId ?? '').trim()

@@ -2,20 +2,19 @@ import { query, queryOne } from '@/lib/db'
 import type { Lang } from '@/lib/i18n'
 
 /**
- * Bildergalerie: Datenzugriff und URL-Bau.
+ * Image gallery: data access and URL building.
  *
- * Server-only. Die Dateien selbst liegen nicht in diesem Projekt, sondern im
- * Dateisystem hinter `cdn.msk-scripts.de`; hier stehen nur die Metadaten aus
- * `msk_images` und `msk_image_categories`.
+ * Server-only. The files themselves do not live in this project but in the
+ * file system behind `cdn.msk-scripts.de`; only the metadata from
+ * `msk_images` and `msk_image_categories` is handled here.
  *
- * **Die drei URLs baut ausschliesslich diese Datei.** Kein Client setzt je
- * selbst eine CDN-Adresse zusammen. Das ist der Grund, warum ein spaeterer
- * Umzug des Bestands (Pull-CDN davor, oder Object Storage dahinter) eine
- * Aenderung an einer Env-Variable ist und kein Refactoring durch das halbe
- * Frontend.
+ * **Only this file builds the three URLs.** No client ever assembles a CDN
+ * address itself. That is why a later move of the collection (a pull CDN in
+ * front, or object storage behind) is a change to one env variable and not a
+ * refactoring through half the frontend.
  */
 
-/** Basis-URL des CDN, ohne Schraegstrich am Ende. */
+/** Base URL of the CDN, without a trailing slash. */
 export function cdnBase(): string {
   const raw = process.env.CDN_BASE_URL || 'https://cdn.msk-scripts.de'
   return raw.replace(/\/+$/, '')
@@ -39,11 +38,11 @@ export interface ImageRecord {
   bytes:    number
   version:  number
   tags:     string[]
-  /** Original, PNG mit Alphakanal. */
+  /** Original, PNG with alpha channel. */
   url:      string
-  /** 400 px WebP, das was Galerie und NUIs anzeigen. */
+  /** 400 px WebP, what the gallery and NUIs display. */
   card:     string
-  /** 160 px WebP fuer dichte Raster. */
+  /** 160 px WebP for dense grids. */
   thumb:    string
 }
 
@@ -54,7 +53,7 @@ export interface ImageListResult {
   items: ImageRecord[]
 }
 
-/** Hoechstwert fuer `per`, serverseitig erzwungen. */
+/** Maximum for `per`, enforced server-side. */
 export const MAX_PER_PAGE = 100
 export const DEFAULT_PER_PAGE = 60
 
@@ -71,12 +70,12 @@ interface ImageRow {
 }
 
 /**
- * Aus einer Datenbankzeile den oeffentlichen Datensatz bauen.
+ * Build the public record from a database row.
  *
- * Der Cachebuster haengt nur ab Version 2 an: der vhost liefert mit
- * `max-age=31536000, immutable` aus, eine ersetzte Datei braucht deshalb eine
- * neue Adresse. Beim Erstimport waere `?v=1` an jeder URL nur Ballast, und er
- * wuerde in jedem kopierten Link mitwandern.
+ * The cache buster is only appended from version 2 on: the vhost serves with
+ * `max-age=31536000, immutable`, so a replaced file needs a new address. On the
+ * initial import, `?v=1` on every URL would just be dead weight, and it would
+ * travel along in every copied link.
  */
 function toRecord(row: ImageRow): ImageRecord {
   const base = `${cdnBase()}/${row.category}/${row.name}`
@@ -99,23 +98,23 @@ function toRecord(row: ImageRow): ImageRecord {
 }
 
 /**
- * Suchbegriff fuer MATCH ... AGAINST IN BOOLEAN MODE entschaerfen.
+ * Defuse a search term for MATCH ... AGAINST IN BOOLEAN MODE.
  *
- * Im Boolean-Modus sind `+ - > < ( ) ~ * " @` Operatoren. Ein Nutzer, der
- * "pistol -50" eintippt, meint keinen Ausschluss, und ein einzelnes `"` wuerde
- * die Abfrage mit einem Syntaxfehler abbrechen. Deshalb bleiben nur Buchstaben,
- * Ziffern, Unterstrich und Bindestrich stehen; jedes Wort bekommt ein `*`
- * angehaengt, damit "zent" auch "zentorno" findet.
+ * In boolean mode, `+ - > < ( ) ~ * " @` are operators. A user who types
+ * "pistol -50" does not mean an exclusion, and a single `"` would abort the
+ * query with a syntax error. That is why only letters, digits, underscore and
+ * hyphen are kept; every word gets a `*` appended, so that "zent" also finds
+ * "zentorno".
  *
- * Der Bindestrich ist dabei der Sonderfall, und er war bis zum 26.08.2026 ein
- * Defekt: er muss **innerhalb** eines Wortes stehen bleiben (`low-rider` ist
- * ein echter Tag), **am Anfang** ist er aber genau der Ausschlussoperator, den
- * der Absatz darueber ausschliessen wollte. "pistol -50" lieferte deshalb
- * Treffer ohne "50" statt Treffer mit beidem. Fuehrende Bindestriche fallen
- * jetzt weg; alle anderen Operatorzeichen erledigt bereits die Zeichenklasse.
+ * The hyphen is the special case here, and until 26.08.2026 it was a defect:
+ * it has to stay **inside** a word (`low-rider` is a real tag), but **at the
+ * start** it is exactly the exclusion operator the paragraph above meant to
+ * rule out. "pistol -50" therefore returned results without "50" instead of
+ * results with both. Leading hyphens are now dropped; the character class
+ * already takes care of all other operator characters.
  *
- * MariaDB indiziert per Default erst ab drei Zeichen (ft_min_word_len). Ein
- * kuerzerer Begriff faellt deshalb auf LIKE zurueck, siehe listImages().
+ * By default MariaDB only indexes from three characters on (ft_min_word_len).
+ * A shorter term therefore falls back to LIKE, see listImages().
  */
 function booleanTerms(q: string): string {
   return q
@@ -127,28 +126,28 @@ function booleanTerms(q: string): string {
 }
 
 /**
- * Die WHERE-Bedingung fuer einen Suchbegriff, oder `null` bei leerer Eingabe.
+ * The WHERE condition for a search term, or `null` for empty input.
  *
- * Steht hier und nicht in der aufrufenden Funktion, weil der Admin-Bereich
- * dieselbe Suche braucht: er ist die Stelle, an der Label und Tags gepflegt
- * werden, und wer dort etwas anderes findet als der Besucher, pflegt am
- * Problem vorbei. Beide Aufrufer muessen die Tabelle als `i` aliasen.
+ * Lives here and not in the calling function, because the admin area needs
+ * the same search: it is the place where labels and tags are maintained, and
+ * whoever finds something different there than the visitor does is
+ * maintaining past the problem. Both callers must alias the table as `i`.
  */
 export function searchClause(q: string): { sql: string; params: string[] } | null {
   const term = q.trim()
   if (!term) return null
 
   const terms = booleanTerms(term)
-  // Unterhalb der Volltext-Mindestlaenge liefert MATCH nichts, obwohl es
-  // Treffer gaebe. Kurze Begriffe wie "gt" oder "50" sind bei Spawnnamen
-  // aber genau der Normalfall, deshalb dort LIKE mit Praefix.
+  // Below the full-text minimum length, MATCH returns nothing even though
+  // there would be matches. Short terms like "gt" or "50" are exactly the
+  // normal case for spawn names, though, hence LIKE with a prefix there.
   if (terms && term.length >= 3) {
     return { sql: 'MATCH(i.name, i.label, i.tags) AGAINST (? IN BOOLEAN MODE)', params: [terms] }
   }
   return { sql: '(i.name LIKE ? OR i.label LIKE ?)', params: [`%${term}%`, `%${term}%`] }
 }
 
-/** Kategorien mit Anzahl der veroeffentlichten Bilder. */
+/** Categories with the number of published images. */
 export async function listCategories(lang: Lang, includePrivate = false): Promise<ImageCategory[]> {
   const rows = await query<{
     slug: string; name_en: string; name_de: string
@@ -191,7 +190,7 @@ export interface ListOptions {
 
 export async function listImages(opts: ListOptions): Promise<ImageListResult> {
   const page = Math.max(1, Math.floor(Number(opts.page) || 1))
-  // Hart gedeckelt: ein `?per=100000` bekommt 100, nicht den halben Bestand.
+  // Hard cap: a `?per=100000` gets 100, not half the collection.
   const per  = Math.min(MAX_PER_PAGE, Math.max(1, Math.floor(Number(opts.per) || DEFAULT_PER_PAGE)))
 
   const where:  string[]   = [`i.status = 'published'`]
@@ -203,8 +202,8 @@ export async function listImages(opts: ListOptions): Promise<ImageListResult> {
   }
 
   if (opts.tag) {
-    // FIND_IN_SET passt zur kommaseparierten Spalte und trifft ganze Tags,
-    // nicht Teilzeichenketten: ein LIKE '%sport%' wuerde auch "transport" finden.
+    // FIND_IN_SET fits the comma-separated column and matches whole tags,
+    // not substrings: a LIKE '%sport%' would also find "transport".
     where.push('FIND_IN_SET(?, i.tags)')
     params.push(opts.tag.toLowerCase())
   }
@@ -222,10 +221,10 @@ export async function listImages(opts: ListOptions): Promise<ImageListResult> {
   )
   const total = Number(totalRow?.total ?? 0)
 
-  // LIMIT und OFFSET stehen inline, weil mysql2 dafuer keine Platzhalter
-  // erlaubt. Beide sind oben durch Math.floor und die Deckel oben auf
-  // Ganzzahlen in bekannten Grenzen gezwungen, es geht also kein Nutzerwert
-  // ungeprueft in das SQL.
+  // LIMIT and OFFSET are inline, because mysql2 does not allow placeholders
+  // there. Both are forced above, by Math.floor and the caps above, into
+  // integers within known bounds, so no user value goes into the SQL
+  // unchecked.
   const offset = (page - 1) * per
 
   const rows = await query<ImageRow>(
@@ -250,7 +249,7 @@ export async function getImage(category: string, name: string): Promise<ImageRec
   return row ? toRecord(row) : null
 }
 
-/** Nachbarn fuer die Blaetternavigation auf der Detailseite. */
+/** Neighbours for the prev/next navigation on the detail page. */
 export async function getNeighbours(category: string, name: string): Promise<{
   prev: string | null
   next: string | null
@@ -270,7 +269,7 @@ export async function getNeighbours(category: string, name: string): Promise<{
   return { prev: prev?.name ?? null, next: next?.name ?? null }
 }
 
-/** Gesamtzahl veroeffentlichter Bilder, fuer die Uebersicht und die Sitemap. */
+/** Total number of published images, for the overview and the sitemap. */
 export async function countPublished(): Promise<number> {
   const row = await queryOne<{ total: number }>(
     `SELECT COUNT(*) AS total FROM msk_images WHERE status = 'published'`,

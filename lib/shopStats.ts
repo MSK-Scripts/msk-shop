@@ -78,7 +78,7 @@ export async function loadShopStats(): Promise<ShopStats | null> {
   }
 
   const uniqueBuyers = Number(row.unique_buyers)
-  // Null Käufer wäre kein Beleg, sondern ein kaputter Lauf.
+  // Zero buyers would not be evidence, but a broken run.
   if (!Number.isFinite(uniqueBuyers) || uniqueBuyers <= 0) return null
 
   const reversalRate = Number(row.reversal_rate)

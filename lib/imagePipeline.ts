@@ -3,18 +3,18 @@ import { join } from 'node:path'
 import sharp from 'sharp'
 
 /**
- * Die Aufbereitungsregeln des Bildbestands, als TypeScript.
+ * The processing rules of the image collection, as TypeScript.
  *
- * **Das ist ein bewusster Spiegel von `scripts/image-ingest.js`**, nicht eine
- * zweite Meinung. Das Script ist Plain-JS und laeuft ausserhalb von Next; es
- * kann dieses Modul nicht importieren, und dieses Modul kann das Script nicht
- * laden. Dasselbe Muster wie `BASIC_STORAGE_DAYS` in `scripts/cleanup.js`.
+ * **This is a deliberate mirror of `scripts/image-ingest.js`**, not a second
+ * opinion. The script is plain JS and runs outside of Next; it cannot import
+ * this module, and this module cannot load the script. Same pattern as
+ * `BASIC_STORAGE_DAYS` in `scripts/cleanup.js`.
  *
- * Warum die Duplikation trotzdem vertretbar ist: die Regeln aendern sich fast
- * nie, und wenn doch, aendern sie das Aussehen der ganzen Galerie — das ist
- * kein beilaeufiger Commit. `tests/imagePipeline.test.ts` liest die Zahlen aus
- * dem Script und vergleicht sie mit denen hier, damit ein Auseinanderlaufen
- * auffaellt statt sich als Bestand mit zwei Looks niederzuschlagen.
+ * Why the duplication is still acceptable: the rules almost never change, and
+ * when they do, they change the look of the entire gallery. That is not an
+ * incidental commit. `tests/imagePipeline.test.ts` reads the numbers from the
+ * script and compares them with the ones here, so that a divergence gets
+ * noticed instead of settling into a collection with two looks.
  */
 export const PIPELINE_RULES = {
   originalMaxEdge: 1024,
@@ -26,7 +26,7 @@ export const PIPELINE_RULES = {
   minEdge:         32,
 } as const
 
-/** Formate, die ein Einreichender schicken darf. Geprueft wird der Inhalt, nicht die Endung. */
+/** Formats a submitter may send. The content is checked, not the extension. */
 export const ACCEPTED_INPUT_FORMATS = ['png', 'jpeg', 'webp'] as const
 
 export function cdnRootPath(): string {
@@ -34,24 +34,24 @@ export function cdnRootPath(): string {
 }
 
 /**
- * Dateiname auf das Schema bringen, das die URL vertraegt.
+ * Bring a file name into the scheme the URL can handle.
  *
- * Zeichengleich mit `normaliseName` im Ingest-Script, inklusive der Reihenfolge
- * der ersten beiden Schritte: die Umlaute muessen VOR `normalize('NFD')` weg,
- * sonst zerlegt NFD sie und der Folgeschritt wirft das Diakritikum weg, bevor
- * die Umlautregel greift. Genau dieser Fehler war am 25.08.2026 im Script drin
- * und machte aus "Baeckerei" ein "backerei".
+ * Character-for-character identical to `normaliseName` in the ingest script,
+ * including the order of the first two steps: the umlauts must be gone BEFORE
+ * `normalize('NFD')`, otherwise NFD decomposes them and the following step
+ * throws away the diacritic before the umlaut rule applies. Exactly this bug
+ * was in the script on 25.08.2026 and turned "Baeckerei" into "backerei".
  */
 export function normaliseName(raw: string): string {
   return raw
     .replace(/ä/gi, 'ae').replace(/ö/gi, 'oe').replace(/ü/gi, 'ue').replace(/ß/g, 'ss')
     .normalize('NFD').replace(/[̀-ͯ]/g, '')
     .toLowerCase()
-    // Das Plus ausschreiben, BEVOR die Sonderzeichenregel darunter es zu einem
-    // Unterstrich macht und der Schnitt am Wortende ihn wieder wegnimmt. Ohne
-    // diese Zeile fallen `coiloversS+` und `coiloversS` beide auf
-    // `coiloverss`, und weil `UNIQUE (category, name)` nur eine Zeile zulaesst,
-    // waere eines der beiden Bilder still verschwunden statt aufzufallen.
+    // Spell out the plus BEFORE the special-character rule below turns it into
+    // an underscore and the trim at the end of the word removes it again.
+    // Without this line `coiloversS+` and `coiloversS` both end up as
+    // `coiloverss`, and because `UNIQUE (category, name)` allows only one row,
+    // one of the two images would have silently disappeared instead of standing out.
     .replace(/\+/g, '_plus')
     .replace(/[^a-z0-9_-]+/g, '_')
     .replace(/_{2,}/g, '_')
@@ -68,20 +68,20 @@ export interface Variants {
 }
 
 /**
- * Trimmen, dann einheitlich umranden.
+ * Trim, then pad uniformly.
  *
- * Der Trim macht optisch am meisten aus: ungetrimmte Aufnahmen ergeben ein
- * Raster, in dem jedes Objekt anders gross wirkt, weil jedes Bild anders viel
- * Leerraum mitbringt. Der Rand wird aus der GETRIMMTEN Groesse berechnet, sonst
- * wandert er mit dem Leerraum mit, den wir gerade entfernt haben.
+ * The trim makes the biggest visual difference: untrimmed captures produce a
+ * grid in which every object looks a different size, because every image brings
+ * a different amount of empty space. The padding is calculated from the TRIMMED
+ * size, otherwise it shifts along with the empty space we just removed.
  */
 export async function trimAndPad(input: Buffer): Promise<Buffer> {
   let working = input
   try {
     working = await sharp(input).trim({ threshold: 0 }).toBuffer()
   } catch {
-    // Ein Bild ohne beschneidbaren Rand laesst sharp werfen. Dann bleibt das
-    // Original stehen, das ist kein Fehlerfall.
+    // An image without a croppable border makes sharp throw. Then the original
+    // stays as it is; that is not an error case.
   }
 
   const meta = await sharp(working).metadata()
@@ -103,9 +103,9 @@ export async function buildVariants(padded: Buffer): Promise<Variants> {
       height: PIPELINE_RULES.originalMaxEdge,
       fit: 'inside', withoutEnlargement: true,
     })
-    // effort: 10 ist kein Feinschliff, sondern der Unterschied zwischen 358 KB
-    // und 93 KB je Bild (am Ingest nachgemessen). Ohne den Wert liefert sharp
-    // ein PNG, das groesser ist als die Quelle.
+    // effort: 10 is not polish but the difference between 358 KB and 93 KB
+    // per image (measured on the ingest). Without the value sharp produces a
+    // PNG that is larger than the source.
     .png({ compressionLevel: 9, effort: 10 })
     .toBuffer()
 
@@ -124,24 +124,24 @@ export async function buildVariants(padded: Buffer): Promise<Variants> {
 }
 
 /**
- * Die drei Fassungen in das oeffentlich ausgelieferte Verzeichnis schreiben.
+ * Write the three variants into the publicly served directory.
  *
- * Bis zum 26.08.2026 tat das ausschliesslich `scripts/image-ingest.js`, und der
- * Plan sagte, das solle so bleiben. Mit den Community-Uploads gibt es eine
- * zweite Stelle, und zwar bewusst: die Alternative waere ein Cron gewesen, der
- * freigegebene Einreichungen einsammelt, also eine zweite bewegliche Komponente
- * und eine Verzoegerung zwischen Klick und Ergebnis.
+ * Until 26.08.2026 only `scripts/image-ingest.js` did that, and the plan said
+ * it should stay that way. With community uploads there is a second place, and
+ * deliberately so: the alternative would have been a cron that collects
+ * approved submissions, i.e. a second moving component and a delay between
+ * click and result.
  *
- * Was die Entscheidung traegt, ist der Weg davor: was hier ankommt, ist keine
- * hochgeladene Datei, sondern ein von sharp neu erzeugter Puffer. Fremde Bytes
- * erreichen dieses Verzeichnis nie, `category` und `name` sind gegen die
- * Datenbank bzw. gegen `normaliseName` geprueft, und geschrieben wird erst
- * nach einer Freigabe durch einen Menschen.
+ * What carries the decision is the path before it: what arrives here is not an
+ * uploaded file but a buffer freshly produced by sharp. Foreign bytes never
+ * reach this directory, `category` and `name` are checked against the database
+ * and against `normaliseName` respectively, and writing only happens after
+ * approval by a human.
  */
 export async function writeVariants(category: string, name: string, v: Variants): Promise<void> {
-  // turbopackIgnore: der Pfad ist absichtlich dynamisch, die Wurzel kommt aus
-  // CDN_ROOT_PATH und zeigt aus dem Repo heraus. Ohne den Hinweis traced
-  // Turbopack das ganze Projekt, wie beim Transcript-Upload.
+  // turbopackIgnore: the path is dynamic on purpose, the root comes from
+  // CDN_ROOT_PATH and points out of the repo. Without the hint Turbopack traces
+  // the whole project, as with the transcript upload.
   const dir = join(/*turbopackIgnore: true*/ cdnRootPath(), category)
   await mkdir(/*turbopackIgnore: true*/ dir, { recursive: true })
 

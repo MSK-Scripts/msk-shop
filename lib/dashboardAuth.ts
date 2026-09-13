@@ -44,9 +44,9 @@ export async function getDashboardUserId(): Promise<string | null> {
 }
 
 export type GuildAuthResult =
-  // `guildId` ist die gebrandete Fassung von `guild.guild_id`. Sie ist der
-  // einzige Weg (neben `trustedGuildId()`), an einen `ScopedGuildId` zu kommen,
-  // und damit an alles, was einen verlangt. Siehe lib/guildScope.ts.
+  // `guildId` is the branded version of `guild.guild_id`. It is the only way
+  // (besides `trustedGuildId()`) to get a `ScopedGuildId`, and with it
+  // everything that requires one. See lib/guildScope.ts.
   | { ok: true;  discordUserId: string; guild: DashboardGuild; guildId: ScopedGuildId }
   | { ok: false; status: number; error: string };
 
@@ -82,8 +82,8 @@ export async function authorizeGuild(guildId: string | null | undefined): Promis
     return { ok: false, status: 403, error: 'access_revoked' };
   }
 
-  // Ab hier ist die Id belegt: sie stammt aus einer Zeile, die auf den
-  // Session-Nutzer eingeschränkt war. `guild.guild_id` kommt aus der Datenbank,
-  // die Formatprüfung von `trustedGuildId` kann also nicht fehlschlagen.
+  // From here on the id is proven: it comes from a row that was restricted to
+  // the session user. `guild.guild_id` comes from the database, so the format
+  // check in `trustedGuildId` cannot fail.
   return { ok: true, discordUserId, guild, guildId: trustedGuildId(guild.guild_id, 'dashboard-session') };
 }

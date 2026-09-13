@@ -2,23 +2,23 @@ import type { AdminPermission } from '@/lib/adminPerms'
 import { memberHasPermission, type AdminTeamMember } from '@/lib/adminPerms'
 
 /**
- * Welche Reiter das Admin-Dashboard hat und wer sie sehen darf.
+ * Which tabs the admin dashboard has and who may see them.
  *
- * Steht neben der Komponente und nicht darin, weil "welchen Reiter bekommt
- * dieses Mitglied" eine Rechtefrage ist und keine Darstellungsfrage. Sie wird
- * seit der Adresszeile auch von zwei Seiten gestellt: beim Aufbau der Leiste
- * und beim Auswerten von `?tab=`, und ein Wunsch aus der Adresszeile ist eine
- * Nutzereingabe.
+ * Lives next to the component and not inside it, because "which tab does this
+ * member get" is a permission question, not a presentation question. Since the
+ * address bar came into play it is also asked from two sides: when building the
+ * tab bar and when evaluating `?tab=`, and a wish from the address bar is user
+ * input.
  *
- * Die Routen sind davon unabhaengig abgesichert (`adminRoute`). Ein Reiter, den
- * jemand aufzwingt, koennte also keine Daten zeigen, aber er saehe eine
- * Oberflaeche voller 403-Meldungen statt der ehrlichen Auskunft, dass es
- * diesen Bereich fuer ihn nicht gibt.
+ * The routes are secured independently of this (`adminRoute`). A tab someone
+ * forces open could therefore not show any data, but they would see a UI full
+ * of 403 messages instead of the honest answer that this area does not exist
+ * for them.
  */
 export interface TabDef {
   id:    string
   label: string
-  /** Reiter bleibt verborgen ohne dieses Recht. Array heisst: eines davon genuegt. */
+  /** Tab stays hidden without this permission. An array means: one of them is enough. */
   perm?: AdminPermission | AdminPermission[]
 }
 
@@ -44,23 +44,23 @@ export function visibleTabs(member: AdminTeamMember): TabDef[] {
 }
 
 /**
- * Den Reiter aus `?tab=` aufloesen, mit dem ersten erlaubten als Rueckfall.
+ * Resolve the tab from `?tab=`, falling back to the first allowed one.
  *
- * Faellt bewusst still zurueck statt zu meckern: ein veralteter Bookmark auf
- * einen entfernten Reiter, oder ein Recht, das jemandem entzogen wurde, sind
- * beide keine Fehlbedienung. Und weil `visibleTabs` immer mindestens
- * "Overview" enthaelt, gibt es diesen Rueckfall garantiert.
+ * Deliberately falls back silently instead of complaining: an outdated bookmark
+ * to a removed tab, or a permission that was revoked from someone, are neither
+ * of them a user error. And because `visibleTabs` always contains at least
+ * "Overview", this fallback is guaranteed to exist.
  */
 export function resolveTab(tabs: TabDef[], wanted: string | undefined): string {
   return tabs.some(t => t.id === wanted) ? wanted! : tabs[0].id
 }
 
 /**
- * Die Adresse zu einem Reiter.
+ * The address of a tab.
  *
- * Der erste Reiter bekommt keinen Parameter, damit `/admin` die Adresse des
- * Dashboards bleibt und nicht zu `/admin?tab=overview` wird, sobald jemand
- * einmal hin und her klickt.
+ * The first tab gets no parameter, so that `/admin` stays the address of the
+ * dashboard and does not turn into `/admin?tab=overview` as soon as someone
+ * clicks back and forth once.
  */
 export function tabHref(tabs: TabDef[], id: string): string {
   return id === tabs[0].id ? '/admin' : `/admin?tab=${encodeURIComponent(id)}`

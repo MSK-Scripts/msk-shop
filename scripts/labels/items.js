@@ -1,35 +1,35 @@
 #!/usr/bin/env node
 /**
- * Labels und Tags fuer Items.
+ * Labels and tags for items.
  *
  *   node scripts/labels/items.js item-labels.json
  *   node scripts/image-label-import.js items item-labels.json --dry-run
  *
- * Anders als bei Fahrzeugen, Waffen und Peds gibt es hier **keine Datenquelle**.
- * Die Labels stammen aus `ox_inventory` (`data/items.lua` und `data/weapons.lua`),
- * und die sind bereits eingespielt: beim Abgleich am 26.08.2026 stimmten 54 von
- * 83 exakt ueberein, 0 wichen ab, 29 kennt ox gar nicht. ox splittet Anbauteile
- * pro Waffentyp (`at_clip_extended_pistol`, `_smg`, ...), unser Bild heisst
- * generisch `at_clip_extended` und bedient alle davon; der Rest sind Items, die
- * es in ox nicht gibt.
+ * Unlike vehicles, weapons and peds, there is **no data source** here.
+ * The labels come from `ox_inventory` (`data/items.lua` and `data/weapons.lua`),
+ * and those are already imported: in the comparison on 26.08.2026, 54 of 83
+ * matched exactly, 0 differed, and ox does not know 29 at all. ox splits
+ * attachments per weapon type (`at_clip_extended_pistol`, `_smg`, ...), our
+ * image is generically named `at_clip_extended` and serves all of them; the rest
+ * are items that do not exist in ox.
  *
- * Was hier steht, ist deshalb Handarbeit:
+ * What is here is therefore handwork:
  *
- *   TAGS    Eine Einordnung nach Verwendung. Sie ist **meine**, nicht die einer
- *           Quelle. ox fuehrt keine Kategorien. Ohne sie kannte die Suche nur
- *           Dateinamen, "drug" oder "food" lieferten null Treffer.
- *   LABELS  Acht Namen, die der erste Import mechanisch aus dem Dateinamen
- *           gebaut hatte ("Card Id", "Usb Black"). Nur Wortstellung und
- *           Schreibweise, keine Erfindungen.
+ *   TAGS    A classification by use. It is **mine**, not that of a source.
+ *           ox keeps no categories. Without them the search only knew file
+ *           names, "drug" or "food" returned zero hits.
+ *   LABELS  Eight names that the first import had built mechanically from the
+ *           file name ("Card Id", "Usb Black"). Only word order and spelling,
+ *           nothing invented.
  *
- * Ammo und Anbauteile brauchen hier nichts: ihre Labels kommen aus ox und ihre
- * Tags setzt der erste Lauf bereits.
+ * Ammo and attachments need nothing here: their labels come from ox and the
+ * first run already sets their tags.
  */
 'use strict'
 
 const fs = require('node:fs')
 
-/** Einordnung nach Verwendung. Kleinschreibung, wie in den anderen Kategorien. */
+/** Classification by use. Lowercase, as in the other categories. */
 const TAGS = {
   advancedkit: 'tool',        armour: 'equipment',        bandage: 'medical',
   black_money: 'money',       burger: 'food',             burger_chicken: 'food',
@@ -48,8 +48,8 @@ const TAGS = {
 }
 
 /**
- * Korrekturen an mechanisch gebauten Labels. Brauchen `--force`, weil der
- * Import ein vorhandenes Label sonst stehen laesst.
+ * Corrections to mechanically built labels. They need `--force`, because the
+ * import otherwise leaves an existing label in place.
  */
 const LABELS = {
   advancedkit:        'Advanced Kit',
@@ -62,7 +62,7 @@ const LABELS = {
   usb_black:          'USB Drive',
 }
 
-/** Anbauteile tragen ihren Tag aus dem ersten Lauf, hier nur die Korrekturen. */
+/** Attachments carry their tag from the first run, only the corrections here. */
 const TAGS_ZU_LABELS = { at_clip_extended2: 'attachment' }
 
 const ziel = process.argv[2]

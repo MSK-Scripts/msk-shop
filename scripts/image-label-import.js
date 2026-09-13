@@ -1,25 +1,25 @@
 #!/usr/bin/env node
 /**
- * image-label-import.js — Labels und Tags nachpflegen.
+ * image-label-import.js: backfill labels and tags.
  *
- *   node scripts/image-label-import.js <kategorie> <labels.json> [--dry-run]
+ *   node scripts/image-label-import.js <category> <labels.json> [--dry-run]
  *
- * Erwartet eine JSON-Datei mit [{ name, label, tags }, ...]. Gesetzt wird nur,
- * was auch ein Bild hat; Eintraege ohne Bild werden gezaehlt, nicht angelegt.
+ * Expects a JSON file with [{ name, label, tags }, ...]. Only entries that also
+ * have an image are set; entries without an image are counted, not created.
  *
- * Warum das ueberhaupt noetig ist: der Ingest kennt nur den Dateinamen. Ohne
- * Label findet die Suche `zentorno`, aber nicht "Pegassi", und genau danach
- * sucht jemand, der das Fahrzeug im Spiel gesehen hat und den Spawnnamen nicht
- * auswendig kann.
+ * Why this is needed at all: the ingest only knows the file name. Without a
+ * label the search finds `zentorno`, but not "Pegassi", and that is exactly
+ * what someone searches for who saw the vehicle in the game and does not know
+ * the spawn name by heart.
  *
- * Bestehende Labels werden NICHT ueberschrieben, ausser mit --force. Von Hand
- * gepflegte Werte sind mehr wert als ein automatischer Import.
+ * Existing labels are NOT overwritten, except with --force. Values maintained
+ * by hand are worth more than an automatic import.
  *
- * Der Schutz gilt aber dem einzelnen Feld, nicht der ganzen Zeile. Bis zum
- * 26.08.2026 sprang die Schleife bei vorhandenem Label komplett weiter, damit
- * liessen sich an einem benannten Bild nie Tags nachtragen. Aufgefallen an den
- * 83 Items: alle hatten ein Label, 40 hatten kein Tag, und der Import meldete
- * sie als "schon gepflegt". Label und Tags werden deshalb getrennt geprueft.
+ * The protection applies to the individual field, though, not the whole row. Until
+ * 26.08.2026 the loop skipped the row entirely when a label was present, so tags
+ * could never be added to a named image. Noticed on the
+ * 83 items: all had a label, 40 had no tag, and the import reported
+ * them as "already maintained". Label and tags are therefore checked separately.
  */
 
 'use strict'
@@ -28,22 +28,22 @@ const fs    = require('node:fs/promises')
 const mysql = require('mysql2/promise')
 
 /**
- * Tags auf die Form bringen, die die Spalte erwartet.
+ * Bring tags into the form the column expects.
  *
- * `msk_images.tags` ist eine kommaseparierte Liste, die `FIND_IN_SET` liest.
- * Bis zum 28.08.2026 ging der Wert aus der JSON-Datei ungeprueft in die
- * Spalte. Wer dort das naheliegende `tags: ["food"]` schrieb, bekam den String
- * `["food"]` gespeichert: kein Fehler, keine Warnung, und die Tag-Suche fand
- * ab da nichts mehr. Aufgefallen an 2066 Zeilen aus dem ox_inventory-Satz,
- * deren Suche still null Treffer lieferte, obwohl die Spalte gefuellt aussah.
+ * `msk_images.tags` is a comma-separated list that `FIND_IN_SET` reads.
+ * Until 28.08.2026 the value from the JSON file went into the column
+ * unchecked. Whoever wrote the obvious `tags: ["food"]` there got the string
+ * `["food"]` stored: no error, no warning, and from then on the tag search
+ * found nothing. Noticed on 2066 rows from the ox_inventory set,
+ * whose search silently returned zero hits although the column looked filled.
  *
- * Ein Array ist die natuerlichere Form fuer Tags, also wird es angenommen und
- * umgewandelt statt abgelehnt. Alles, was weder Array noch String ist, bricht
- * den Lauf ab, denn ein stiller Fehlschreiber in einer Spalte, die eine Suche
- * speist, ist schlimmer als ein lauter Abbruch.
+ * An array is the more natural form for tags, so it is accepted and
+ * converted instead of rejected. Anything that is neither array nor string
+ * aborts the run, because a silent miswrite in a column that feeds a search
+ * is worse than a loud abort.
  *
- * Spiegel von normalizeTags in lib/adminImages.ts: kleingeschrieben, ohne
- * Leerraum um die Kommas, ohne Dubletten, auf die Spaltenbreite begrenzt.
+ * Mirror of normalizeTags in lib/adminImages.ts: lowercase, without
+ * whitespace around the commas, without duplicates, capped at the column width.
  */
 function toTagList(value, name) {
   if (value === undefined || value === null || value === '') return null
@@ -56,8 +56,8 @@ function toTagList(value, name) {
   const seen = new Set()
   for (const part of parts) {
     const tag = String(part).trim().toLowerCase()
-    // Ein Komma im Tag waere ein zweiter Tag: das Trennzeichen der Spalte kann
-    // nicht Teil eines Wertes sein.
+    // A comma in the tag would be a second tag: the column's separator cannot
+    // be part of a value.
     if (tag.includes(',')) throw new Error(`Tag mit Komma fuer "${name}": ${tag}`)
     if (tag) seen.add(tag)
   }
@@ -98,8 +98,8 @@ async function main() {
     const row  = known.get(name)
     if (!row) { ohneBild++; continue }
 
-    // Je Feld entscheiden: ein vorhandener Wert bleibt stehen, ein leerer wird
-    // gefuellt. --force setzt beide neu.
+    // Decide per field: an existing value stays, an empty one gets
+    // filled. --force sets both anew.
     const labelNeu = (force || !row.label) ? (e.label || null) : row.label
     const tagsNeu  = (force || !row.tags)  ? toTagList(e.tags, name) : row.tags
 

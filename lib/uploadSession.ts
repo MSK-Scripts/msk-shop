@@ -1,14 +1,14 @@
 import { createHmac, timingSafeEqual } from 'crypto'
 
 /**
- * Signierte Sitzung fuer Community-Uploads.
+ * Signed session for community uploads.
  *
- * Eigener Scope neben Ticketbot, Giveaway und Admin. Alle vier signieren mit
- * demselben `SESSION_SECRET`, aber der Scope geht in den HMAC ein, damit ein
- * Ticketbot-Token nicht als Upload-Token durchgeht und umgekehrt. Die Sitzung
- * traegt genau zwei Dinge: wer eingereicht hat und wie diese Person heisst.
- * Rechte haengen nicht daran — sie erlaubt nur, ein Bild in die Schlange zu
- * legen, und ueber jedes Bild entscheidet danach ein Mensch.
+ * Its own scope next to ticketbot, giveaway and admin. All four sign with the
+ * same `SESSION_SECRET`, but the scope goes into the HMAC, so that a ticketbot
+ * token does not pass as an upload token and vice versa. The session carries
+ * exactly two things: who submitted and what that person is called.
+ * No permissions hang on it: it only allows putting an image into the queue,
+ * and a human decides about every image afterwards.
  */
 
 function getSecret(): string {
@@ -20,11 +20,11 @@ function getSecret(): string {
 interface Envelope<T> { d: T; exp: number }
 
 const SCOPE   = 'image-upload'
-const TTL_MS  = 7 * 24 * 3600_000   // 7 Tage
+const TTL_MS  = 7 * 24 * 3600_000   // 7 days
 
 export interface UploadSession {
   discordUserId: string
-  /** Anzeigename zum Zeitpunkt der Anmeldung. Nur zur Anzeige im Dashboard. */
+  /** Display name at the time of login. Only for display in the dashboard. */
   displayName:   string | null
 }
 

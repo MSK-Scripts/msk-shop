@@ -3,18 +3,17 @@ import { cdnBase, searchClause, MAX_PER_PAGE, DEFAULT_PER_PAGE } from '@/lib/ima
 import { copyVariants, deleteVariants } from '@/lib/imagePipeline'
 
 /**
- * Bildergalerie: der Datenzugriff des Admin-Bereichs.
+ * Image gallery: the data access of the admin area.
  *
- * Bewusst neben `lib/images.ts` und nicht darin. Jede Abfrage dort traegt
- * `status = 'published'` fest verdrahtet, und genau das ist die Zusicherung,
- * auf der die oeffentliche Galerie beruht: ein verstecktes Bild kann von dort
- * nicht versehentlich herausfallen. Ein Flag `includeHidden` haette diese
- * Zusicherung zu einer Aufrufer-Entscheidung gemacht, und die vergisst man
- * genau einmal.
+ * Deliberately next to `lib/images.ts` and not inside it. Every query there has
+ * `status = 'published'` hard-wired, and that is exactly the guarantee the
+ * public gallery rests on: a hidden image cannot accidentally slip out from
+ * there. An `includeHidden` flag would have turned that guarantee into a
+ * caller's decision, and that is the kind of thing you forget exactly once.
  *
- * Der Preis dafuer ist eine zweite Abfrage mit aehnlichem SQL. Der Suchteil
- * ist deshalb geteilt (`searchClause`), damit Admin und Besucher nicht
- * unterschiedliche Treffer sehen.
+ * The price for this is a second query with similar SQL. The search part is
+ * therefore shared (`searchClause`), so admins and visitors do not see
+ * different results.
  *
  * What does NOT happen here: producing new image data. The ingest stays
  * `scripts/image-ingest.js` on the server, and an endpoint that writes foreign
@@ -30,16 +29,15 @@ import { copyVariants, deleteVariants } from '@/lib/imagePipeline'
  */
 
 /**
- * Die drei Zustaende der Spalte `status`, in der Reihenfolge, in der ein Bild
- * sie durchlaeuft.
+ * The three states of the `status` column, in the order an image passes
+ * through them.
  *
- * `pending` ist der Eingangszustand eines Community-Uploads. Solange es das
- * Upload-Modul nicht gibt, ist die Schlange leer, aber der Zustand existiert
- * im Schema seit dem ersten Tag und wird hier vollstaendig behandelt: die
- * Galerie zeigt ihn nicht (dort gilt `status = 'published'`), die Kennzahlen
- * zaehlen ihn, und der Admin-Bereich loest ihn auf. Ein Zustand, den niemand
- * aufloest, ist eine Falle; das war der Grund, ihn zuerst wegzulassen, und
- * mit der Oberflaeche dafuer faellt der Grund weg.
+ * `pending` is the entry state of a community upload. As long as the upload
+ * module does not exist, the queue is empty, but the state has existed in the
+ * schema since day one and is handled completely here: the gallery does not
+ * show it (`status = 'published'` applies there), the stats count it, and the
+ * admin area resolves it. A state that nobody resolves is a trap; that was the
+ * reason to leave it out at first, and with a UI for it that reason goes away.
  */
 export const IMAGE_STATUSES = ['pending', 'published', 'hidden'] as const
 export type ImageStatus = (typeof IMAGE_STATUSES)[number]
@@ -49,13 +47,13 @@ export function isImageStatus(value: unknown): value is ImageStatus {
 }
 
 /**
- * Welches Recht eine Statusaenderung verlangt.
+ * Which permission a status change requires.
  *
- * Eine Zeile aus `pending` herauszuholen ist eine Moderationsentscheidung ueber
- * fremdes Material, kein Pflegevorgang am eigenen Bestand. Deshalb haengt die
- * Antwort am **bisherigen** Zustand und nicht am gewuenschten: wer nur
- * `images.manage` hat, darf den eigenen Bestand verstecken und wieder
- * veroeffentlichen, aber keinen Upload freigeben.
+ * Taking a row out of `pending` is a moderation decision about someone else's
+ * material, not maintenance of our own collection. That is why the answer
+ * depends on the **current** state and not on the requested one: whoever only
+ * has `images.manage` may hide and republish our own collection, but may not
+ * approve an upload.
  */
 export function permissionForStatusChange(current: string): 'images.moderate' | 'images.manage' {
   return current === 'pending' ? 'images.moderate' : 'images.manage'
@@ -81,12 +79,12 @@ export interface AdminImage {
   status:      string
   source:      string | null
   licenseNote: string | null
-  /** Discord-User-Id des Einreichenden. Nur bei Community-Uploads gesetzt. */
+  /** Discord user id of the submitter. Only set for community uploads. */
   submittedBy: string | null
   updatedAt:   string
-  /** 160 px WebP, reicht fuer die Tabelle. */
+  /** 160 px WebP, enough for the table. */
   thumb:       string
-  /** Original, fuer den Blick aufs echte Bild. */
+  /** Original, for a look at the real image. */
   url:         string
 }
 
@@ -113,7 +111,7 @@ export function splitTags(raw: string | null): string[] {
 
 function toAdminImage(row: AdminImageRow): AdminImage {
   const base = `${cdnBase()}/${row.category}/${row.name}`
-  // Cachebuster erst ab Version 2, gleiche Regel wie in lib/images.ts.
+  // Cache buster only from version 2 on, same rule as in lib/images.ts.
   const v = row.version > 1 ? `?v=${row.version}` : ''
 
   return {
@@ -137,14 +135,13 @@ function toAdminImage(row: AdminImageRow): AdminImage {
 }
 
 /**
- * Tag-Eingabe auf die Form bringen, die `FIND_IN_SET` erwartet.
+ * Bring tag input into the shape `FIND_IN_SET` expects.
  *
- * Kleinbuchstaben, keine Leerzeichen um die Kommas, keine Dubletten. Kommas
- * sind das Trennzeichen der Spalte und koennen deshalb nicht Teil eines Tags
- * sein; alles andere bleibt stehen, damit `msk_core` oder `low-rider` heil
- * durchkommen. Gibt `null` zurueck, wenn nichts uebrig bleibt, denn die Spalte
- * ist nullable und ein leerer String waere ein dritter Zustand fuer
- * "keine Tags".
+ * Lowercase, no spaces around the commas, no duplicates. Commas are the
+ * column's separator and therefore cannot be part of a tag; everything else
+ * stays, so `msk_core` or `low-rider` come through intact. Returns `null` if
+ * nothing is left, because the column is nullable and an empty string would be
+ * a third state for "no tags".
  */
 export function normalizeTags(raw: string): string | null {
   const seen = new Set<string>()
@@ -156,7 +153,7 @@ export function normalizeTags(raw: string): string | null {
   return joined ? joined.slice(0, 255) : null
 }
 
-/** Label leeren heisst NULL, nicht Leerstring. Gleiche Begruendung wie oben. */
+/** Clearing the label means NULL, not an empty string. Same reasoning as above. */
 export function normalizeLabel(raw: string): string | null {
   const label = raw.trim()
   return label ? label.slice(0, 160) : null
@@ -210,10 +207,9 @@ export async function listAdminImages(opts: AdminListOptions): Promise<AdminImag
   )
   const total = Number(totalRow?.total ?? 0)
 
-  // LIMIT und OFFSET inline, weil mysql2 dafuer keine Platzhalter erlaubt.
-  // Beide sind oben durch Math.floor und die Deckel auf Ganzzahlen in
-  // bekannten Grenzen gezwungen, es geht also kein Nutzerwert ungeprueft
-  // in das SQL.
+  // LIMIT and OFFSET inline, because mysql2 does not allow placeholders there.
+  // Both are forced above, by Math.floor and the caps, into integers within
+  // known bounds, so no user value goes into the SQL unchecked.
   const offset = (page - 1) * per
 
   const rows = await query<AdminImageRow>(
@@ -243,18 +239,18 @@ export interface AdminImageCategoryStat {
 }
 
 /**
- * Kennzahlen je Kategorie, inklusive der nicht oeffentlichen.
+ * Stats per category, including the non-public ones.
  *
- * Eine Abfrage ueber alle Kategorien statt einer je Kategorie, und ein
- * `LEFT JOIN`, damit auch eine leere Kategorie in der Liste bleibt: `props`
- * steht seit Monaten auf 0 und soll sichtbar bleiben, sonst wirkt der
- * Rueckstand wie erledigt.
+ * One query across all categories instead of one per category, and a
+ * `LEFT JOIN` so that an empty category stays in the list too: `props` has
+ * been at 0 for months and should stay visible, otherwise the backlog looks
+ * like it is done.
  *
- * Genau dieser LEFT JOIN ist aber die Falle in den beiden Mangel-Zaehlern.
- * Ohne Join-Partner liefert die Zeile `i.label = NULL`, und `NULL IS NULL`
- * ist wahr: `props` meldete damit 1 Bild ohne Label, obwohl es dort gar kein
- * Bild gibt. Der Gesamtwert stand deshalb auf 13 statt 12. Der Guard
- * `i.id IS NOT NULL` unterscheidet "Zeile ohne Label" von "keine Zeile".
+ * That very LEFT JOIN is the trap in the two gap counters, though. Without a
+ * join partner the row yields `i.label = NULL`, and `NULL IS NULL` is true:
+ * `props` therefore reported 1 image without a label, although there is no
+ * image there at all. The total therefore read 13 instead of 12. The guard
+ * `i.id IS NOT NULL` distinguishes "row without a label" from "no row".
  */
 export async function adminImageStats(): Promise<AdminImageCategoryStat[]> {
   const rows = await query<{
@@ -307,15 +303,15 @@ export async function getAdminImage(category: string, name: string): Promise<Adm
 }
 
 /**
- * Label, Tags und Sichtbarkeit einer Zeile aendern.
+ * Change the label, tags and visibility of a row.
  *
- * Bewusst nur diese drei Spalten. Alles andere (`width`, `bytes`, `sha256`,
- * `version`) beschreibt die Datei auf der Platte, und die kann von hier aus
- * niemand anfassen; ein editierbares `bytes` waere eine Luege ueber den
- * Bestand, und genau solche Abweichungen meldet `image-sync-check.js` als
- * Befund.
+ * Deliberately only these three columns. Everything else (`width`, `bytes`,
+ * `sha256`, `version`) describes the file on disk, and nobody can touch that
+ * from here; an editable `bytes` would be a lie about the collection, and
+ * exactly such mismatches are what `image-sync-check.js` reports as a
+ * finding.
  *
- * Gibt `null` zurueck, wenn es die Zeile nicht gibt.
+ * Returns `null` if the row does not exist.
  */
 export async function updateAdminImage(
   category: string,

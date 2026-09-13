@@ -1,44 +1,44 @@
 #!/bin/bash
 #
-# Wrapper für die Cron-Jobs von msk-shop.
+# Wrapper for the msk-shop cron jobs.
 #
-# ── Warum es das gibt ───────────────────────────────────────────────────────
+# ── Why this exists ─────────────────────────────────────────────────────────
 #
-# Bis zum 02.09.2026 stand jeder Job als Kette in der Crontab:
+# Until 02.09.2026 every job was a chain in the crontab:
 #
 #   set -a; . /opt/msk-shop/.env.local; set +a; NODE_PATH=… node …/cleanup.js \
 #     >> /var/log/msk-cleanup.log 2>&1
 #
-# Die Umleitung hängt in einer solchen Kette **nur am letzten Kommando**. Als am
-# 29.08.2026 eine unquotierte Zeile in die `.env.local` kam (`MAIL_FROM=MSK
-# Scripts <info@…>`, und `sh` liest `<` als Umleitung), starb das Sourcen — also
-# der Teil VOR der Umleitung. Der Fehler ging in die Cron-Mail, die es nicht gab,
-# und die Logdatei sah unverändert aus statt kaputt. Drei Crons lagen drei Tage
-# still, ohne dass irgendwo etwas Auffälliges stand.
+# In a chain like that the redirect is attached **only to the last command**.
+# When an unquoted line landed in `.env.local` on 29.08.2026 (`MAIL_FROM=MSK
+# Scripts <info@…>`, and `sh` reads `<` as a redirect), the sourcing died, that
+# is, the part BEFORE the redirect. The error went into the cron mail, which did
+# not exist, and the log file looked unchanged instead of broken. Three crons sat
+# idle for three days without anything suspicious showing up anywhere.
 #
-# Hier passiert die Umleitung deshalb **vor allem anderen** (`exec` unten). Alles,
-# was danach schiefgeht, steht im Log, auch ein Fehler beim Laden der Umgebung.
+# That is why the redirect happens here **before anything else** (`exec` below).
+# Anything that goes wrong after that ends up in the log, including a failure to
+# load the environment.
 #
-# ── Wie der Alarm funktioniert ──────────────────────────────────────────────
+# ── How the alert works ─────────────────────────────────────────────────────
 #
-# Die ursprünglichen Kanäle von Cron werden auf 3 und 4 gerettet, bevor stdout
-# ins Log umgebogen wird. Läuft der Job durch, schreibt der Wrapper **nichts**
-# auf Kanal 3, Cron sieht keine Ausgabe und verschickt keine Mail. Erst bei einem
-# Fehlschlag geht eine Zusammenfassung dorthin, und die wird zur Mail an das
-# `MAILTO` der Crontab.
+# Cron's original channels are saved to 3 and 4 before stdout is bent into the
+# log. If the job succeeds, the wrapper writes **nothing** to channel 3, cron
+# sees no output and sends no mail. Only on a failure does a summary go there,
+# and that becomes the mail to the crontab's `MAILTO`.
 #
-# Damit ist die Mail ein Ereignis und keine Gewohnheit: eine Mail bedeutet, dass
-# etwas kaputt ist. Ein täglicher Bericht, den niemand liest, hätte den Ausfall
-# vom 29.08. genauso wenig aufgedeckt wie gar keine Mail.
+# That makes the mail an event and not a habit: a mail means something is
+# broken. A daily report nobody reads would have uncovered the outage of 29.08.
+# no better than no mail at all.
 #
-# ── Aufruf ──────────────────────────────────────────────────────────────────
+# ── Usage ───────────────────────────────────────────────────────────────────
 #
 #   /opt/msk-shop/scripts/msk-cron.sh cleanup
 #   /opt/msk-shop/scripts/msk-cron.sh stripe-reconcile
 #   /opt/msk-shop/scripts/msk-cron.sh tebex-stats
 #
-# Läuft als root aus der Crontab. Die Datei liegt im Repo und wird mit jedem
-# Deploy aktualisiert; `deploy.sh` lässt `scripts/` root-owned.
+# Runs as root from the crontab. The file lives in the repo and is updated with
+# every deploy; `deploy.sh` leaves `scripts/` root-owned.
 
 set -uo pipefail
 
@@ -46,9 +46,9 @@ BASE=/opt/msk-shop
 ENV_FILE="$BASE/.env.local"
 NODE_BIN=/usr/bin/node
 
-# Allow-list statt freier Skriptname. Der Wrapper läuft als root aus der
-# Crontab; ein durchgereichter Pfad wäre eine Einladung, und ein Tippfehler
-# würde sonst als „node: kann Datei nicht finden" enden statt als klarer Fehler.
+# Allow-list instead of a free script name. The wrapper runs as root from the
+# crontab; a passed-through path would be an invitation, and a typo would
+# otherwise end as "node: cannot find file" instead of a clear error.
 case "${1:-}" in
   cleanup|stripe-reconcile|tebex-stats) JOB="$1" ;;
   *)
@@ -59,8 +59,8 @@ esac
 
 LOG="/var/log/msk-${JOB}.log"
 
-# Originale Kanäle sichern, BEVOR umgeleitet wird. Auf 3 landet später nur der
-# Fehlerfall, und genau daraus macht Cron die Mail.
+# Save the original channels BEFORE redirecting. Only the failure case ends up
+# on 3 later, and that is exactly what cron turns into the mail.
 exec 3>&1 4>&2
 exec >> "$LOG" 2>&1
 
@@ -84,11 +84,11 @@ fail() {
   exit "$rc"
 }
 
-# ── Umgebung laden ──────────────────────────────────────────────────────────
+# ── Load the environment ────────────────────────────────────────────────────
 #
-# `set -a` exportiert alles Folgende. Das Sourcen steht bewusst hier unten und
-# nicht in der Crontab: sein Scheitern ist genau der Fall, der am 29.08. keine
-# Spur hinterlassen hat, und jetzt landet er im Log und in der Mail.
+# `set -a` exports everything that follows. The sourcing sits down here on
+# purpose and not in the crontab: its failure is exactly the case that left no
+# trace on 29.08., and now it ends up in the log and in the mail.
 if [ ! -r "$ENV_FILE" ]; then
   fail 78 "$ENV_FILE ist nicht lesbar"   # EX_CONFIG
 fi
@@ -106,7 +106,7 @@ if [ ! -f "$SCRIPT" ]; then
   fail 72 "$SCRIPT fehlt"                # EX_OSFILE
 fi
 
-# ── Job ausführen ───────────────────────────────────────────────────────────
+# ── Run the job ─────────────────────────────────────────────────────────────
 NODE_PATH="$BASE/node_modules" "$NODE_BIN" "$SCRIPT"
 rc=$?
 

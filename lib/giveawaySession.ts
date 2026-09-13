@@ -1,10 +1,10 @@
 import { createHmac, timingSafeEqual } from 'crypto';
 import type { DiscordGuild } from './session';
 
-// Eigene, gescopte Sessions für den Giveaway-Flow. Bewusst getrennt vom
-// Ticketbot (`lib/dashboardSession.ts` / `lib/session.ts`): der HMAC bindet
-// jeweils einen Scope mit ein, damit ein Ticketbot-Token nicht als Giveaway-
-// Token gilt (und umgekehrt), obwohl alle dasselbe SESSION_SECRET nutzen.
+// Separate, scoped sessions for the giveaway flow. Deliberately kept apart from
+// the ticket bot (`lib/dashboardSession.ts` / `lib/session.ts`): the HMAC binds
+// a scope into each one, so that a ticket bot token does not count as a
+// giveaway token (and vice versa), even though all of them use the same SESSION_SECRET.
 /**
  * Resolve the HMAC secret. Throws if SESSION_SECRET is unset rather than
  * falling back to a known placeholder — a missing secret in production would
@@ -47,19 +47,19 @@ function parse<T>(scope: string, token: string | undefined): T | null {
   }
 }
 
-// ── Finale Dashboard-Session ──────────────────────────────────────────────────
+// ── Final dashboard session ───────────────────────────────────────────────────
 export interface GiveawaySession {
   guildId: string;
   /**
-   * Discord-ID des eingeloggten Users. Wird an den Bot durchgereicht, damit der
-   * für die Tebex-Routen selbst gegen `guild.ownerId` prüfen kann. Fehlt bei
-   * Sessions, die vor dieser Erweiterung ausgestellt wurden.
+   * Discord id of the logged-in user. Passed through to the bot so that it can
+   * check the Tebex routes against `guild.ownerId` itself. Missing in
+   * sessions that were issued before this extension.
    */
   userId?: string;
   /**
-   * Ob der User Besitzer dieser Guild ist. Steuert NUR die Anzeige — die
-   * Berechtigung entscheidet der Bot, und zwar gegen Discord statt gegen dieses
-   * Feld. Ein manipuliertes Flag brächte hier also nichts.
+   * Whether the user owns this guild. Controls ONLY the display: the bot
+   * decides the permission, and it does so against Discord rather than against
+   * this field. A tampered flag would therefore gain nothing here.
    */
   owner?: boolean;
 }
@@ -78,8 +78,8 @@ export function parseGiveawaySession(token: string | undefined): GiveawaySession
   return s && typeof s.guildId === 'string' ? s : null;
 }
 
-// ── Kurzlebige Zwischen-Session (nach OAuth, vor Guild-Auswahl) ───────────────
-/** Guild aus der OAuth-Liste, um das Besitzer-Flag ergänzt. */
+// ── Short-lived intermediate session (after OAuth, before guild selection) ────
+/** Guild from the OAuth list, extended with the owner flag. */
 export type GiveawayGuild = DiscordGuild & { owner?: boolean };
 
 export interface GiveawayVerifyData {
@@ -93,7 +93,7 @@ export function signGiveawayVerify(data: GiveawayVerifyData): string {
 
 export function parseGiveawayVerify(token: string | undefined): GiveawayVerifyData | null {
   const s = parse<GiveawayVerifyData>('giveaway-verify', token);
-  // Laufzeit-Formprüfung (Defense-in-Depth, auch wenn HMAC bereits geprüft ist).
+  // Runtime shape check (defense in depth, even though the HMAC is already verified).
   if (!s || typeof s.discordUserId !== 'string' || !Array.isArray(s.guilds)) return null;
   return s;
 }

@@ -24,20 +24,20 @@ interface AdminResource<T> {
  *
  * `key` and `failMessage` are expected to be constants. `url` may change: it
  * goes into the effect dependencies, so a new url refetches, and the `alive`
- * guard makes that race-safe — a response that arrives after the url moved on
+ * guard makes that race-safe: a response that arrives after the url moved on
  * cannot overwrite the newer one. The images tab relies on this to filter and
  * paginate server-side without a single setState inside an effect.
  */
 /**
- * Eine Antwort holen und den Nutzdatenteil herausziehen.
+ * Fetch a response and pull out the payload part.
  *
- * Steht als eigene Funktion neben dem Hook, damit sie ohne React-Renderer
- * testbar ist: die Fehlerbehandlung darin ist der Teil, der falsch war.
+ * Lives as its own function next to the hook, so that it is testable without a
+ * React renderer: the error handling in it is the part that was wrong.
  *
- * `res.json()` blind aufzurufen war der Fehler. Eine 500 liefert Nexts
- * HTML-Fehlerseite, und 429 wie 413 kommen aus `proxy.ts` als reiner Text. Das
- * Parsen warf dann, und der Nutzer sah die Browser-Meldung "Unexpected end of
- * JSON input" statt eines Satzes, mit dem er etwas anfangen kann.
+ * Calling `res.json()` blindly was the bug. A 500 returns Next's HTML error
+ * page, and 429 as well as 413 come from `proxy.ts` as plain text. Parsing then
+ * threw, and the user saw the browser message "Unexpected end of JSON input"
+ * instead of a sentence they could do something with.
  */
 export async function readJsonResource<T>(url: string, key: string, failMessage: string): Promise<T> {
   const res = await fetch(url)
@@ -46,19 +46,19 @@ export async function readJsonResource<T>(url: string, key: string, failMessage:
   try {
     body = await res.json()
   } catch {
-    // Kein JSON. Der Statuscode unten entscheidet, was das heisst.
+    // Not JSON. The status code below decides what that means.
   }
 
   if (!res.ok) {
-    // Unsere eigenen Routen antworten mit { error }. Alles andere bekommt den
-    // Satz des Aufrufers, nicht die Rohmeldung des Browsers.
+    // Our own routes answer with { error }. Everything else gets the caller's
+    // sentence, not the browser's raw message.
     const reported = (body as { error?: unknown } | null)?.error
     throw new Error(typeof reported === 'string' ? reported : failMessage)
   }
 
-  // 200 ohne verwertbaren Koerper ist ebenfalls ein Fehlerfall, nur ein
-  // leiserer: ohne diese Zeile kaeme `undefined` als Daten zurueck und die
-  // Oberflaeche bliebe im Ladezustand haengen.
+  // A 200 without a usable body is an error case too, just a quieter one:
+  // without this line `undefined` would come back as data and the UI would
+  // stay stuck in the loading state.
   if (body === null || typeof body !== 'object') throw new Error(failMessage)
 
   return (body as Record<string, unknown>)[key] as T
@@ -100,11 +100,11 @@ export function useJsonResource<T>(url: string, key: string, failMessage: string
 }
 
 /**
- * Der historische Name, unter dem die Admin-Tabs den Hook kennen.
+ * The historical name under which the admin tabs know the hook.
  *
- * Die Bild-Einreichungsseite nutzt dieselbe Mechanik, ist aber oeffentlich, und
- * ein Hook namens `useAdminResource` auf einer oeffentlichen Seite laesst den
- * naechsten Leser nach einer Rechtepruefung suchen, die es hier nie gab. Der
- * Alias kostet eine Zeile und spart diese Suche.
+ * The image submission page uses the same mechanism but is public, and a hook
+ * called `useAdminResource` on a public page makes the next reader look for a
+ * permission check that never existed here. The alias costs one line and saves
+ * that search.
  */
 export const useAdminResource = useJsonResource

@@ -4,43 +4,42 @@ import { absoluteUrl } from '@/lib/siteUrl'
 import { alternatePaths } from '@/lib/lang'
 
 /**
- * Sitemap: Datenaufbau und Serialisierung.
+ * Sitemap: data assembly and serialization.
  *
- * Warum von Hand und nicht über Nexts `app/sitemap.ts`: dessen Serialisierer
- * bietet keinen Platz für eine `<?xml-stylesheet?>`-Anweisung. Ohne die
- * rendert der Browser die Datei als aneinandergehängten Text, was jedes
- * Nachsehen von Hand unbrauchbar macht. Google interessiert das Stylesheet
- * nicht, es liest das XML.
+ * Why by hand and not via Next's `app/sitemap.ts`: its serializer offers no
+ * place for an `<?xml-stylesheet?>` instruction. Without it the browser
+ * renders the file as concatenated text, which makes any manual inspection
+ * useless. Google does not care about the stylesheet, it reads the XML.
  *
- * Warum hier weder `priority` noch `changefreq` steht: Google ignoriert beide
- * Felder vollständig (Search Central, „Build and Submit a Sitemap"). Sie
- * standen bis zum 22.08.2026 drin und haben nichts getan, ausser eine
- * Steuerung vorzutäuschen, die es nicht gibt.
+ * Why neither `priority` nor `changefreq` is here: Google ignores both fields
+ * completely (Search Central, "Build and Submit a Sitemap"). They were in the
+ * file until 22.08.2026 and did nothing except pretend to offer a control
+ * that does not exist.
  *
- * `lastmod` dagegen wertet Google aus, aber nur wenn der Wert „consistently and
- * verifiably accurate" ist. Vorher stand dort `new Date()` für **alle** URLs,
- * der Wert wanderte also mit jeder Revalidierung weiter und sagte nichts über
- * die Seite aus. Jetzt gilt:
+ * `lastmod`, on the other hand, is evaluated by Google, but only if the value is
+ * "consistently and verifiably accurate". Before, it held `new Date()` for **all**
+ * URLs, so the value moved forward with every revalidation and said nothing
+ * about the page. Now:
  *
- *   - Paketseiten     → `updated_at` aus der Tebex-API, der echte Wert
- *   - Kategorieseiten → das jüngste `updated_at` ihrer Pakete
- *   - alles Statische → **gar kein** `lastmod`
+ *   - package pages   → `updated_at` from the Tebex API, the real value
+ *   - category pages  → the most recent `updated_at` of their packages
+ *   - everything static → **no** `lastmod` at all
  *
- * Kein Datum ist besser als ein falsches: fehlt es, nutzt Google es einfach
- * nicht. Ist es erkennbar erfunden, verliert die ganze Datei ihre Glaubwürdigkeit.
+ * No date is better than a wrong one: if it is missing, Google simply does not
+ * use it. If it is recognizably made up, the whole file loses its credibility.
  */
 
 export interface SitemapEntry {
   url:           string
   lastModified?: Date
-  /** hreflang → absolute URL. Leer lassen, wenn die Seite einsprachig ist. */
+  /** hreflang → absolute URL. Leave empty if the page is single-language. */
   alternates?:   Record<string, string>
 }
 
-/** Pfad zum XSL-Stylesheet, das den Browser die Sitemap als Tabelle zeigen lässt. */
+/** Path to the XSL stylesheet that lets the browser show the sitemap as a table. */
 export const SITEMAP_STYLESHEET = '/sitemap.xsl'
 
-/** Statische, öffentlich indexierbare Seiten. */
+/** Static, publicly indexable pages. */
 const STATIC_ROUTES = [
   '/',
   '/packages',
@@ -57,18 +56,18 @@ const STATIC_ROUTES = [
   '/terms/privacy',
   '/terms/widerruf',
   '/terms/avv',
-  // Die drei Pflichtformulare gehören in die Sitemap, nicht in die robots.txt:
-  // sie müssen ohne Anmeldung und ohne Suchen erreichbar sein.
+  // The three mandatory forms belong in the sitemap, not in robots.txt:
+  // they must be reachable without logging in and without searching.
   '/vertrag-widerrufen',
   '/vertrag-kuendigen',
   '/report',
 ]
 
 /**
- * Parst einen Tebex-Zeitstempel defensiv. Fehlt er oder ist er unbrauchbar,
- * kommt `undefined` zurück und der Eintrag bekommt kein `lastmod` — siehe die
- * Begründung oben. `created_at` liefert die API für manche Pakete bereits als
- * `null`, auf `updated_at` ist deshalb kein Verlass ohne Prüfung.
+ * Parses a Tebex timestamp defensively. If it is missing or unusable,
+ * `undefined` is returned and the entry gets no `lastmod`, see the
+ * reasoning above. The API already returns `created_at` as `null` for some
+ * packages, so `updated_at` cannot be relied on without a check.
  */
 function parseTimestamp(value?: string | null): Date | undefined {
   if (!value) return undefined
@@ -76,7 +75,7 @@ function parseTimestamp(value?: string | null): Date | undefined {
   return Number.isNaN(date.getTime()) ? undefined : date
 }
 
-/** Jüngstes Datum einer Liste, oder `undefined` wenn keins brauchbar ist. */
+/** Most recent date of a list, or `undefined` if none is usable. */
 function newest(dates: Array<Date | undefined>): Date | undefined {
   const usable = dates.filter((d): d is Date => d !== undefined)
   if (usable.length === 0) return undefined
@@ -84,13 +83,13 @@ function newest(dates: Array<Date | undefined>): Date | undefined {
 }
 
 /**
- * Jede Seite steht zweimal in der Sitemap, einmal je Sprache, und beide
- * Einträge nennen dasselbe hreflang-Trio. Ein einseitiges oder abweichendes
- * Paar wertet Google nicht.
+ * Every page is in the sitemap twice, once per language, and both entries
+ * name the same hreflang trio. Google does not evaluate a one-sided or
+ * mismatched pair.
  *
- * Seit dem 22.08.2026 gilt das für den ganzen Baum und nicht mehr nur für die
- * beiden Bot-Landingpages: die Sprache steckt im Pfad, `/de/packages` ist eine
- * eigene Adresse mit eigenem Inhalt.
+ * Since 22.08.2026 this applies to the whole tree and no longer only to the
+ * two bot landing pages: the language is in the path, `/de/packages` is a
+ * separate address with its own content.
  */
 function bothLanguages(path: string, lastModified?: Date): SitemapEntry[] {
   const alt = alternatePaths(path)
@@ -109,9 +108,9 @@ function bothLanguages(path: string, lastModified?: Date): SitemapEntry[] {
 export async function buildSitemapEntries(): Promise<SitemapEntry[]> {
   const staticEntries: SitemapEntry[] = STATIC_ROUTES.flatMap(path => bothLanguages(path))
 
-  // Fail-soft: Ist Tebex nicht erreichbar (CI-Build ohne Secrets, API-Ausfall),
-  // wird trotzdem eine gültige Sitemap mit den statischen Seiten ausgeliefert,
-  // statt den ganzen Build zu kippen.
+  // Fail-soft: if Tebex is unreachable (CI build without secrets, API outage),
+  // a valid sitemap with the static pages is still delivered instead of
+  // bringing down the whole build.
   const [packages, categories] = await Promise.all([
     getPackages().catch(err => {
       console.warn('[sitemap] Tebex-Pakete nicht verfügbar:', err)
@@ -127,20 +126,20 @@ export async function buildSitemapEntries(): Promise<SitemapEntry[]> {
     bothLanguages(`/packages/${pkg.id}`, parseTimestamp(pkg.updated_at)),
   )
 
-  // `getCategories()` fragt mit `includePackages=1` ab, die Pakete liegen also
-  // vor. Eine Kategorieseite ändert sich genau dann, wenn eines ihrer Pakete
-  // sich ändert.
+  // `getCategories()` queries with `includePackages=1`, so the packages are
+  // already there. A category page changes exactly when one of its packages
+  // changes.
   const categoryEntries: SitemapEntry[] = categories.flatMap(cat =>
     bothLanguages(`/categories/${cat.id}`, newest((cat.packages ?? []).map(pkg => parseTimestamp(pkg.updated_at)))),
   )
 
-  // Galerie: Uebersicht und Kategorieseiten gehoeren hierher, die einzelnen
-  // Bilder NICHT. Davon gibt es tausende, und eine Sitemap darf 50.000 URLs
-  // fassen — sie stehen deshalb in `/sitemap-images.xml`, das ausserdem den
-  // image-Namespace mitbringt, den Google fuer Bildersuche auswertet.
+  // Gallery: the overview and category pages belong here, the individual
+  // images do NOT. There are thousands of them, and a sitemap may hold
+  // 50,000 URLs, so they live in `/sitemap-images.xml`, which also brings
+  // the image namespace that Google evaluates for image search.
   //
-  // Fail-soft wie bei Tebex: ohne Datenbank (CI-Build) bleibt die Sitemap
-  // gueltig, statt den Build zu kippen.
+  // Fail-soft as with Tebex: without a database (CI build) the sitemap stays
+  // valid instead of bringing down the build.
   const imageCategories = await listCategories('en').catch(err => {
     console.warn('[sitemap] Bildkategorien nicht verfuegbar:', err)
     return []
@@ -154,10 +153,10 @@ export async function buildSitemapEntries(): Promise<SitemapEntry[]> {
 }
 
 /**
- * Entschärft die fünf Zeichen, die in XML nicht roh in Text oder Attributwerten
- * stehen dürfen. Heute enthalten alle URLs nur Ziffern und Buchstaben, aber ein
- * Serialisierer, der sich darauf verlässt, produziert beim ersten Sonderzeichen
- * eine kaputte Datei.
+ * Escapes the five characters that may not appear raw in XML text or attribute
+ * values. Today all URLs contain only digits and letters, but a serializer
+ * that relies on that produces a broken file at the first special
+ * character.
  */
 function escapeXml(value: string): string {
   return value

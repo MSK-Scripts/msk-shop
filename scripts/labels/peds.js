@@ -1,18 +1,18 @@
 #!/usr/bin/env node
 /**
- * Labels und Tags fuer Peds aus DurtyFree/gta-v-data-dumps bauen.
+ * Build labels and tags for peds from DurtyFree/gta-v-data-dumps.
  *
  *   curl -sLO https://raw.githubusercontent.com/DurtyFree/gta-v-data-dumps/master/peds.json
  *   node scripts/labels/peds.js peds.json ped-labels.json
  *   node scripts/image-label-import.js peds ped-labels.json --dry-run
  *
- * Anzeigenamen fuehrt das Spiel nur fuer die Peds, die im Rockstar Editor
- * auswaehlbar sind. Fuer alle uebrigen wird das Label aus der CamelCase-Form
- * des Modellnamens gebildet, die der Dump mitliefert und die als einzige die
- * Wortgrenzen kennt: `casinocash` ist nicht trennbar, `CasinoCash` schon.
+ * The game only keeps display names for the peds that can be selected in the
+ * Rockstar Editor. For all others the label is built from the CamelCase form
+ * of the model name, which the dump includes and which is the only one that
+ * knows the word boundaries: `casinocash` cannot be split, `CasinoCash` can.
  *
- * Abkuerzungen bleiben bewusst stehen (`StrPunk` -> "Str Punk"). Eine
- * Aufloesung waere Auslegung und keine Datenquelle.
+ * Abbreviations stay as they are on purpose (`StrPunk` -> "Str Punk").
+ * Expanding them would be interpretation and not a data source.
  */
 'use strict'
 const fs = require('node:fs')
@@ -23,15 +23,15 @@ const GRUPPE = {
   p: 'player', player: 'player', slod: 'slod',
 }
 const ALTER = { y: 'young', m: 'middle-aged', o: 'old' }
-// Pedtype ist kein Geschlecht: COP, army, MEDIC und Swat stehen dort als
-// eigene Werte. Es liefert nur die Rolle, das Geschlecht kommt aus dem Namen.
+// Pedtype is not a gender: COP, army, MEDIC and Swat appear there as values of
+// their own. It only provides the role, the gender comes from the name.
 const ROLLE = {
   COP: 'police', army: 'army', MEDIC: 'medic', FIREMAN: 'fireman',
   Swat: 'swat', PLAYER_0: 'player', PLAYER_1: 'player', PLAYER_2: 'player',
 }
-// Rueckfall fuer das Geschlecht. Nur die Praefixe a_, s_, g_ und u_ tragen es
-// im Namen; cs_, csb_, ig_ und mp_ nicht, und das sind hier ueber die Haelfte.
-// Fuer die steht es im Pedtype, der sonst die Rolle liefert.
+// Fallback for the gender. Only the prefixes a_, s_, g_ and u_ carry it in the
+// name; cs_, csb_, ig_ and mp_ do not, and those are over half of them here.
+// For those it is in the Pedtype, which otherwise provides the role.
 const GESCHLECHT_AUS_TYP = {
   civmale: 'male', CIVMALE: 'male', CIVFEMALE: 'female', civfemale: 'female',
   COP: 'male', army: 'male', MEDIC: 'male', FIREMAN: 'male', Swat: 'male',
@@ -56,8 +56,8 @@ function zerlege(camelName) {
     i++
     if (teile[i] && teile[i].length === 1) { alterstufe = ALTER[teile[i].toLowerCase()] || null; i++ }
   }
-  // Reine Zahlen am Ende sind Variantennummern. Die Kachel zeigt den
-  // Spawnnamen ohnehin darueber, im Label waeren sie eine Doppelung.
+  // Pure numbers at the end are variant numbers. The tile shows the spawn
+  // name above it anyway, in the label they would be a duplication.
   const rest = teile.slice(i).filter(t => !/^\d+$/.test(t))
   return { gruppe, geschlecht, alterstufe, beschreibung: rest.map(trenneCamel).join(' ').trim() }
 }

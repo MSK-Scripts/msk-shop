@@ -1,13 +1,14 @@
-// ── Bestellbestätigung nach § 312f BGB ──────────────────────────────────────
+// ── Order confirmation under § 312f BGB ─────────────────────────────────────
 //
-// Bei einem Fernabsatzvertrag über eine Dienstleistung muss der Unternehmer den
-// Vertragsinhalt "innerhalb einer angemessenen Frist nach Vertragsschluss, auf
-// einem dauerhaften Datenträger" bestätigen, samt der Informationen nach
-// Art. 246a EGBGB. Stripe schickt eine Zahlungsquittung, keine
-// Vertragsbestätigung — die Quittung nennt weder Laufzeit noch Kündigung noch
-// die AGB, und über den Widerruf sagt sie gar nichts.
+// For a distance contract for a service, the trader must confirm the contract
+// content "innerhalb einer angemessenen Frist nach Vertragsschluss, auf
+// einem dauerhaften Datenträger" (within a reasonable time after conclusion of
+// the contract, on a durable medium), together with the information under
+// Art. 246a EGBGB. Stripe sends a payment receipt, not a contract
+// confirmation: the receipt names neither the term nor cancellation nor the
+// terms and conditions, and it says nothing at all about withdrawal.
 //
-// Deshalb diese Mail. Rein und ohne SMTP testbar, wie `trialEnding.ts`.
+// Hence this mail. Pure and testable without SMTP, like `trialEnding.ts`.
 
 import type { MailLang } from './trialEnding';
 
@@ -25,15 +26,15 @@ function escapeHtml(value: string): string {
 
 export interface OrderConfirmationInput {
   lang:       MailLang;
-  /** Anzeigename der Stufe, z. B. "Premium+". */
+  /** Display name of the tier, e.g. "Premium+". */
   tierLabel:  string;
-  /** Servername, oder die Id wenn der Name unbekannt ist. Fremde Eingabe. */
+  /** Server name, or the id if the name is unknown. External input. */
   guildLabel: string;
-  /** Monatspreis, bereits formatiert ("3,99 €" bzw. "€3.99"). */
+  /** Monthly price, already formatted ("3,99 €" or "€3.99"). */
   price:      string;
-  /** True, solange die kostenlose Testphase läuft. */
+  /** True while the free trial is running. */
   inTrial:    boolean;
-  /** Ende der Testphase, wenn eine läuft. */
+  /** End of the trial, if one is running. */
   trialEndsAt?: Date | null;
 }
 

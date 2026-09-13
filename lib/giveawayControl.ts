@@ -1,6 +1,6 @@
-// Server-seitiger Client für den localhost-Steuer-Endpunkt des Giveaway-Bots.
-// Wird NUR aus API-Routen aufgerufen, die die guildId aus der signierten
-// Session beziehen (nie aus dem Client-Body) — verhindert IDOR.
+// Server-side client for the giveaway bot's localhost control endpoint.
+// Called ONLY from API routes that take the guildId from the signed
+// session (never from the client body), which prevents IDOR.
 const CONTROL_URL = process.env.GIVEAWAY_CONTROL_URL ?? 'http://127.0.0.1:8787';
 const CONTROL_SECRET = process.env.GIVEAWAY_CONTROL_SECRET ?? '';
 

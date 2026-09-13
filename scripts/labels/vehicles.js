@@ -1,18 +1,18 @@
 #!/usr/bin/env node
 /**
- * Labels und Tags fuer Fahrzeuge aus DurtyFree/gta-v-data-dumps bauen.
+ * Build labels and tags for vehicles from DurtyFree/gta-v-data-dumps.
  *
  *   curl -sLO https://raw.githubusercontent.com/DurtyFree/gta-v-data-dumps/master/vehicles.json
  *   node scripts/labels/vehicles.js vehicles.json vehicle-labels.json
  *   node scripts/image-label-import.js vehicles vehicle-labels.json --dry-run
  *
- * Label ist Hersteller plus Anzeigename ("Truffade Adder"), Tags sind Klasse und
- * Hersteller in Kleinschreibung ("super,truffade"). Ohne das findet die Suche
- * `zentorno`, aber nicht "Pegassi", und genau danach sucht jemand, der das
- * Fahrzeug im Spiel gesehen hat und den Spawnnamen nicht auswendig kann.
+ * The label is manufacturer plus display name ("Truffade Adder"), tags are class
+ * and manufacturer in lowercase ("super,truffade"). Without that the search finds
+ * `zentorno` but not "Pegassi", and that is exactly what someone searches for who
+ * has seen the vehicle in the game and does not know the spawn name by heart.
  *
- * Fahrzeuge ohne Anzeigenamen im Dump werden ausgelassen statt geraten. Das
- * sind Anhaenger und ein paar Drift-Varianten, sechs Stueck bei 916 Bildern.
+ * Vehicles without a display name in the dump are skipped instead of guessed.
+ * Those are trailers and a few drift variants, six of them across 916 images.
  */
 'use strict'
 

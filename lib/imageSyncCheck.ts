@@ -4,23 +4,23 @@ import { join } from 'node:path'
 import { query } from '@/lib/db'
 
 /**
- * Karteileichen im Bild-CDN finden: Zeilen ohne Datei, Dateien ohne Zeile,
- * fehlende Derivate.
+ * Find dead entries in the image CDN: rows without a file, files without a
+ * row, missing derivatives.
  *
- * Das ist die Web-Fassung von `scripts/image-sync-check.js`, und sie ist
- * bewusst die kleinere: das Script prueft zusaetzlich, ob die Dateigroesse auf
- * der Platte zur Spalte `bytes` passt, und braucht dafuer ein `fs.stat` **je
- * Zeile**, also derzeit rund 2100 Systemaufrufe. Das ist fuer einen Cron in
- * Ordnung und fuer einen Klick im Dashboard nicht.
+ * This is the web version of `scripts/image-sync-check.js`, and it is
+ * deliberately the smaller one: the script additionally checks whether the
+ * file size on disk matches the `bytes` column, and for that needs an `fs.stat`
+ * **per row**, currently around 2100 system calls. That is fine for a cron and
+ * not for a click in the dashboard.
  *
- * Hier reicht ein `readdir` je Kategorie, also sechs Aufrufe fuer den ganzen
- * Bestand. Damit fallen die drei Zustaende auf, die dem Besucher wirklich
- * begegnen: eine Kachel, deren Bild 404 liefert; eine Datei, die ausgeliefert
- * wird und nirgends auftaucht; ein fehlendes Derivat. Fuer den Groessenabgleich
- * bleibt das Script zustaendig, und die Oberflaeche sagt das auch.
+ * Here one `readdir` per category is enough, i.e. six calls for the whole
+ * collection. That surfaces the three states a visitor actually runs into: a
+ * tile whose image returns 404; a file that is served and appears nowhere; a
+ * missing derivative. The size comparison stays the script's job, and the UI
+ * says so too.
  *
- * Reines Lesen. Diese Datei aendert nichts, weder in der Datenbank noch auf
- * der Platte. Aufraeumen bleibt `image-ingest.js --force` bzw. Handarbeit.
+ * Read-only. This file changes nothing, neither in the database nor on disk.
+ * Cleaning up remains `image-ingest.js --force` or manual work.
  */
 
 const DERIVATIVES = [
@@ -28,14 +28,14 @@ const DERIVATIVES = [
   { suffix: '_thumb.webp', label: 'thumb' },
 ]
 
-/** Wie viele Beispiele je Befund zurueckgehen. Der Rest steht nur als Zahl. */
+/** How many examples per finding are returned. The rest is only given as a number. */
 const SAMPLE_SIZE = 10
 
 export interface SyncCheckCategory {
   category:      string
   rows:          number
   files:         number
-  /** Verzeichnis fehlt ganz. Nur dann ein Problem, wenn es Zeilen dazu gibt. */
+  /** Directory is missing entirely. Only a problem if there are rows for it. */
   directoryGone: boolean
   missingFile:   string[]
   orphanFile:    string[]
@@ -47,13 +47,13 @@ export interface SyncCheckCategory {
 
 export interface SyncCheckResult {
   /**
-   * Wurzel, gegen die geprueft wurde. Steht mit im Bericht, damit ein falscher
-   * Pfad als solcher erkennbar ist und nicht als leeres CDN gelesen wird.
+   * Root that was checked against. Included in the report so that a wrong
+   * path is recognisable as such and is not read as an empty CDN.
    */
   root:       string
   problems:   number
   categories: SyncCheckCategory[]
-  /** Gesetzt, wenn die Wurzel gar nicht lesbar ist (lokale Entwicklung). */
+  /** Set when the root is not readable at all (local development). */
   unavailable?: string
 }
 
@@ -62,13 +62,13 @@ function cdnRoot(): string {
 }
 
 /**
- * turbopackIgnore: der Pfad ist absichtlich dynamisch. Die Wurzel kommt aus
- * CDN_ROOT_PATH und zeigt aus dem Repo heraus (/var/www/cdn.msk-scripts.de),
- * dahinter steht ein Kategorie-Slug aus der Datenbank. Ohne den Hinweis zieht
- * Turbopack das ganze Projekt ins Build-Tracing, wie schon beim
- * Transcript-Upload. Das Tracing ist hier ungenutzt (kein `output: 'standalone'`,
- * der Server startet aus dem vollen Checkout), der Hinweis unterdrueckt also
- * nur Rauschen, das echte Funde ueberdecken wuerde.
+ * turbopackIgnore: the path is dynamic on purpose. The root comes from
+ * CDN_ROOT_PATH and points out of the repo (/var/www/cdn.msk-scripts.de),
+ * followed by a category slug from the database. Without the hint Turbopack
+ * pulls the whole project into build tracing, as already with the transcript
+ * upload. Tracing is unused here (no `output: 'standalone'`, the server starts
+ * from the full checkout), so the hint only suppresses noise that would drown
+ * out real findings.
  */
 async function listFiles(dir: string): Promise<string[] | null> {
   try {
@@ -86,9 +86,9 @@ export async function runSyncCheck(): Promise<SyncCheckResult> {
     'SELECT slug FROM msk_image_categories ORDER BY sort_order',
   )
 
-  // Ist die Wurzel selbst nicht da, laeuft das hier auf einem Rechner ohne
-  // CDN-Verzeichnis. Dann sechs Kategorien als "Verzeichnis fehlt" zu melden
-  // waere formal richtig und praktisch ein Fehlalarm.
+  // If the root itself is missing, this is running on a machine without a CDN
+  // directory. Reporting six categories as "directory missing" would then be
+  // formally correct and practically a false alarm.
   if ((await listFiles(root)) === null) {
     return {
       root,

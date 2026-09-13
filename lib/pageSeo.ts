@@ -1,19 +1,19 @@
 import type { Lang } from '@/lib/i18n'
 
 /**
- * Titel und Beschreibungen der festen Seiten, je Sprache.
+ * Titles and descriptions of the fixed pages, per language.
  *
- * Seit dem 22.08.2026 hat jede Seite zwei Adressen. Eine deutsche URL mit
- * englischem Titel im Kopf rankt für nichts: der Titel ist das Signal, an dem
- * Google die Sprache und das Thema einer Seite festmacht.
+ * Since 22.08.2026 every page has two addresses. A German URL with an
+ * English title in the head ranks for nothing: the title is the signal
+ * Google uses to determine the language and topic of a page.
  *
- * Die deutschen Fassungen sind Übersetzungen der englischen, keine eigene
- * Keyword-Recherche. Für die beiden Bot-Landingpages liegen dafür Zahlen aus
- * der Search Console vor, für diese Seiten nicht; erfundene Suchbegriffe wären
- * schlechter als eine ehrliche Übersetzung.
+ * The German versions are translations of the English ones, not separate
+ * keyword research. For the two bot landing pages there are numbers from
+ * the Search Console, for these pages there are not; made-up search terms would be
+ * worse than an honest translation.
  *
- * `absolute: true` heisst, der Titel trägt die Marke schon selbst und darf
- * nicht noch einmal durch das '%s | MSK Scripts'-Template laufen.
+ * `absolute: true` means the title already carries the brand itself and must
+ * not run through the '%s | MSK Scripts' template again.
  */
 
 export interface PageSeo {
@@ -112,10 +112,10 @@ export const PAGE_SEO: Record<string, Record<Lang, PageSeo>> = {
     },
   },
 
-  // Die drei Pflichtformulare. Sie tragen bewusst kein `noindex`: § 356a und
-  // § 312k BGB verlangen eine ständig und ohne Hürde erreichbare Schaltfläche,
-  // und eine Seite aus dem Index zu nehmen, die jemand im Ernstfall suchen
-  // wird, arbeitet gegen diesen Zweck.
+  // The three mandatory forms. They deliberately carry no `noindex`: § 356a and
+  // § 312k BGB require a button that is permanently reachable without hurdles,
+  // and removing a page from the index that someone will search for in an
+  // emergency works against that purpose.
   '/vertrag-widerrufen': {
     en: {
       title:       'Withdraw from contract',
@@ -147,12 +147,12 @@ export const PAGE_SEO: Record<string, Record<Lang, PageSeo>> = {
     },
   },
 
-  // Kaufpfad. Diese fünf tragen `robots: noindex` und stehen zusätzlich in der
-  // robots.txt, die Beschreibung wird also nie in einem Suchergebnis landen.
-  // Der Titel ist trotzdem nötig: bis zum 24.08.2026 hiessen alle fünf
-  // "MSK Scripts – Website & Shop", weil sie gar keine Metadaten hatten und den
-  // Vorgabewert aus dem Root-Layout erbten. Wer beim Kaufen einen zweiten Tab
-  // öffnet, fand den Warenkorb in der Leiste nicht wieder.
+  // Purchase path. These five carry `robots: noindex` and are also listed in
+  // robots.txt, so the description will never end up in a search result.
+  // The title is still needed: until 24.08.2026 all five were called
+  // "MSK Scripts – Website & Shop", because they had no metadata at all and
+  // inherited the default value from the root layout. Anyone opening a second
+  // tab while buying could not find the cart in the tab bar again.
   '/cart': {
     en: { title: 'Cart',        description: 'The packages you have selected, before checkout at Tebex.' },
     de: { title: 'Warenkorb',   description: 'Die ausgewählten Pakete, vor der Bezahlung bei Tebex.' },
@@ -174,9 +174,9 @@ export const PAGE_SEO: Record<string, Record<Lang, PageSeo>> = {
     de: { title: 'Discord verknüpfen',   description: 'Discord-Konto verknüpfen für die Rollenvergabe nach dem Kauf.' },
   },
 
-  // Die Galerie ist die einzige Seite hier, die auf Suchbegriffe zielt, die
-  // nichts mit der Marke zu tun haben ("fivem vehicle images transparent").
-  // Deshalb steht das Gesuchte im Titel und nicht der Bereichsname.
+  // The gallery is the only page here that targets search terms that have
+  // nothing to do with the brand ("fivem vehicle images transparent").
+  // That is why the title holds what people search for, not the section name.
   '/images/upload': {
     en: {
       title:       'Submit an Image',
@@ -199,7 +199,7 @@ export const PAGE_SEO: Record<string, Record<Lang, PageSeo>> = {
   },
 }
 
-/** Kurzgriff für eine Seite. Der Pfad ist der sprachlose. */
+/** Shorthand for a page. The path is the language-less one. */
 export function pageSeo(path: string, lang: Lang): PageSeo {
   return PAGE_SEO[path][lang]
 }

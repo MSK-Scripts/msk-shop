@@ -7,9 +7,9 @@ const ALLOWED_SLUGS = [
   'imprint', 'imprint-de',
   'privacy', 'privacy-de',
   'terms',   'terms-de',
-  // Widerrufsbelehrung (§ 356a BGB) und Auftragsverarbeitungsvertrag (Art. 28
-  // DSGVO). Die Liste ist der Pfad-Traversal-Schutz dieser Datei — ein neuer
-  // Rechtstext ohne Eintrag hier wirft, statt irgendeine Datei zu lesen.
+  // Withdrawal notice (§ 356a BGB) and data processing agreement (Art. 28
+  // GDPR). The list is this file's path traversal protection: a new legal text
+  // without an entry here throws instead of reading some arbitrary file.
   'widerruf', 'widerruf-de',
   'avv',      'avv-de',
 ] as const
@@ -59,12 +59,12 @@ export function renderMarkdown(md: string): string {
       i++; continue
     }
 
-    // Blockquote — aufeinanderfolgende Zeilen mit '>'
+    // Blockquote: consecutive lines starting with '>'
     //
-    // Gebraucht wird das genau einmal, aber an einer Stelle, an der es zählt:
-    // der Hinweis auf das Widerspruchsrecht nach Art. 21 DSGVO muss sich vom
-    // Fließtext abheben (die Aufsichtsbehörden verlangen eine hervorgehobene
-    // Darstellung). Ohne diesen Zweig stand dort ein sichtbares '>' im Text.
+    // This is needed exactly once, but in a place where it matters: the notice
+    // about the right to object under Art. 21 GDPR has to stand out from the
+    // body text (the supervisory authorities require a highlighted
+    // presentation). Without this branch a visible '>' stood in the text there.
     if (line.startsWith('>')) {
       const quoted: string[] = []
       while (i < lines.length && lines[i].startsWith('>')) {

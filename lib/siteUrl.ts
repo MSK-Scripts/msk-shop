@@ -1,9 +1,9 @@
 /**
- * Kanonische Basis-URL der Seite.
+ * Canonical base URL of the site.
  *
- * Single Source of Truth für alles was absolute URLs braucht: `metadataBase`,
- * Canonicals, Sitemap und robots.txt. Trailing Slash wird abgeschnitten, damit
- * `${siteUrl()}/packages` nie ein doppeltes `//` erzeugt.
+ * Single source of truth for everything that needs absolute URLs: `metadataBase`,
+ * canonicals, sitemap and robots.txt. The trailing slash is cut off, so that
+ * `${siteUrl()}/packages` never produces a double `//`.
  */
 const FALLBACK_URL = 'https://www.msk-scripts.de'
 
@@ -13,7 +13,7 @@ export function siteUrl(): string {
   return raw.replace(/\/+$/, '')
 }
 
-/** Absolute URL für einen internen Pfad, z. B. `absoluteUrl('/packages')`. */
+/** Absolute URL for an internal path, e.g. `absoluteUrl('/packages')`. */
 export function absoluteUrl(path: string): string {
   return `${siteUrl()}${path.startsWith('/') ? path : `/${path}`}`
 }

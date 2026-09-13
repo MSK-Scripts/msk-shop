@@ -67,45 +67,46 @@ export const PACKAGE_DESCRIPTIONS: Record<number, string> = {
 }
 
 // ── Search snippets ──────────────────────────────────────────
-// Titel und Meta-Description der Paket- und Kategorieseiten, also das was in
-// der Google-Trefferliste steht. Bewusst getrennt von PACKAGE_DESCRIPTIONS:
-// das ist der sichtbare Kartentext auf der Seite selbst.
+// Title and meta description of the package and category pages, i.e. what
+// shows up in the Google result list. Deliberately separate from
+// PACKAGE_DESCRIPTIONS: that is the visible card text on the page itself.
 //
-// Zwei Gründe für die Kuratierung, beide am 22.08.2026 in der Search Console
-// nachgemessen:
+// Two reasons for curating them, both measured in Search Console on
+// 22.08.2026:
 //
-//   1. Der Shop sammelt Impressionen auf generische Anfragen wie
-//      "fivem handcuff script" (24) und "fivem job creator" (21), aber in
-//      keinem Tebex-Paketnamen steht das Wort "FiveM". Der rohe Name als
-//      <title> liess ausgerechnet den gesuchten Begriff weg.
-//   2. Encrypted und Source sind pro Produkt zwei Seiten mit identischem Text.
-//      Google meldet 6 Seiten als "Duplikat, vom Nutzer nicht als kanonisch
-//      festgelegt". Beide Fassungen sollen indexierbar bleiben, also müssen
-//      Titel und Description den Lizenzunterschied benennen.
+//   1. The shop collects impressions on generic queries such as
+//      "fivem handcuff script" (24) and "fivem job creator" (21), but the
+//      word "FiveM" appears in none of the Tebex package names. The raw name
+//      as <title> left out precisely the term people were searching for.
+//   2. Encrypted and Source are two pages per product with identical text.
+//      Google reports 6 pages as "Duplikat, vom Nutzer nicht als kanonisch
+//      festgelegt" (duplicate without user-selected canonical). Both versions
+//      should stay indexable, so title and description have to name the
+//      license difference.
 //
-// Die Formulierung des Unterschieds stammt aus Tebex' eigenen Kategorietexten,
-// sie ist nicht ausgedacht: Encrypted verschlüsselt alles ausser config.lua,
-// translation.lua und server_discordlog.lua, Source lässt den Grossteil offen
-// und verschlüsselt nur die CORE-Funktionen.
+// The wording of the difference comes from Tebex's own category texts, it is
+// not made up: Encrypted encrypts everything except config.lua,
+// translation.lua and server_discordlog.lua, Source leaves most of it open
+// and encrypts only the CORE functions.
 //
-// Ohne Eintrag fällt die Seite auf den Tebex-Namen und den Tebex-Text zurück.
-// Neue Pakete und Kategorien gehören deshalb hier ergänzt.
+// Without an entry the page falls back to the Tebex name and the Tebex text.
+// New packages and categories therefore have to be added here.
 
 export interface SearchSnippet {
-  /** <title> ohne das " | MSK Scripts"-Suffix. Zielmarke: unter 50 Zeichen. */
+  /** <title> without the " | MSK Scripts" suffix. Target: under 50 characters. */
   title:       string
-  /** Meta-Description. Zielmarke: unter 160 Zeichen, sonst kürzt Google. */
+  /** Meta description. Target: under 160 characters, otherwise Google truncates. */
   description: string
 }
 
 /**
- * Ein Suchergebnis je Sprache. Seit dem 22.08.2026 hat jede Paket- und
- * Kategorieseite zwei Adressen, und eine deutsche URL mit englischem Titel
- * rankt für nichts.
+ * One search result per language. Since 22.08.2026 every package and
+ * category page has two addresses, and a German URL with an English title
+ * ranks for nothing.
  *
- * Produktnamen und die Fachbegriffe der Szene bleiben englisch: ein deutscher
- * Serverbetreiber sucht nach „fivem handcuff script", nicht nach
- * „FiveM Handschellen-Skript". Übersetzt ist, was ihm etwas erklärt.
+ * Product names and the scene's technical terms stay English: a German
+ * server operator searches for „fivem handcuff script", not for
+ * „FiveM Handschellen-Skript". What gets translated is what explains something to them.
  */
 export type SearchSnippets = Record<Lang, SearchSnippet>
 
@@ -192,9 +193,9 @@ export const PACKAGE_SEO: Record<number, SearchSnippets> = {
   },
 }
 
-// Die Tebex-Kategoriebeschreibungen sind zweisprachige [GER]/[ENG]-Blöcke. Ein
-// Auszug daraus liefert immer den deutschen Teil, weshalb die englischen
-// Kategorieseiten bis zum 22.08.2026 eine deutsche Meta-Description trugen.
+// The Tebex category descriptions are bilingual [GER]/[ENG] blocks. An
+// excerpt from them always yields the German part, which is why the English
+// category pages carried a German meta description until 22.08.2026.
 export const CATEGORY_SEO: Record<number, SearchSnippets> = {
   2105296: { // Encrypted Version
     en: {
@@ -229,16 +230,16 @@ export const CATEGORY_SEO: Record<number, SearchSnippets> = {
 }
 
 
-// ── Lizenzvariante ────────────────────────────────────────────
-// Jedes Script gibt es zweimal, als Encrypted und als Source. Bis zum
-// 22.08.2026 stand der Unterschied nirgends auf der Kaufflaeche: die beiden
-// Karten trugen dieselbe Beschreibung, dieselben Tags und teils dasselbe Bild
-// und unterschieden sich sichtbar nur durch ein Titelsuffix und den Preis.
-// Formuliert war er da, aber nur in CATEGORY_SEO, also fuer Google.
+// ── License variant ───────────────────────────────────────────
+// Every script exists twice, as Encrypted and as Source. Until
+// 22.08.2026 the difference appeared nowhere on the purchase surface: the two
+// cards carried the same description, the same tags and partly the same image
+// and differed visibly only by a title suffix and the price.
+// It was written down, but only in CATEGORY_SEO, i.e. for Google.
 //
-// Die Zuordnung kommt aus den vorhandenen Daten, nichts wird geraten: die
-// beiden Katalogkategorien tragen sie direkt. Bei den Abo-Paketen liegen beide
-// Varianten in derselben Kategorie, dort entscheidet der Paketname.
+// The mapping comes from the existing data, nothing is guessed: the two
+// catalogue categories carry it directly. For the subscription packages both
+// variants live in the same category, there the package name decides.
 
 export type PackageVariant = 'encrypted' | 'source'
 
@@ -270,11 +271,11 @@ export const PACKAGE_TAGS: Record<number, string[]> = {
   5301828: ['msk_core', 'pma-voice', 'saltychat'], // MSK Handcuffs - S
   6446936: ['oxmysql', 'msk_core', 'ox_inventory', 'msk_enginetoggle'], // MSK VehicleKeys - E
   6446947: ['oxmysql', 'msk_core', 'ox_inventory', 'msk_enginetoggle'], // MSK VehicleKeys - S
-  // Die beiden Abo-Pakete stehen bewusst ohne Eintrag. `Subscription` ist keine
-  // Abhängigkeit, sondern die Produktart, und als Badge steht sie oben auf dem
-  // Bild bereits auf der Karte (PACKAGE_BADGES). In dieser Liste landete sie
-  // zusätzlich in der Filtergruppe "Funktioniert mit", zwischen saltychat und
-  // oxmysql, wo sie nichts zu suchen hat.
+  // The two subscription packages deliberately have no entry. `Subscription` is
+  // not a dependency but the product type, and as a badge it already sits at the
+  // top of the image on the card (PACKAGE_BADGES). In this list it also ended up
+  // in the "Funktioniert mit" ("Works with") filter group, between saltychat and
+  // oxmysql, where it does not belong.
 }
 
 // ── News Popup ────────────────────────────────────────────

@@ -1,15 +1,15 @@
-// ── Eingangsbestätigungen für die drei Pflichtformulare ─────────────────────
+// ── Acknowledgements of receipt for the three mandatory forms ───────────────
 //
-// Widerruf (§ 356a BGB), Kündigung (§ 312k BGB) und DSA-Meldung (Art. 16).
+// Withdrawal (§ 356a BGB), cancellation (§ 312k BGB) and DSA report (Art. 16).
 //
-// Die ersten beiden sind keine Höflichkeit, sondern Tatbestandsmerkmal: die
-// Bestätigung muss "auf einem dauerhaften Datenträger" beim Erklärenden
-// ankommen und **Inhalt der Erklärung, Datum und Uhrzeit des Eingangs**
-// enthalten. Genau deshalb steht der komplette Erklärungstext in der Mail und
-// nicht nur ein "wir haben deine Anfrage erhalten".
+// The first two are not a courtesy but a statutory requirement: the
+// acknowledgement must reach the declaring party "auf einem dauerhaften
+// Datenträger" (on a durable medium) and contain **the content of the
+// declaration, date and time of receipt**. That is exactly why the full
+// declaration text is in the mail and not just a "we have received your request".
 //
-// Alles hier ist rein: keine Datenbank, kein SMTP, kein `new Date()` ohne
-// Übergabe. Damit ist der Wortlaut testbar, ohne eine Mail zu verschicken.
+// Everything here is pure: no database, no SMTP, no `new Date()` without it
+// being passed in. That way the wording is testable without sending a mail.
 
 import type { MailLang } from './trialEnding';
 
@@ -29,11 +29,11 @@ function escapeHtml(value: string): string {
 }
 
 /**
- * Zeitpunkt für Menschen, mit Zeitzone.
+ * Human-readable point in time, with time zone.
  *
- * Die Zone gehört dazu und ist kein Detail: die Bestätigung ist der Beleg für
- * die Wahrung einer Frist, und "14:03 Uhr" ohne Zone beantwortet die Frage
- * nicht, ob der letzte Tag noch lief.
+ * The zone belongs to it and is not a detail: the acknowledgement is the proof
+ * that a deadline was met, and "14:03 Uhr" without a zone does not answer the
+ * question of whether the last day was still running.
  */
 export function formatReceiptTime(at: Date, lang: MailLang): string {
   const formatted = at.toLocaleString(lang === 'de' ? 'de-DE' : 'en-GB', {
@@ -52,7 +52,7 @@ export interface BuiltEmail {
   html:    string;
 }
 
-/** Eine Zeile "Label: Wert" für den Textteil, leere Werte fallen weg. */
+/** One "Label: value" line for the text part, empty values are dropped. */
 function line(label: string, value: string | null | undefined): string | null {
   const v = (value ?? '').trim();
   return v ? `${label}: ${v}` : null;
@@ -86,7 +86,7 @@ function buildBody(lang: MailLang, heading: string, intro: string, rows: (string
   return { subject: heading, text, html };
 }
 
-// ── Widerruf ────────────────────────────────────────────────────────────────
+// ── Withdrawal ──────────────────────────────────────────────────────────────
 
 export interface WithdrawalInput {
   lang:        MailLang;
@@ -139,7 +139,7 @@ export function buildWithdrawalReceipt(input: WithdrawalInput): BuiltEmail {
   );
 }
 
-// ── Kündigung ───────────────────────────────────────────────────────────────
+// ── Cancellation ────────────────────────────────────────────────────────────
 
 export type CancellationKind = 'ordinary' | 'extraordinary';
 
@@ -203,7 +203,7 @@ export function buildCancellationReceipt(input: CancellationInput): BuiltEmail {
   );
 }
 
-// ── DSA-Meldung ─────────────────────────────────────────────────────────────
+// ── DSA report ──────────────────────────────────────────────────────────────
 
 export interface ReportInput {
   lang:       MailLang;
@@ -251,12 +251,12 @@ export function buildReportReceipt(input: ReportInput): BuiltEmail {
   );
 }
 
-// ── Interne Benachrichtigung ────────────────────────────────────────────────
+// ── Internal notification ───────────────────────────────────────────────────
 
 /**
- * Meldung an info@msk-scripts.de. Bewusst immer auf Deutsch und immer mit
- * allen Feldern: das hier liest niemand als Kunde, sondern jemand, der gleich
- * handeln muss.
+ * Notice to info@msk-scripts.de. Deliberately always in German and always with
+ * all fields: nobody reads this as a customer, but someone who has to act
+ * right away.
  */
 export function buildInternalNotice(
   kind: 'withdrawal' | 'cancellation' | 'report',

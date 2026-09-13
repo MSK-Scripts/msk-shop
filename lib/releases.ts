@@ -101,8 +101,8 @@ async function lastCommitDate(file: string): Promise<string | null> {
     if (!Array.isArray(data) || data.length === 0) return null
     const date = data[0]?.commit?.author?.date ?? data[0]?.commit?.committer?.date
     if (typeof date !== 'string') return null
-    // Ein unparsbares Datum ist schlimmer als gar keins: es würde als
-    // "Invalid Date" durchs Rendering laufen.
+    // An unparseable date is worse than none at all: it would run through the
+    // rendering as "Invalid Date".
     return Number.isNaN(Date.parse(date)) ? null : date
   } catch {
     return null
@@ -117,8 +117,8 @@ async function loadOne(entry: ResourceStatEntry): Promise<ReleaseEntry | null> {
       lastCommitDate(entry.versionsFile),
     ])
     const newest = newestVersion(parsed)
-    // Ohne Datum liesse sich der Eintrag nicht einsortieren, und "zuletzt
-    // gepflegt" ohne Zeitpunkt ist keine Aussage.
+    // Without a date the entry could not be sorted, and "last maintained"
+    // without a point in time is not a statement.
     if (!newest || !date) return null
 
     return {

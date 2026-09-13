@@ -6,16 +6,16 @@ import type { OpenGraph } from 'next/dist/lib/metadata/types/opengraph-types'
 
 import type { TebexPackage } from '@/types/tebex'
 
-/** Fallback-Bild, wenn ein Tebex-Objekt kein eigenes Bild mitbringt. */
+/** Fallback image when a Tebex object does not bring its own image. */
 export const DEFAULT_OG_IMAGE = '/msk-scripts-server-banner.webp'
 
 /**
- * Basis-OpenGraph-Objekt für eine Unterseite.
+ * Base OpenGraph object for a subpage.
  *
- * Next.js merged `metadata` nur flach: Sobald eine Seite `openGraph` setzt,
- * ersetzt das den Block aus dem Root-Layout komplett. Ohne diesen Helper
- * verliert jede Seite, die nur `url` überschreiben will, still ihr `og:image`
- * und `og:site_name`. Deshalb werden die Defaults hier explizit mitgegeben.
+ * Next.js only merges `metadata` shallowly: as soon as a page sets `openGraph`,
+ * it completely replaces the block from the root layout. Without this helper
+ * every page that only wants to override `url` silently loses its `og:image`
+ * and `og:site_name`. That is why the defaults are passed explicitly here.
  */
 export function openGraphFor(overrides: OpenGraph & { images?: OpenGraph['images'] }): OpenGraph {
   return {
@@ -28,12 +28,12 @@ export function openGraphFor(overrides: OpenGraph & { images?: OpenGraph['images
 }
 
 /**
- * Die HTML-Entities, die in Tebex-Beschreibungen vorkommen.
+ * The HTML entities that occur in Tebex descriptions.
  *
- * Wird für einen **einmaligen** Ersetzungsdurchlauf genutzt (siehe
- * `decodeEntities`). Nacheinander ausgeführte `.replace()`-Aufrufe wären hier
- * falsch: `&amp;` zuerst aufzulösen macht aus `&amp;lt;` erst `&lt;` und im
- * nächsten Schritt ein echtes `<` (Double-Unescaping, CodeQL js/double-escaping).
+ * Used for a **single** replacement pass (see `decodeEntities`).
+ * Sequential `.replace()` calls would be wrong here: resolving `&amp;` first
+ * turns `&amp;lt;` into `&lt;` and in the next step into a real `<`
+ * (double unescaping, CodeQL js/double-escaping).
  */
 const HTML_ENTITIES: Record<string, string> = {
   '&nbsp;':  ' ',
@@ -48,18 +48,18 @@ const HTML_ENTITIES: Record<string, string> = {
 
 const ENTITY_RE = /&(?:nbsp|amp|lt|gt|quot|apos|#0?39);/g
 
-/** Löst jede Entity genau einmal auf, ohne das Ergebnis erneut zu scannen. */
+/** Resolves each entity exactly once, without rescanning the result. */
 function decodeEntities(input: string): string {
   return input.replace(ENTITY_RE, m => HTML_ENTITIES[m] ?? m)
 }
 
 /**
- * Entfernt Tags, bis sich nichts mehr ändert.
+ * Removes tags until nothing changes anymore.
  *
- * Ein einzelner Durchlauf reicht nicht: `<scr<b>ipt>` würde nach dem Entfernen
- * von `<b>` als `<script>` zurückbleiben (CodeQL
- * js/incomplete-multi-character-sanitization). `[^<>]*` statt `[^>]+`, damit
- * eine verschachtelte Klammer den Match begrenzt statt ihn zu verschlucken.
+ * A single pass is not enough: `<scr<b>ipt>` would remain as `<script>` after
+ * removing `<b>` (CodeQL
+ * js/incomplete-multi-character-sanitization). `[^<>]*` instead of `[^>]+`, so
+ * that a nested bracket bounds the match instead of swallowing it.
  */
 function stripTags(input: string): string {
   let out = input
@@ -72,21 +72,21 @@ function stripTags(input: string): string {
 }
 
 /**
- * Macht aus Tebex-Beschreibungs-HTML einen einzeiligen Klartext-Auszug für
- * `<meta name="description">` und `og:description`.
+ * Turns Tebex description HTML into a single-line plain-text excerpt for
+ * `<meta name="description">` and `og:description`.
  *
- * Reihenfolge ist bewusst Entities zuerst, dann Tags: Sonst könnte ein
- * `&lt;script&gt;` das Tag-Strippen passieren und erst danach zu echtem Markup
- * werden. Das Ergebnis landet zwar nur in Metadata-Werten, die Next.js selbst
- * escaped, aber die Funktion soll für sich genommen korrekt sein.
+ * The order is deliberately entities first, then tags: otherwise an
+ * `&lt;script&gt;` could pass the tag stripping and only become real markup
+ * afterwards. The result only ends up in metadata values that Next.js escapes
+ * itself, but the function should be correct on its own.
  *
- * Für gerendertes HTML ist weiterhin `sanitizeTebexHtml` aus `lib/sanitize.ts`
- * zuständig, nicht diese Funktion.
+ * Rendered HTML is still handled by `sanitizeTebexHtml` from `lib/sanitize.ts`,
+ * not by this function.
  */
 export function plainExcerpt(html: string | undefined | null, maxLength = 160): string {
   if (!html) return ''
 
-  // Block-Enden zu Leerzeichen, sonst kleben Sätze über Tag-Grenzen zusammen.
+  // Block ends become spaces, otherwise sentences stick together across tag boundaries.
   const spaced = html
     .replace(/<br\s*\/?>/gi, ' ')
     .replace(/<\/(p|div|li|h[1-6]|tr)>/gi, ' ')
@@ -103,11 +103,11 @@ export function plainExcerpt(html: string | undefined | null, maxLength = 160): 
 }
 
 /**
- * Bestes verfügbares Vorschaubild eines Tebex-Pakets.
+ * Best available preview image of a Tebex package.
  *
- * Reihenfolge: explizites `image`, dann das als primär markierte Medium, dann
- * das erste Medium überhaupt, sonst das Seiten-Banner. Tebex liefert absolute
- * CDN-URLs, die von `metadataBase` unangetastet durchgereicht werden.
+ * Order: explicit `image`, then the medium marked as primary, then the
+ * first medium at all, otherwise the site banner. Tebex delivers absolute
+ * CDN URLs, which `metadataBase` passes through untouched.
  */
 export function packageImage(pkg: Pick<TebexPackage, 'image' | 'media'>): string {
   if (pkg.image) return pkg.image
@@ -121,14 +121,14 @@ export function packageImage(pkg: Pick<TebexPackage, 'image' | 'media'>): string
 }
 
 /**
- * Canonical und hreflang fuer eine Seite, die es in beiden Sprachen gibt.
+ * Canonical and hreflang for a page that exists in both languages.
  *
- * Beides gehoert zusammen: das Canonical zeigt auf die Fassung, die man gerade
- * liest, `languages` nennt beide plus `x-default`. Ein Canonical ohne
- * hreflang-Paar laesst Google eine der beiden Fassungen als Dublette werten,
- * ein hreflang ohne Rueckverweis ignoriert es.
+ * The two belong together: the canonical points to the version you are
+ * currently reading, `languages` names both plus `x-default`. A canonical without
+ * an hreflang pair makes Google treat one of the two versions as a duplicate,
+ * and an hreflang without a return link is ignored.
  *
- * `path` ist der sprachlose Pfad, also `/packages`, nicht `/de/packages`.
+ * `path` is the language-less path, i.e. `/packages`, not `/de/packages`.
  */
 export function alternatesFor(lang: Lang, path: string): NonNullable<Metadata['alternates']> {
   const alt = alternatePaths(path)

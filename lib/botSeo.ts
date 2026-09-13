@@ -4,24 +4,24 @@ import type { Lang } from '@/lib/i18n'
 import { softwareApplicationJsonLd, type JsonLdObject } from '@/lib/jsonLd'
 
 /**
- * Metadata und strukturierte Daten der beiden Bot-Landingpages.
+ * Metadata and structured data of the two bot landing pages.
  *
- * Jede Seite existiert zweimal (`/ticketbot` und `/de/ticketbot`). Die
- * hreflang-Paare stehen deshalb an genau einer Stelle: Ein Canonical, das auf
- * die falsche Sprachfassung zeigt, oder ein hreflang ohne Rückverweis ist
- * schlimmer als gar keins, weil Google die Seiten dann als Duplikate wertet.
+ * Each page exists twice (`/ticketbot` and `/de/ticketbot`). The
+ * hreflang pairs are therefore kept in exactly one place: a canonical that points to
+ * the wrong language version, or an hreflang without a return link, is
+ * worse than none at all, because Google then treats the pages as duplicates.
  *
- * **Titel bewusst auf Mid-Tail statt auf den Head-Term.** Für „discord ticket
- * bot" ranken Ein-Zweck-Domains mit vierstelliger Linkzahl, dagegen ist mit 74
- * externen Links nichts zu holen. Die Formulierungen zielen auf die Anfragen,
- * auf denen die Seiten heute schon Seite 1 erreichen (self-hosted, Transkripte,
- * neustartsicher, gewichtete Lose).
+ * **Titles deliberately target the mid-tail instead of the head term.** For "discord ticket
+ * bot", single-purpose domains with four-digit link counts rank; with 74
+ * external links there is nothing to gain against them. The wording targets the queries
+ * for which the pages already reach page 1 today (self-hosted, transcripts,
+ * restart-safe, weighted entries).
  *
- * **Kein `keywords`.** Bis zum 22.08.2026 trug jede der vier Seiten eine
- * eigene Liste. Google schreibt dazu: "The meta-keyword tag is not used by
+ * **No `keywords`.** Until 22.08.2026 each of the four pages carried its
+ * own list. Google says about this: "The meta-keyword tag is not used by
  * Google Search, and it has no effect on indexing and ranking at all." Bing
- * hat dasselbe 2014 im eigenen Webmaster-Blog festgehalten. Nicht wieder
- * einbauen.
+ * stated the same in 2014 on its own Webmaster blog. Do not add it
+ * back.
  */
 
 const LOCALE: Record<Lang, string> = { en: 'en_US', de: 'de_DE' }
@@ -32,12 +32,12 @@ interface BotSeo {
   ogTitle:     string
   ogDescription: string
   twitterDescription: string
-  /** Kurzbeschreibung fürs JSON-LD. Darf knapper sein als die Meta-Description. */
+  /** Short description for the JSON-LD. May be terser than the meta description. */
   appDescription: string
 }
 
 interface BotDefinition {
-  /** Pfad je Sprache. Zusammen bilden die beiden das hreflang-Paar. */
+  /** Path per language. Together the two form the hreflang pair. */
   paths: Record<Lang, string>
   image: string
   appName: string
@@ -170,14 +170,14 @@ function metadataFor(bot: BotDefinition, lang: Lang): Metadata {
   const path = bot.paths[lang]
 
   return {
-    // `absolute`, damit die Landingpage ihren eigenen Titel behält statt das
-    // '%s | MSK Scripts'-Template des Root-Layouts zu bekommen.
+    // `absolute`, so the landing page keeps its own title instead of getting the
+    // root layout's '%s | MSK Scripts' template.
     title:       { absolute: seo.title },
     description: seo.description,
     alternates: {
       canonical: path,
-      // Beide Fassungen nennen beide Pfade, sonst ist das hreflang-Paar
-      // einseitig und Google ignoriert es.
+      // Both versions name both paths, otherwise the hreflang pair is
+      // one-sided and Google ignores it.
       languages: {
         'en':        bot.paths.en,
         'de':        bot.paths.de,
@@ -221,7 +221,7 @@ export const giveawayMetadata  = (lang: Lang) => metadataFor(GIVEAWAY, lang)
 export const ticketBotAppJsonLd = (lang: Lang) => appJsonLdFor(TICKETBOT, lang)
 export const giveawayAppJsonLd  = (lang: Lang) => appJsonLdFor(GIVEAWAY, lang)
 
-/** Alle vier Landingpage-Pfade, für die Sitemap. */
+/** All four landing page paths, for the sitemap. */
 export const BOT_LANDING_PATHS = {
   ticketbot:        TICKETBOT.paths,
   ticketbotCompare: TICKETBOT_COMPARE.paths,

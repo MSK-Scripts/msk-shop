@@ -20,9 +20,9 @@ const execFileAsync = promisify(execFile);
  *
  * Safe to call for any guild id — no-ops when the guild has no domain configured.
  *
- * Verlangt einen `ScopedGuildId`: die Funktion reisst einer fremden Guild die
- * Domain weg, wenn man ihr die falsche Id gibt. Woher die Id kommt, muss der
- * Aufrufer belegen — siehe lib/guildScope.ts.
+ * Requires a `ScopedGuildId`: the function rips the domain away from someone
+ * else's guild if it is given the wrong id. The caller has to prove where the
+ * id comes from, see lib/guildScope.ts.
  */
 export async function teardownCustomDomain(guildId: ScopedGuildId): Promise<void> {
   const row = await queryOne<{ custom_domain: string | null; domain_status: string }>(

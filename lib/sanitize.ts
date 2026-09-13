@@ -96,21 +96,21 @@ function convertPipeTables(html: string): string {
 }
 
 /**
- * Schneidet aus einer zweisprachigen Tebex-Beschreibung den passenden Block.
+ * Cuts the matching block out of a bilingual Tebex description.
  *
- * Die Kategorietexte im Store sind als ein einziges HTML gepflegt, in der Form
- * `<p><strong>[GER]</strong></p><p>…</p><p><strong>[ENG]</strong></p><p>…</p>`.
- * Bis zum 22.08.2026 landete das komplett auf der Seite, also beide Sprachen
- * untereinander, und `plainExcerpt()` nahm für die Meta-Description immer den
- * deutschen Anfang, auch auf der englischen Fassung.
+ * The category texts in the store are maintained as a single HTML string, in
+ * the form `<p><strong>[GER]</strong></p><p>…</p><p><strong>[ENG]</strong></p><p>…</p>`.
+ * Until 22.08.2026 all of it ended up on the page, so both languages one below
+ * the other, and `plainExcerpt()` always took the German opening for the meta
+ * description, even on the English version.
  *
- * Fehlt einer der beiden Marker, bleibt der Text unangetastet. Lieber der ganze
- * Text als ein halber, wenn die Struktur nicht die erwartete ist.
+ * If either marker is missing, the text is left untouched. Better the whole
+ * text than half of it when the structure is not the expected one.
  *
- * Die Ränder werden bewusst nur grob geputzt: der Schnitt hinterlässt vorne
- * verwaiste schließende und hinten verwaiste öffnende Tags. Beides räumt
- * `sanitizeTebexHtml()` ohnehin auf, hier fallen nur die leeren Hüllen weg,
- * damit kein leerer Absatz stehen bleibt.
+ * The edges are deliberately only roughly cleaned: the cut leaves orphaned
+ * closing tags at the front and orphaned opening tags at the back.
+ * `sanitizeTebexHtml()` cleans up both anyway, here only the empty shells are
+ * dropped so that no empty paragraph is left behind.
  */
 export function pickLanguageBlock(html: string, lang: 'en' | 'de'): string {
   const ger = html.search(/\[GER\]/i)
@@ -123,12 +123,12 @@ export function pickLanguageBlock(html: string, lang: 'en' | 'de'): string {
   const slice  = other > wanted ? html.slice(start, other) : html.slice(start)
 
   return slice
-    // Die Leerzeichen sitzen bewusst nur auf **einer** Seite der Gruppe. Mit
-    // `\s*` an beiden Enden kann derselbe Leerraum vom Ende der einen und vom
-    // Anfang der nächsten Wiederholung beansprucht werden, und bei einem
-    // Eingabetext, der am Schluss doch nicht passt, probiert die Maschine alle
-    // Aufteilungen durch. Gemessen mit `'<a>' + ' <a>'.repeat(26) + '!'`:
-    // 25,7 Sekunden vorher, 0 ms danach (CodeQL js/redos, Alert 69).
+    // The whitespace deliberately sits on only **one** side of the group. With
+    // `\s*` at both ends, the same whitespace can be claimed by the end of one
+    // repetition and by the start of the next, and for an input text that does
+    // not match at the very end after all, the engine tries every possible
+    // split. Measured with `'<a>' + ' <a>'.repeat(26) + '!'`:
+    // 25.7 seconds before, 0 ms after (CodeQL js/redos, alert 69).
     .replace(/^\s*(?:<\/[a-z][^>]*>\s*)+/i, '')
     .replace(/(?:\s*<[a-z][^>]*>)+\s*$/i, '')
     .trim()

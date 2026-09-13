@@ -1,45 +1,43 @@
 import { NextResponse } from 'next/server'
 
 /**
- * Antwortkopf der oeffentlichen Lese-Endpunkte unter `/api/images`.
+ * Response headers of the public read endpoints under `/api/images`.
  *
- * Diese drei Routen (Liste, Kategorien, Einzelbild) liefern denselben Bestand,
- * den das CDN ohnehin an jeden ausliefert, und sie tun das ohne Sitzung. Ihnen
- * `Access-Control-Allow-Origin: *` zu geben ist deshalb keine Oeffnung, sondern
- * die Angleichung an die Bilder selbst: `cdn.msk-scripts.de` traegt den Header
- * seit dem ersten Tag, weil ein FiveM-NUI mit `nui://`-Origin sonst gar nicht
- * an die Datei kaeme. Ein Consumer, der vor dem Anzeigen nachschlaegt, ob es zu
- * einem Modellnamen ein Bild gibt, sitzt in genau derselben Lage.
+ * These three routes (list, categories, single image) deliver the same
+ * collection the CDN serves to everyone anyway, and they do so without a
+ * session. Giving them `Access-Control-Allow-Origin: *` is therefore not an
+ * opening but an alignment with the images themselves: `cdn.msk-scripts.de` has
+ * carried the header since day one, because a FiveM NUI with a `nui://` origin
+ * could not reach the file otherwise. A consumer that looks up whether an image
+ * exists for a model name before displaying it is in exactly the same position.
  *
- * **Bewusst kein Praefix-Abgleich.** Unter `/api/images` liegt auch
- * `/api/images/upload`: Sitzungscookie, Schreibzugriff, Origin-Pruefung als
- * CSRF-Schutz. Eine Regel auf das Praefix haette den Header dorthin
- * mitgenommen und genau das Loch geoeffnet, das die Pruefung schliesst. Der
- * Kopf wird deshalb von jeder Leseroute einzeln gesetzt; wer eine neue Route
- * unter `/api/images` anlegt, bekommt ihn nicht geschenkt und muss sich
- * entscheiden.
+ * **Deliberately no prefix match.** Under `/api/images` there is also
+ * `/api/images/upload`: session cookie, write access, origin check as CSRF
+ * protection. A rule on the prefix would have carried the header there and
+ * opened exactly the hole the check closes. The header is therefore set by each
+ * read route individually; whoever adds a new route under `/api/images` does
+ * not get it for free and has to make a decision.
  *
- * Kein `Access-Control-Allow-Credentials`. Mit `*` waere es ohnehin unzulaessig,
- * und diese Routen haben nichts, wofuer sich ein Cookie lohnte.
+ * No `Access-Control-Allow-Credentials`. With `*` it would not be allowed
+ * anyway, and these routes have nothing a cookie would be worth sending for.
  */
 export const PUBLIC_READ_HEADERS: Record<string, string> = {
   'Cache-Control':               'public, s-maxage=300, stale-while-revalidate=3600',
   'Access-Control-Allow-Origin': '*',
 }
 
-/** Eine oeffentlich lesbare JSON-Antwort mit den Koepfen von oben. */
+/** A publicly readable JSON response with the headers from above. */
 export function publicJson(body: unknown, status = 200): NextResponse {
   return NextResponse.json(body, { status, headers: PUBLIC_READ_HEADERS })
 }
 
 /**
- * Preflight fuer dieselben Routen.
+ * Preflight for the same routes.
  *
- * Ein schlichtes `fetch` ohne eigene Kopfzeilen loest keinen Preflight aus, ein
- * Aufrufer mit `Accept: application/json` oder einem eigenen Kopf aber schon.
- * Ohne diesen Handler antwortet Next darauf mit 405, und die eigentliche
- * Anfrage wird nie gestellt: der Endpunkt sieht dann funktionierend aus und
- * ist es fuer den halben Anwendungsfall nicht.
+ * A plain `fetch` without custom headers triggers no preflight, but a caller
+ * with `Accept: application/json` or a custom header does. Without this handler
+ * Next answers it with 405, and the actual request is never made: the endpoint
+ * then looks like it works, and for half the use case it does not.
  */
 export function corsPreflight(): NextResponse {
   return new NextResponse(null, {

@@ -1,13 +1,13 @@
-// Zentrale Preis-/Sale-Auflösung für die Anzeige.
+// Central price/sale resolution for display.
 //
-// Tebex meldet einen aktiven (ggf. user-spezifischen) Sale über die Headless-API
-// NUR mit authentifiziertem Basket-Ident – und in einer unintuitiven Form:
-//   base_price  = Preis NACH Rabatt (z. B. 17.994)
-//   discount    = Rabattbetrag in der Währung (z. B. 11.996)
-//   total_price = zahlbarer Preis (z. B. 17.99)
-// Der ursprüngliche (Vor-Sale-)Preis ist also `base_price + discount`.
+// Tebex reports an active (possibly user-specific) sale through the Headless API
+// ONLY with an authenticated basket ident, and in an unintuitive form:
+//   base_price  = price AFTER discount (e.g. 17.994)
+//   discount    = discount amount in the currency (e.g. 11.996)
+//   total_price = payable price (e.g. 17.99)
+// The original (pre-sale) price is therefore `base_price + discount`.
 //
-// Ohne Sale (bzw. ohne Basket-Kontext) gilt base_price == total_price und discount == 0.
+// Without a sale (or without basket context) base_price == total_price and discount == 0.
 
 export interface SaleData {
   base_price: number
@@ -16,13 +16,13 @@ export interface SaleData {
 }
 
 export interface DisplayPrice {
-  /** Ursprünglicher Katalogpreis (durchgestrichen, wenn rabattiert). */
+  /** Original catalogue price (struck through when discounted). */
   original: number
-  /** Tatsächlich zu zahlender Preis. */
+  /** Price actually payable. */
   price: number
   isFree: boolean
   hasDiscount: boolean
-  /** Gerundeter Rabatt in Prozent. */
+  /** Rounded discount in percent. */
   discountPct: number
 }
 
@@ -31,12 +31,12 @@ export function resolveDisplayPrice(
   pkgTotalPrice: number,
   sale?: SaleData,
 ): DisplayPrice {
-  // Mit aktivem Sale ist base_price bereits rabattiert → Original = base_price + discount.
-  // Ohne Sale-Daten der Katalogpreis aus den Server-Props.
+  // With an active sale base_price is already discounted → original = base_price + discount.
+  // Without sale data, the catalogue price from the server props.
   const original = sale ? sale.base_price + sale.discount : pkgBasePrice
   const price = sale?.total_price ?? pkgTotalPrice
   const isFree = original === 0
-  // Float-Guard: 17.994 vs. 17.99 darf NICHT als „Sale −0%" durchrutschen.
+  // Float guard: 17.994 vs. 17.99 must NOT slip through as "Sale −0%".
   const hasDiscount = !isFree && original > 0 && original - price > 0.005
   const discountPct = hasDiscount
     ? Math.round(((original - price) / original) * 100)
