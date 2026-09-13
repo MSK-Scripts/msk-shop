@@ -66,7 +66,7 @@ if [[ "${DEPLOY_REEXEC:-0}" == "0" ]]; then
     self_hash="$(sha256sum "$0" | awk '{print $1}')"
     latest_hash="$(sha256sum "$tmp_script" | awk '{print $1}')"
     if [[ "$self_hash" != "$latest_hash" ]]; then
-      echo "Deploy-Skript aus origin/main aktualisiert — re-exec."
+      echo "deploy.sh updated from origin/main, re-exec."
       install -m 755 -o root -g root "$tmp_script" "$REPO_DIR/scripts/deploy.sh"
       rm -f "$tmp_script"
       # Refresh the index, otherwise the following checkout sees a phantom conflict.
@@ -132,7 +132,7 @@ env_value() {
 if [[ -d "$MIGRATIONS_DIR" ]] && compgen -G "$MIGRATIONS_DIR/*.sql" >/dev/null; then
   DB_NAME="$(env_value DB_NAME)"
   if [[ -z "$DB_NAME" ]]; then
-    echo "Migrationen vorhanden, aber DB_NAME steht nicht in $ENV_FILE — Abbruch."
+    echo "Migrations present, but DB_NAME is not set in $ENV_FILE. Aborting."
     exit 1
   fi
 
@@ -152,7 +152,7 @@ if [[ -d "$MIGRATIONS_DIR" ]] && compgen -G "$MIGRATIONS_DIR/*.sql" >/dev/null; 
     # than quoting. Abort rather than skip - a migration that silently does not
     # run is worse than a loud stop.
     if [[ ! "$migration_name" =~ ^[0-9]{3,}-[A-Za-z0-9._-]+\.sql$ ]]; then
-      echo "Migrationsname passt nicht zu NNN-name.sql: $migration_name — Abbruch."
+      echo "Migration name does not match NNN-name.sql: $migration_name. Aborting."
       exit 1
     fi
 
@@ -160,9 +160,9 @@ if [[ -d "$MIGRATIONS_DIR" ]] && compgen -G "$MIGRATIONS_DIR/*.sql" >/dev/null; 
       continue
     fi
 
-    echo "Migration wird eingespielt: $migration_name"
+    echo "Applying migration: $migration_name"
     if ! db < "$migration"; then
-      echo "Migration $migration_name fehlgeschlagen — Deploy abgebrochen."
+      echo "Migration $migration_name failed. Deploy aborted."
       exit 1
     fi
     # Only recorded AFTER the file ran through. A failed migration is retried
@@ -172,9 +172,9 @@ if [[ -d "$MIGRATIONS_DIR" ]] && compgen -G "$MIGRATIONS_DIR/*.sql" >/dev/null; 
   done
 
   if [[ "$migrations_applied" -eq 0 ]]; then
-    echo "Migrationen: nichts zu tun."
+    echo "Migrations: nothing to apply."
   else
-    echo "Migrationen: $migrations_applied eingespielt."
+    echo "Migrations: $migrations_applied applied."
   fi
 fi
 
@@ -218,7 +218,7 @@ fi
 
 # 7. Update the systemd unit if it changed.
 if ! cmp -s "$REPO_DIR/msk-shop.service" /etc/systemd/system/msk-shop.service 2>/dev/null; then
-  echo "msk-shop.service geändert — übernehme + daemon-reload."
+  echo "msk-shop.service changed, installing it and running daemon-reload."
   cp "$REPO_DIR/msk-shop.service" /etc/systemd/system/msk-shop.service
   systemctl daemon-reload
 fi
@@ -238,8 +238,8 @@ for _ in $(seq 1 10); do
   sleep 2
 done
 if [[ "$ok" -ne 1 ]]; then
-  echo "Health-Check fehlgeschlagen: ${health_error:-keine Antwort}"
-  echo "Letzte 50 Log-Zeilen:"
+  echo "Health check failed: ${health_error:-no response}"
+  echo "Last 50 log lines:"
   journalctl -u "$SERVICE" -n 50 --no-pager || true
   exit 1
 fi
@@ -249,4 +249,4 @@ fi
 TAG="deploy-$(date -u +%Y%m%d-%H%M%S)"
 git tag -f "$TAG" >/dev/null 2>&1 || true
 
-echo "Deploy erfolgreich (${COMMIT:-HEAD}) — Tag: $TAG"
+echo "Deploy succeeded (${COMMIT:-HEAD}), tag: $TAG"
