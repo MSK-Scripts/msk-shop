@@ -304,4 +304,15 @@ describe('checkBotMembership', () => {
     fetchMock.mockRejectedValue(new Error('getaddrinfo ENOTFOUND discord.com'))
     expect(await checkBotMembership('tok', '1512390228546162738')).toBe('ok')
   })
+
+  // Only a snowflake may end up in the request path. Anything else skips the
+  // check without a request, so a path segment like "../users/@me" can never
+  // point the bot token at a different Discord endpoint.
+  it('never builds a request from a guild id that is not a snowflake', async () => {
+    answer(200)
+    for (const bad of ['../users/@me', '123', '', '1512390228546162738/../x']) {
+      expect(await checkBotMembership('tok', bad)).toBe('ok')
+    }
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
 })

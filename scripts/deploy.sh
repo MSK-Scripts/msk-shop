@@ -1,26 +1,26 @@
 #!/usr/bin/env bash
-# Auto-Deploy für msk-shop.
+# Auto-deploy for msk-shop.
 #
-# Wird vom GitHub-Actions-Workflow .github/workflows/deploy.yml per SSH als
-# root aufgerufen. Lokal aufrufbar für Rollback:  ./scripts/deploy.sh <sha>
+# Called as root over SSH by the GitHub Actions workflow
+# .github/workflows/deploy.yml. Run locally for a rollback:  ./scripts/deploy.sh <sha>
 #
-# Eigenschaften:
-#   - Server-side Build: holt den Code per git, baut mit npm direkt auf dem
-#     Server (so liegt das KOMPLETTE Repo inkl. scripts/ versioniert vor).
-#   - Idempotent (erneuter Lauf mit gleichem Commit unschädlich).
-#   - Self-updating: vor jedem Lauf wird deploy.sh aus origin/main geholt und,
-#     falls geändert, re-exec. So bleibt die Deploy-Logik stabil — auch beim
-#     Rollback auf einen Commit mit älterer Skript-Version.
-#   - Bricht hart ab, wenn Build oder Health-Check fehlschlägt.
-#   - Audit-Log nach /var/log/msk-shop-deploy.log.
+# Properties:
+#   - Server-side build: fetches the code with git and builds with npm on the
+#     server itself (so the COMPLETE repo, scripts/ included, is versioned there).
+#   - Idempotent (running again with the same commit is harmless).
+#   - Self-updating: before every run deploy.sh is fetched from origin/main and,
+#     if it changed, re-exec'd. That keeps the deploy logic stable, including a
+#     rollback onto a commit that carries an older version of the script.
+#   - Aborts hard when the build or the health check fails.
+#   - Audit log in /var/log/msk-shop-deploy.log.
 #
-# Build-Env: `next build` lädt automatisch /opt/msk-shop/.env.local — die
-# NEXT_PUBLIC_*- und TEBEX_PRIVATE_KEY-Werte MÜSSEN dort stehen (server-side
-# Build, nicht mehr aus GitHub-Secrets).
+# Build env: `next build` loads /opt/msk-shop/.env.local on its own. The
+# NEXT_PUBLIC_* and TEBEX_PRIVATE_KEY values MUST be in there (server-side
+# build, no longer taken from GitHub secrets).
 #
-# npm-Schritte laufen als App-User (musiker15) via `sudo -u … bash -lc`, damit
-# node_modules dem App-User gehören und eine evtl. NVM-Node aus der Login-Shell
-# geladen wird. root-only-Schritte (git, systemctl, chown) laufen direkt.
+# npm steps run as the app user (musiker15) via `sudo -u ... bash -lc`, so that
+# node_modules belong to the app user and an NVM node from the login shell is
+# picked up. Root-only steps (git, systemctl, chown) run directly.
 
 set -euo pipefail
 
@@ -30,10 +30,10 @@ SERVICE="${SERVICE:-msk-shop}"
 APP_PORT="${APP_PORT:-3005}"
 LOG_FILE="${LOG_FILE:-/var/log/msk-shop-deploy.log}"
 
-# Commit-SHA: 1. Positionsargument oder $SSH_ORIGINAL_COMMAND (bei ForceCommand
-# in authorized_keys reicht GitHub den SHA hier durch).
+# Commit SHA: first positional argument or $SSH_ORIGINAL_COMMAND (with a
+# ForceCommand in authorized_keys, GitHub passes the SHA through there).
 COMMIT="${1:-${SSH_ORIGINAL_COMMAND:-}}"
-COMMIT="${COMMIT##* }"   # falls SSH_ORIGINAL_COMMAND mit Pfad-Präfix kam
+COMMIT="${COMMIT##* }"   # in case SSH_ORIGINAL_COMMAND arrived with a path prefix
 
 # Tee into the log file if it is writable, otherwise stdout only.
 #
@@ -49,17 +49,17 @@ echo "=== Deploy $(date -Iseconds) commit=${COMMIT:-HEAD} ==="
 
 cd "$REPO_DIR"
 
-# Helper: Befehl als App-User mit Login-Shell ausführen (lädt ggf. NVM, setzt HOME).
+# Helper: run a command as the app user with a login shell (loads NVM if present, sets HOME).
 run_as_app_user() {
   sudo -u "$APP_USER" -H bash -lc "cd '$REPO_DIR' && $*"
 }
 
-# 1. Code holen.
+# 1. Fetch the code.
 git fetch --prune origin main
 
-# 1a. Self-Update: deploy.sh aus origin/main holen und re-exec, falls anders als
-#     das gerade laufende Skript. So bleibt die Deploy-Logik stabil — auch beim
-#     Rollback auf einen Commit, der eine ältere/fehlerhafte Logik mitbringt.
+# 1a. Self-update: fetch deploy.sh from origin/main and re-exec if it differs from
+#     the script currently running. Keeps the deploy logic stable, including a
+#     rollback onto a commit that brings older or broken logic along.
 if [[ "${DEPLOY_REEXEC:-0}" == "0" ]]; then
   tmp_script="$(mktemp)"
   if git show origin/main:scripts/deploy.sh > "$tmp_script" 2>/dev/null; then
@@ -69,7 +69,7 @@ if [[ "${DEPLOY_REEXEC:-0}" == "0" ]]; then
       echo "Deploy-Skript aus origin/main aktualisiert — re-exec."
       install -m 755 -o root -g root "$tmp_script" "$REPO_DIR/scripts/deploy.sh"
       rm -f "$tmp_script"
-      # Index nachziehen, sonst sieht der folgende checkout einen Phantom-Konflikt.
+      # Refresh the index, otherwise the following checkout sees a phantom conflict.
       git update-index --add scripts/deploy.sh || true
       export DEPLOY_REEXEC=1
       exec "$REPO_DIR/scripts/deploy.sh" "$@"
@@ -78,9 +78,9 @@ if [[ "${DEPLOY_REEXEC:-0}" == "0" ]]; then
   rm -f "$tmp_script"
 fi
 
-# 2. Checkout auf den gewünschten Commit (oder neuestes main). --force als
-#    Sicherheitsnetz gegen Working-Tree-Drift; das Repo enthält außer den
-#    Skripten keine bewusst gepflegten lokalen Änderungen.
+# 2. Check out the requested commit (or the latest main). --force as a safety
+#    net against working-tree drift; apart from the scripts the repo holds no
+#    deliberately maintained local changes.
 if [[ -n "$COMMIT" ]]; then
   git checkout --force --detach "$COMMIT"
 else
@@ -178,26 +178,26 @@ if [[ -d "$MIGRATIONS_DIR" ]] && compgen -G "$MIGRATIONS_DIR/*.sql" >/dev/null; 
   fi
 fi
 
-# 4. Dependencies (inkl. devDependencies — der Next-Build braucht sie).
-#    --no-audit: Der Audit-Report am Ende von `npm ci` betrifft ausschliesslich
-#    devDependencies (siehe unten), waere im Deploy-Log aber nicht davon zu
-#    unterscheiden und wuerde jeden Deploy nach einem echten Problem aussehen
-#    lassen. Der Audit gehoert in die CI und auf die Werkbank, nicht ins
-#    Deploy-Log. Produktionsstand pruefen mit `npm audit --omit=dev` (0).
+# 4. Dependencies (devDependencies included, the Next build needs them).
+#    --no-audit: the audit report at the end of `npm ci` concerns devDependencies
+#    only (see below), but in the deploy log it cannot be told apart from a real
+#    finding and would make every deploy look like a problem. The audit belongs
+#    in CI and on the workbench, not in the deploy log. Check the production
+#    tree with `npm audit --omit=dev` (0).
 run_as_app_user 'npm ci --no-audit'
 
-# 5. Production-Build. `next build` lädt .env.local automatisch (NEXT_PUBLIC_*,
-#    TEBEX_PRIVATE_KEY müssen dort stehen).
+# 5. Production build. `next build` loads .env.local on its own (NEXT_PUBLIC_*
+#    and TEBEX_PRIVATE_KEY must be in there).
 run_as_app_user 'npm run build'
 
-# 6. Berechtigungen.
-#    App-Files → App-User. .git/ und scripts/ bleiben ROOT-OWNED.
-#    scripts/ MUSS root-owned + nicht app-user-beschreibbar sein: vhost-*.sh
-#    werden vom App-User per NOPASSWD-sudo als root ausgeführt — lägen sie in
-#    einem vom App-User beschreibbaren Verzeichnis, könnte er sie (bzw. via
-#    Verzeichnis-Schreibrecht die ganze Datei) austauschen → Privilege
-#    Escalation. deploy.sh läuft als root und aktualisiert scripts/ via git
-#    trotzdem problemlos.
+# 6. Permissions.
+#    App files go to the app user. .git/ and scripts/ stay ROOT-OWNED.
+#    scripts/ MUST be root-owned and not writable by the app user: vhost-*.sh
+#    are run by the app user as root through NOPASSWD sudo. If they sat in a
+#    directory the app user can write to, it could swap them out (or, through
+#    write access to the directory, replace the whole file), which is privilege
+#    escalation. deploy.sh runs as root and still updates scripts/ through git
+#    without trouble.
 find "$REPO_DIR" -mindepth 1 -maxdepth 1 \
   ! -name '.git' ! -name 'scripts' \
   -exec chown -R "$APP_USER:$APP_USER" {} +
@@ -205,28 +205,28 @@ chown -R root:root "$REPO_DIR/scripts"
 chmod 755 "$REPO_DIR/scripts"
 find "$REPO_DIR/scripts" -name '*.sh' -exec chmod 755 {} +
 
-# .env.local gehört dem App-User und sonst niemandem. Am 03.09.2026 stand sie
-# auf 644, und auf dieser Maschine gibt es elf weitere Login-Nutzer (ts3,
-# sinusbot, fivem, minecraft, steam, …). Jeder davon konnte damit den
-# Live-Stripe-Key, SESSION_SECRET, das DB-Passwort, den IONOS-API-Key und
-# BOT_DASHBOARD_PROXY_SECRET mitlesen. Die Datei ist gitignored und wird vom
-# Deploy nicht neu angelegt; die Zeile steht hier, damit eine von Hand neu
-# geschriebene Datei nicht wieder offen liegen bleibt.
+# .env.local belongs to the app user and nobody else. On 2026-09-03 it was 644,
+# and this machine has eleven other login users (ts3, sinusbot, fivem,
+# minecraft, steam, ...). Any of them could read the live Stripe key,
+# SESSION_SECRET, the database password, the IONOS API key and
+# BOT_DASHBOARD_PROXY_SECRET. The file is gitignored and not recreated by the
+# deploy; the line is here so a file rewritten by hand does not end up
+# world-readable again.
 if [ -f "$REPO_DIR/.env.local" ]; then
   chmod 600 "$REPO_DIR/.env.local"
 fi
 
-# 7. systemd-Unit aktualisieren, falls geändert.
+# 7. Update the systemd unit if it changed.
 if ! cmp -s "$REPO_DIR/msk-shop.service" /etc/systemd/system/msk-shop.service 2>/dev/null; then
   echo "msk-shop.service geändert — übernehme + daemon-reload."
   cp "$REPO_DIR/msk-shop.service" /etc/systemd/system/msk-shop.service
   systemctl daemon-reload
 fi
 
-# 8. Service neu starten.
+# 8. Restart the service.
 systemctl restart "$SERVICE"
 
-# 9. Health-Check — bis zu ~20 s auf eine 200-Antwort warten, sonst abbrechen.
+# 9. Health check: wait up to ~20 s for a 200 response, otherwise abort.
 ok=0
 for _ in $(seq 1 10); do
   if curl -fsS -o /dev/null "http://127.0.0.1:${APP_PORT}/"; then ok=1; break; fi
@@ -238,8 +238,8 @@ if [[ "$ok" -ne 1 ]]; then
   exit 1
 fi
 
-# 10. Deploy-Tag setzen, damit sich der zuletzt funktionierende Stand schnell
-#    wiederfinden lässt (Rollback).
+# 10. Set a deploy tag so the last working state is quick to find again
+#     (rollback).
 TAG="deploy-$(date -u +%Y%m%d-%H%M%S)"
 git tag -f "$TAG" >/dev/null 2>&1 || true
 

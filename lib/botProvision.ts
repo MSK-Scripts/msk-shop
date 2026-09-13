@@ -129,8 +129,14 @@ export function validateHostingForm(f: Partial<HostingForm>): string | null {
 export async function checkBotMembership(
   token: string, guildId: string,
 ): Promise<'ok' | 'invalid_token' | 'bot_not_in_guild'> {
+  // The token is supposed to travel to Discord, that is the whole check. What
+  // must not happen is anything other than a snowflake ending up in the path,
+  // even though today both callers pass the id of a row they already own.
+  // Unusable input skips the check (fail open, like every other branch here)
+  // instead of building a request to an unexpected Discord endpoint.
+  if (!SNOWFLAKE_RE.test(String(guildId))) return 'ok'
   try {
-    const res = await fetch(`https://discord.com/api/v10/guilds/${guildId}`, {
+    const res = await fetch(`https://discord.com/api/v10/guilds/${encodeURIComponent(guildId)}`, {
       headers: { Authorization: `Bot ${token}` },
       cache:   'no-store',
       signal:  AbortSignal.timeout(10_000),
