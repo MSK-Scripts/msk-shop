@@ -1,6 +1,6 @@
 import mysql from 'mysql2/promise';
 
-// Singleton pool — reused across all API route invocations in the same process.
+// Singleton pool, reused across all API route invocations in the same process.
 let pool: mysql.Pool | null = null;
 
 export function getPool(): mysql.Pool {

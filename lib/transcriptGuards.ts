@@ -5,7 +5,7 @@ import path from 'path';
 // (api-key shape, attachment extension/MIME allow-lists, bot-supplied id shape)
 // are unit-testable without standing up the whole route.
 
-/** Lowercase UUID (any version) — the only shape accepted as a bot-supplied
+/** Lowercase UUID (any version): the only shape accepted as a bot-supplied
  *  attachment id. Anything else must fall back to a server-generated UUID, so a
  *  malicious value can never influence the on-disk filename. */
 export const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
@@ -22,10 +22,10 @@ export function extractApiKey(authHeader: string | null | undefined): string | n
  *  Images belong here even when the browser can't decode them (heic): the
  *  transcript references every `image/*` attachment through an `<img>` tag, and
  *  a forced download would break that tag outright. Media the browser cannot
- *  play (mkv, avi) is deliberately in the download set instead — it is rendered
+ *  play (mkv, avi) is deliberately in the download set instead, it is rendered
  *  as a link either way, so a download is the better outcome. */
 export const INLINE_ATTACHMENT_EXTS = new Set([
-  // images — always inline, see above
+  // images: always inline, see above
   'png', 'jpg', 'jpeg', 'jfif', 'gif', 'webp', 'bmp', 'avif',
   'tif', 'tiff', 'ico', 'heic', 'heif',
   'pdf',
@@ -47,7 +47,7 @@ export const DOWNLOAD_ONLY_ATTACHMENT_EXTS = new Set([
   // code and configuration
   'lua', 'js', 'ts', 'css', 'json', 'xml', 'sql', 'cfg', 'ini', 'toml',
   'yml', 'yaml',
-  // GTA / FiveM resource formats — the whole point of this bot's support cases
+  // GTA / FiveM resource formats, the whole point of this bot's support cases
   'meta', 'ymap', 'ytyp', 'ytd', 'yft', 'ydr', 'ydd', 'ybn', 'ycd', 'ynv',
   'rpf', 'fxap',
   // databases
@@ -58,7 +58,7 @@ export const DOWNLOAD_ONLY_ATTACHMENT_EXTS = new Set([
   'docx', 'xlsx', 'pptx', 'odt', 'ods',
 ]);
 
-/** Allow-listed attachment extensions — mirrors the Apache FilesMatch allowlist,
+/** Allow-listed attachment extensions, mirrors the Apache FilesMatch allowlist,
  *  minus html/svg (which can carry active content) and executables. The on-disk
  *  filename is rebuilt as `<uuid>.<ext>`, so an attacker-controlled name such as
  *  "x.php.png", "../x" or a null-byte trick can never reach the web root.
@@ -69,7 +69,7 @@ export const DOWNLOAD_ONLY_ATTACHMENT_EXTS = new Set([
  *       (main vhost AND the custom-domain vhost template),
  *    2. this set,
  *    3. ALLOWED_ATTACHMENT_EXTS in the bot (src/utils/ticketActions.js).
- *  Widen the server side FIRST — the upload route rejects the whole request with
+ *  Widen the server side FIRST, the upload route rejects the whole request with
  *  400 over a single unknown extension, which costs the hosted transcript. */
 export const ALLOWED_ATTACHMENT_EXTS = new Set([
   ...INLINE_ATTACHMENT_EXTS,

@@ -2,7 +2,7 @@ import { createHmac, timingSafeEqual } from 'crypto';
 
 /**
  * Resolve the HMAC secret. Throws if SESSION_SECRET is unset rather than
- * falling back to a known placeholder — a missing secret in production would
+ * falling back to a known placeholder, a missing secret in production would
  * otherwise let anyone forge dashboard sessions. Evaluated lazily.
  */
 function getSecret(): string {
@@ -21,7 +21,7 @@ export interface DashboardSession {
   discordUserId: string;
 }
 
-/** Session lifetime — matches the cookie maxAge, but enforced server-side too so
+/** Session lifetime: matches the cookie maxAge, but enforced server-side too so
  *  a leaked/copied token string is not valid forever (independent of the cookie). */
 const SESSION_TTL_MS = 30 * 24 * 3600_000;   // 30 days
 
@@ -50,7 +50,7 @@ export function parseDashboardSession(token: string): DashboardSession | null {
   if (sigBuf.length !== expBuf.length || !timingSafeEqual(sigBuf, expBuf)) return null;
   try {
     const data = JSON.parse(Buffer.from(payload, 'base64url').toString()) as SignedPayload;
-    // Enforce expiry server-side — a leaked token string is not valid forever.
+    // Enforce expiry server-side, a leaked token string is not valid forever.
     if (typeof data.exp !== 'number' || data.exp < Date.now()) return null;
     if (!data.discordUserId) return null;
     return { discordUserId: data.discordUserId };

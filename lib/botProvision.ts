@@ -7,7 +7,7 @@ import { botDir, quote, parseEnv } from '@/lib/botEnv'
 import { dashboardUrl }    from '@/lib/dashboardHost'
 
 // =============================================================================
-// Self-service bot hosting — the pieces both the API routes and the detached
+// Self-service bot hosting: the pieces both the API routes and the detached
 // provisioning worker need.
 // =============================================================================
 // The split is deliberate. Anything fast and reversible (validating the form,
@@ -18,7 +18,7 @@ import { dashboardUrl }    from '@/lib/dashboardHost'
 // restarting msk-shop must not abort a half-finished installation.
 // =============================================================================
 
-/** Public repository — cloned over HTTPS on purpose. The server also holds a
+/** Public repository, cloned over HTTPS on purpose. The server also holds a
  *  deploy key, but depending on it would make provisioning fail for a reason no
  *  customer-facing message could ever explain. */
 export const BOT_REPO = 'https://github.com/MSK-Scripts/discord_ticketbot.git'
@@ -55,7 +55,7 @@ function portFree(port: number): Promise<boolean> {
  * Pick a loopback port for a new hosted bot.
  *
  * Checked against BOTH the database and the machine. The database alone is not
- * enough — a port can be held by something that is not a hosted bot at all — and
+ * enough (a port can be held by something that is not a hosted bot at all), and
  * the machine alone is not enough either, because a stopped bot's port is free
  * right now and would be handed to a second bot that then collides the moment
  * the first one starts again.
@@ -80,7 +80,7 @@ export interface HostingForm {
   token:        string
   /** Discord application (client) id. */
   clientId:     string
-  /** Discord OAuth2 client secret — the bot's own dashboard login needs it. */
+  /** Discord OAuth2 client secret; the bot's own dashboard login needs it. */
   clientSecret: string
   /** Optional external database; empty means the bundled SQLite file. */
   databaseUrl?: string
@@ -115,7 +115,7 @@ export function validateHostingForm(f: Partial<HostingForm>): string | null {
  * Runs before anything is created, and that placement is the point: without it
  * the first thing that notices an uninvited bot is the health check, ninety
  * seconds after a three-minute `npm install`, and it reports the failure as
- * "the bot did not answer" — which sends the customer hunting through the three
+ * "the bot did not answer", which sends the customer hunting through the three
  * fields of a form where nothing is wrong.
  *
  * Costs one request and settles two questions at once, because a token Discord
@@ -160,7 +160,7 @@ export async function checkBotMembership(
  * for it, a fresh installation reports plain success and the customer is left
  * wondering why their panel command answers "configuration error".
  *
- * Returns null whenever we cannot tell — no port, no shared secret, nothing
+ * Returns null whenever we cannot tell, no port, no shared secret, nothing
  * listening. The caller shows nothing rather than guessing, because "your
  * configuration is fine" is the more expensive thing to be wrong about.
  */
@@ -211,7 +211,7 @@ export interface EnvContext {
  * Compose a complete .env for a freshly cloned bot.
  *
  * Written from scratch rather than patched into .env.example, because at this
- * point there is no file yet — and because a generated file makes it obvious
+ * point there is no file yet, and because a generated file makes it obvious
  * that the values below are ours, not the customer's to guess. SESSION_SECRET is
  * minted here so it is unique per installation; letting the bot generate one on
  * first start would work too, but then it lives only on disk and a restore from
@@ -266,7 +266,7 @@ export function buildBotEnv(form: HostingForm, ctx: EnvContext): string {
 
 // ── Staging the .env for the detached worker ─────────────────────────────────
 //
-// The worker cannot be handed the token on its command line — `ps` is readable
+// The worker cannot be handed the token on its command line, `ps` is readable
 // by every user on the box. So the composed .env is written to a 0600 file that
 // only the app user can read, and the worker moves it into place and deletes it.
 
@@ -301,7 +301,7 @@ export async function getHostingJob(guildId: string): Promise<HostingJob | null>
  *
  * Returns false when a run is already active, which is the whole point: two
  * concurrent runs would clone into the same directory and fight over the same
- * PM2 name. A previous `failed` or `done` row is overwritten — that is a retry.
+ * PM2 name. A previous `failed` or `done` row is overwritten, that is a retry.
  */
 export async function claimHostingJob(guildId: string): Promise<boolean> {
   const existing = await getHostingJob(guildId)
@@ -321,7 +321,7 @@ export async function setHostingStep(guildId: string, step: HostingStep): Promis
   await query('UPDATE ticketbot_hosting_jobs SET step = ? WHERE guild_id = ?', [step, guildId])
 }
 
-/** Mark the run as failed. `log` is the tail the customer sees — it is the only
+/** Mark the run as failed. `log` is the tail the customer sees; it is the only
  *  thing that explains a rejected token, so it is stored, not just logged. */
 export async function failHostingJob(guildId: string, error: string, log?: string): Promise<void> {
   await query(
@@ -337,7 +337,7 @@ export async function finishHostingJob(guildId: string): Promise<void> {
   )
 }
 
-/** Last `n` non-empty lines, with ANSI colour codes stripped — the bot's log is
+/** Last `n` non-empty lines, with ANSI colour codes stripped, the bot's log is
  *  heavily coloured and the escape sequences are noise in a web page.
  *
  *  Anchored on the ESC byte, written as an escape sequence rather than pasted in
@@ -354,7 +354,7 @@ export function tailLines(text: string, n: number): string {
 //
 // Removing hosting RENAMES the directory to `<guildId>_archived_<timestamp>`
 // instead of deleting it (lib/hostedBot.ts), and the daily cron hard-deletes it
-// 14 days later. In that window the whole installation is still there — most
+// 14 days later. In that window the whole installation is still there, most
 // importantly the ticket history in its database.
 //
 // So setting hosting up again is not necessarily a fresh start, and the customer
@@ -413,7 +413,7 @@ function archivePath(guildId: string, name: string): string {
  *
  * Only the rename happens here. The worker then finds a directory that already
  * has a package.json, skips cloning, writes the new .env over the old one and
- * reinstalls the dependencies — which is what makes an archive from a different
+ * reinstalls the dependencies, which is what makes an archive from a different
  * bot version usable again.
  */
 export async function restoreArchive(guildId: string, name: string): Promise<void> {
@@ -466,7 +466,7 @@ export async function readArchivedEnv(
 /**
  * Fill the gaps in a submitted form from an archived .env.
  *
- * Anything the customer typed wins — they may be coming back precisely because
+ * Anything the customer typed wins, they may be coming back precisely because
  * they rotated a secret. Only the fields they left empty are taken from the
  * archive, which is what lets "bring it back" be a single click.
  */

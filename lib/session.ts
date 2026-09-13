@@ -2,7 +2,7 @@ import { createHmac, randomBytes, timingSafeEqual } from 'crypto';
 
 /**
  * Resolve the HMAC secret. Throws if SESSION_SECRET is unset rather than
- * falling back to a known placeholder — a missing secret in production would
+ * falling back to a known placeholder, a missing secret in production would
  * otherwise let anyone forge sessions. Evaluated lazily (on sign/parse), so a
  * build without the env var still compiles; only runtime use requires it.
  */

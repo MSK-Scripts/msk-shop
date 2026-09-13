@@ -7,7 +7,7 @@ import type { DiscordGuild } from './session';
 // giveaway token (and vice versa), even though all of them use the same SESSION_SECRET.
 /**
  * Resolve the HMAC secret. Throws if SESSION_SECRET is unset rather than
- * falling back to a known placeholder — a missing secret in production would
+ * falling back to a known placeholder, a missing secret in production would
  * otherwise let anyone forge giveaway sessions. Evaluated lazily.
  */
 function getSecret(): string {
@@ -17,7 +17,7 @@ function getSecret(): string {
 }
 
 // Signed tokens carry an absolute expiry (`exp`, ms epoch) inside the HMAC-signed
-// envelope, enforced on parse — so a leaked/copied token string is not valid
+// envelope, enforced on parse, so a leaked/copied token string is not valid
 // forever, independent of the client-controlled cookie maxAge.
 interface Envelope<T> { d: T; exp: number; }
 

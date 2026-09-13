@@ -15,7 +15,7 @@ const execFileAsync = promisify(execFile)
 // Why a host per bot instead of the single bot-dashboard.msk-scripts.de proxy we
 // already have: that proxy authenticates through msk-shop, and msk-shop only
 // knows the OWNER of a guild (authorizeGuild → discord_user_id). A customer's
-// support team has no msk-shop account, so they could never get in — and the
+// support team has no msk-shop account, so they could never get in, and the
 // proxy additionally short-circuits the bot's /auth/login. On its own host the
 // bot runs its own Discord OAuth and resolves its own permissions, which is what
 // the customer's staff actually need. The old proxy stays as the owner's
@@ -64,7 +64,7 @@ function vhostError(err: unknown): DashboardHostError {
  * Publish `host` in front of the bot listening on `port`.
  *
  * Order matters and is deliberate: DNS first, vhost second. A record without a
- * vhost answers with the default site (which denies everything) — harmless and
+ * vhost answers with the default site (which denies everything), harmless and
  * invisible. A vhost without DNS is the reverse: Apache holds a ServerName
  * nobody can reach, and in certbot mode issuance fails outright. So the cheap,
  * reversible step goes first.
@@ -79,7 +79,7 @@ export async function publishDashboardHost(host: string, port: number, opts: { c
 
   const mode = opts.certbot ? 'certbot' : 'wildcard'
 
-  // Only names inside our own zone get DNS records — a customer's own domain is
+  // Only names inside our own zone get DNS records, a customer's own domain is
   // their DNS to manage, and we could not write their zone anyway.
   if (!opts.certbot) {
     if (!isManagedHost(host)) throw new DashboardHostError(`Not a managed host: ${host}`, 'dns')
@@ -115,7 +115,7 @@ export async function publishDashboardHost(host: string, port: number, opts: { c
 /**
  * Take `host` down again: vhost first, then DNS.
  *
- * Reverse order of publishing, and for the same reason — the step that makes the
+ * Reverse order of publishing, and for the same reason, the step that makes the
  * host stop answering runs first. Neither half throws: this runs in teardown
  * paths (hosting removed, subscription cancelled) where the caller must be able
  * to finish the rest of the cleanup even if one piece is already gone.

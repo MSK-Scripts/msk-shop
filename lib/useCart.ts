@@ -17,7 +17,7 @@ export function useCart() {
 
   const ensureBasket = useCallback(async (): Promise<string> => {
     if (ident) {
-      // A completed basket can never take another package — fall through and
+      // A completed basket can never take another package, fall through and
       // create a fresh one instead of running every add into a Tebex 422.
       try {
         const b = await getBasket(ident)
@@ -84,7 +84,7 @@ export function useCart() {
       sessionStorage.removeItem('wantDiscordAuth')
 
       if (!pendingId) {
-        // Plain login — discord_id stored for later use
+        // Plain login: discord_id stored for later use
         return
       }
 
@@ -131,7 +131,7 @@ export function useCart() {
       const id = await ensureBasket()
       const currentBasket = await getBasket(id)
       if (!currentBasket.username) {
-        // Stored login state is stale (expired/completed basket) — Tebex would
+        // Stored login state is stale (expired/completed basket), Tebex would
         // reject the add with 422. Re-auth and resume instead of failing silently.
         await loginAndAdd(packageId, packageType)
         return true

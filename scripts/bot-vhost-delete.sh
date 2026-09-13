@@ -4,7 +4,7 @@
 #
 # Removes the VirtualHost created by bot-vhost-create.sh, and the Let's Encrypt
 # certificate if the host had its own (MODE=certbot). A wildcard-served host has
-# no certificate of its own — the zone certificate stays, obviously.
+# no certificate of its own, the zone certificate stays, obviously.
 #
 # Must be run as root (via sudo).
 # =============================================================================
@@ -29,7 +29,7 @@ ENABLED_LINK="/etc/apache2/sites-enabled/$HOST.conf"
 
 # Always clean up BOTH locations even when sites-available is already gone: a
 # dangling sites-enabled symlink makes `apache2ctl configtest` fail for the WHOLE
-# server, which then blocks every later reload and deploy — not just this host.
+# server, which then blocks every later reload and deploy, not just this host.
 # That is the bug guarding a2dissite behind `[ -f "$VHOST_FILE" ]` once caused in
 # vhost-delete.sh.
 a2dissite "$HOST.conf" >/dev/null 2>&1 || true

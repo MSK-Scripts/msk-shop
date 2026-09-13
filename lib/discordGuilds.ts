@@ -1,5 +1,5 @@
 /**
- * Reading a user's Discord guilds — the only place that talks to
+ * Reading a user's Discord guilds: the only place that talks to
  * `GET /users/@me/guilds` and `GET /users/@me/guilds/{id}/member`.
  *
  * Both verify callbacks carried their own copy of the plain fetch until
@@ -49,7 +49,7 @@ const MAX_PAGES = 6;
  * Pagination is a boundary guard, not a common path: a user sitting at exactly
  * 200 guilds returns a full page, and a full page is indistinguishable from a
  * truncated one. One extra request settles it. Without that, a Nitro user at
- * the cap could have guilds silently missing from the list — and absence is
+ * the cap could have guilds silently missing from the list, and absence is
  * what `reconcileGuildAccess()` reads as "lost access".
  */
 export async function fetchUserGuilds(accessToken: string): Promise<UserGuilds> {
@@ -86,7 +86,7 @@ export async function fetchUserGuilds(accessToken: string): Promise<UserGuilds> 
     after = last;
   }
 
-  // Ran out of pages before seeing a short one — treat as unknown.
+  // Ran out of pages before seeing a short one, treat as unknown.
   return { guilds, complete: false };
 }
 
@@ -95,7 +95,7 @@ export async function fetchUserGuilds(accessToken: string): Promise<UserGuilds> 
  *
  * Needs the `guilds.members.read` scope, which the giveaway flow requests and
  * the ticketbot flow does not. Returns null on any failure, including "the
- * token was never granted that scope" — a caller must read null as "cannot
+ * token was never granted that scope", a caller must read null as "cannot
  * say", never as "holds no roles".
  */
 export async function fetchGuildMemberRoles(

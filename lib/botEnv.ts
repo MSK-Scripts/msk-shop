@@ -7,7 +7,7 @@ import { join, resolve }             from 'path'
 // This is the OUT-OF-BAND layer, and that framing is what justifies it existing
 // here at all: the bot's own dashboard can edit its .env, but a bot with a bad
 // token never starts, so its dashboard is exactly what you cannot reach. The
-// config editor was removed from msk-shop in July 2026 for the opposite reason —
+// config editor was removed from msk-shop in July 2026 for the opposite reason,
 // config.jsonc is only ever edited while the bot is up, so two editors just
 // drifted apart. The .env is the file you need precisely when nothing runs.
 //
@@ -23,7 +23,7 @@ const GUILD_ID_RE = /^\d{17,20}$/
 const KEY_RE = /^[A-Za-z_][A-Za-z0-9_]*$/
 
 /** Absolute, validated directory of a hosted bot. Throws rather than returning a
- *  fallback — every caller here writes files, and a wrong path is not a case to
+ *  fallback, every caller here writes files, and a wrong path is not a case to
  *  paper over. */
 export function botDir(guildId: string): string {
   if (!GUILD_ID_RE.test(guildId)) throw new Error(`Invalid guild id: ${guildId}`)
@@ -80,7 +80,7 @@ export function parseEnv(text: string): Record<string, string> {
  * Set each key in `updates`, returning the new file text.
  *
  * A key that already has a line is rewritten in place. A key that appears only
- * as a commented-out example (`# DATABASE_URL=""`) is deliberately NOT revived —
+ * as a commented-out example (`# DATABASE_URL=""`) is deliberately NOT revived,
  * the comment is documentation, and un-commenting it would change what the
  * surrounding text means. Such a key is appended at the end instead.
  *

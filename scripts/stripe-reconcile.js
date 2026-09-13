@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * stripe-reconcile.js — keeps ticketbot_guilds in sync with the *current* state
+ * stripe-reconcile.js: keeps ticketbot_guilds in sync with the *current* state
  * of Stripe subscriptions.
  *
  * WHY THIS EXISTS
@@ -19,13 +19,13 @@
  * Stripe. Any Stripe API failure aborts the run WITHOUT touching the DB.
  *
  * Hosted bots are NOT auto-archived here (that destructive PM2/FS work stays in
- * the webhook) — a downgrade of an is_hosted guild is logged loudly instead.
+ * the webhook), a downgrade of an is_hosted guild is logged loudly instead.
  *
  * DEPLOYMENT (same pattern as cleanup.js)
  * ---------------------------------------
  * Deployed with the repo at /opt/msk-shop/scripts/stripe-reconcile.js. Reads its
  * config from the environment but does NOT load dotenv itself, and it requires
- * mysql2 + stripe — so the cron must source .env.local and point NODE_PATH at the
+ * mysql2 + stripe, so the cron must source .env.local and point NODE_PATH at the
  * app's node_modules.
  *
  *   0 4 * * * set -a; . /opt/msk-shop/.env.local; set +a; \
@@ -82,7 +82,7 @@ async function main() {
 
   const stripe = require('stripe')(STRIPE_KEY);
 
-  // 1. Source of truth — fetch ALL subscriptions BEFORE opening the DB so any
+  // 1. Source of truth: fetch ALL subscriptions BEFORE opening the DB so any
   //    Stripe failure means no writes. Build a map subId → details.
   const subsById = new Map();
   try {
@@ -175,7 +175,7 @@ async function main() {
     for (const row of boundGuilds) {
       const subId = row.stripe_subscription_id;
       const sub   = subsById.get(subId);
-      if (sub && isActiveStatus(sub.status)) continue; // still paying — leave alone
+      if (sub && isActiveStatus(sub.status)) continue; // still paying; leave alone
 
       if (DRY_RUN) {
         console.log(`[stripe-reconcile] would downgrade guild ${row.guild_id} → basic (sub ${subId} ${sub ? sub.status : 'missing'})`);

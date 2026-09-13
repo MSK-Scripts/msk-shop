@@ -1,7 +1,7 @@
 /**
  * Decides whether a Tebex coupon is still usable.
  *
- * The Plugin API returns every coupon the store has ever had — 860 of them at
+ * The Plugin API returns every coupon the store has ever had, 860 of them at
  * the time of writing, of which 4 are live. The Tebex creator panel only lists
  * the usable ones, so the admin dashboard has to reproduce that filter itself.
  *
@@ -66,7 +66,7 @@ export function couponState(coupon: CouponLike, now: number = Date.now()): Coupo
   }
 
   // Only call a coupon spent when the payload actually says so. A missing
-  // `limit` is unknown, not zero — defaulting it would hide a working coupon.
+  // `limit` is unknown, not zero; defaulting it would hide a working coupon.
   const limit = Number(coupon.expire?.limit);
   if (!isTrue(coupon.expire?.redeem_unlimited) && Number.isFinite(limit) && limit <= 0) {
     return 'used_up';

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * cleanup.js — daily housekeeping:
+ * cleanup.js: daily housekeeping.
  *   1. deletes expired transcripts and attachments from disk and DB,
  *   2. auto-downgrades guilds whose paid membership has lapsed (expires_at in
  *      the past and no active premium sponsor backing them),
@@ -10,7 +10,7 @@
  * a root cron.
  *
  * It reads DB_* from the environment but does NOT load dotenv itself, and it
- * requires mysql2 — so the cron must source .env.local and point NODE_PATH at
+ * requires mysql2, so the cron must source .env.local and point NODE_PATH at
  * the app's node_modules:
  *
  *   0 3 * * * set -a; . /opt/msk-shop/.env.local; set +a; \
@@ -83,13 +83,13 @@ async function main() {
   // catches guilds that have NO Stripe subscription on file yet still carry a
   // paid tier with a past expiry. A guild is downgraded only when ALL hold:
   //   • tier is not basic, AND
-  //   • expires_at is in the past (NULL never counts as expired — the
+  //   • expires_at is in the past (NULL never counts as expired, the
   //     "freshly verified / basic" state), AND
   //   • there is no Stripe subscription bound to it (stripe_subscription_id IS
-  //     NULL) — guilds WITH a subscription are owned by the webhook/reconcile and
+  //     NULL), guilds WITH a subscription are owned by the webhook/reconcile and
   //     left untouched here so a missed webhook can never wrongly downgrade a
   //     paying customer.
-  // Hosted bots are only flagged here — never auto-archived.
+  // Hosted bots are only flagged here, never auto-archived.
   const EXPIRED_GUILD_PREDICATE = `
     g.tier <> 'basic'
     AND g.expires_at IS NOT NULL
@@ -133,7 +133,7 @@ async function main() {
     // Reclaim premium-only custom domains: tear down the vhost for any that were
     // active, then demote status to pending_dns (keep custom_domain so a later
     // re-subscribe restores it; the /api/domain/validate tier gate blocks any
-    // re-activation while the guild is basic). Best-effort — never abort cleanup.
+    // re-activation while the guild is basic). Best-effort, never abort cleanup.
     for (const g of expiredGuilds) {
       if (g.domain_status === 'active' && g.custom_domain) {
         try {

@@ -29,7 +29,7 @@ ENABLED_LINK="/etc/apache2/sites-enabled/$DOMAIN.conf"
 # Always disable and clean up BOTH locations, even if the sites-available file is
 # already gone. A domain replacement (set → delete-old + create-new) or a prior
 # partial run can leave a dangling sites-enabled symlink behind, and a dangling
-# symlink makes `apache2ctl configtest` fail for the WHOLE server — which then
+# symlink makes `apache2ctl configtest` fail for the WHOLE server, which then
 # blocks every future reload/deploy, not just this one domain. Guarding a2dissite
 # behind `[ -f "$VHOST_FILE" ]` is exactly what let that orphan survive.
 

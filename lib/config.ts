@@ -53,7 +53,7 @@ export const PACKAGE_BADGES: Record<number, Badge[]> = {
 // ── Package Descriptions ─────────────────────────────────────
 // Optional custom description shown on package cards.
 // If empty ("") or not set, the Tebex description is used.
-// Keep it short — 1 to 2 sentences max.
+// Keep it short: 1 to 2 sentences max.
 
 export const PACKAGE_DESCRIPTIONS: Record<number, string> = {
   5732587: 'A complete, server-authoritative garage and impound system for ESX with a modern React UI and a security-first backend.', // MSK Garage - E
@@ -290,21 +290,21 @@ export const NEWS_POPUP = {
   // Supports simple text. Use \n for line breaks.
   text: 'Get your API Key now and create a ticket system for your community!',
 
-  // Optional button — set to null to hide it
+  // Optional button, set to null to hide it
   //button: null as { label: string; href: string } | null,
   button: {
     label: 'Get API Key',
     href: '/ticketbot/verify',
   } as { label: string; href: string } | null,
 
-  // Optional second button — set to null to hide it
+  // Optional second button, set to null to hide it
   //secondButton: null as { label: string; href: string } | null,
   secondButton: {
     label: 'Dashboard',
     href: '/ticketbot/dashboard',
   } as { label: string; href: string } | null,
 
-  // Optional coupon code — set to null to hide it
+  // Optional coupon code, set to null to hide it
   // Displays a copyable coupon field below the text
   coupon: null as string | null,
   //coupon: 'NEWSHOP20',

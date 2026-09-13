@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * bot-provision.js — install and start one customer's hosted ticket bot.
+ * bot-provision.js: install and start one customer's hosted ticket bot.
  *
  *   node scripts/bot-provision.js <guild_id> [--restart-only]
  *
@@ -17,8 +17,8 @@
  * outlives its parent and records every step in ticketbot_hosting_jobs, which
  * the dashboard polls.
  *
- * The fast, reversible half — validating the form, allocating the port, creating
- * DNS + vhost, composing the .env — already happened in the request. By the time
+ * The fast, reversible half (validating the form, allocating the port, creating
+ * DNS + vhost, composing the .env) already happened in the request. By the time
  * this runs, the guild row carries bot_port and dashboard_host, and the .env is
  * staged at <base>/.staging/<guild_id>.env with mode 0600.
  *
@@ -77,7 +77,7 @@ const exists = p => access(p).then(() => true, () => false);
 const sleep  = ms => new Promise(r => setTimeout(r, ms));
 
 /** Strip ANSI colour codes and keep the last n non-empty lines. Mirrors
- *  tailLines() in lib/botProvision.ts — this script is plain JS run outside
+ *  tailLines() in lib/botProvision.ts, this script is plain JS run outside
  *  Next and cannot import the TS module. */
 function tailLines(text, n) {
   const plain = String(text || '').replace(/\x1b\[[0-9;]*m/g, '');
@@ -110,7 +110,7 @@ const markFailed = (error, log) => db.execute(
 // ── Health check ─────────────────────────────────────────────────────────────
 
 /**
- * Ask the bot's own supervisor whether the BOT is running — not merely whether
+ * Ask the bot's own supervisor whether the BOT is running, not merely whether
  * something is listening.
  *
  * This distinction is the whole reason the check exists. dashboard.js is a
@@ -129,7 +129,7 @@ const markFailed = (error, log) => db.execute(
  */
 async function botReportsRunning(port, discordUserId) {
   const secret = process.env.BOT_DASHBOARD_PROXY_SECRET;
-  if (!secret) return null;   // cannot tell — caller falls back
+  if (!secret) return null;   // cannot tell; caller falls back
 
   const ask = async (path, headers) => {
     const res = await fetch(`http://127.0.0.1:${port}${path}`, { headers, cache: 'no-store' });
@@ -202,7 +202,7 @@ async function start() {
   // `pm2 start` under the same name would then error instead of replacing it.
   await execFileAsync(PM2, ['delete', appName], { timeout: 20_000 }).catch(() => {});
 
-  // dashboard.js, NOT index.js. index.js is the plain bot with no web server —
+  // dashboard.js, NOT index.js. index.js is the plain bot with no web server,
   // it starts fine, PM2 reports online, and the customer's dashboard host then
   // answers 503 forever with nothing in any log to explain it.
   await execFileAsync(PM2, ['start', 'dashboard.js', '--name', appName],
@@ -222,7 +222,7 @@ async function health(port, discordUserId) {
 
   const log = await readBotLog();
   // `null` means the status endpoint could not be reached or refused us, which
-  // is a different failure from "the bot says it is not running" — saying so
+  // is a different failure from "the bot says it is not running", saying so
   // stops the customer from hunting for a token problem that is not there.
   throw Object.assign(
     new Error(lastAnswer === null ? 'health_unreachable' : 'health_not_running'),

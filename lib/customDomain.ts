@@ -18,7 +18,7 @@ const execFileAsync = promisify(execFile);
  *   blocks any re-activation, so a non-premium guild can never serve from the
  *   custom domain again on its own.
  *
- * Safe to call for any guild id — no-ops when the guild has no domain configured.
+ * Safe to call for any guild id, no-ops when the guild has no domain configured.
  *
  * Requires a `ScopedGuildId`: the function rips the domain away from someone
  * else's guild if it is given the wrong id. The caller has to prove where the

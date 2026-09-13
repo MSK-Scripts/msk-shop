@@ -7,7 +7,7 @@
 # vhost is the only way in, and it forwards straight to that loopback port.
 #
 #   MODE=wildcard  (default)  HOST must be <label>.msk-scripts.de. Served with
-#                             the existing wildcard certificate — NO certbot run.
+#                             the existing wildcard certificate, NO certbot run.
 #   MODE=certbot              HOST is a customer's own domain. Issues a
 #                             certificate via the http-01 webroot first.
 #
@@ -29,7 +29,7 @@ EMAIL="${4:-info@msk-scripts.de}"
 ZONE="msk-scripts.de"
 WILDCARD_DIR="/etc/apache2/ssl/$ZONE"
 
-# ACME http-01 webroot — same server convention as vhost-create.sh: 000-default
+# ACME http-01 webroot: same server convention as vhost-create.sh: 000-default
 # grants /.well-known/acme-challenge/ from here and both blocks below point at it
 # for that path. See the long note in vhost-create.sh; nothing outside these
 # files backs the challenge up since the forms wildcard vhost was removed.
@@ -148,7 +148,7 @@ fi
 # what makes renewal work at all (the redirect would otherwise send Let's
 # Encrypt to :443, which proxies to the bot and never serves the token). In
 # wildcard mode the cert comes from a DNS-01 run for the whole zone, so nothing
-# needs the path today — it stays because a host can later be switched to its
+# needs the path today, it stays because a host can later be switched to its
 # own certificate, and a silently missing exception only shows up 90 days later
 # as an expired certificate.
 
@@ -174,7 +174,7 @@ cat > "$VHOST_FILE" << APACHE
     SSLCertificateKeyFile $KEY_FILE
 
     # The bot's dashboard sets its own security headers (helmet). Drop the global
-    # ones from conf-enabled/security.conf so they do not arrive twice — same
+    # ones from conf-enabled/security.conf so they do not arrive twice, same
     # reasoning as bot-dashboard.msk-scripts.de.conf.
     Header always unset X-Content-Type-Options
     Header always unset X-Frame-Options
@@ -185,7 +185,7 @@ cat > "$VHOST_FILE" << APACHE
 
     # Straight to the bot's own dashboard on loopback. Unlike
     # bot-dashboard.msk-scripts.de this does NOT go through msk-shop: the bot
-    # runs its own Discord OAuth here, which is the entire point — the customer's
+    # runs its own Discord OAuth here, which is the entire point, the customer's
     # staff have no msk-shop account and could never mint a handoff token.
     ProxyPreserveHost On
     ProxyPass         / http://127.0.0.1:$PORT/

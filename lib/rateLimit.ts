@@ -13,7 +13,7 @@ interface RateLimitOptions {
  *
  * `X-Forwarded-For` is a comma-separated chain where each proxy APPENDS the
  * address it received the request from. Behind our single trusted reverse proxy
- * (Apache) the RIGHTMOST entry is the address Apache saw — i.e. the real client.
+ * (Apache) the RIGHTMOST entry is the address Apache saw, i.e. the real client.
  * The leftmost entries are client-supplied and trivially spoofable, so keying on
  * them would let an attacker reset their bucket at will. We therefore take the
  * rightmost token. (Assumes exactly one trusted proxy; revisit if a CDN is added.)

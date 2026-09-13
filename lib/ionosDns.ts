@@ -1,5 +1,5 @@
 // =============================================================================
-// IONOS DNS API — create and remove the A/AAAA pair for a hosted bot subdomain
+// IONOS DNS API: create and remove the A/AAAA pair for a hosted bot subdomain
 // =============================================================================
 // msk-scripts.de has NO wildcard DNS record: every subdomain is an explicit A
 // (and AAAA) entry in the IONOS zone. So when a customer activates bot hosting
@@ -9,7 +9,7 @@
 // wildcard cert (`*.msk-scripts.de`, acme.sh + IONOS DNS-01, deployed to
 // /etc/apache2/ssl/msk-scripts.de/), so a fresh subdomain is served the moment
 // its vhost exists. That is the whole reason provisioning can be fast and can
-// never fail on the Let's Encrypt rate limit — see scripts/bot-vhost-create.sh.
+// never fail on the Let's Encrypt rate limit, see scripts/bot-vhost-create.sh.
 //
 // Auth is a single API key that covers every zone of the IONOS account, which is
 // exactly why this module refuses to touch a name outside DNS_ZONE: a bug in a
@@ -61,7 +61,7 @@ export function serverAddresses(): { ipv4: string; ipv6: string | null } {
 
 /**
  * Guard for every name this module handles. A host must sit directly under the
- * zone — one label, nothing deeper. Two reasons, and the second is the load
+ * zone, one label, nothing deeper. Two reasons, and the second is the load
  * bearing one:
  *
  *   • The wildcard certificate covers `*.msk-scripts.de` and NOT
@@ -127,7 +127,7 @@ async function call<T>(path: string, init: RequestInit = {}): Promise<T> {
 
 let zoneIdCache: string | null = null
 
-/** Zone id of DNS_ZONE. Cached for the life of the process — the zone is created
+/** Zone id of DNS_ZONE. Cached for the life of the process, the zone is created
  *  once by hand and its id never changes. */
 export async function zoneId(): Promise<string> {
   if (zoneIdCache) return zoneIdCache
@@ -176,7 +176,7 @@ export async function createHostRecords(host: string): Promise<void> {
 }
 
 /**
- * Remove every A/AAAA record for `host`. Missing records are not an error — this
+ * Remove every A/AAAA record for `host`. Missing records are not an error, this
  * runs in teardown paths (hosting removed, subscription cancelled) where the
  * caller must be able to finish cleaning up whatever else is left over.
  */

@@ -23,7 +23,7 @@ if [[ -z "$DOMAIN" || -z "$GUILD_ID" ]]; then
     exit 1
 fi
 
-# Only allow safe domain characters — prevents shell injection
+# Only allow safe domain characters; prevents shell injection
 if ! [[ "$DOMAIN" =~ ^[a-zA-Z0-9][a-zA-Z0-9.-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$ ]]; then
     echo "ERROR: Invalid domain format: $DOMAIN" >&2
     exit 1
@@ -45,7 +45,7 @@ fi
 
 TRANSCRIPT_DIR="/var/www/html/transcripts/$GUILD_ID"
 VHOST_FILE="/etc/apache2/sites-available/$DOMAIN.conf"
-# ACME http-01 webroot. MUST be /var/www/html — that is the server's convention:
+# ACME http-01 webroot. MUST be /var/www/html: that is the server's convention:
 # 000-default.conf grants /.well-known/acme-challenge/ from there, and both vhosts
 # this script writes point their DocumentRoot at it for that path. Any other value
 # means certbot drops the token somewhere nobody serves, and issuance fails with a
@@ -86,7 +86,7 @@ chmod 2775 "$TRANSCRIPT_DIR"
 
 # ── Ensure the ACME challenge dir exists ──────────────────────────────────────
 # certbot --webroot creates it too; this is just insurance. NOTE: never chown
-# /var/www/html itself — only make sure the challenge subdir is present.
+# /var/www/html itself, only make sure the challenge subdir is present.
 mkdir -p "$WEBROOT/.well-known/acme-challenge"
 
 # ── Step 1: Temporary HTTP-only VHost for certbot challenge ───────────────────
@@ -97,7 +97,7 @@ mkdir -p "$WEBROOT/.well-known/acme-challenge"
 # This block used to have a fallback: a wildcard vhost (ServerAlias *) would have
 # caught the request otherwise and served the challenge from the same web root.
 # That vhost was removed on 24.08.2026. Without it, a domain that has no exact
-# vhost lands on 000-default.conf, which denies everything except the ACME path —
+# vhost lands on 000-default.conf, which denies everything except the ACME path,
 # so issuance still works, but only because this vhost is written first.
 
 cat > "$VHOST_FILE" << APACHE
@@ -137,7 +137,7 @@ if ! certbot certonly \
     exit 20
 fi
 
-# Sanity check — make sure certbot actually produced the files
+# Sanity check: make sure certbot actually produced the files
 if [[ ! -f "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" ]]; then
     echo "ERROR: Certbot did not produce a certificate for $DOMAIN" >&2
     exit 20
@@ -154,7 +154,7 @@ fi
 # Until 24.08.2026 renewal worked by accident. The forms wildcard vhost
 # (ServerAlias * in msk-forms-acme.conf) sorts before the generated files in
 # sites-enabled, matched first, skipped the ACME path and served it from
-# $WEBROOT — so the block below never ran at all. Removing that catch-all broke
+# $WEBROOT, so the block below never ran at all. Removing that catch-all broke
 # renewal for every custom domain at once, which is why the exception now lives
 # where it belongs. Same shape as bot-dashboard.msk-scripts.de.conf.
 
@@ -186,7 +186,7 @@ cat > "$VHOST_FILE" << APACHE
         AllowOverride None
         Require all denied
 
-        # The transcript page itself — the only file served as HTML. Matched by
+        # The transcript page itself: the only file served as HTML. Matched by
         # exact name, so an uploaded "x.html" could never be rendered even if the
         # upload route's extension allow-list were ever widened by mistake.
         <Files "transcript.html">
@@ -201,7 +201,7 @@ cat > "$VHOST_FILE" << APACHE
 
         # Everything else: user-authored content (FiveM resources, configs,
         # scripts, logs, archives). Downloadable, but never interpreted by the
-        # browser — a .lua whose first line is "<html>" must not become a rendered
+        # browser, a .lua whose first line is "<html>" must not become a rendered
         # page on this origin. ForceType + Content-Disposition + nosniff together
         # guarantee that, which is also why widening THIS list stays cheap.
         <FilesMatch "\.(zip|rar|7z|tar|gz|tgz|bz2|xz|zst|txt|log|md|csv|conf|properties|patch|diff|lua|js|ts|css|json|xml|sql|cfg|ini|toml|ya?ml|meta|ymap|ytyp|ytd|yft|ydr|ydd|ybn|ycd|ynv|rpf|fxap|db|sqlite|mkv|avi|wmv|mpe?g|m4v|docx|xlsx|pptx|odt|ods)$">

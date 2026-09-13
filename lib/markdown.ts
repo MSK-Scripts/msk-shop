@@ -23,7 +23,7 @@ export function getLegalContent(slug: string): string {
   return fs.readFileSync(filePath, 'utf-8')
 }
 
-// Renders markdown to plain HTML — styled via .legal-content CSS class in globals.css
+// Renders markdown to plain HTML, styled via .legal-content CSS class in globals.css
 export function renderMarkdown(md: string): string {
   const lines = md.split('\n')
   const output: string[] = []
@@ -75,7 +75,7 @@ export function renderMarkdown(md: string): string {
       continue
     }
 
-    // Table — lines starting with |
+    // Table: lines starting with |
     if (line.startsWith('|')) {
       const tableLines: string[] = []
       while (i < lines.length && lines[i].startsWith('|')) {
@@ -86,7 +86,7 @@ export function renderMarkdown(md: string): string {
       continue
     }
 
-    // Unordered list — supports - and *
+    // Unordered list: supports - and *
     if (line.startsWith('- ') || line.startsWith('* ')) {
       const items: string[] = []
       while (i < lines.length && (lines[i].startsWith('- ') || lines[i].startsWith('* '))) {
@@ -108,7 +108,7 @@ export function renderMarkdown(md: string): string {
       continue
     }
 
-    // Paragraph — collect consecutive non-special lines
+    // Paragraph: collect consecutive non-special lines
     const paraLines: string[] = []
     while (
       i < lines.length &&

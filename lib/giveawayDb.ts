@@ -3,7 +3,7 @@ import mysql from 'mysql2/promise';
 // Separate, read-only connection pool for the Giveaway-Bot database.
 //
 // The Giveaway-Bot stores its data in its own MariaDB database (`giveaway_bot`,
-// Prisma-managed) — distinct from the msk-shop database. We connect with a
+// Prisma-managed), distinct from the msk-shop database. We connect with a
 // dedicated, least-privilege read-only user (SELECT only) so the public stats
 // page can aggregate anonymous numbers without sharing the shop's DB user.
 //

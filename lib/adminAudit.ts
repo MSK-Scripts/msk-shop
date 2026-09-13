@@ -4,7 +4,7 @@ import { query } from './db';
  * Append a row to the admin audit log. Called after every successful write
  * action in the admin dashboard so there is a permanent record of who did what.
  *
- * Never throws in a way that should abort the caller's response — the action has
+ * Never throws in a way that should abort the caller's response, the action has
  * already happened by the time we log it. Failures are swallowed and logged to
  * the server console instead.
  *

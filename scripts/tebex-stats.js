@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * tebex-stats.js — nightly snapshot of the shop's own sales figures.
+ * tebex-stats.js: nightly snapshot of the shop's own sales figures.
  *
  * Walks the Tebex Plugin API's paginated /payments endpoint once and stores the
  * aggregate in `msk_shop_stats`, so the homepage can render measured numbers

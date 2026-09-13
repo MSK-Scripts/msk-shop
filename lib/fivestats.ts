@@ -1,5 +1,5 @@
 // NOTE: server-only module. Imported exclusively by the API route and the
-// server-rendered page — never by a client component. FIVESTATS_API_KEY has
+// server-rendered page, never by a client component. FIVESTATS_API_KEY has
 // no NEXT_PUBLIC_ prefix, so it is never inlined into the client bundle.
 import {
   RESOURCE_STATS,
@@ -12,7 +12,7 @@ import {
 // ─────────────────────────────────────────────────────────────
 //  fivestats.io API client (SERVER-ONLY)
 //
-//  The API key (FIVESTATS_API_KEY) never reaches the client — this
+//  The API key (FIVESTATS_API_KEY) never reaches the client, this
 //  module imports 'server-only' and all calls go out from the server.
 //  Read calls are cached (revalidate) so we don't hammer the upstream.
 //
@@ -113,7 +113,7 @@ async function fivestatsFetch<T>(path: string): Promise<T | null> {
       next: { revalidate: REVALIDATE_SECONDS },
     })
     if (!res.ok) {
-      // 404 = resource not indexed (yet) — expected, handled by the caller.
+      // 404 = resource not indexed (yet): expected, handled by the caller.
       if (res.status !== 404) console.error(`[fivestats] ${path} → ${res.status}`)
       return null
     }

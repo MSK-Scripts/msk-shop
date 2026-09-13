@@ -1,7 +1,7 @@
 import { createHmac, timingSafeEqual } from 'crypto'
 
 // =============================================================================
-// Bot-dashboard reverse proxy — signing + config helpers
+// Bot-dashboard reverse proxy: signing + config helpers
 // =============================================================================
 // A hosted bot runs its own self-hosted dashboard bound to 127.0.0.1:<bot_port>.
 // It is never exposed directly; instead msk-shop is the authenticated gateway in
@@ -12,7 +12,7 @@ import { createHmac, timingSafeEqual } from 'crypto'
 //      lived HANDOFF token bound to { discordUserId, guildId, botPort }.
 //   2. A new tab opens https://<BOT_DASHBOARD_HOST>/__enter?h=<token>. The proxy
 //      validates it and sets a host-only PROXY_COOKIE (a longer-lived session
-//      scoped to the proxy host only — the main msk-shop cookie is NOT broadened
+//      scoped to the proxy host only, the main msk-shop cookie is NOT broadened
 //      to subdomains).
 //   3. Every further request on that host is forwarded to http://127.0.0.1:<port>
 //      with the trusted-proxy headers the bot expects (shared secret + verified
@@ -95,7 +95,7 @@ function readToken(scope: string, token: string | undefined | null): ProxyClaims
     return null
   }
 
-  // A correctly signed but expired token must be rejected — the exp is inside the
+  // A correctly signed but expired token must be rejected, the exp is inside the
   // signed payload, so it cannot be tampered with.
   if (!claims || typeof claims.exp !== 'number' || claims.exp < Date.now()) return null
   if (!SNOWFLAKE_RE.test(String(claims.discordUserId))) return null

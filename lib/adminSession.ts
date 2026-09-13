@@ -2,7 +2,7 @@ import { createHmac, timingSafeEqual } from 'crypto';
 
 /**
  * Resolve the HMAC secret. Throws if SESSION_SECRET is unset rather than
- * falling back to a known placeholder — a missing secret in production would
+ * falling back to a known placeholder, a missing secret in production would
  * otherwise let anyone forge admin sessions. Evaluated lazily.
  */
 function getSecret(): string {
@@ -14,13 +14,13 @@ function getSecret(): string {
 /** Cookie name for the signed admin session. */
 export const ADMIN_SESSION_COOKIE = 'msk_admin_session';
 
-/** Session lifetime — matches the cookie maxAge, but enforced server-side too. */
+/** Session lifetime: matches the cookie maxAge, but enforced server-side too. */
 const SESSION_TTL_MS = 3600_000;
 
 export interface AdminSession {
   /**
    * The Discord user id the admin session belongs to. Permissions are NOT stored
-   * here — they are loaded live from `msk_admin_team` on every request so that a
+   * here, they are loaded live from `msk_admin_team` on every request so that a
    * revocation takes effect immediately. The session only proves identity.
    */
   discordUserId: string;
@@ -51,7 +51,7 @@ export function parseAdminSession(token: string): AdminSession | null {
   if (sigBuf.length !== expBuf.length || !timingSafeEqual(sigBuf, expBuf)) return null;
   try {
     const data = JSON.parse(Buffer.from(payload, 'base64url').toString()) as SignedPayload;
-    // Enforce expiry server-side — a leaked token string is not valid forever.
+    // Enforce expiry server-side, a leaked token string is not valid forever.
     if (typeof data.exp !== 'number' || data.exp < Date.now()) return null;
     if (!data.discordUserId) return null;
     return { discordUserId: data.discordUserId };

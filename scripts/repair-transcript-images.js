@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * repair-transcript-images.js — one-off repair for already-stored transcripts.
+ * repair-transcript-images.js: one-off repair for already-stored transcripts.
  *
  * Background: older transcripts embedded message image/file attachments using the
  * raw Discord CDN URL (cdn.discordapp.com/attachments/…). Those URLs are signed
@@ -24,7 +24,7 @@
  * map to a stored file), so re-running causes no further changes.
  *
  * Deployed with the repo at /opt/msk-shop/scripts/. Reads DB_* from the env but
- * does NOT load dotenv and requires mysql2 — run it like cleanup.js:
+ * does NOT load dotenv and requires mysql2; run it like cleanup.js:
  *
  *   set -a; . /opt/msk-shop/.env.local; set +a; \
  *     NODE_PATH=/opt/msk-shop/node_modules /usr/bin/node \

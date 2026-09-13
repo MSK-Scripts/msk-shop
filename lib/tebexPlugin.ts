@@ -2,7 +2,7 @@
  * Server-only client for the Tebex **Plugin API** (https://plugin.tebex.io).
  *
  * This is the backend for the admin dashboard. It holds the game-server secret
- * key (TEBEX_PLUGIN_SECRET) and must NEVER be imported into client code — the
+ * key (TEBEX_PLUGIN_SECRET) and must NEVER be imported into client code, the
  * key grants full, unscoped access to the store's operational endpoints.
  *
  * Endpoint/field details: docs/TEBEX_API_REFERENCE.md.
@@ -10,7 +10,7 @@
  *
  * SERVER-ONLY by convention: TEBEX_PLUGIN_SECRET has no NEXT_PUBLIC_ prefix, so it
  * is never bundled into client code. Only import this module from route handlers
- * / server components — never from a "use client" file.
+ * / server components, never from a "use client" file.
  */
 
 const BASE_URL = 'https://plugin.tebex.io';
@@ -191,7 +191,7 @@ export const tebexPlugin = {
     list:   (page = 1) => pluginFetch<CouponPage>(`/coupons?page=${encodeURIComponent(page)}`),
     /**
      * Every coupon across every page. The endpoint pages at 25 and returns them
-     * in no usable order, so a live coupon can sit on any page — there is no
+     * in no usable order, so a live coupon can sit on any page, there is no
      * shortcut that avoids reading all of them.
      */
     listAll: () => fetchAllCoupons(),

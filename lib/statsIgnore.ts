@@ -6,7 +6,7 @@
  *
  * ⚠️  Do NOT commit real production API keys here if this file is public.
  *     For sensitive environments use the env variable STATS_IGNORED_API_KEYS
- *     (comma-separated) instead — it takes precedence over this list.
+ *     (comma-separated) instead, it takes precedence over this list.
  */
 export const STATS_IGNORED_API_KEYS: string[] = [
   // 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',  // My test server

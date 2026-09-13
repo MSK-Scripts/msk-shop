@@ -16,7 +16,7 @@ export interface TierConfig {
   /**
    * Whether the guild may have its bot hosted and managed by us: an own
    * directory under BOT_CONFIG_BASE_PATH, a PM2 process, and a public host for
-   * the bot's own dashboard. Every paid tier gets it — the limit is server
+   * the bot's own dashboard. Every paid tier gets it, the limit is server
    * capacity, not the price, and a Premium customer who cannot host has to run
    * the bot somewhere themselves, which is the part most of them cannot do.
    */
@@ -106,7 +106,7 @@ export function getExpiresAt(tier: Tier): Date {
 /**
  * Monthly price for humans, in the language of the page.
  *
- * German writes "3,99 €", English "€3.99" — the same number, and both are
+ * German writes "3,99 €", English "€3.99": the same number, and both are
  * wrong in the other language. Built from `priceCents` rather than from a
  * literal so it can never disagree with the tier table above.
  */

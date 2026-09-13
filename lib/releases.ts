@@ -3,7 +3,7 @@ import { RESOURCE_STATS, type ResourceStatEntry } from '@/content/resource-stats
 /**
  * Release log for the homepage hero.
  *
- * Source is the public `MSK-Scripts/VERSIONS` repository — the very same files
+ * Source is the public `MSK-Scripts/VERSIONS` repository, the very same files
  * every script polls at runtime through its own `server/versionchecker.lua`.
  * That matters: it is the list that already has to be correct for the version
  * checker to work, so the homepage cannot show something the scripts disagree

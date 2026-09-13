@@ -2,7 +2,7 @@ import { giveawayQuery, giveawayQueryOne } from '@/lib/giveawayDb';
 
 // Shared loader for the public, anonymous Giveaway-Bot statistics.
 // Used by both the server-rendered page (initial load) and the live API route
-// the client polls. All numbers are aggregate counts — no guild IDs, user IDs
+// the client polls. All numbers are aggregate counts, no guild IDs, user IDs
 // or other personal data ever leave the database.
 
 export interface GiveawayStats {

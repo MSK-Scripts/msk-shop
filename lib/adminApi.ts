@@ -18,7 +18,7 @@ interface AdminCtx<P> {
  *   2. per-IP rate limit (429)
  *   3. Tebex/error normalization (Tebex `error_message` passthrough, else 500)
  *
- * All mutations must use POST/PATCH/PUT/DELETE (never GET) — with SameSite=Lax
+ * All mutations must use POST/PATCH/PUT/DELETE (never GET), with SameSite=Lax
  * cookies that is what provides the CSRF protection.
  */
 export function adminRoute<P = Record<string, string>>(
@@ -26,7 +26,7 @@ export function adminRoute<P = Record<string, string>>(
   handler: (ctx: AdminCtx<P>) => Promise<NextResponse>,
 ) {
   // `context` is typed required (Next's route validator rejects `| undefined`),
-  // but at runtime it is absent for non-dynamic routes — hence the defensive
+  // but at runtime it is absent for non-dynamic routes, hence the defensive
   // read below. P defaults to Record<string,string> so a static route's
   // `Promise<P>` stays assignable to Next's expected RouteContext.
   return async (req: NextRequest, context: { params: Promise<P> }): Promise<NextResponse> => {
@@ -38,7 +38,7 @@ export function adminRoute<P = Record<string, string>>(
     // CSRF defense-in-depth on mutations: browsers always send Origin on
     // POST/PATCH/PUT/DELETE and a cross-site attacker cannot forge it. Reject a
     // present-but-foreign Origin (a missing Origin, e.g. a same-origin server
-    // call, is allowed — SameSite=Lax + the JSON body already guard those).
+    // call, is allowed: SameSite=Lax + the JSON body already guard those).
     if (req.method !== 'GET') {
       const origin  = req.headers.get('origin');
       const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://www.msk-scripts.de';

@@ -13,7 +13,7 @@ interface AdminTeamRow {
   display_name:    string | null;
   is_owner:        number;
   // mysql2 returns JSON columns already parsed on MySQL, but MariaDB may hand
-  // back a string — handle both in loadAdminMember().
+  // back a string, handle both in loadAdminMember().
   permissions:     string | unknown[];
   active:          number;
 }

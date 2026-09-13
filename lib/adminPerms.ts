@@ -5,7 +5,7 @@
  * The permissions cover three separate systems, not one:
  *
  *   payments.* / coupons.* / giftcards.* / bans.* / packages.edit
- *       mirror what the Tebex Plugin API can actually do — see
+ *       mirror what the Tebex Plugin API can actually do, see
  *       docs/TEBEX_API_REFERENCE.md. Anything not listed there is not exposed
  *       by any Tebex API and stays in the Creator Panel.
  *   api_key.*
@@ -27,7 +27,7 @@
  * resolving a `pending` row, i.e. what a community upload arrives as. The
  * queue is empty until the upload module lands (phase 4, point 20 of
  * docs/IMAGE_CDN_PLAN.md), but the state exists in the schema today and the
- * dashboard resolves it today — so the permission is wired, not reserved.
+ * dashboard resolves it today, so the permission is wired, not reserved.
  */
 
 export const ADMIN_PERMISSIONS = [
