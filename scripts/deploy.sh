@@ -227,13 +227,19 @@ fi
 systemctl restart "$SERVICE"
 
 # 9. Health check: wait up to ~20 s for a 200 response, otherwise abort.
+#    The first attempt right after the restart almost always fails because
+#    Next.js has not opened the port yet. curl's error is kept in a variable
+#    instead of going to the log, so a normal retry does not look like a
+#    failure; only when every attempt fails is the last error printed.
 ok=0
+health_error=""
 for _ in $(seq 1 10); do
-  if curl -fsS -o /dev/null "http://127.0.0.1:${APP_PORT}/"; then ok=1; break; fi
+  if health_error="$(curl -fsS -o /dev/null "http://127.0.0.1:${APP_PORT}/" 2>&1)"; then ok=1; break; fi
   sleep 2
 done
 if [[ "$ok" -ne 1 ]]; then
-  echo "Health-Check fehlgeschlagen — letzte 50 Log-Zeilen:"
+  echo "Health-Check fehlgeschlagen: ${health_error:-keine Antwort}"
+  echo "Letzte 50 Log-Zeilen:"
   journalctl -u "$SERVICE" -n 50 --no-pager || true
   exit 1
 fi
