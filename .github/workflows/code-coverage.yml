@@ -31,6 +31,8 @@ jobs:
       - run: npm ci
       - run: npm run test:coverage
       # Only upload from same-repo events (forked-PR runs cannot write coverage).
+      # A failed upload is reported as a warning: the tests above already decide
+      # the result, and GitHub's coverage API has returned HTTP 500 on its own side.
       - name: Upload coverage report
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         uses: actions/upload-code-coverage@v1
@@ -38,3 +40,4 @@ jobs:
           file: coverage/cobertura-coverage.xml
           language: TypeScript
           label: code-coverage/vitest
+          fail-on-error: false
