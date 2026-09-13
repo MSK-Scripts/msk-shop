@@ -1,12 +1,12 @@
-# Deployment — msk-shop
+# Deployment: msk-shop
 
 Server-side Deploy: GitHub Actions baut **nicht** mehr selbst und überträgt keine
 Artefakte per SCP. Stattdessen liegt das **komplette Repo als Git-Clone** unter
 `/opt/msk-shop`, und ein **`scripts/deploy.sh`** auf dem Server macht
-`git checkout` → `npm ci` → `npm run build` → Service-Restart → Health-Check.
+`git checkout` → DB-Migrationen → `npm ci` → `npm run build` → Service-Restart → Health-Check.
 
 ```
-Push → CI (lint/typecheck/build) ── grün ──▶ Deploy-Workflow
+Push → CI (lint/typecheck/test/audit/build) ── grün ──▶ Deploy-Workflow
                                               └─ SSH (ForceCommand) ─▶ /opt/msk-shop/scripts/deploy.sh <sha>
 ```
 
@@ -37,7 +37,7 @@ Push → CI (lint/typecheck/build) ── grün ──▶ Deploy-Workflow
 ## Einmaliges Server-Setup (Migration vom alten SCP-Deploy)
 
 > **Reihenfolge ist wichtig:** erst Server + Secrets fertig einrichten, **dann**
-> die geänderten Workflows pushen — sonst läuft ein Deploy ins Leere.
+> die geänderten Workflows pushen, sonst läuft ein Deploy ins Leere.
 
 ### 1. Repo als Git-Clone aufsetzen (`.env.local` erhalten)
 ```bash
@@ -54,7 +54,7 @@ GIT_SSH_COMMAND='ssh -i /root/.ssh/msk-shop_ro -o IdentitiesOnly=yes -F /dev/nul
 cp /root/msk-shop.env.local.bak /opt/msk-shop/.env.local
 ```
 Damit `git fetch` in `deploy.sh` dauerhaft ohne Nachfrage läuft, den Key fest hinterlegen.
-`-F /dev/null -o IdentityAgent=none` isoliert den Key — sonst bietet die `~/.ssh/config`
+`-F /dev/null -o IdentityAgent=none` isoliert den Key, sonst bietet die `~/.ssh/config`
 bzw. der Agent (hier liegen auch srh-checklisten-/mskanban-Keys) andere Keys mit an, was zu
 „Too many authentication failures" oder Auth über den falschen Key führen kann:
 ```bash
@@ -62,7 +62,7 @@ git -C /opt/msk-shop config core.sshCommand 'ssh -i /root/.ssh/msk-shop_ro -o Id
 ```
 
 ### 2. `.env.local` um die Build-Variablen ergänzen
-Der Build läuft jetzt auf dem Server — `/opt/msk-shop/.env.local` muss **zusätzlich**
+Der Build läuft jetzt auf dem Server, `/opt/msk-shop/.env.local` muss **zusätzlich**
 zu den bisherigen Server-Secrets enthalten:
 ```
 NEXT_PUBLIC_TEBEX_PUBLIC_TOKEN=…
@@ -88,7 +88,7 @@ systemctl status msk-shop --no-pager
 # Lokal/Server: ed25519-Keypair erzeugen (OHNE Passphrase)
 ssh-keygen -t ed25519 -f msk-shop_deploy -N '' -C 'github-actions-deploy'
 
-# Public-Key in root/authorized_keys — auf deploy.sh festgenagelt:
+# Public-Key in root/authorized_keys, auf deploy.sh festgenagelt:
 printf 'command="/opt/msk-shop/scripts/deploy.sh",no-agent-forwarding,no-port-forwarding,no-pty,no-X11-forwarding %s\n' \
   "$(cat msk-shop_deploy.pub)" >> /root/.ssh/authorized_keys
 ```
@@ -97,7 +97,7 @@ printf 'command="/opt/msk-shop/scripts/deploy.sh",no-agent-forwarding,no-port-fo
   ```bash
   ssh-keyscan -t ed25519 -p <port> <host>     # Output → DEPLOY_HOST_FINGERPRINT
   ```
-> ⚠️ **`PermitRootLogin` muss Key-Login für root erlauben** — `prohibit-password`
+> ⚠️ **`PermitRootLogin` muss Key-Login für root erlauben**: `prohibit-password`
 > (empfohlen, blockt nur Passwörter) oder `yes`. **NICHT** `forced-commands-only`:
 > das erlaubt nur noch Forced-Command-Keys und sperrt deinen normalen interaktiven
 > Root-Login aus. Der Deploy-Key funktioniert unter `prohibit-password`/`yes` ohnehin.
@@ -128,7 +128,7 @@ nach `main` pushen. CI läuft → bei Grün triggert der Deploy automatisch.
   Repo** unter `/opt/msk-shop/scripts/` und deployen automatisch mit. Die App ruft sie
   dort auf (`app/api/domain/*`).
   - **Sicherheit:** `deploy.sh` lässt `scripts/` **`root:root`** (nicht vom App-User
-    beschreibbar) — sonst wäre die NOPASSWD-sudo-Ausführung der vhost-Skripte eine
+    beschreibbar), sonst wäre die NOPASSWD-sudo-Ausführung der vhost-Skripte eine
     Privilege Escalation. `git`/`deploy.sh` (als root) aktualisieren sie trotzdem.
   - **sudoers anpassen** (`/etc/sudoers.d/msk-vhost`) auf den neuen Pfad:
     ```
@@ -201,34 +201,41 @@ nach `main` pushen. CI läuft → bei Grün triggert der Deploy automatisch.
   Zahlen einfach aus. Vor dem ersten Lauf `msk_shop_stats` anlegen (steht in
   `database/schema.sql`), danach einmal von Hand starten. `--dry-run` rechnet, ohne zu
   schreiben.
-- **DB:** msk-shop nutzt rohes `database/schema.sql` (kein Prisma) — `deploy.sh` führt
-  **keine** Migrationen aus. Schema-Änderungen manuell einspielen.
+- **DB-Migrationen laufen seit dem 12.09.2026 im Deploy.** `deploy.sh` spielt nach dem
+  Checkout und **vor** `npm ci` jede noch nicht vermerkte `database/migrations/NNN-name.sql`
+  ein und trägt sie danach in `schema_migrations` ein. Das geschieht als root über den
+  Unix-Socket (`mariadb --defaults-file=/dev/null -u root`), `DB_NAME` wird aus der
+  `.env.local` gelesen, nicht gesourct. Weil die alte Version während der Migration noch
+  Anfragen bedient, müssen Migrationen **additiv** sein; ein Rollback dreht sie nicht
+  zurück. Regeln: `database/migrations/README.md`. Eine frische Datenbank bekommt weiterhin
+  alles aus `database/schema.sql`.
+- **Health-Check:** nach dem Neustart bis zu zehn Versuche im Abstand von 2 Sekunden. Ein
+  gescheiterter Versuch schreibt nichts ins Log, erst wenn alle scheitern, erscheinen die
+  letzte curl-Meldung und die letzten 50 Zeilen des Journals.
 - **Audit-Log** des Deploys: `/var/log/msk-shop-deploy.log`.
 
 ## npm audit: warum der Deploy `--no-audit` benutzt
 
 `deploy.sh` installiert mit `npm ci --no-audit`, und die CI prüft stattdessen gezielt
-`npm audit --omit=dev --audit-level=high`. Der Grund ist kein Wegschauen, sondern
-Trennschärfe:
+`npm audit --omit=dev --audit-level=high`. Der Grund ist Trennschärfe: der Report am Ende
+von `npm ci` unterscheidet im Deploy-Log nicht zwischen Entwicklungs- und
+Produktionsabhängigkeiten, und ein Fund dort kommt ohnehin zu spät, weil die CI vorher
+gelaufen ist. Gegated wird der Baum, der ausgeliefert wird; ein neuer Fund dort lässt den
+Job rot werden.
 
-- Der **Produktionsbaum ist sauber** (`npm audit --omit=dev` = 0). Genau das gatet die CI,
-  und ein neuer Fund dort lässt den Job rot werden.
-- Die verbleibenden Meldungen des vollen `npm audit` sind **dev-only** und stammen alle aus
-  derselben Advisory: `brace-expansion` (GHSA-mh99-v99m-4gvg, DoS durch unbegrenzte
-  Expansion) unterhalb von `minimatch@3`, das `eslint-plugin-import`, `eslint-plugin-react`
-  und `eslint-plugin-jsx-a11y` mitbringen. Erreichbar ist der Code ausschließlich, wenn wir
-  selbst ESLint mit einem bösartig konstruierten Glob aufrufen.
-- **Es gibt dafür aktuell keinen Fix.** Alle drei Plugins sind auf dem neuesten Stand und
-  deklarieren weiterhin `minimatch@^3.1.2`; die Advisory gilt für alles `<= 5.0.7`, einen
-  1.x-Backport gibt es nicht. `minimatch` auf 9/10 zu heben scheitert daran, dass deren
-  CJS-Export ein Objekt ist, die Plugins es aber als Funktion aufrufen.
-- **Nicht per Override "lösen".** Ein globaler `brace-expansion`-Override auf 5.x macht die
-  Meldung still, bricht aber `minimatch@3` bei jedem Glob mit geschweiften Klammern
-  (`TypeError: expand is not a function`). Genau das ist am 2026-07-31 zurückgebaut worden.
+Stand 13.09.2026 meldet auch der **volle** `npm audit` 0. Die frühere Dauermeldung zu
+`brace-expansion` (GHSA-mh99-v99m-4gvg) unterhalb von `minimatch@3` in den ESLint-Plugins
+ist mit `brace-expansion` 1.1.18 entfallen, das den Fix auf die 1.x-Reihe zurückgebracht
+hat. Die Lehre von damals bleibt: **nicht per Override über eine Major-Grenze "lösen"**.
+Ein globaler `brace-expansion`-Override auf 5.x hatte die Meldung still gemacht und dabei
+`minimatch@3` bei jedem Glob mit geschweiften Klammern gebrochen
+(`TypeError: expand is not a function`, am 31.07.2026 zurückgebaut).
 
-**Wiedervorlage:** Sobald eines der drei Plugins auf `minimatch@^9` oder neuer geht,
-`npm audit` erneut prüfen. Dann sollte der volle Report wieder auf 0 stehen und dieser
-Abschnitt kann weg.
+**Blockierte Installationsskripte:** npm 12 führt Install-Skripte von Abhängigkeiten nur
+nach Freigabe aus und meldet `unrs-resolver` (über `eslint-config-next`) im Deploy-Log. Das
+ist gewollt und harmlos: das Skript prüft nur, ob das native Binding da ist, das npm ohnehin
+über `optionalDependencies` installiert, und der Server-Build lintet nicht. Nicht freigeben,
+jede Freigabe wäre Code, der beim Deploy als App-User läuft.
 
 ## Lokale Entwicklungs-Datenbank (Docker)
 
@@ -255,7 +262,7 @@ node scripts/tebex-stats.js
 
 `seed.dev.sql` enthält **erfundene** Guilds, Transkripte und Ergebnisseiten,
 damit die Ansichten etwas zu zeigen haben. `msk_shop_stats` wird davon bewusst
-nicht berührt — die Zahl kommt aus dem echten Cron, damit die Startseite lokal
+nicht berührt, die Zahl kommt aus dem echten Cron, damit die Startseite lokal
 dieselben Werte zeigt wie später live.
 
 Auf dem Server läuft MariaDB nativ, nicht in Docker. Die Compose-Datei ist reine

@@ -9,10 +9,12 @@ through [SECURITY.md](./SECURITY.md), not public issues.
 
 ## Prerequisites
 
-- Node.js >= 22 and npm
+- Node.js >= 24 and npm (the version is pinned in `.nvmrc` and `engines`)
 - A local copy of `.env.local` (copy `.env.example` and fill in the values you
-  need). Most of the storefront works without a database; the ticket-bot and
-  admin features need MariaDB and the relevant secrets.
+  need). Most of the storefront works without a database; the ticket-bot,
+  giveaway, gallery and admin features need MariaDB and the relevant secrets.
+- Optional: Docker, for the local MariaDB in `docker-compose.dev.yml` (setup in
+  the last section of [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md))
 
 ## Getting started
 
@@ -22,6 +24,10 @@ cp .env.example .env.local   # then fill in the values
 npm run dev            # http://localhost:3005
 ```
 
+The production Content-Security-Policy does not let `next dev` hydrate every
+page. To check runtime behavior in the browser, use a production build
+(`npm run build && npm start`).
+
 ## Before you open a pull request
 
 Run the same checks CI runs and make sure they all pass:
@@ -30,6 +36,7 @@ Run the same checks CI runs and make sure they all pass:
 npm run lint           # ESLint
 npm run typecheck      # tsc --noEmit (strict)
 npm test               # Vitest
+npm audit --omit=dev --audit-level=high   # production dependency tree
 npm run build          # production build
 ```
 
@@ -39,11 +46,15 @@ Guidelines:
   line should trace back to the purpose of the PR.
 - **Match the existing style.** TypeScript strict mode, the existing component
   and file conventions, and the design tokens in `app/globals.css` (never
-  hard-coded colors).
+  hard-coded colors, see [DESIGN.md](DESIGN.md)).
 - **Security matters.** Validate input server-side, never expose secrets to the
   client, and keep the Content-Security-Policy intact (see `proxy.ts`).
 - **Add tests** for logic where mistakes are costly (auth, permissions, billing,
-  parsing). Tests live in `tests/`.
+  parsing). Tests live in `tests/`. A good test fails when the code it guards is
+  broken, so try that once before relying on it.
+- **Schema changes go into a migration.** Add a `database/migrations/NNN-name.sql`
+  file and update `database/schema.sql` in the same change. Migrations must be
+  additive, see [database/migrations/README.md](database/migrations/README.md).
 - **Update the docs** when you change behavior, env variables, routes or the
   database schema.
 
@@ -84,15 +95,18 @@ for example:
 feat(admin): add gift card management
 fix(cart): keep gift recipient after reload
 test: cover the rate limiter window reset
-chore(deps): bump next to 16.3.1
+chore(deps): bump next to 16.3.5
 ```
+
+Code comments are written in English as well.
 
 ## Pull request process
 
 1. Create a branch off `main`.
 2. Push your branch and open a pull request against `main`.
-3. Make sure the CI checks (Lint, Typecheck, Test, Build) are green.
+3. Make sure the CI checks (Lint, Typecheck, Test, Audit, Build) are green.
 4. A maintainer reviews and merges. Merging to `main` triggers an automatic
-   deployment, so keep `main` releasable at all times.
+   deployment, including any new database migration, so keep `main` releasable
+   at all times.
 
 Thanks again for contributing!

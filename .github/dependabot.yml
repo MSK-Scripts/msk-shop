@@ -24,14 +24,20 @@ updates:
         update-types:
           - "minor"
           - "patch"
-    # Block major version bumps for packages with known breaking changes:
-    # - eslint v10+: not supported by eslint-config-next@15.x
-    # - eslint-config-next: must stay in sync with installed Next.js version
-    # - next: major upgrades require manual migration (App Router changes)
-    # - tailwindcss: v4 is a complete rewrite (no tailwind.config.js, CSS-based config)
-    # - typescript: major compiler changes require manual verification
-    # - lucide-react: v1.x API changes from 0.x need manual review
-    # - @types/node: major bumps should stay in sync with Node.js runtime version
+    # Major bumps that need a person, not a PR. Minor and patch updates of these
+    # packages still arrive through the groups above.
+    # - eslint: a new major has to be supported by every plugin eslint-config-next
+    #   bundles (react, import, jsx-a11y) before it installs cleanly
+    # - eslint-config-next: moves in lockstep with next, bump both by hand
+    # - next: every major so far renamed conventions (middleware.ts became
+    #   proxy.ts in 16) and removed `next lint`
+    # - tailwindcss: design tokens live in app/globals.css (@theme), a major can
+    #   change how they compile
+    # - typescript: typescript-eslint caps its peer range (currently <6.1.0), so a
+    #   new major breaks lint before it breaks the build
+    # - lucide-react: majors remove icons (1.0 dropped every brand mark)
+    # - @types/node: follows the Node.js major on the server (24), not the
+    #   newest published types
     ignore:
       - dependency-name: "eslint"
         update-types: ["version-update:semver-major"]
