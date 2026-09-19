@@ -12,6 +12,11 @@
  *       the ticket bot guild registry in our own database.
  *   images.*
  *       the image CDN inventory (msk_images), also our own database.
+ *   news_popup.manage
+ *       the site-wide announcement popup, stored in msk_site_settings. It has
+ *       a permission of its own rather than riding along on an existing one
+ *       because it is the only thing in this dashboard that writes text onto
+ *       every public page of the shop.
  *
  * Until the image tab existed this header claimed the whole list mirrored
  * Tebex. It no longer does, and a comment that describes a smaller world than
@@ -44,6 +49,7 @@ export const ADMIN_PERMISSIONS = [
   'images.manage',
   'images.moderate',
   'images.delete',
+  'news_popup.manage',
   'team.manage',
 ] as const;
 
@@ -64,6 +70,7 @@ export const PERMISSION_LABELS: Record<AdminPermission, { label: string; descrip
   'images.manage':    { label: 'Manage images',  description: 'Edit label and tags, publish or hide an image' },
   'images.moderate':  { label: 'Moderate uploads', description: 'Approve or reject images awaiting review (community uploads)' },
   'images.delete':    { label: 'Delete images',  description: 'Permanently remove an image and its files from the CDN' },
+  'news_popup.manage': { label: 'Manage news popup', description: 'Edit and switch the site-wide announcement popup' },
   'team.manage':      { label: 'Manage team',     description: 'Add/remove team members and set permissions' },
 };
 

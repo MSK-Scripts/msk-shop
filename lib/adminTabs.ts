@@ -33,6 +33,7 @@ export const ALL_TABS: TabDef[] = [
   { id: 'apikeys',   label: 'API keys',   perm: ['api_key.view', 'api_key.change'] },
   { id: 'images',    label: 'Images',     perm: ['images.view', 'images.manage', 'images.moderate'] },
   { id: 'uploads',   label: 'Uploads',    perm: ['images.view', 'images.manage', 'images.moderate'] },
+  { id: 'newspopup', label: 'News popup', perm: 'news_popup.manage' },
   { id: 'team',      label: 'Team',       perm: 'team.manage' },
   { id: 'audit',     label: 'Audit log',  perm: 'team.manage' },
 ]

@@ -51,7 +51,7 @@ const GUARDS: Array<{ name: string; pattern: RegExp }> = [
   // The bot's API key: the guild is derived from the key, never from the body
   { name: 'apiKey',           pattern: /\bextractApiKey\s*\(|WHERE\s+api_key\s*=\s*\?/ },
   // Signed verify/dashboard/giveaway session from the cookie
-  { name: 'signedSession',    pattern: callOf('parseSession', 'parseDashboardSession', 'parseGiveawaySession') },
+  { name: 'signedSession',    pattern: callOf('parseSession', 'parseDashboardSession', 'parseGiveawaySession', 'parseUploadSession') },
   // The bot's shared secret, compared in constant time
   { name: 'sharedSecret',     pattern: callOf('timingSafeEqual') },
   // OAuth return channel: code exchange + state check, signing only happens afterwards
@@ -73,6 +73,35 @@ const PUBLIC_BY_DESIGN: Record<string, string> = {
   'stats/route.ts':
     'Öffentliche Statistikseite. Liefert ausschließlich Aggregate (COUNT, AVG, SUM, MAX) ' +
     'über alle Guilds, nie guild-bezogene Zeilen. Ein Guild-Scope wäre hier sinnlos.',
+
+  // Die drei folgenden Galerie-Routen tauchen hier erst seit dem 19.09.2026
+  // auf, weil dieser Test bis dahin nur direkte @/lib/db-Importe gesehen hat.
+  // Sie waren die ganze Zeit ungeschützt, und das ist richtig so: der
+  // Bildbestand ist der öffentliche Katalog, den das CDN ohnehin für jeden
+  // ausliefert.
+  'images/route.ts':
+    'Öffentlicher Bildkatalog. Liest ausschließlich freigegebene Zeilen aus msk_images ' +
+    '(lib/images.ts verdrahtet status = published fest), keine Mandantendaten.',
+  'images/categories/route.ts':
+    'Öffentliche Kategorieliste der Bildergalerie. Liest nur msk_image_categories ' +
+    'mit is_public = 1.',
+  'images/[category]/[name]/route.ts':
+    'Einzelnes öffentliches Bild aus msk_images, dieselbe Zeile, die das CDN ' +
+    'ohne jede Prüfung ausliefert.',
+
+  // Die drei Pflichtformulare. Sie schreiben, aber jede Zeile gehört dem
+  // Absender und niemandem sonst: es gibt keine Abfrage, die sie je wieder
+  // an einen Besucher ausliefert, gelesen werden sie nur per Mail und von
+  // Hand in der Datenbank.
+  'legal/withdrawal/route.ts':
+    'Widerrufsformular nach § 356a BGB, muss ohne Login erreichbar sein. Schreibt eine ' +
+    'Erklärung, die der Absender selbst abgibt; CSRF über originAllowed(), Missbrauch ' +
+    'über die IP im Datensatz nachvollziehbar.',
+  'legal/cancellation/route.ts':
+    'Kündigungsformular nach § 312k Abs. 2 BGB. Muss ausdrücklich ohne Login und ohne ' +
+    'Anmeldung erreichbar sein, das ist der Zweck der Vorschrift. Sonst wie oben.',
+  'legal/report/route.ts':
+    'Meldeformular nach Art. 16 DSA, ebenfalls ohne Login erreichbar. Sonst wie oben.',
 }
 
 function routeFiles(dir: string): string[] {
@@ -95,8 +124,60 @@ const ROUTES = routeFiles(API_DIR).map(file => ({
   source: readFileSync(file, 'utf8'),
 }))
 
-/** Routes that import `lib/db`, directly or through a re-export. */
-const DB_ROUTES = ROUTES.filter(r => /from\s+['"]@\/lib\/db['"]/.test(r.source))
+/**
+ * Which `lib/` modules reach the database, transitively.
+ *
+ * Until 19.09.2026 this test only looked for a direct `@/lib/db` import in the
+ * route file. Moving the statistics queries out of `app/api/stats/route.ts`
+ * into `lib/ticketbotStats.ts` silently removed that route from this test's
+ * scope, and the only reason anybody noticed is that the allowlist then
+ * complained about a dead entry. Without that second check the route would
+ * have dropped out unannounced, and so would every future route that reads
+ * through a lib module rather than calling `query()` itself.
+ *
+ * The fixed point is computed rather than hand-listed: `lib/adminApi.ts`
+ * reaches the database through `lib/adminAuth.ts`, and a list would have gone
+ * stale at the first such link.
+ */
+const LIB_DIR = join(process.cwd(), 'lib')
+
+function libFiles(dir: string): string[] {
+  const out: string[] = []
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const full = join(dir, entry.name)
+    if (entry.isDirectory()) out.push(...libFiles(full))
+    else if (entry.name.endsWith('.ts')) out.push(full)
+  }
+  return out
+}
+
+/** `@/lib/foo` and `@/lib/sub/bar` as they appear in an import. */
+function libImports(source: string): string[] {
+  return [...source.matchAll(/from\s+['"]@\/(lib\/[\w./-]+)['"]/g)].map(m => m[1])
+}
+
+const LIB_SOURCES = new Map<string, string>(
+  libFiles(LIB_DIR).map(file => [
+    `lib/${relative(LIB_DIR, file).split(sep).join('/').replace(/\.ts$/, '')}`,
+    readFileSync(file, 'utf8'),
+  ]),
+)
+
+/** Modules that reach `lib/db`, grown until nothing new comes in. */
+const DB_MODULES = new Set<string>(['lib/db'])
+for (let changed = true; changed;) {
+  changed = false
+  for (const [name, source] of LIB_SOURCES) {
+    if (DB_MODULES.has(name)) continue
+    if (libImports(source).some(dep => DB_MODULES.has(dep))) {
+      DB_MODULES.add(name)
+      changed = true
+    }
+  }
+}
+
+/** Routes that reach the database, directly or through a lib module. */
+const DB_ROUTES = ROUTES.filter(r => libImports(r.source).some(dep => DB_MODULES.has(dep)))
 
 describe('API-Routen mit Datenbankzugriff', () => {
   it('findet überhaupt Routen (schützt vor einem still leeren Test)', () => {

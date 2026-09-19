@@ -3,14 +3,14 @@
 import { useState } from 'react'
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 import { X, Copy, Check } from 'lucide-react'
-import { NEWS_POPUP } from '@/lib/config'
+import type { NewsPopupSettings } from '@/lib/newsPopup'
 import { Button } from '@/components/ui/Button'
 import { useHydrated } from '@/lib/useHydrated'
 import { cn } from '@/lib/utils'
 
 const STORAGE_KEY = 'news-popup-closed'
 
-export function NewsPopup() {
+export function NewsPopup({ settings }: { settings: NewsPopupSettings }) {
   // Server-side there is no sessionStorage, so treat the popup as closed. The
   // `hydrated` guard keeps the first client render identical to the server
   // markup; the popup only appears on the render after hydration.
@@ -22,8 +22,8 @@ export function NewsPopup() {
   const [hovered, setHovered] = useState(false)
 
   function copyCode() {
-    if (!NEWS_POPUP.coupon) return
-    navigator.clipboard.writeText(NEWS_POPUP.coupon)
+    if (!settings.coupon) return
+    navigator.clipboard.writeText(settings.coupon)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
@@ -33,7 +33,7 @@ export function NewsPopup() {
     sessionStorage.setItem(STORAGE_KEY, '1')
   }
 
-  if (!NEWS_POPUP.enabled || !hydrated || closed) return null
+  if (!settings.enabled || !hydrated || closed) return null
 
   return (
     <div className="fixed bottom-5 right-5 z-50 w-80 overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] shadow-2xl">
@@ -43,7 +43,7 @@ export function NewsPopup() {
       <div className="p-4">
         {/* Header */}
         <div className="mb-2.5 flex items-start justify-between gap-2">
-          <p className="text-sm font-bold leading-snug">{NEWS_POPUP.title}</p>
+          <p className="text-sm font-bold leading-snug">{settings.title}</p>
           <button
             onClick={close}
             className="mt-0.5 shrink-0 text-[var(--color-muted-foreground)] transition-colors hover:text-[var(--color-foreground)]"
@@ -55,11 +55,11 @@ export function NewsPopup() {
 
         {/* Text */}
         <p className="mb-3.5 text-xs leading-relaxed text-[var(--color-muted-foreground)]">
-          {NEWS_POPUP.text}
+          {settings.text}
         </p>
 
         {/* Coupon Code */}
-        {NEWS_POPUP.coupon && (
+        {settings.coupon && (
           <div
             onClick={copyCode}
             onMouseEnter={() => setHovered(true)}
@@ -69,7 +69,7 @@ export function NewsPopup() {
           >
             <div className="flex items-center justify-between gap-2 bg-[var(--color-muted)] px-3 py-2">
               <span className="font-mono text-sm font-bold tracking-widest">
-                {NEWS_POPUP.coupon}
+                {settings.coupon}
               </span>
               {copied
                 ? <Check className="h-3 w-3 shrink-0 text-[var(--color-primary)]" />
@@ -94,19 +94,19 @@ export function NewsPopup() {
         )}
 
         {/* Buttons */}
-        {(NEWS_POPUP.button || NEWS_POPUP.secondButton) && (
+        {(settings.button || settings.secondButton) && (
           <div className="flex gap-2">
-            {NEWS_POPUP.button && (
+            {settings.button && (
               <Button asChild size="sm" className="flex-1">
-                <Link href={NEWS_POPUP.button.href} onClick={close}>
-                  {NEWS_POPUP.button.label}
+                <Link href={settings.button.href} onClick={close}>
+                  {settings.button.label}
                 </Link>
               </Button>
             )}
-            {NEWS_POPUP.secondButton && (
+            {settings.secondButton && (
               <Button asChild variant="outline" size="sm" className="flex-1">
-                <Link href={NEWS_POPUP.secondButton.href} onClick={close}>
-                  {NEWS_POPUP.secondButton.label}
+                <Link href={settings.secondButton.href} onClick={close}>
+                  {settings.secondButton.label}
                 </Link>
               </Button>
             )}

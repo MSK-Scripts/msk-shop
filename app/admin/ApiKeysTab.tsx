@@ -1,13 +1,14 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { Loader2, AlertCircle, Pencil, Eye, EyeOff, Copy, Check, Globe, X } from 'lucide-react'
+import { Loader2, AlertCircle, Pencil, Eye, EyeOff, Copy, Check, Globe, X, EyeClosed } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { cn } from '@/lib/utils'
 import { useAdminResource } from '@/lib/useAdminResource'
 import { ErrorCard } from '@/app/admin/ErrorCard'
+import { KEY_ORIGINS, KEY_ORIGIN_LABELS, type KeyOrigin } from '@/lib/keyClassification'
 
 type Tier = 'basic' | 'premium' | 'premium_plus' | 'business'
 
@@ -22,6 +23,10 @@ interface ApiKey {
   active:       boolean
   createdAt:    string
   expiresAt:    string | null
+  /** Counts towards the public figures on /ticketbot/stats? */
+  statsExcluded: boolean
+  /** How this key came about. See lib/keyClassification.ts. */
+  keyOrigin:     KeyOrigin
 }
 
 const TIER_LABELS: Record<Tier, string> = {
@@ -38,6 +43,14 @@ function tierBadgeClass(tier: Tier): string {
     case 'business':     return 'border-[var(--color-tier-business)]/30 bg-[var(--color-tier-business)]/10 text-[var(--color-tier-business)]'
     case 'premium':      return 'border-[var(--color-info)]/30 bg-[var(--color-info)]/10 text-[var(--color-info)]'
     default:             return 'border-[var(--color-border)] bg-[var(--color-muted)] text-[var(--color-muted-foreground)]'
+  }
+}
+
+function originBadgeClass(origin: KeyOrigin): string {
+  switch (origin) {
+    case 'giveaway':  return 'border-[var(--color-warning)]/30 bg-[var(--color-warning)]/10 text-[var(--color-warning)]'
+    case 'sponsored': return 'border-[var(--color-tier-plus)]/30 bg-[var(--color-tier-plus)]/10 text-[var(--color-tier-plus)]'
+    default:          return 'border-[var(--color-border)] bg-[var(--color-muted)] text-[var(--color-muted-foreground)]'
   }
 }
 
@@ -72,6 +85,8 @@ export default function ApiKeysTab({ canChange }: { canChange: boolean }) {
 
   const [editing, setEditing]   = useState<ApiKey | null>(null)
   const [newTier, setNewTier]   = useState<Tier>('basic')
+  const [newExcluded, setNewExcluded] = useState(false)
+  const [newOrigin, setNewOrigin]     = useState<KeyOrigin>('normal')
   const [busy, setBusy]         = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
   const [notice, setNotice]     = useState<string | null>(null)
@@ -84,7 +99,8 @@ export default function ApiKeysTab({ canChange }: { canChange: boolean }) {
       k.guildId.includes(q) ||
       (k.guildName ?? '').toLowerCase().includes(q) ||
       (k.customDomain ?? '').toLowerCase().includes(q) ||
-      k.tier.includes(q),
+      k.tier.includes(q) ||
+      k.keyOrigin.includes(q),
     )
   }, [keys, search])
 
@@ -104,18 +120,33 @@ export default function ApiKeysTab({ canChange }: { canChange: boolean }) {
     } catch { /* clipboard unavailable */ }
   }
 
-  const openEdit = (k: ApiKey) => { setEditing(k); setNewTier(k.tier); setFormError(null) }
+  const openEdit = (k: ApiKey) => {
+    setEditing(k)
+    setNewTier(k.tier)
+    setNewExcluded(k.statsExcluded)
+    setNewOrigin(k.keyOrigin)
+    setFormError(null)
+  }
   const closeEdit = () => { if (!busy) setEditing(null) }
+
+  /** Nothing to save when all three still match the row we opened. */
+  const dirty = !!editing && (
+    newTier !== editing.tier ||
+    newExcluded !== editing.statsExcluded ||
+    newOrigin !== editing.keyOrigin
+  )
 
   const save = async () => {
     if (!editing || busy) return
-    if (newTier === editing.tier) { setEditing(null); return }
+    if (!dirty) { setEditing(null); return }
     setBusy(true); setFormError(null)
     try {
+      // All three go over the wire; the route compares against the stored row
+      // and only writes (and only audits) what actually differs.
       const r = await fetch(`/api/admin/api-keys/${editing.guildId}`, {
         method:  'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ tier: newTier }),
+        body:    JSON.stringify({ tier: newTier, statsExcluded: newExcluded, keyOrigin: newOrigin }),
       })
       const d = await r.json()
       if (!r.ok) throw new Error(d.error ?? 'Update failed.')
@@ -132,7 +163,7 @@ export default function ApiKeysTab({ canChange }: { canChange: boolean }) {
         Every registered ticket bot API key with its guild, tier and custom domain,
         newest registration first.
         {canChange
-          ? ' Changing a tier is a manual override. Stripe billing and the daily cleanup still apply.'
+          ? ' Changing a tier is a manual override: Stripe billing and the daily cleanup still apply. Exclusion and origin are ours alone, no sync touches them.'
           : ' You can view API keys but not change them.'}
       </p>
 
@@ -178,6 +209,7 @@ export default function ApiKeysTab({ canChange }: { canChange: boolean }) {
                       <th className="px-4 py-3 font-medium">Guild</th>
                       <th className="px-4 py-3 font-medium">API key</th>
                       <th className="px-4 py-3 font-medium">Tier</th>
+                      <th className="px-4 py-3 font-medium">Statistics</th>
                       <th className="px-4 py-3 font-medium">Custom domain</th>
                       <th className="px-4 py-3 font-medium">Registered</th>
                       {canChange && <th className="px-4 py-3 font-medium" />}
@@ -229,6 +261,21 @@ export default function ApiKeysTab({ canChange }: { canChange: boolean }) {
                           </span>
                         </td>
                         <td className="px-4 py-3">
+                          <div className="flex flex-col items-start gap-1">
+                            <span className={cn('inline-block rounded-full border px-2 py-0.5 text-xs font-semibold', originBadgeClass(k.keyOrigin))}>
+                              {KEY_ORIGIN_LABELS[k.keyOrigin].label}
+                            </span>
+                            {k.statsExcluded && (
+                              <span
+                                className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase text-[var(--color-muted-foreground)]"
+                                title="Not counted in the public figures on /ticketbot/stats"
+                              >
+                                <EyeClosed className="h-3 w-3" /> excluded
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
                           {k.customDomain ? (
                             <span className="inline-flex items-center gap-1.5">
                               <Globe className="h-3.5 w-3.5 text-[var(--color-primary)]" />
@@ -249,7 +296,7 @@ export default function ApiKeysTab({ canChange }: { canChange: boolean }) {
                         {canChange && (
                           <td className="px-4 py-3 text-right">
                             <Button variant="outline" size="sm" onClick={() => openEdit(k)}>
-                              <Pencil className="h-3.5 w-3.5" /> Tier
+                              <Pencil className="h-3.5 w-3.5" /> Edit
                             </Button>
                           </td>
                         )}
@@ -266,7 +313,7 @@ export default function ApiKeysTab({ canChange }: { canChange: boolean }) {
       {editing && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={closeEdit}>
           <Card className="w-full max-w-md p-6" onClick={e => e.stopPropagation()}>
-            <h3 className="text-lg font-bold tracking-tight">Change tier</h3>
+            <h3 className="text-lg font-bold tracking-tight">Edit API key</h3>
             <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">
               {editing.guildName ?? editing.guildId}
             </p>
@@ -302,10 +349,70 @@ export default function ApiKeysTab({ canChange }: { canChange: boolean }) {
                 Downgrading to Basic disables custom domains and attachments at the next cleanup run.
               </p>
             </div>
+
+            {/* Two separate controls, because they answer two separate
+                questions. The internal test server is excluded and regular; a
+                giveaway key is visible and a giveaway. */}
+            <div className="mt-5 border-t border-[var(--color-border)] pt-5">
+              <label className="flex cursor-pointer items-start gap-3 text-sm">
+                <input
+                  type="checkbox"
+                  checked={newExcluded}
+                  onChange={e => setNewExcluded(e.target.checked)}
+                  className="mt-0.5 accent-[var(--color-primary)]"
+                />
+                <span>
+                  <span className="font-medium">Exclude from public statistics</span>
+                  <span className="mt-0.5 block text-xs text-[var(--color-muted-foreground)]">
+                    The key disappears from every figure on /ticketbot/stats, including the totals.
+                    Replaces the old STATS_IGNORED_API_KEYS env variable.
+                  </span>
+                </span>
+              </label>
+            </div>
+
+            <div className="mt-5">
+              <label className="text-sm font-medium">Origin</label>
+              <div className="mt-2 space-y-2">
+                {KEY_ORIGINS.map(o => (
+                  <label
+                    key={o}
+                    className={cn(
+                      'flex cursor-pointer items-start gap-3 rounded-md border px-3 py-2.5 text-sm transition-colors',
+                      newOrigin === o
+                        ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/5'
+                        : 'border-[var(--color-border)] hover:bg-[var(--color-muted)]',
+                    )}
+                  >
+                    <input
+                      type="radio"
+                      name="origin"
+                      value={o}
+                      checked={newOrigin === o}
+                      onChange={() => setNewOrigin(o)}
+                      className="mt-0.5 accent-[var(--color-primary)]"
+                    />
+                    <span>
+                      <span className="font-medium">{KEY_ORIGIN_LABELS[o].label}</span>
+                      <span className="mt-0.5 block text-xs text-[var(--color-muted-foreground)]">
+                        {KEY_ORIGIN_LABELS[o].description}
+                      </span>
+                    </span>
+                    {editing.keyOrigin === o && (
+                      <span className="ml-auto shrink-0 text-xs text-[var(--color-muted-foreground)]">current</span>
+                    )}
+                  </label>
+                ))}
+              </div>
+              <p className="mt-2 text-xs text-[var(--color-muted-foreground)]">
+                Giveaway and sponsored keys are counted and shown separately on the public
+                statistics page.
+              </p>
+            </div>
             {formError && <p className="mt-3 text-sm text-[var(--color-danger)]">{formError}</p>}
             <div className="mt-5 flex justify-end gap-2">
               <Button variant="outline" onClick={closeEdit} disabled={busy}>Cancel</Button>
-              <Button onClick={save} disabled={busy || newTier === editing.tier}>
+              <Button onClick={save} disabled={busy || !dirty}>
                 {busy && <Loader2 className="h-4 w-4 animate-spin" />} Save
               </Button>
             </div>

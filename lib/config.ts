@@ -1,5 +1,14 @@
 import type { Lang } from '@/lib/i18n'
 
+// ── Site Config ───────────────────────────────────────────
+export const SITE_CONFIG = {
+  name: 'MSK Scripts Shop',
+  tagline: 'High quality FiveM resources & Discord bots for your server',
+  discord: 'https://discord.gg/5hHSBRHvJE',
+  github: 'https://github.com/MSK-Scripts',
+  docs: 'https://docu.msk-scripts.de',
+}
+
 // ── Featured Package IDs ─────────────────────────────────────
 // Add the Tebex package IDs you want to show on the homepage.
 // Find the ID in your Tebex control panel URL when editing a package.
@@ -276,45 +285,4 @@ export const PACKAGE_TAGS: Record<number, string[]> = {
   // top of the image on the card (PACKAGE_BADGES). In this list it also ended up
   // in the "Funktioniert mit" ("Works with") filter group, between saltychat and
   // oxmysql, where it does not belong.
-}
-
-// ── News Popup ────────────────────────────────────────────
-// Shown bottom-right on every full page load. Closes with X button.
-// Set enabled: false to hide it completely.
-
-export const NEWS_POPUP = {
-  enabled: false,
-
-  title: "Support services limited",
-
-  // Supports simple text. Use \n for line breaks.
-  text: "Support services will be limited from September 14 through September 18 due to Musiker15's absence.\n\nThe Discord Ticket Bot will remain functional, but support requests may be delayed during this period.",
-
-  // Optional button, set to null to hide it
-  button: null as { label: string; href: string } | null,
-  // button: {
-  //   label: "Get API Key",
-  //   href: "/ticketbot/verify",
-  // } as { label: string; href: string } | null,
-
-  // Optional second button, set to null to hide it
-  secondButton: null as { label: string; href: string } | null,
-  // secondButton: {
-  //   label: "Dashboard",
-  //   href: "/ticketbot/dashboard",
-  // } as { label: string; href: string } | null,
-
-  // Optional coupon code, set to null to hide it
-  // Displays a copyable coupon field below the text
-  coupon: null as string | null,
-  //coupon: 'NEWSHOP20',
-};
-
-// ── Site Config ───────────────────────────────────────────
-export const SITE_CONFIG = {
-  name: 'MSK Scripts Shop',
-  tagline: 'High quality FiveM resources & Discord bots for your server',
-  discord: 'https://discord.gg/5hHSBRHvJE',
-  github: 'https://github.com/MSK-Scripts',
-  docs: 'https://docu.msk-scripts.de',
 }

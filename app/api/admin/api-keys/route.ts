@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
-import { adminRoute }   from '@/lib/adminApi';
-import { query }        from '@/lib/db';
-import type { Tier }    from '@/lib/tiers';
+import { adminRoute }        from '@/lib/adminApi';
+import { query }             from '@/lib/db';
+import type { KeyOrigin }    from '@/lib/keyClassification';
+import type { Tier }         from '@/lib/tiers';
 
 // Session-/cookie-dependent → never cache.
 export const dynamic = 'force-dynamic';
@@ -13,10 +14,12 @@ interface GuildRow {
   tier:          Tier;
   custom_domain: string | null;
   domain_status: 'none' | 'pending_dns' | 'active';
-  is_hosted:     number;
-  active:        number;
-  created_at:    string;
-  expires_at:    string | null;
+  is_hosted:      number;
+  active:         number;
+  created_at:     string;
+  expires_at:     string | null;
+  stats_excluded: number;
+  key_origin:     KeyOrigin;
 }
 
 // List every ticket bot API key with its guild, tier and custom domain. Visible
@@ -24,7 +27,7 @@ interface GuildRow {
 export const GET = adminRoute(['api_key.view', 'api_key.change'], async () => {
   const rows = await query<GuildRow>(
     `SELECT guild_id, guild_name, api_key, tier, custom_domain, domain_status,
-            is_hosted, active, created_at, expires_at
+            is_hosted, active, created_at, expires_at, stats_excluded, key_origin
        FROM ticketbot_guilds
       ORDER BY created_at DESC`,
   );
@@ -40,6 +43,9 @@ export const GET = adminRoute(['api_key.view', 'api_key.change'], async () => {
     active:       r.active === 1,
     createdAt:    r.created_at,
     expiresAt:    r.expires_at,
+    // Classification for the public figures, see lib/keyClassification.ts.
+    statsExcluded: r.stats_excluded === 1,
+    keyOrigin:     r.key_origin,
   }));
 
   // Response carries raw guild API keys → never let any cache (even a private

@@ -16,6 +16,7 @@ import { NewsPopup } from '@/components/ui/NewsPopup'
 import { ThemeProvider } from '@/components/theme/ThemeProvider'
 import { LangProvider } from '@/components/i18n/LangProvider'
 import { LANG_HEADER, PATH_HEADER, langFromHeader } from '@/lib/lang'
+import { loadNewsPopup } from '@/lib/siteSettings'
 import { layoutTranslations } from '@/lib/i18n'
 import { siteUrl } from '@/lib/siteUrl'
 import { JsonLd } from '@/components/JsonLd'
@@ -100,6 +101,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const hdrs = await headers()
   const nonce = hdrs.get('x-nonce') ?? undefined
 
+  // Announcement popup. Editable in /admin since 19.09.2026, so switching a
+  // two-day banner on no longer costs a commit, a CI run and a deploy. Cached
+  // for 30 s in lib/siteSettings.ts and fail-soft: a database blip returns the
+  // disabled default rather than taking the layout down.
+  const newsPopup = await loadNewsPopup()
+
   // Language and language-less path come from proxy.ts. Server Components do
   // not see the address otherwise, and the switcher needs the path to navigate
   // to the counterpart URL.
@@ -148,7 +155,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <Header />
             <CartDrawer />
             <SalePriceFetcher />
-            <NewsPopup />
+            <NewsPopup settings={newsPopup} />
             <main id="main" tabIndex={-1} className="flex-1">{children}</main>
             <Footer />
           </LangProvider>

@@ -63,6 +63,20 @@ CREATE TABLE IF NOT EXISTS ticketbot_guilds (
     -- for is_hosted bots that run dashboard.js). The bot-dashboard reverse proxy
     -- forwards to http://127.0.0.1:<bot_port>. NULL = no proxied dashboard.
     bot_port               SMALLINT UNSIGNED NULL,
+    -- Klassifizierung fuer die oeffentliche Statistik (/ticketbot/stats).
+    -- Zwei Spalten, weil sie zwei verschiedene Fragen beantworten und sich
+    -- frei kombinieren lassen:
+    --   stats_excluded = zaehlt dieser Key in den oeffentlichen Zahlen mit?
+    --                    Ersetzt seit dem 19.09.2026 die Env-Variable
+    --                    STATS_IGNORED_API_KEYS, die dafuer einen Deploy
+    --                    brauchte. Ein ausgeschlossener Key verschwindet
+    --                    spurlos, auch aus der Gesamtzahl.
+    --   key_origin     = wie kam der Key zustande? Bis dahin galt jeder
+    --                    bezahlte Key ohne Stripe-Abo rechnerisch als
+    --                    Giveaway-Key, was Sponsoring-Keys und den eigenen
+    --                    Testschluessel mitgezaehlt hat.
+    stats_excluded         TINYINT(1)   NOT NULL DEFAULT 0,
+    key_origin             ENUM('normal', 'giveaway', 'sponsored') NOT NULL DEFAULT 'normal',
     active                 BOOLEAN      NOT NULL DEFAULT TRUE,
     created_at             DATETIME     NOT NULL DEFAULT NOW(),
     expires_at             DATETIME     NULL,
@@ -280,6 +294,24 @@ CREATE TABLE IF NOT EXISTS msk_admin_audit (
 
 CREATE INDEX IF NOT EXISTS idx_admin_audit_created ON msk_admin_audit(created_at);
 CREATE INDEX IF NOT EXISTS idx_admin_audit_user    ON msk_admin_audit(discord_user_id);
+
+-- Einstellungen, die im Admin-Dashboard aenderbar sind und deshalb keinen
+-- Deploy mehr brauchen. Erster Bewohner ist das News-Popup, das bis zum
+-- 19.09.2026 als Konstante in lib/config.ts stand: einschalten hiess Commit,
+-- CI und Deploy fuer ein Banner, das meist zwei Tage steht.
+--
+-- Eine generische Schluessel/Wert-Tabelle statt einer Tabelle je Einstellung.
+-- Die Form des Werts liegt in lib/siteSettings.ts und wird dort beim Lesen UND
+-- beim Schreiben geprueft, damit eine von Hand bearbeitete Zeile die Seite
+-- nicht mit etwas erreicht, das die Komponente nicht erwartet.
+--
+-- Eine fehlende Zeile heisst "aus". Deshalb wird hier nichts eingefuegt.
+CREATE TABLE IF NOT EXISTS msk_site_settings (
+    setting_key      VARCHAR(64)  NOT NULL PRIMARY KEY,
+    value            JSON         NOT NULL,
+    updated_at       DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by       VARCHAR(20)  NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Seed the owner once. Replace <OWNER_DISCORD_ID> with ADMIN_OWNER_DISCORD_ID.
 -- (Automating this from the env var is done at app boot; this is the manual form.)

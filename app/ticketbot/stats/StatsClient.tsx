@@ -1,29 +1,16 @@
 'use client'
 
-import { FileText, Key, HardDrive, Paperclip, CreditCard, BarChart3, Globe, Server, TrendingUp, Database, Activity, Files, Maximize2, Gift } from 'lucide-react'
+import { FileText, Key, HardDrive, Paperclip, CreditCard, BarChart3, Globe, Server, TrendingUp, Database, Activity, Files, Maximize2, Gift, HeartHandshake } from 'lucide-react'
 import { statsTranslations, type Lang } from '@/lib/i18n'
 import { useLang } from '@/components/i18n/LangProvider'
 import { Card } from '@/components/ui/Card'
 import { cn } from '@/lib/utils'
+import type { Stats } from '@/lib/ticketbotStats'
 
-export interface Stats {
-  available:                  boolean
-  transcripts:                number
-  apiKeys:                    number
-  tiers:                      Record<string, number>
-  avgTranscriptBytes:         number
-  attachments:                number
-  avgAttachmentBytes:         number
-  subscriptions:              number
-  subscriptionTiers:          Record<string, number>
-  customDomains:              number
-  hostedBots:                 number
-  newGuilds30d:               number
-  totalStorageBytes:          number
-  transcripts30d:             number
-  transcriptsWithAttachments: number
-  maxTranscriptBytes:         number
-}
+// Der Typ liegt bei den Queries in lib/ticketbotStats.ts, nicht hier: die
+// Seite und die Poll-Route liefern beide dieselbe Form, und eine Kopie in der
+// Komponente war schon einmal die Stelle, an der ein neues Feld fehlte.
+export type { Stats } from '@/lib/ticketbotStats'
 
 function formatBytes(bytes: number): string {
   if (bytes === 0) return '—'
@@ -140,12 +127,13 @@ export default function StatsClient({ stats }: { stats: Stats }) {
   const { lang } = useLang()
   const t = statsTranslations[lang]
 
-  // Paid-tier API keys (premium + premium+) that are NOT backed by a paid Stripe
-  // subscription were granted via giveaways. Clamp at 0 for safety.
-  const giveawayKeys = Math.max(
-    0,
-    stats.tiers.premium + stats.tiers.premium_plus + stats.tiers.business - stats.subscriptions,
-  )
+  // Giveaway- und Sponsoring-Keys kommen seit dem 19.09.2026 als gezaehlte
+  // Werte aus der Datenbank. Vorher stand hier
+  // `premium + premium_plus + business - subscriptions`, also eine Subtraktion,
+  // die jeden bezahlten Key ohne Stripe-Abo zum Giveaway erklaerte: auch
+  // gesponserte Keys und den eigenen Testserver.
+  const giveawayKeys  = stats.giveawayKeys
+  const sponsoredKeys = stats.sponsoredKeys
 
   const cards = [
     { icon: FileText,   label: t.card_transcripts,       value: formatNum(stats.transcripts, lang),                 sub: t.card_transcripts_sub,        accent: true  },
@@ -162,6 +150,7 @@ export default function StatsClient({ stats }: { stats: Stats }) {
     { icon: Maximize2,  label: t.card_max_transcript,    value: formatBytes(stats.maxTranscriptBytes),              sub: t.card_max_transcript_sub,     accent: false },
     { icon: CreditCard, label: t.card_subscriptions,     value: formatNum(stats.subscriptions, lang),               sub: t.card_subscriptions_sub,      accent: true  },
     { icon: Gift,       label: t.card_giveaway_keys,     value: formatNum(giveawayKeys, lang),                      sub: t.card_giveaway_keys_sub,      accent: false },
+    { icon: HeartHandshake, label: t.card_sponsored_keys, value: formatNum(sponsoredKeys, lang),                     sub: t.card_sponsored_keys_sub,     accent: false },
   ]
 
   return (

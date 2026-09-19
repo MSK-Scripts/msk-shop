@@ -23,6 +23,7 @@ import PackagesTab from './PackagesTab'
 import ApiKeysTab from './ApiKeysTab'
 import ImagesTab from './ImagesTab'
 import UploadsTab from './UploadsTab'
+import NewsPopupTab from './NewsPopupTab'
 import TeamTab from './TeamTab'
 import AuditTab from './AuditTab'
 
@@ -158,6 +159,7 @@ export default function AdminClient({ member, initialTab }: { member: AdminTeamM
           {active === 'uploads'   && (
             <UploadsTab canModerate={memberHasPermission(member, 'images.moderate')} />
           )}
+          {active === 'newspopup' && <NewsPopupTab />}
           {active === 'team'      && <TeamTab selfId={member.discordUserId} />}
           {active === 'audit'     && <AuditTab />}
         </div>
