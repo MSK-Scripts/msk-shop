@@ -25,6 +25,16 @@ The reason hosting moved up a tier is arithmetic, not taste: of a 3.99 € plan
 40 €/h rate. Hosting is the feature that produces support contacts. The full
 note is in the comment on `botHosting` in `lib/tiers.ts`.
 
+## Status
+
+- **Database:** done on 2026-09-19. Guilds with a hosted bot were moved up a
+  tier before the code change, see section 1.
+- **Stripe:** done on 2026-09-19. Six prices created, the product renamed, the
+  default prices repointed, see section 2.
+- **Open:** the six `STRIPE_PRICE_*` in `/opt/msk-shop/.env.local` and the
+  deploy, see sections 4 and 5. **The deploy must not go live before the env
+  vars are in place**, see the warning at the top of section 5.
+
 ## 1. Before anything else: find guilds that would lose hosting
 
 `premium` no longer grants bot hosting. Any guild sitting on `premium` **and**
@@ -49,63 +59,71 @@ WHERE is_hosted = 1 AND tier = 'premium';
 Do this **before** the deploy, not after. Afterwards the dashboard hides the
 hosting tab for them and the support ticket arrives before the fix does.
 
-## 2. Stripe: create six prices
+## 2. Stripe: six prices, created 2026-09-19
 
-I have no write access to Stripe, and this is a live billing account, so these
-steps are yours. Everything happens under **Products** in the Stripe dashboard.
+Live account `acct_1TlYFFHzrOblnPeT`. The account held three products and three
+monthly prices (3.99 / 6.99 / 9.99) and, importantly, **zero subscriptions**.
+That is what made this safe to do without a migration plan for existing
+customers: there are none.
 
-For each of the three products (Premium, Hosted, Business), add prices:
+Created:
 
-| Product | Price | Billing period | Currency |
-|---|---|---|---|
-| Premium | 4.99 | monthly | EUR |
-| Premium | 49.00 | yearly | EUR |
-| Hosted (the product currently named Premium+) | 9.99 | monthly | EUR |
-| Hosted | 99.00 | yearly | EUR |
-| Business | 19.99 | monthly | EUR |
-| Business | 199.00 | yearly | EUR |
+| Product | Nickname | Amount | Interval | Price id |
+|---|---|---|---|---|
+| Ticketbot Premium | Premium monthly | 4.99 € | month | `price_1UHQDjHzrOblnPeTt8Es1LI8` |
+| Ticketbot Premium | Premium yearly | 49.00 € | year | `price_1UHQDrHzrOblnPeTk6VnKSlu` |
+| Ticketbot Hosted | Hosted monthly | 9.99 € | month | `price_1UHQDuHzrOblnPeT9DsY3Q0q` |
+| Ticketbot Hosted | Hosted yearly | 99.00 € | year | `price_1UHQDxHzrOblnPeTOporOXrb` |
+| Ticketbot Business | Business monthly | 19.99 € | month | `price_1UHQDzHzrOblnPeTwsENcbzE` |
+| Ticketbot Business | Business yearly | 199.00 € | year | `price_1UHQE2HzrOblnPeTPICKwm68` |
 
-Three things to get right:
+Also done:
 
-1. **Add prices, do not edit the existing ones.** A Stripe price is immutable
-   once it has been used; the dashboard offers to "update" a price by creating a
-   new one and archiving the old. Let it, but **do not archive the old price**
-   by hand, see grandfathering below.
-2. **Tax behaviour stays `unspecified`.** Stripe Tax is off and must stay off,
-   otherwise Stripe starts extracting 19 % out of the gross amount and the
-   4.99 € become 4.19 €. Checked and written down on 2026-09-04.
-3. Rename the product **Premium+** to **Hosted** while you are there, so the
-   Stripe receipt says the same thing the dashboard and the AGB say.
+- Product `prod_Ul4d0SjoQOST9w` renamed from **Ticketbot Premium+** to
+  **Ticketbot Hosted**, so the Stripe receipt says what the dashboard and the
+  AGB say.
+- `default_price` of all three products repointed at the new monthly price. The
+  checkout passes an explicit price id and never reads `default_price`, so this
+  is tidiness rather than function, but a dashboard that still offers 3.99 € is
+  how a wrong price gets sent by hand one day.
+- Every new price carries `tax_behavior: unspecified`, like the old ones.
+  **Stripe Tax stays off**; `/v1/tax/registrations` is empty, checked after the
+  change. With Stripe Tax on, Stripe would extract 19 % out of the gross amount
+  and 4.99 € would become 4.19 €.
 
-## 3. Grandfathering: do nothing, deliberately
+## 3. The three old prices are still active
 
-A running Stripe subscription keeps the price it was created with. Existing
-subscribers stay on 3.99 € / 6.99 € / 9.99 € for as long as they do not cancel,
-without any code, any coupon and any manual work.
+`price_1TlYSrHzrOblnPeTMrVLNWJJ` (3.99), `price_1TlYUJHzrOblnPeT8RB7MutR`
+(6.99) and `price_1U9n1ZHzrOblnPeTZPSwb8R8` (9.99) were deliberately left
+active. Nothing references them once the env vars below are in place.
 
-So: **do not archive the old prices and do not migrate anybody.** Archiving them
-would not move existing subscriptions either, but it takes away the option of
-putting somebody back on the old price by hand.
+They could be archived in the dashboard without any functional effect, since no
+subscription uses them. Left alone because archiving buys nothing and takes away
+the option of putting somebody back on an old price by hand.
 
-`resolveTierFromPrice` in `lib/stripe.ts` only knows the ids in the env vars.
-An old price id that is no longer in the env resolves to `basic`, and the
-nightly `stripe-reconcile.js` would then **downgrade a paying customer**. If you
-ever repoint `STRIPE_PRICE_*` at the new ids while old subscriptions are still
-running, the old ids have to stay reachable too. Today that question does not
-arise, because there are no active subscriptions.
+**The rule that matters if a subscription ever does exist:**
+`resolveTierFromPrice` in `lib/stripe.ts` only knows the ids in the env vars. A
+price id that is not in the env resolves to `basic`, and the nightly
+`stripe-reconcile.js` would then **downgrade a paying customer**. A running
+Stripe subscription keeps its original price forever, so repointing
+`STRIPE_PRICE_*` while old subscriptions run means the old ids have to stay
+reachable too. That is grandfathering, and it costs no code.
 
 ## 4. Server: `.env.local`
 
-Six variables, three of them new:
+Six variables, three of them new, three repointed. Copy them as they stand:
 
 ```
-STRIPE_PRICE_PREMIUM=price_…
-STRIPE_PRICE_PREMIUM_PLUS=price_…
-STRIPE_PRICE_BUSINESS=price_…
-STRIPE_PRICE_PREMIUM_YEARLY=price_…
-STRIPE_PRICE_PREMIUM_PLUS_YEARLY=price_…
-STRIPE_PRICE_BUSINESS_YEARLY=price_…
+STRIPE_PRICE_PREMIUM=price_1UHQDjHzrOblnPeTt8Es1LI8
+STRIPE_PRICE_PREMIUM_PLUS=price_1UHQDuHzrOblnPeT9DsY3Q0q
+STRIPE_PRICE_BUSINESS=price_1UHQDzHzrOblnPeTwsENcbzE
+STRIPE_PRICE_PREMIUM_YEARLY=price_1UHQDrHzrOblnPeTk6VnKSlu
+STRIPE_PRICE_PREMIUM_PLUS_YEARLY=price_1UHQDxHzrOblnPeTOporOXrb
+STRIPE_PRICE_BUSINESS_YEARLY=price_1UHQE2HzrOblnPeTPICKwm68
 ```
+
+`STRIPE_PRICE_PREMIUM_PLUS` keeps its name and now points at the Hosted price.
+The env var is named after the internal tier, not after the label.
 
 Back the file up first (`cp /opt/msk-shop/.env.local /root/env.local.bak-$(date +%Y%m%d)`).
 
@@ -119,6 +137,14 @@ price, which is the one failure mode worth avoiding here.
 
 ## 5. Deploy and check
 
+**Order matters here.** The env vars have to be in place **before** the new code
+serves a page. In between, the site would show 4.99 € while the checkout still
+charges the old 3.99 € price, and § 312j (2) BGB wants the price shown before
+the order button to be the price actually charged.
+
+So: edit `.env.local` first, then deploy. The deploy restarts the service and
+picks the new values up.
+
 The deploy itself is the usual one, and **no database migration is involved**.
 
 Afterwards, on the live site:
@@ -131,8 +157,12 @@ Afterwards, on the live site:
   monthly and yearly: price and term have to change together. That block is
   § 312j (2) BGB, it is the one place where a wrong number is a legal problem
   rather than a cosmetic one.
-- A test checkout in Stripe test mode, once per interval, is worth the ten
-  minutes.
+- One real checkout per interval is worth the ten minutes and costs nothing:
+  a new customer gets the 14-day trial without a card, so the amount due today
+  is 0. Check in Stripe that the subscription carries the intended price id,
+  then cancel it. Do not use the live test for the paid path, and note that the
+  test-mode account has no prices of its own; these six were created in
+  livemode.
 
 ## What is NOT in this change
 
