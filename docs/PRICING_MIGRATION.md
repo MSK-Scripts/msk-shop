@@ -31,9 +31,16 @@ note is in the comment on `botHosting` in `lib/tiers.ts`.
   tier before the code change, see section 1.
 - **Stripe:** done on 2026-09-19. Six prices created, the product renamed, the
   default prices repointed, see section 2.
-- **Open:** the six `STRIPE_PRICE_*` in `/opt/msk-shop/.env.local` and the
-  deploy, see sections 4 and 5. **The deploy must not go live before the env
-  vars are in place**, see the warning at the top of section 5.
+- **Server and deploy:** done on 2026-09-19. The six `STRIPE_PRICE_*` went into
+  `/opt/msk-shop/.env.local` first, the deploy followed (`0da036c`, CI and
+  deploy green).
+- **Verified live** in both languages: 4.99 / 9.99 / 19.99 with the yearly line
+  under each, the hosting row struck through on Basic and Premium and ticked on
+  Hosted and Business, the AGB table identical to `TIER_CONFIG`, the comparison
+  page no longer claiming that every paid tier includes hosting, and no
+  "Premium+" left anywhere.
+- **Still worth doing once:** a real trial checkout per interval, see the last
+  bullet of section 5. It needs a session, so it could not be checked from here.
 
 ## 1. Before anything else: find guilds that would lose hosting
 
