@@ -90,7 +90,7 @@ function TierBreakdown({ tiers, total, label, lang, hideBasic = false }: {
   const allItems = [
     { key: 'basic',        tierLabel: 'Basic',    bg: 'bg-[var(--color-muted-foreground)]', text: 'text-[var(--color-muted-foreground)]' },
     { key: 'premium',      tierLabel: 'Premium',  bg: 'bg-[var(--color-primary)]',          text: 'text-[var(--color-primary)]' },
-    { key: 'premium_plus', tierLabel: 'Premium+', bg: 'bg-[var(--color-warning)]',          text: 'text-[var(--color-warning)]' },
+    { key: 'premium_plus', tierLabel: 'Hosted',   bg: 'bg-[var(--color-warning)]',          text: 'text-[var(--color-warning)]' },
     { key: 'business',     tierLabel: 'Business', bg: 'bg-[var(--color-tier-business)]',    text: 'text-[var(--color-tier-business)]' },
   ]
   const items = hideBasic ? allItems.filter(i => i.key !== 'basic') : allItems

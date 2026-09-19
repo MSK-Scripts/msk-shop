@@ -13,15 +13,18 @@ beforeAll(() => {
   process.env.STRIPE_PRICE_PREMIUM = 'price_prem'
   process.env.STRIPE_PRICE_PREMIUM_PLUS = 'price_plus'
   process.env.STRIPE_PRICE_BUSINESS = 'price_biz'
+  process.env.STRIPE_PRICE_PREMIUM_YEARLY = 'price_prem_y'
+  process.env.STRIPE_PRICE_PREMIUM_PLUS_YEARLY = 'price_plus_y'
+  process.env.STRIPE_PRICE_BUSINESS_YEARLY = 'price_biz_y'
 })
 
-/** Every paid tier and the env var that carries its price id. Asserted below to
+/** Every paid tier and the env vars that carry its price ids. Asserted below to
  *  cover TIER_CONFIG in full, so adding a tier without a price mapping fails
  *  here instead of silently resolving to basic in production. */
-const PAID_PRICES: Record<Exclude<Tier, 'basic'>, string> = {
-  premium:      'price_prem',
-  premium_plus: 'price_plus',
-  business:     'price_biz',
+const PAID_PRICES: Record<Exclude<Tier, 'basic'>, { monthly: string; yearly: string }> = {
+  premium:      { monthly: 'price_prem', yearly: 'price_prem_y' },
+  premium_plus: { monthly: 'price_plus', yearly: 'price_plus_y' },
+  business:     { monthly: 'price_biz',  yearly: 'price_biz_y'  },
 }
 
 describe('tier coverage', () => {
@@ -34,16 +37,30 @@ describe('tier coverage', () => {
 describe('priceIdForTier', () => {
   it('maps every paid tier and returns null for basic', () => {
     for (const [tier, price] of Object.entries(PAID_PRICES)) {
-      expect(priceIdForTier(tier as Tier)).toBe(price)
+      expect(priceIdForTier(tier as Tier)).toBe(price.monthly)
+      expect(priceIdForTier(tier as Tier, 'monthly')).toBe(price.monthly)
+      expect(priceIdForTier(tier as Tier, 'yearly')).toBe(price.yearly)
     }
     expect(priceIdForTier('basic')).toBeNull()
+    expect(priceIdForTier('basic', 'yearly')).toBeNull()
+  })
+
+  it('returns null for an interval with no price rather than the other one', () => {
+    // A customer who picks "yearly" must never be billed monthly because the
+    // yearly price is missing. Null surfaces as "billing is not configured".
+    const saved = process.env.STRIPE_PRICE_BUSINESS_YEARLY
+    delete process.env.STRIPE_PRICE_BUSINESS_YEARLY
+    expect(priceIdForTier('business', 'yearly')).toBeNull()
+    expect(priceIdForTier('business', 'monthly')).toBe('price_biz')
+    process.env.STRIPE_PRICE_BUSINESS_YEARLY = saved
   })
 })
 
 describe('resolveTierFromPrice', () => {
-  it('reverse-maps every configured price id', () => {
+  it('reverse-maps every configured price id, both intervals', () => {
     for (const [tier, price] of Object.entries(PAID_PRICES)) {
-      expect(resolveTierFromPrice(price)).toBe(tier)
+      expect(resolveTierFromPrice(price.monthly)).toBe(tier)
+      expect(resolveTierFromPrice(price.yearly)).toBe(tier)
     }
   })
 
@@ -51,6 +68,16 @@ describe('resolveTierFromPrice', () => {
     expect(resolveTierFromPrice('price_unknown')).toBe('basic')
     expect(resolveTierFromPrice(null)).toBe('basic')
     expect(resolveTierFromPrice(undefined)).toBe('basic')
+  })
+
+  it('does not grant a tier from an unset env var', () => {
+    // Without the Boolean() guard, an unconfigured price env var is undefined,
+    // and a subscription whose price id is also missing would compare equal.
+    const saved = process.env.STRIPE_PRICE_BUSINESS_YEARLY
+    delete process.env.STRIPE_PRICE_BUSINESS_YEARLY
+    expect(resolveTierFromPrice(undefined)).toBe('basic')
+    expect(resolveTierFromPrice('')).toBe('basic')
+    process.env.STRIPE_PRICE_BUSINESS_YEARLY = saved
   })
 })
 

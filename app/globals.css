@@ -123,7 +123,7 @@
   --color-chart-teal:     #09716e;
   --color-chart-fuchsia:  #af1dab;
 
-  /* Tier-Badge Premium+ im Ticketbot-Dashboard. Stand bis zum 24.08.2026 als
+  /* Tier-Badge Hosted (DB-Wert premium_plus) im Ticketbot-Dashboard. Stand bis zum 24.08.2026 als
      hartverdrahtetes #9d65fe in der Komponente und war damit die einzige Farbe
      der Anwendung, die `tests/contrast.test.ts` nicht sehen konnte: der Test
      liest nur `--color-*` aus dieser Datei. Gemessen lag sie als Text auf ihrer

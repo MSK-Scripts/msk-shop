@@ -54,8 +54,8 @@ const TICKETBOT: BotDefinition = {
     en: {
       title: 'Self-Hosted Discord Ticket Bot with Transcripts | MSK Scripts',
       description:
-        'Free self-hosted Discord ticket bot on Discord.js v14. Runs on SQLite, MySQL/MariaDB or PostgreSQL. '
-        + 'Custom ticket types, claim system, HTML transcripts, ratings, auto-close and a hosted dashboard.',
+        'Free self-hosted Discord ticket bot on Discord.js v14. HTML transcripts under your own domain, '
+        + 'attachments, SQLite or your own SQL. No telemetry, open source.',
       ogTitle: 'Self-Hosted Discord Ticket Bot with HTML Transcripts',
       ogDescription:
         'Free self-hosted Discord ticket bot: custom ticket types, claim system, HTML transcripts, ratings, '
@@ -69,9 +69,8 @@ const TICKETBOT: BotDefinition = {
     de: {
       title: 'Discord Ticket Bot zum Selbsthosten | MSK Scripts',
       description:
-        'Kostenloser Discord Ticket Bot zum Selbsthosten, gebaut auf Discord.js v14. Läuft mit SQLite, '
-        + 'MySQL/MariaDB oder PostgreSQL. Ticket-Typen, Claim-System, HTML-Transkripte, Bewertungen, '
-        + 'Auto-Close und ein Dashboard.',
+        'Kostenloser Discord Ticket Bot zum Selbsthosten. HTML-Transkripte unter eigener Domain, '
+        + 'Anhänge, SQLite oder eigene SQL. Ohne Telemetrie, Open Source.',
       ogTitle: 'Discord Ticket Bot zum Selbsthosten, mit HTML-Transkripten',
       ogDescription:
         'Kostenloser Discord Ticket Bot zum Selbsthosten: Ticket-Typen, Claim-System, HTML-Transkripte, '
@@ -94,8 +93,8 @@ const TICKETBOT_COMPARE: BotDefinition = {
     en: {
       title: 'Self-Hosted Discord Ticket Bots Compared | MSK Scripts',
       description:
-        'Which self-hosted Discord ticket bot to use: MSK Ticket Bot, Discord Tickets, Sayrix Ticket-Bot '
-        + 'and the hosted Ticket Tool side by side, with the cases where our own bot is the wrong choice.',
+        'MSK Ticket Bot, Discord Tickets, Sayrix Ticket-Bot and the hosted Ticket Tool side by side: '
+        + 'hosting, licence, database, transcripts and cost.',
       ogTitle: 'Which Self-Hosted Discord Ticket Bot Should You Use?',
       ogDescription:
         'Three open-source ticket bots and one hosted service compared: hosting, licence, database, '
@@ -109,9 +108,8 @@ const TICKETBOT_COMPARE: BotDefinition = {
     de: {
       title: 'Discord Ticket Bots zum Selbsthosten im Vergleich | MSK Scripts',
       description:
-        'Welchen Discord Ticket Bot zum Selbsthosten nehmen: MSK Ticket Bot, Discord Tickets, Sayrix '
-        + 'Ticket-Bot und das gehostete Ticket Tool nebeneinander, samt der Fälle, in denen unser '
-        + 'eigener Bot die falsche Wahl ist.',
+        'MSK Ticket Bot, Discord Tickets, Sayrix Ticket-Bot und das gehostete Ticket Tool im Vergleich: '
+        + 'Hosting, Lizenz, Datenbank, Transkripte und Kosten.',
       ogTitle: 'Welchen Discord Ticket Bot zum Selbsthosten soll man nehmen?',
       ogDescription:
         'Drei Open-Source-Ticket-Bots und ein gehosteter Dienst im Vergleich: Betrieb, Lizenz, '
@@ -134,8 +132,8 @@ const GIVEAWAY: BotDefinition = {
     en: {
       title: 'Free Discord Giveaway Bot, Restart-Safe | MSK Scripts',
       description:
-        'Free Discord giveaway bot on Discord.js v14. Button entry, restart-safe scheduling, weighted bonus '
-        + 'entries, eligibility rules, templates, reroll and automatic Tebex coupons for winners.',
+        'Free Discord giveaway bot on Discord.js v14. Button entry, restart-safe scheduling, weighted '
+        + 'bonus entries and reroll.',
       ogTitle: 'Free Discord Giveaway Bot, Restart-Safe & Multilingual',
       ogDescription:
         'Free Discord giveaway bot: button entry, restart-safe scheduling, weighted bonus entries, '
@@ -150,8 +148,7 @@ const GIVEAWAY: BotDefinition = {
       title: 'Discord Giveaway Bot, kostenlos & neustartsicher | MSK Scripts',
       description:
         'Kostenloser Discord Giveaway Bot auf Discord.js v14. Teilnahme per Knopfdruck, neustartsichere '
-        + 'Zeitsteuerung, gewichtete Bonuslose, Teilnahmeregeln, Vorlagen, Neuauslosung und automatische '
-        + 'Tebex-Gutscheine für Gewinner.',
+        + 'Zeitsteuerung, gewichtete Bonuslose und Neuauslosung.',
       ogTitle: 'Discord Giveaway Bot, kostenlos, neustartsicher und mehrsprachig',
       ogDescription:
         'Kostenloser Discord Giveaway Bot: Teilnahme per Knopfdruck, neustartsichere Zeitsteuerung, '

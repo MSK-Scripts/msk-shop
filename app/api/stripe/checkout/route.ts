@@ -23,10 +23,15 @@ export async function POST(req: Request): Promise<NextResponse> {
   // Parse body
   let guildId: string;
   let tier: string;
+  let interval: string;
   try {
     const body = await req.json();
     guildId    = String(body.guildId ?? '').trim();
     tier       = String(body.tier ?? '').trim();
+    // Default to monthly so an older client that does not send the field keeps
+    // working; a wrong value is rejected below rather than silently defaulted,
+    // because the billing interval is part of what the customer confirmed.
+    interval   = String(body.interval ?? 'monthly').trim();
   } catch {
     return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 });
   }
@@ -36,14 +41,18 @@ export async function POST(req: Request): Promise<NextResponse> {
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status });
   const { discordUserId, guild } = auth;
 
-  // Only the two paid tiers are purchasable
+  // Only the paid tiers are purchasable
   if (tier !== 'premium' && tier !== 'premium_plus' && tier !== 'business') {
     return NextResponse.json({ error: 'Invalid tier.' }, { status: 400 });
   }
 
-  const price = priceIdForTier(tier);
+  if (interval !== 'monthly' && interval !== 'yearly') {
+    return NextResponse.json({ error: 'Invalid billing interval.' }, { status: 400 });
+  }
+
+  const price = priceIdForTier(tier, interval);
   if (!price) {
-    console.error('[stripe/checkout] Price id not configured for tier', tier);
+    console.error('[stripe/checkout] Price id not configured for', tier, interval);
     return NextResponse.json({ error: 'Billing is not configured.' }, { status: 500 });
   }
 

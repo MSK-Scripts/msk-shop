@@ -35,12 +35,12 @@ export async function POST(req: Request): Promise<NextResponse> {
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status });
   const guild = auth.guild;
 
-  // Tier gate — custom domains are Premium/Premium+ only. This MUST be enforced
+  // Tier gate — custom domains need a paid tier. This MUST be enforced
   // here too (not just in /api/domain/set): a guild that saved a domain while
   // premium keeps its custom_domain row after a downgrade, and without this gate
   // could re-provision the vhost + SSL for free by calling validate directly.
   if (!TIER_CONFIG[guild.tier].customDomain) {
-    return NextResponse.json({ error: 'Custom domains require Premium or Premium+.' }, { status: 403 });
+    return NextResponse.json({ error: 'Custom domains require a paid tier.' }, { status: 403 });
   }
 
   if (!guild?.custom_domain) {

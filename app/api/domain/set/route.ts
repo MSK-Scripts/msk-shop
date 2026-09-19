@@ -49,7 +49,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     return NextResponse.json({ error: 'Guild not found.' }, { status: 404 });
   }
   if (!TIER_CONFIG[guild.tier].customDomain) {
-    return NextResponse.json({ error: 'Custom domains require Premium or Premium+.' }, { status: 403 });
+    return NextResponse.json({ error: 'Custom domains require a paid tier.' }, { status: 403 });
   }
 
   // Check domain not already taken by another guild

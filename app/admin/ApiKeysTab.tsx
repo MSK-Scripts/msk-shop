@@ -27,7 +27,7 @@ interface ApiKey {
 const TIER_LABELS: Record<Tier, string> = {
   basic:        'Basic',
   premium:      'Premium',
-  premium_plus: 'Premium+',
+  premium_plus: 'Hosted',
   business:     'Business',
 }
 const TIER_ORDER: Tier[] = ['basic', 'premium', 'premium_plus', 'business']

@@ -34,7 +34,7 @@
  *     >> /var/log/msk-stripe-reconcile.log 2>&1
  *
  * Required env: STRIPE_SECRET_KEY, STRIPE_PRICE_PREMIUM, STRIPE_PRICE_PREMIUM_PLUS,
- *               STRIPE_PRICE_BUSINESS.
+ *               STRIPE_PRICE_BUSINESS, plus the three *_YEARLY variants.
  * Flags: --dry-run   log intended changes without writing to the DB.
  */
 
@@ -45,9 +45,12 @@ const execFileAsync = promisify(execFile);
 
 const DRY_RUN    = process.argv.includes('--dry-run');
 const STRIPE_KEY = process.env.STRIPE_SECRET_KEY;
-const PRICE_PREMIUM      = process.env.STRIPE_PRICE_PREMIUM;
-const PRICE_PREMIUM_PLUS = process.env.STRIPE_PRICE_PREMIUM_PLUS;
-const PRICE_BUSINESS     = process.env.STRIPE_PRICE_BUSINESS;
+const PRICE_PREMIUM             = process.env.STRIPE_PRICE_PREMIUM;
+const PRICE_PREMIUM_PLUS        = process.env.STRIPE_PRICE_PREMIUM_PLUS;
+const PRICE_BUSINESS            = process.env.STRIPE_PRICE_BUSINESS;
+const PRICE_PREMIUM_YEARLY      = process.env.STRIPE_PRICE_PREMIUM_YEARLY;
+const PRICE_PREMIUM_PLUS_YEARLY = process.env.STRIPE_PRICE_PREMIUM_PLUS_YEARLY;
+const PRICE_BUSINESS_YEARLY     = process.env.STRIPE_PRICE_BUSINESS_YEARLY;
 
 /**
  * Map a Stripe price id → internal tier. Hand-written mirror of
@@ -55,16 +58,21 @@ const PRICE_BUSINESS     = process.env.STRIPE_PRICE_BUSINESS;
  * running outside Next and cannot import the module. Same arrangement as
  * BASIC_STORAGE_DAYS in cleanup.js.
  *
- * A new tier has to be added here as well, and missing one is not cosmetic:
- * an unknown price resolves to 'basic', and the upsert below would write that
- * over a guild whose subscription is active and paid. Business was missing
- * from 2026-08-29 until 2026-09-02. The guard in the upsert loop is there so
- * the next omission cannot demote anyone.
+ * A new tier or interval has to be added here as well, and missing one is not
+ * cosmetic: an unknown price resolves to 'basic', and the upsert below would
+ * write that over a guild whose subscription is active and paid. Business was
+ * missing from 2026-08-29 until 2026-09-02. The guard in the upsert loop is
+ * there so the next omission cannot demote anyone.
+ *
+ * Both intervals of a tier resolve to the same tier — how often somebody pays
+ * says nothing about what they may use.
  */
 function resolveTierFromPrice(priceId) {
-  if (priceId && priceId === PRICE_PREMIUM)      return 'premium';
-  if (priceId && priceId === PRICE_PREMIUM_PLUS) return 'premium_plus';
-  if (priceId && priceId === PRICE_BUSINESS)     return 'business';
+  if (!priceId) return 'basic';
+  const is = (envValue) => Boolean(envValue) && envValue === priceId;
+  if (is(PRICE_PREMIUM)      || is(PRICE_PREMIUM_YEARLY))      return 'premium';
+  if (is(PRICE_PREMIUM_PLUS) || is(PRICE_PREMIUM_PLUS_YEARLY)) return 'premium_plus';
+  if (is(PRICE_BUSINESS)     || is(PRICE_BUSINESS_YEARLY))     return 'business';
   return 'basic';
 }
 

@@ -355,7 +355,7 @@ export const dashboardTranslations = {
     domain_desc:      'Serve transcripts under your own domain, e.g.',
     domain_instead:   'instead of',
     no_premium:       'Custom domains are available from',
-    no_premium_link:  'Premium (€3.99/month)',
+    no_premium_link:  'Premium ({price}/month)',
     no_premium_link2: 'Upgrade now →',
     domain_placeholder: 'transcript.yourserver.com',
     domain_btn:       'Set',
@@ -378,7 +378,7 @@ export const dashboardTranslations = {
     logout_title:     'Switch to another bot',
     tier_basic:       'Basic (Free)',
     tier_premium:     'Premium',
-    tier_premium_plus:'Premium+',
+    tier_premium_plus:'Hosted',
     tier_business:    'Business',
 
     // Bot Config Editor
@@ -593,12 +593,16 @@ export const dashboardTranslations = {
     sub_manage:           'Manage subscription',
     sub_manage_loading:   'Opening…',
     sub_upgrade_premium:  'Upgrade to Premium',
-    sub_upgrade_plus:     'Upgrade to Premium+',
+    sub_upgrade_plus:     'Upgrade to Hosted',
     sub_upgrade_business: 'Upgrade to Business',
     sub_get_premium:      'Get Premium',
-    sub_get_plus:         'Get Premium+',
+    sub_get_plus:         'Get Hosted',
     sub_get_business:     'Get Business',
     sub_trial_hint:       '14 days free, no card required. Cancel anytime.',
+    sub_interval:         'Billing',
+    sub_interval_monthly: 'Monthly',
+    sub_interval_yearly:  'Yearly',
+    sub_interval_save:    '{n} months free',
     sub_trial_active:     'Your free trial runs until {date}. Add a payment method to keep Premium, otherwise the subscription ends automatically on that day.',
     sub_trial_active_nodate:
                           'Your free trial is running. Add a payment method to keep Premium, otherwise the subscription ends automatically when the trial is over.',
@@ -618,9 +622,12 @@ export const dashboardTranslations = {
     sub_confirm_service:  'Service',
     sub_confirm_price:    'Total price',
     sub_confirm_price_value: '{price} per month, no VAT shown (§ 19 UStG)',
+    sub_confirm_price_value_year: '{price} per year, no VAT shown (§ 19 UStG)',
     sub_confirm_term:     'Term',
     sub_confirm_term_value:
                           'One month, renews monthly, can be cancelled at any time to the end of the billing period.',
+    sub_confirm_term_value_year:
+                          'Twelve months, renews yearly, can be cancelled at any time to the end of the billing period.',
     sub_confirm_legal_pre: 'By ordering you accept the',
     sub_confirm_legal_and: 'and confirm that you have read the',
     sub_confirm_terms:    'Terms and Conditions',
@@ -641,7 +648,7 @@ export const dashboardTranslations = {
     domain_desc:      'Transkripte unter deiner eigenen Domain abrufbar, z.B.',
     domain_instead:   'statt',
     no_premium:       'Eigene Domains sind ab',
-    no_premium_link:  'Premium (3,99 €/Monat)',
+    no_premium_link:  'Premium ({price}/Monat)',
     no_premium_link2: 'Jetzt upgraden →',
     domain_placeholder: 'transcript.deinserver.de',
     domain_btn:       'Setzen',
@@ -664,7 +671,7 @@ export const dashboardTranslations = {
     logout_title:     'Anderen Bot verwalten',
     tier_basic:       'Basic (Kostenlos)',
     tier_premium:     'Premium',
-    tier_premium_plus:'Premium+',
+    tier_premium_plus:'Hosted',
     tier_business:    'Business',
 
     // Bot Config Editor
@@ -872,12 +879,16 @@ export const dashboardTranslations = {
     sub_manage:           'Abo verwalten',
     sub_manage_loading:   'Öffne…',
     sub_upgrade_premium:  'Auf Premium upgraden',
-    sub_upgrade_plus:     'Auf Premium+ upgraden',
+    sub_upgrade_plus:     'Auf Hosted upgraden',
     sub_upgrade_business: 'Auf Business upgraden',
     sub_get_premium:      'Premium holen',
-    sub_get_plus:         'Premium+ holen',
+    sub_get_plus:         'Hosted holen',
     sub_get_business:     'Business holen',
     sub_trial_hint:       '14 Tage gratis, ohne Kreditkarte. Jederzeit kündbar.',
+    sub_interval:         'Abrechnung',
+    sub_interval_monthly: 'Monatlich',
+    sub_interval_yearly:  'Jährlich',
+    sub_interval_save:    '{n} Monate geschenkt',
     sub_trial_active:     'Deine Testphase läuft bis zum {date}. Hinterlege ein Zahlungsmittel, um Premium zu behalten, sonst endet das Abo an diesem Tag automatisch.',
     sub_trial_active_nodate:
                           'Deine Testphase läuft. Hinterlege ein Zahlungsmittel, um Premium zu behalten, sonst endet das Abo nach Ablauf der Testphase automatisch.',
@@ -891,9 +902,12 @@ export const dashboardTranslations = {
     sub_confirm_service:  'Leistung',
     sub_confirm_price:    'Gesamtpreis',
     sub_confirm_price_value: '{price} pro Monat, keine Umsatzsteuer ausgewiesen (§ 19 UStG)',
+    sub_confirm_price_value_year: '{price} pro Jahr, keine Umsatzsteuer ausgewiesen (§ 19 UStG)',
     sub_confirm_term:     'Laufzeit',
     sub_confirm_term_value:
                           'Ein Monat, verlängert sich monatlich, jederzeit zum Ende des Abrechnungszeitraums kündbar.',
+    sub_confirm_term_value_year:
+                          'Zwölf Monate, verlängert sich jährlich, jederzeit zum Ende des Abrechnungszeitraums kündbar.',
     sub_confirm_legal_pre: 'Mit der Bestellung akzeptierst du die',
     sub_confirm_legal_and: 'und bestätigst, die',
     sub_confirm_terms:    'AGB',
@@ -2296,7 +2310,7 @@ export const legalFormTranslations = {
     // Withdrawal
     revoke_title:      'Withdraw from contract',
     revoke_intro:
-      'Use this form to withdraw from a paid subscription (Ticket Bot Premium, Premium+ or Business). '
+      'Use this form to withdraw from a paid subscription (Ticket Bot Premium, Hosted or Business). '
       + 'You do not need to give a reason and you do not need to sign in. '
       + 'This form does not apply to purchases in the shop, those are handled by Tebex.',
     revoke_contract_hint:
@@ -2364,7 +2378,7 @@ export const legalFormTranslations = {
 
     revoke_title:      'Vertrag widerrufen',
     revoke_intro:
-      'Mit diesem Formular widerrufst du ein kostenpflichtiges Abonnement (Ticket Bot Premium, Premium+ oder Business). '
+      'Mit diesem Formular widerrufst du ein kostenpflichtiges Abonnement (Ticket Bot Premium, Hosted oder Business). '
       + 'Du musst keinen Grund angeben und dich nicht anmelden. '
       + 'Für Käufe im Shop gilt dieses Formular nicht, die wickelt Tebex ab.',
     revoke_contract_hint:

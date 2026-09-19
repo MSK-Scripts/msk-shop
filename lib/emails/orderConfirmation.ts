@@ -26,7 +26,7 @@ function escapeHtml(value: string): string {
 
 export interface OrderConfirmationInput {
   lang:       MailLang;
-  /** Display name of the tier, e.g. "Premium+". */
+  /** Display name of the tier, e.g. "Hosted". */
   tierLabel:  string;
   /** Server name, or the id if the name is unknown. External input. */
   guildLabel: string;

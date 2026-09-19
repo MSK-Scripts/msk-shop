@@ -276,7 +276,7 @@ async function sendOrderConfirmation(sub: Stripe.Subscription): Promise<void> {
 const TIER_LABELS: Record<Tier, string> = {
   basic:        'Basic',
   premium:      'Premium',
-  premium_plus: 'Premium+',
+  premium_plus: 'Hosted',
   business:     'Business',
 };
 

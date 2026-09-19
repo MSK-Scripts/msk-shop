@@ -134,7 +134,7 @@ const en: TicketBotCompareCopy = {
     },
     {
       q: 'What is the difference between the free and the paid tiers?',
-      a: 'The bot itself does not change. The paid tiers affect the hosted transcripts: Basic keeps them for 30 days with no file attachments, Premium for 180 days with attachments and a custom domain, Premium+ for 365 days, Business for ten years. Every paid tier also includes bot hosting on our servers, and lets you remove the MSK notice from the ticket panel.',
+      a: 'The bot itself does not change. The paid tiers affect the hosted transcripts: Basic keeps them for 30 days with no file attachments, Premium for 180 days with attachments and a custom domain, Hosted for 365 days, Business for ten years. Bot hosting on our servers starts at Hosted; every paid tier lets you remove the MSK notice from the ticket panel.',
     },
     {
       q: 'Can I remove the MSK branding?',
@@ -231,7 +231,7 @@ const de: TicketBotCompareCopy = {
     },
     {
       q: 'Was unterscheidet die kostenlosen von den bezahlten Stufen?',
-      a: 'Am Bot selbst nichts. Die bezahlten Stufen betreffen die gehosteten Transkripte: Basic hebt sie 30 Tage ohne Dateianhänge auf, Premium 180 Tage mit Anhängen und eigener Domain, Premium+ 365 Tage, Business zehn Jahre. In jeder bezahlten Stufe ist außerdem das Bot-Hosting auf unseren Servern enthalten, und du darfst den MSK-Hinweis aus dem Ticket-Panel entfernen.',
+      a: 'Am Bot selbst nichts. Die bezahlten Stufen betreffen die gehosteten Transkripte: Basic hebt sie 30 Tage ohne Dateianhänge auf, Premium 180 Tage mit Anhängen und eigener Domain, Hosted 365 Tage, Business zehn Jahre. Das Bot-Hosting auf unseren Servern gibt es ab Hosted; den MSK-Hinweis aus dem Ticket-Panel darfst du in jeder bezahlten Stufe entfernen.',
     },
     {
       q: 'Darf ich das MSK-Branding entfernen?',

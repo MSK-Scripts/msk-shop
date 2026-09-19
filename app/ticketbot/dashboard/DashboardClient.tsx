@@ -10,7 +10,7 @@ import {
 } from 'lucide-react'
 import { dashboardTranslations } from '@/lib/i18n'
 import { useLang } from '@/components/i18n/LangProvider'
-import { TIER_CONFIG, formatTierPrice, type Tier } from '@/lib/tiers'
+import { TIER_CONFIG, formatTierPrice, yearlyMonthsFree, type BillingInterval, type Tier } from '@/lib/tiers'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -240,17 +240,25 @@ function GuildPanel({
   // expands the summary; only the button inside it starts the
   // checkout.
   const [pendingTier, setPendingTier] = useState<PaidTier | null>(null)
+  // Billing interval of the pending order. Lives next to `pendingTier` because
+  // the two together are what § 312j (2) BGB makes us show before the button:
+  // a price without its term says nothing.
+  //
+  // Named `billingInterval` and not `interval`: a setter called `setInterval`
+  // would shadow the global one inside this component, and this is exactly the
+  // file where somebody will eventually add a poll.
+  const [billingInterval, setBillingInterval] = useState<BillingInterval>('monthly')
 
   const showMsg = (type: 'success' | 'error' | 'info', text: string) => setMessage({ type, text })
 
-  const handleCheckout = async (tier: PaidTier) => {
+  const handleCheckout = async (tier: PaidTier, billingInterval: BillingInterval = 'monthly') => {
     setBillingLoading(tier)
     setBillingError(null)
     try {
       const res = await fetch('/api/stripe/checkout', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ guildId, tier }),
+        body:    JSON.stringify({ guildId, tier, interval: billingInterval }),
       })
       const data = await res.json()
       if (!res.ok || !data.url) { setBillingError(data.error ?? t.sub_err); return }
@@ -456,16 +464,42 @@ function GuildPanel({
                 {' · '}{guild.guild_name ?? guild.guild_id}
               </dd>
             </div>
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+              <dt className="text-[var(--color-muted-foreground)]">{t.sub_interval}:</dt>
+              <dd className="flex items-center gap-1.5">
+                {(['monthly', 'yearly'] as const).map(option => (
+                  <button
+                    key={option}
+                    type="button"
+                    onClick={() => setBillingInterval(option)}
+                    aria-pressed={billingInterval === option}
+                    disabled={billingLoading !== null}
+                    className={
+                      billingInterval === option
+                        ? 'rounded-md border border-[var(--color-primary)] bg-[var(--color-primary)]/10 px-2.5 py-1 text-xs font-semibold text-[var(--color-primary)]'
+                        : 'rounded-md border border-[var(--color-border)] px-2.5 py-1 text-xs font-medium text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]'
+                    }
+                  >
+                    {option === 'monthly' ? t.sub_interval_monthly : t.sub_interval_yearly}
+                  </button>
+                ))}
+                <span className="text-xs text-[var(--color-primary)]">
+                  {t.sub_interval_save.replace('{n}', String(yearlyMonthsFree(pendingTier)))}
+                </span>
+              </dd>
+            </div>
             <div className="flex flex-wrap gap-x-2">
               <dt className="text-[var(--color-muted-foreground)]">{t.sub_confirm_price}:</dt>
               <dd className="font-medium text-[var(--color-foreground)]">
-                {t.sub_confirm_price_value
-                  .replace('{price}', formatTierPrice(pendingTier, lang))}
+                {(billingInterval === 'yearly' ? t.sub_confirm_price_value_year : t.sub_confirm_price_value)
+                  .replace('{price}', formatTierPrice(pendingTier, lang, billingInterval))}
               </dd>
             </div>
             <div className="flex flex-wrap gap-x-2">
               <dt className="text-[var(--color-muted-foreground)]">{t.sub_confirm_term}:</dt>
-              <dd className="font-medium text-[var(--color-foreground)]">{t.sub_confirm_term_value}</dd>
+              <dd className="font-medium text-[var(--color-foreground)]">
+                {billingInterval === 'yearly' ? t.sub_confirm_term_value_year : t.sub_confirm_term_value}
+              </dd>
             </div>
           </dl>
           <p className="mt-3 text-xs leading-relaxed text-[var(--color-muted-foreground)]">
@@ -478,7 +512,7 @@ function GuildPanel({
           <div className="mt-4 flex flex-wrap gap-2">
             {/* The wording is prescribed by law (§ 312j Abs. 3 BGB) and
                 must not be shortened to "Abonnieren" or "Weiter". */}
-            <Button size="sm" onClick={() => handleCheckout(pendingTier)} disabled={billingLoading !== null}>
+            <Button size="sm" onClick={() => handleCheckout(pendingTier, billingInterval)} disabled={billingLoading !== null}>
               {billingLoading === pendingTier
                 ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
                 : <CreditCard className="h-3.5 w-3.5" />}
@@ -563,7 +597,9 @@ function GuildPanel({
             <Info className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-muted-foreground)]" />
             <span>
               {t.no_premium}{' '}
-              <strong className="text-[var(--color-primary)]">{t.no_premium_link}</strong>{' '}
+              <strong className="text-[var(--color-primary)]">
+                {t.no_premium_link.replace('{price}', formatTierPrice('premium', lang))}
+              </strong>{' '}
               {lang === 'en' ? 'available.' : 'verfügbar.'}{' '}
               <button
                 type="button"

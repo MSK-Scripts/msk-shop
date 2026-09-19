@@ -2,7 +2,7 @@
 
 Stand: September 2026
 
-Diese Widerrufsbelehrung gilt für **kostenpflichtige Abonnements** (Ticket-Bot-Transcript-Service Premium, Premium+ und Business sowie MSK Forms Pro und Enterprise), bei denen MSK Scripts dein Vertragspartner ist und Stripe lediglich die Zahlung abwickelt.
+Diese Widerrufsbelehrung gilt für **kostenpflichtige Abonnements** (Ticket-Bot-Transcript-Service Premium, Hosted und Business sowie MSK Forms Pro und Enterprise), bei denen MSK Scripts dein Vertragspartner ist und Stripe lediglich die Zahlung abwickelt.
 
 Sie gilt **nicht** für Käufe im Shop: Dort ist Tebex Limited Verkäufer und stellt eine eigene Widerrufsbelehrung im Bestellprozess bereit (https://checkout.tebex.io/terms).
 

@@ -156,7 +156,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     }
 
     // 4. Body-size ceiling BEFORE reading the body. This route is deliberately
-    //    exempt from the proxy body cap (large Premium+ uploads), and an
+    //    exempt from the proxy body cap (large uploads on the upper tiers), and an
     //    App Router handler has no default limit — so `await req.json()` would
     //    otherwise buffer an arbitrarily large body into the shared heap and let
     //    a single tenant OOM the whole process. Reject via Content-Length against

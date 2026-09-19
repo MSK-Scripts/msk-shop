@@ -53,17 +53,19 @@ Resources provided free of charge (e.g. msk_core, msk_fuel), the Ticket Bot, the
 | Tier | Price | Retention | max. transcript | Attachments | Custom domain | Remove branding | Bot hosting |
 |---|---|---|---|---|---|---|---|
 | Basic | free | 30 days | 10 MB | no | no | no | no |
-| Premium | €3.99/month | 180 days | 50 MB | yes (100 MB/ticket) | yes | yes | yes |
-| Premium+ | €6.99/month | 365 days | 100 MB | yes (200 MB/ticket) | yes | yes | yes |
-| Business | €9.99/month | 10 years | 200 MB | yes (500 MB/ticket) | yes | yes | yes |
+| Premium | €4.99/month | 180 days | 50 MB | yes (100 MB/ticket) | yes | yes | no |
+| Hosted | €9.99/month | 365 days | 100 MB | yes (200 MB/ticket) | yes | yes | yes |
+| Business | €19.99/month | 10 years | 200 MB | yes (500 MB/ticket) | yes | yes | yes |
+
+Optionally billed yearly: **€49/year** (Premium), **€99/year** (Hosted), **€199/year** (Business). The services are the same; the term is then twelve months (§ 6 (1)).
 
 Prices are final prices; VAT is not shown pursuant to § 19 UStG.
 
-(2) **Branding waiver:** For servers with an active Premium, Premium+ or Business subscription we waive the additional term under § 4; the notice may be removed. The waiver ends with the subscription.
+(2) **Branding waiver:** For servers with an active Premium, Hosted or Business subscription we waive the additional term under § 4; the notice may be removed. The waiver ends with the subscription.
 
 (3) **Conclusion of contract:** You select a tier in the dashboard, check the details and click **"Subscribe with obligation to pay"**; this constitutes an offer that we accept by activating the tier and sending a confirmation email (containing the contents of the contract and these Terms, § 312f BGB). You can correct input errors up until you click.
 
-(4) **Trial period:** New customers receive a one-off 14 days free of charge without a payment method. Without a payment method on file, the subscription ends automatically and falls back to Basic; no charge is incurred. With a payment method on file, the trial period converts into a paid monthly subscription unless you cancel beforehand. We notify you by email three days before it expires.
+(4) **Trial period:** New customers receive a one-off 14 days free of charge without a payment method. Without a payment method on file, the subscription ends automatically and falls back to Basic; no charge is incurred. With a payment method on file, the trial period converts into a paid subscription on the billing period you selected (monthly or yearly) unless you cancel beforehand. We notify you by email three days before it expires.
 
 ## § 6 Subscriptions: term, cancellation, withdrawal
 

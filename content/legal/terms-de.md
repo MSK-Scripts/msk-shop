@@ -51,21 +51,23 @@ Kostenlos bereitgestellte Ressourcen (z. B. msk_core, msk_fuel), der Ticket-Bot,
 | Stufe | Preis | Speicherdauer | max. Transkript | Anhänge | eigene Domain | Branding entfernen | Bot-Hosting |
 |---|---|---|---|---|---|---|---|
 | Basic | kostenlos | 30 Tage | 10 MB | nein | nein | nein | nein |
-| Premium | 3,99 €/Monat | 180 Tage | 50 MB | ja (100 MB/Ticket) | ja | ja | ja |
-| Premium+ | 6,99 €/Monat | 365 Tage | 100 MB | ja (200 MB/Ticket) | ja | ja | ja |
-| Business | 9,99 €/Monat | 10 Jahre | 200 MB | ja (500 MB/Ticket) | ja | ja | ja |
+| Premium | 4,99 €/Monat | 180 Tage | 50 MB | ja (100 MB/Ticket) | ja | ja | nein |
+| Hosted | 9,99 €/Monat | 365 Tage | 100 MB | ja (200 MB/Ticket) | ja | ja | ja |
+| Business | 19,99 €/Monat | 10 Jahre | 200 MB | ja (500 MB/Ticket) | ja | ja | ja |
+
+Wahlweise mit jährlicher Abrechnung: **49 €/Jahr** (Premium), **99 €/Jahr** (Hosted), **199 €/Jahr** (Business). Die Leistungen sind dieselben, die Laufzeit beträgt dann zwölf Monate (§ 6 Abs. 1).
 
 Preise sind Endpreise; Umsatzsteuer wird nach § 19 UStG nicht ausgewiesen.
 
-(2) **Branding-Verzicht:** Für Server mit aktivem Premium-, Premium+- oder Business-Abonnement verzichten wir auf die Zusatzbedingung nach § 4; der Hinweis darf entfernt werden. Der Verzicht endet mit dem Abonnement.
+(2) **Branding-Verzicht:** Für Server mit aktivem Premium-, Hosted- oder Business-Abonnement verzichten wir auf die Zusatzbedingung nach § 4; der Hinweis darf entfernt werden. Der Verzicht endet mit dem Abonnement.
 
 (3) **Vertragsschluss:** Du wählst im Dashboard eine Stufe, prüfst die Angaben und klickst auf **„Zahlungspflichtig abonnieren“**; damit gibst du ein Angebot ab, das wir durch Freischaltung der Stufe und Bestätigungs-E-Mail (mit Vertragsinhalt und diesen AGB, § 312f BGB) annehmen. Eingabefehler kannst du bis zum Klick korrigieren.
 
-(4) **Testphase:** Neukunden erhalten einmalig 14 Tage kostenlos ohne Zahlungsmittel. Ohne Hinterlegung eines Zahlungsmittels endet das Abonnement automatisch und fällt auf Basic zurück; es entsteht kein Entgelt. Mit hinterlegtem Zahlungsmittel geht die Testphase in ein kostenpflichtiges Monatsabonnement über, sofern du nicht vorher kündigst. Drei Tage vor Ablauf informieren wir dich per E-Mail.
+(4) **Testphase:** Neukunden erhalten einmalig 14 Tage kostenlos ohne Zahlungsmittel. Ohne Hinterlegung eines Zahlungsmittels endet das Abonnement automatisch und fällt auf Basic zurück; es entsteht kein Entgelt. Mit hinterlegtem Zahlungsmittel geht die Testphase in ein kostenpflichtiges Abonnement in der von dir gewählten Abrechnungsperiode (monatlich oder jährlich) über, sofern du nicht vorher kündigst. Drei Tage vor Ablauf informieren wir dich per E-Mail.
 
 ## § 6 Abonnements: Laufzeit, Kündigung, Widerruf
 
-(1) Abonnements laufen monatlich und verlängern sich jeweils um einen Monat, wenn sie nicht gekündigt werden. Die Abrechnung erfolgt über Stripe im Voraus zu Beginn jedes Abrechnungszeitraums.
+(1) Abonnements laufen je nach gewählter Abrechnungsperiode einen Monat oder zwölf Monate und verlängern sich jeweils um dieselbe Periode, wenn sie nicht gekündigt werden. Die Abrechnung erfolgt über Stripe im Voraus zu Beginn jedes Abrechnungszeitraums.
 
 (2) **Kündigung** ist jederzeit zum Ende des laufenden Abrechnungszeitraums möglich: über die Schaltfläche **„Verträge hier kündigen“** im Seitenfuß der Website (§ 312k BGB, ohne Login), über „Manage subscription“ im Dashboard (Stripe-Kundenportal) oder per E-Mail an info@msk-scripts.de. Wir bestätigen die Kündigung unverzüglich per E-Mail. Nach Kündigung fällt die Stufe auf Basic zurück; vorhandene Transkripte bleiben bis zu ihrem individuellen Ablauf abrufbar, eigene Domains und Bot-Hosting werden deaktiviert (§ 7 Abs. 5).
 

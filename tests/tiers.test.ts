@@ -1,5 +1,7 @@
 import { describe, it, expect, afterEach, vi } from 'vitest'
-import { getExpiresAt, TIER_CONFIG, type Tier } from '@/lib/tiers'
+import {
+  formatTierPrice, getExpiresAt, TIER_CONFIG, yearlyMonthsFree, type Tier,
+} from '@/lib/tiers'
 
 /**
  * Cheapest to most expensive. Asserted below to cover TIER_CONFIG in full, so a
@@ -48,21 +50,69 @@ describe('TIER_CONFIG invariants', () => {
     }
   })
 
-  it('gates every perk to the paid tiers and grants all of them to each', () => {
+  it('gates the transcript perks to the paid tiers and grants them to each', () => {
     expect(TIER_CONFIG.basic.customDomain).toBe(false)
     expect(TIER_CONFIG.basic.attachments).toBe(false)
     expect(TIER_CONFIG.basic.botHosting).toBe(false)
     expect(TIER_CONFIG.basic.removeBranding).toBe(false)
     expect(TIER_CONFIG.basic.attachmentMaxBytes).toBe(0)
 
-    // Every paid tier gets the lot. VerifyClient and the dashboard ask
+    // Every paid tier gets these three. VerifyClient and the dashboard ask
     // `tier !== 'basic'` rather than listing tiers, and this is what makes
-    // that question the right one.
+    // that question the right one. Bot hosting is deliberately NOT in this
+    // list any more, see the test below.
     for (const tier of LADDER.filter(t => t !== 'basic')) {
       expect(TIER_CONFIG[tier].customDomain).toBe(true)
       expect(TIER_CONFIG[tier].attachments).toBe(true)
-      expect(TIER_CONFIG[tier].botHosting).toBe(true)
       expect(TIER_CONFIG[tier].removeBranding).toBe(true)
     }
+  })
+
+  it('starts bot hosting at premium_plus, not at premium', () => {
+    // The most expensive feature we run marks the boundary between the two
+    // paid halves of the ladder (19.09.2026). Written out per tier rather than
+    // as a loop: moving hosting back down to `premium` is a business decision
+    // worth several euros per customer per month, and it should fail here
+    // rather than be discovered in an invoice.
+    expect(TIER_CONFIG.basic.botHosting).toBe(false)
+    expect(TIER_CONFIG.premium.botHosting).toBe(false)
+    expect(TIER_CONFIG.premium_plus.botHosting).toBe(true)
+    expect(TIER_CONFIG.business.botHosting).toBe(true)
+  })
+
+  it('prices rise with the ladder and the free tier costs nothing', () => {
+    expect(TIER_CONFIG.basic.priceCents).toBe(0)
+    expect(TIER_CONFIG.basic.priceCentsYearly).toBe(0)
+    for (let i = 1; i < LADDER.length; i++) {
+      const lower = TIER_CONFIG[LADDER[i - 1]]
+      const upper = TIER_CONFIG[LADDER[i]]
+      expect(lower.priceCents).toBeLessThan(upper.priceCents)
+      expect(lower.priceCentsYearly).toBeLessThan(upper.priceCentsYearly)
+    }
+  })
+
+  it('every paid tier has a yearly price that beats twelve monthly ones', () => {
+    // A yearly price that is not cheaper is not a yearly price, it is a trap.
+    for (const tier of LADDER.filter(t => t !== 'basic')) {
+      const c = TIER_CONFIG[tier]
+      expect(c.priceCentsYearly).toBeGreaterThan(0)
+      expect(c.priceCentsYearly).toBeLessThan(c.priceCents * 12)
+      expect(yearlyMonthsFree(tier)).toBe(2)
+    }
+    // The free tier has no yearly price, so nothing is "free" about it.
+    expect(yearlyMonthsFree('basic')).toBe(0)
+  })
+})
+
+describe('formatTierPrice', () => {
+  it('writes the number the way the language does', () => {
+    expect(formatTierPrice('premium', 'de')).toBe('4,99\u00A0€')
+    expect(formatTierPrice('premium', 'en')).toBe('€4.99')
+  })
+
+  it('formats the yearly price when asked, the monthly one by default', () => {
+    expect(formatTierPrice('premium_plus', 'en')).toBe('€9.99')
+    expect(formatTierPrice('premium_plus', 'en', 'monthly')).toBe('€9.99')
+    expect(formatTierPrice('premium_plus', 'en', 'yearly')).toBe('€99.00')
   })
 })

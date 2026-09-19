@@ -4,7 +4,7 @@ Last updated: September 2026
 
 This is a translation for your convenience. The German version at www.msk-scripts.de/de/terms/widerruf is authoritative and is the wording that applies to the statutory model instruction.
 
-These withdrawal instructions apply to **paid subscriptions** (Ticket Bot transcript service Premium, Premium+ and Business, as well as MSK Forms Pro and Enterprise) for which MSK Scripts is your contracting party and Stripe merely handles the payment.
+These withdrawal instructions apply to **paid subscriptions** (Ticket Bot transcript service Premium, Hosted and Business, as well as MSK Forms Pro and Enterprise) for which MSK Scripts is your contracting party and Stripe merely handles the payment.
 
 They do **not** apply to purchases in the shop: there, Tebex Limited is the seller and provides its own withdrawal instructions during the order process (https://checkout.tebex.io/terms).
 

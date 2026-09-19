@@ -134,7 +134,7 @@ interface Props {
 const TIER_LABELS: Record<string, { en: string; de: string }> = {
   basic:        { en: 'Basic (Free)', de: 'Basic (Kostenlos)' },
   premium:      { en: 'Premium',      de: 'Premium' },
-  premium_plus: { en: 'Premium+',     de: 'Premium+' },
+  premium_plus: { en: 'Hosted',       de: 'Hosted' },
   business:     { en: 'Business',     de: 'Business' },
 }
 

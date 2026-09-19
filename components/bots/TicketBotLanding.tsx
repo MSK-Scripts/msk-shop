@@ -4,7 +4,7 @@ import {
   UserCheck, Flag, Star, Clock, FileText, MessageSquareText, Globe, Lock,
   Megaphone, Bell, MessageSquare,
   Check, X, ServerCog, RefreshCw, Terminal, RotateCcw, Database,
-  ShieldCheck, Users, Languages,
+  ShieldCheck, Users, Languages, Rocket, Trash2, EyeOff, Wallet,
 } from 'lucide-react'
 
 import { BotCrossLink } from '@/components/bots/BotCrossLink'
@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { Card } from '@/components/ui/Card'
 import { SITE_CONFIG } from '@/lib/config'
-import { TIER_CONFIG, type Tier } from '@/lib/tiers'
+import { TIER_CONFIG, formatTierPrice, yearlyMonthsFree, type Tier } from '@/lib/tiers'
 import type { Lang } from '@/lib/i18n'
 import { TICKETBOT_COPY, type TicketBotTierCard } from '@/content/ticketbot-copy'
 
@@ -39,7 +39,9 @@ const FEATURE_ICONS = [
   Globe, Lock, RotateCcw, Bell, Megaphone, Database, LayoutDashboard,
 ] as const
 
-const VERIFY_ICONS = [MessageSquare, ServerCog, KeyRound] as const
+const PROBLEM_ICONS = [Trash2, EyeOff, Wallet] as const
+
+const VERIFY_ICONS = [MessageSquare, ServerCog, KeyRound, Rocket] as const
 
 const DASHBOARD_ICONS = [LayoutDashboard, Terminal, Users, UserCheck] as const
 
@@ -53,7 +55,7 @@ export function TicketBotLanding({ lang }: { lang: Lang }) {
   const t = TICKETBOT_COPY[lang]
 
   /** Feature-Zeilen einer Tarifkarte, Werte immer aus lib/tiers.ts. */
-  function tierFeatures(key: Tier, hosted: boolean) {
+  function tierFeatures(key: Tier) {
     const c = TIER_CONFIG[key]
     return [
       { label: t.tierFeatureHosting, ok: true },
@@ -66,9 +68,21 @@ export function TicketBotLanding({ lang }: { lang: Lang }) {
       },
       { label: t.tierFeatureDomain, ok: c.customDomain },
       { label: t.tierFeatureBranding, ok: c.removeBranding },
-      { label: t.tierFeatureStorage.replace('{days}', String(c.storageDays)), ok: true },
+      {
+        // Ab zwei Jahren wird die Tagesangabe unlesbar: "3650 Tage" steht auf
+        // der teuersten Karte und die AGB nennt dieselbe Zahl "10 Jahre".
+        label: c.storageDays >= 730
+          ? t.tierFeatureStorageYears.replace('{n}', String(Math.round(c.storageDays / 365)))
+          : t.tierFeatureStorage.replace('{days}', String(c.storageDays)),
+        ok: true,
+      },
       { label: t.tierFeatureUploads.replace('{n}', String(c.uploadsPerHour)), ok: true },
-      { label: t.tierFeatureHosted, ok: hosted },
+      // Reads the tier table. Until 19.09.2026 this line was `ok: i > 0`, i.e.
+      // "every tier except the free one", hard-wired to the card's position.
+      // That happened to match the data back then and stopped matching the
+      // moment hosting moved up a tier, which is the sort of drift TypeScript
+      // cannot see.
+      { label: t.tierFeatureHosted, ok: c.botHosting },
     ]
   }
 
@@ -128,6 +142,20 @@ export function TicketBotLanding({ lang }: { lang: Lang }) {
             </Button>
           </div>
 
+          {/* Belegzeile. Statt einer Zahl, die niemand nachprüfen kann, steht
+              hier ein Verweis auf die Live-Statistik: kleine nachprüfbare
+              Zahlen wiegen mehr als grosse unbelegte. */}
+          <p className="mt-6 text-sm text-[var(--color-muted-foreground)]">
+            {t.heroProof}{' '}
+            <Link
+              href="/ticketbot/stats"
+              prefetch={false}
+              className="text-[var(--color-primary)] underline-offset-4 hover:underline"
+            >
+              {t.heroProofCta}
+            </Link>
+          </p>
+
           {/* Sichtbarer Sprachwechsel. Ergänzt die hreflang-Angaben um einen
               Link, dem sowohl Nutzer als auch Crawler folgen können. */}
           <p className="mt-6 text-sm">
@@ -145,6 +173,31 @@ export function TicketBotLanding({ lang }: { lang: Lang }) {
               {t.altLabel}
             </a>
           </p>
+        </div>
+      </section>
+
+      {/* ── Problem ───────────────────────────────────────────────────────── */}
+      <section className="container-page py-14 md:py-20">
+        <div className="mb-10 text-center">
+          <span className="eyebrow">{t.problemEyebrow}</span>
+          <h2 className="mt-3 text-2xl font-bold tracking-tight md:text-3xl">{t.problemHeading}</h2>
+        </div>
+
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          {t.problems.map((item, i) => {
+            const Icon = PROBLEM_ICONS[i]
+            return (
+              <Card key={item.title} className="flex flex-col p-6">
+                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--color-danger)]/10 text-[var(--color-danger)]">
+                  <Icon className="h-5 w-5" />
+                </div>
+                <h3 className="mb-2 font-bold tracking-tight">{item.title}</h3>
+                <p className="text-sm leading-relaxed text-[var(--color-muted-foreground)]">
+                  {item.text}
+                </p>
+              </Card>
+            )
+          })}
         </div>
       </section>
 
@@ -235,7 +288,11 @@ export function TicketBotLanding({ lang }: { lang: Lang }) {
           <h2 className="mt-3 text-2xl font-bold tracking-tight md:text-3xl">{t.verifyHeading}</h2>
         </div>
 
-        <div className="grid gap-5 grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))]">
+        {/* Feste Spaltenzahlen statt `auto-fit`: mit vier Schritten trifft
+            `auto-fit` im Band zwischen etwa 900 und 1200 px drei Spalten und
+            lässt den vierten Schritt allein in der zweiten Reihe stehen. 1 / 2 / 4
+            geht immer auf, dieselbe Staffelung wie bei den Tarifkarten. */}
+        <div className="grid gap-5 grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
           {t.verifySteps.map((step, i) => {
             const Icon = VERIFY_ICONS[i]
             return (
@@ -370,8 +427,12 @@ export function TicketBotLanding({ lang }: { lang: Lang }) {
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
           {t.tierCards.map((card: TicketBotTierCard, i) => {
             const key = TIER_KEYS[i]
-            const accent = i === 1
-            const hosted = i > 0
+            // Der hervorgehobene Tarif ist der mit dem Badge. Vorher stand hier
+            // `i === 1`, also eine zweite Stelle, an der dieselbe Entscheidung
+            // getroffen wurde; beim Verschieben des Badges wäre der Ring an der
+            // alten Karte stehen geblieben.
+            const accent = card.badge !== null
+            const monthsFree = yearlyMonthsFree(key)
             return (
               <Card
                 key={key}
@@ -390,12 +451,23 @@ export function TicketBotLanding({ lang }: { lang: Lang }) {
 
                 <h3 className="text-lg font-bold tracking-tight">{card.name}</h3>
                 <div className="mt-2 flex items-baseline gap-1.5">
-                  <span className="font-mono text-3xl font-bold tracking-tight">{card.price}</span>
+                  {/* Der Preis kommt aus TIER_CONFIG, nicht aus der Copy-Datei.
+                      Nur der kostenlose Tarif hat einen eigenen Text. */}
+                  <span className="font-mono text-3xl font-bold tracking-tight">
+                    {card.priceOverride ?? formatTierPrice(key, lang)}
+                  </span>
                   <span className="text-sm text-[var(--color-muted-foreground)]">{card.priceSub}</span>
                 </div>
+                {monthsFree > 0 && (
+                  <p className="mt-1.5 text-xs text-[var(--color-muted-foreground)]">
+                    {t.tierPriceYear
+                      .replace('{price}', formatTierPrice(key, lang, 'yearly'))
+                      .replace('{n}', String(monthsFree))}
+                  </p>
+                )}
 
                 <ul className="mt-6 mb-6 flex-1 space-y-2.5">
-                  {tierFeatures(key, hosted).map(f => (
+                  {tierFeatures(key).map(f => (
                     <li key={f.label} className="flex items-center gap-2.5 text-sm">
                       {f.ok ? (
                         <Check className="h-4 w-4 shrink-0 text-[var(--color-primary)]" />
@@ -429,6 +501,35 @@ export function TicketBotLanding({ lang }: { lang: Lang }) {
             <h3 className="mb-1 font-bold tracking-tight">{t.tierNote.title}</h3>
             <p className="text-sm text-[var(--color-muted-foreground)]">{t.tierNote.text}</p>
           </div>
+        </div>
+      </section>
+
+      {/* ── FAQ ───────────────────────────────────────────────────────────── */}
+      <section className="container-page pb-14 md:pb-20">
+        <div className="mb-10 text-center">
+          <span className="eyebrow">{t.faqEyebrow}</span>
+          <h2 className="mt-3 text-2xl font-bold tracking-tight md:text-3xl">{t.faqHeading}</h2>
+        </div>
+
+        {/* `details`/`summary` statt eines Akkordeons mit State: es klappt ohne
+            JavaScript auf, der Browser übernimmt die ARIA-Semantik, und der
+            Antworttext steht im ausgelieferten HTML, wo eine Suchmaschine ihn
+            auch findet. */}
+        <div className="mx-auto max-w-3xl space-y-3">
+          {t.faq.map(item => (
+            <details
+              key={item.title}
+              className="group rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] px-5 py-4 [&_summary::-webkit-details-marker]:hidden"
+            >
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-medium tracking-tight">
+                {item.title}
+                <ArrowRight className="h-4 w-4 shrink-0 text-[var(--color-muted-foreground)] transition-transform group-open:rotate-90" />
+              </summary>
+              <p className="mt-3 text-sm leading-relaxed text-[var(--color-muted-foreground)]">
+                {item.text}
+              </p>
+            </details>
+          ))}
         </div>
       </section>
 

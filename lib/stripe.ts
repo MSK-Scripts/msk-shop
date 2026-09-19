@@ -1,5 +1,5 @@
 import Stripe from 'stripe';
-import type { Tier } from '@/lib/tiers';
+import type { BillingInterval, Tier } from '@/lib/tiers';
 
 // ── Stripe client ────────────────────────────────────────────────────────────
 //
@@ -29,8 +29,26 @@ export const TRIAL_DAYS = 14;
 // Only the two paid tiers map to a Stripe price. `basic` is the free default and
 // never has a subscription.
 
-/** Stripe price id configured for a paid tier, or null for `basic`. */
-export function priceIdForTier(tier: Tier): string | null {
+/**
+ * Stripe price id configured for a paid tier and interval, or null for `basic`
+ * and for an interval that has no price configured yet.
+ *
+ * Returning null rather than falling back to the monthly price is deliberate:
+ * a missing yearly price must surface as "billing is not configured", never as
+ * a customer who clicked "yearly" and gets charged monthly.
+ */
+export function priceIdForTier(
+  tier: Tier,
+  interval: BillingInterval = 'monthly',
+): string | null {
+  if (interval === 'yearly') {
+    switch (tier) {
+      case 'premium':      return process.env.STRIPE_PRICE_PREMIUM_YEARLY      ?? null;
+      case 'premium_plus': return process.env.STRIPE_PRICE_PREMIUM_PLUS_YEARLY ?? null;
+      case 'business':     return process.env.STRIPE_PRICE_BUSINESS_YEARLY     ?? null;
+      default:             return null;
+    }
+  }
   switch (tier) {
     case 'premium':      return process.env.STRIPE_PRICE_PREMIUM      ?? null;
     case 'premium_plus': return process.env.STRIPE_PRICE_PREMIUM_PLUS ?? null;
@@ -43,12 +61,26 @@ export function priceIdForTier(tier: Tier): string | null {
  * Reverse mapping: resolve the internal tier from a Stripe price id. Returns
  * `basic` for any unknown/unconfigured price so a stray subscription can never
  * silently grant a paid tier.
+ *
+ * Both intervals of a tier map to the same tier. That is the whole point of
+ * keeping this function the only reader of the env vars: the webhook and the
+ * reconcile cron decide access from it, and neither of them cares how often
+ * someone pays.
+ *
+ * Every comparison guards against an unset env var. Without that, an
+ * unconfigured `STRIPE_PRICE_BUSINESS_YEARLY` is `undefined`, and a price id
+ * that is also absent would compare equal and grant Business.
  */
 export function resolveTierFromPrice(priceId: string | null | undefined): Tier {
   if (!priceId) return 'basic';
-  if (priceId === process.env.STRIPE_PRICE_PREMIUM)      return 'premium';
-  if (priceId === process.env.STRIPE_PRICE_PREMIUM_PLUS) return 'premium_plus';
-  if (priceId === process.env.STRIPE_PRICE_BUSINESS)     return 'business';
+  const match = (envValue: string | undefined) => Boolean(envValue) && envValue === priceId;
+
+  if (match(process.env.STRIPE_PRICE_PREMIUM)
+   || match(process.env.STRIPE_PRICE_PREMIUM_YEARLY))      return 'premium';
+  if (match(process.env.STRIPE_PRICE_PREMIUM_PLUS)
+   || match(process.env.STRIPE_PRICE_PREMIUM_PLUS_YEARLY)) return 'premium_plus';
+  if (match(process.env.STRIPE_PRICE_BUSINESS)
+   || match(process.env.STRIPE_PRICE_BUSINESS_YEARLY))     return 'business';
   return 'basic';
 }
 

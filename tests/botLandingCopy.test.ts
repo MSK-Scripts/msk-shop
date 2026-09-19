@@ -3,7 +3,9 @@ import { describe, expect, it } from 'vitest'
 
 import { GIVEAWAY_COPY } from '@/content/giveaway-copy'
 import { TICKETBOT_COPY } from '@/content/ticketbot-copy'
-import { BOT_LANDING_PATHS, giveawayMetadata, ticketBotMetadata } from '@/lib/botSeo'
+import {
+  BOT_LANDING_PATHS, giveawayMetadata, ticketBotCompareMetadata, ticketBotMetadata,
+} from '@/lib/botSeo'
 
 /**
  * The two bot landing pages render their texts from `content/*-copy.ts` and
@@ -40,12 +42,14 @@ describe('ticket bot landing copy', () => {
 
   it.each([
     ['highlights',     'highlights'],
+    ['problems',       'problems'],
     ['hubCards',       'hubCards'],
     ['features',       'features'],
     ['verifySteps',    'verifySteps'],
     ['dashboardItems', 'dashboardItems'],
     ['hostedItems',    'hostedItems'],
     ['tierCards',      'tierCards'],
+    ['faq',            'faq'],
   ] as const)('EN and DE have the same number of %s', (_label, key) => {
     expect(de[key].length).toBe(en[key].length)
   })
@@ -54,6 +58,7 @@ describe('ticket bot landing copy', () => {
     ['HUB_ICONS',       'hubCards'],
     ['HUB_HREFS',       'hubCards'],
     ['HUB_VARIANTS',    'hubCards'],
+    ['PROBLEM_ICONS',   'problems'],
     ['FEATURE_ICONS',   'features'],
     ['VERIFY_ICONS',    'verifySteps'],
     ['DASHBOARD_ICONS', 'dashboardItems'],
@@ -64,11 +69,34 @@ describe('ticket bot landing copy', () => {
 
   it('has no empty strings', () => {
     for (const copy of [en, de]) {
-      for (const item of [...copy.features, ...copy.hubCards, ...copy.verifySteps]) {
+      for (const item of [...copy.features, ...copy.hubCards, ...copy.verifySteps,
+                          ...copy.problems, ...copy.faq]) {
         expect(item.title.trim()).not.toBe('')
         expect(item.text.trim()).not.toBe('')
       }
       expect(copy.headline.accent.trim()).not.toBe('')
+    }
+  })
+
+  it('only the free tier carries a hand-written price', () => {
+    // Every paid card renders its price from TIER_CONFIG. A literal that creeps
+    // back into the copy file would be a second source for the same number, and
+    // the one the checkout does NOT read. § 312j (2) BGB wants the price shown
+    // before the order button to be the price actually charged.
+    for (const copy of [en, de]) {
+      const overrides = copy.tierCards.filter(c => c.priceOverride !== null)
+      expect(overrides.length).toBe(1)
+      for (const card of copy.tierCards.slice(1)) {
+        expect(card.priceOverride).toBeNull()
+      }
+    }
+  })
+
+  it('marks exactly one tier as the recommended one', () => {
+    // The component derives the highlighted card from the badge. Two badges
+    // would ring two cards, none would ring the wrong one.
+    for (const copy of [en, de]) {
+      expect(copy.tierCards.filter(c => c.badge !== null).length).toBe(1)
     }
   })
 
@@ -165,5 +193,21 @@ describe('hreflang pairing', () => {
         expect(title).toContain('MSK Scripts')
       }
     }
+  })
+
+  // A description over ~160 characters is cut off mid-sentence in the SERP, and
+  // the part that gets cut is the end, where the argument usually sits. The
+  // ticket bot page shipped with 196 (EN) and 211 (DE) until 19.09.2026.
+  //
+  // One case per page and language so a failure names the page it belongs to.
+  it.each([
+    ['ticketbot', ticketBotMetadata, 'en'],
+    ['ticketbot', ticketBotMetadata, 'de'],
+    ['compare',   ticketBotCompareMetadata, 'en'],
+    ['compare',   ticketBotCompareMetadata, 'de'],
+    ['giveaway',  giveawayMetadata,  'en'],
+    ['giveaway',  giveawayMetadata,  'de'],
+  ] as const)('%s (%s) description stays inside the length Google renders', (_name, build, lang) => {
+    expect(String(build(lang).description).length).toBeLessThanOrEqual(160)
   })
 })
