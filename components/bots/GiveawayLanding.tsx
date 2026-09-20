@@ -175,7 +175,7 @@ export function GiveawayLanding({ lang }: { lang: Lang }) {
             </p>
           </div>
 
-          <div className="grid gap-5 grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))]">
+          <div className="grid gap-5 grid-cols-[repeat(auto-fit,minmax(min(100%,var(--grid-card)),1fr))]">
             {t.features.map((f, i) => {
               const Icon = FEATURE_ICONS[i]
               return (

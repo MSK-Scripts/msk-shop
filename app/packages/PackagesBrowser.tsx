@@ -310,7 +310,7 @@ export function PackagesBrowser({ lang, packages }: Props) {
           // ultrawide without a separate class having to be maintained
           // for every window size. `min(100%, …)` prevents an overflow
           // when the viewport is narrower than the minimum column.
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,300px),1fr))] gap-6">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,var(--grid-card)),1fr))] gap-6">
             {shown.map(pkg => (
               <PackageCard
                 key={pkg.id}

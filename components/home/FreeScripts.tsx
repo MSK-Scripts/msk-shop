@@ -60,7 +60,7 @@ export function FreeScripts({ lang }: { lang: Lang }) {
           </Link>
         </div>
 
-        <div className="mt-8 grid gap-6 grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))]">
+        <div className="mt-8 grid gap-6 grid-cols-[repeat(auto-fit,minmax(min(100%,var(--grid-card)),1fr))]">
           {scripts.map(pkg => (
             <CustomPackageCard key={pkg.id} pkg={pkg} />
           ))}

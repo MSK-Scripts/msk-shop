@@ -1301,10 +1301,6 @@ export const giveawayResultTranslations = {
 // switch calls router.refresh(), which re-renders those server components.
 export const homeTranslations = {
   en: {
-    // Fallback for when fivestats has no number (no key, API down).
-    hero_badge: "Live · Trusted by 500+ Servers",
-    // Live variant. {resource} and {count} are substituted in Hero.tsx.
-    hero_badge_live: "Live · {resource} runs on {count} servers",
     hero_h1_line1: "Premium FiveM",
     hero_h1_line2: "Scripts.",
     hero_h1_accent: "Built by a player.",
@@ -1436,8 +1432,6 @@ export const homeTranslations = {
     tools_all: "Everything on GitHub",
   },
   de: {
-    hero_badge: "Live · Über 500 Server vertrauen darauf",
-    hero_badge_live: "Live · {resource} läuft auf {count} Servern",
     hero_h1_line1: "Premium FiveM",
     hero_h1_line2: "Scripts.",
     hero_h1_accent: "Von einem Spieler entwickelt.",

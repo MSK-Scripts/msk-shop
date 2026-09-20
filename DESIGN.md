@@ -264,8 +264,8 @@ doubt, drop it. The heading carries the section on its own.
 Every page sits in **one** shell, `container-page`, and so do the header and the
 footer. On any route and at any width, those three share an edge.
 
-- **`container-page`** (120rem / 1920 px): the shell. Header, all page content,
-  footer.
+- **`container-page`** (120rem / 1920 px, then 150rem at 1920 px and 180rem at
+  2560 px): the shell. Header, all page content, footer.
 - **`container-prose`** (34rem): an inner cap for running text where a narrow
   column is wanted. Deliberately not in `ch`. A `ch` is the width of the digit
   zero, 10 px in Inter, while the average letter measures 7.8 px, so the
@@ -281,12 +281,26 @@ between routes, and the header never lined up with anything. The density concern
 that produced `container-app` is real, but it belongs to the dense component, not
 to the page. See The Working-Surface Cap Rule.
 
+The cap stopped being a single number on 20 September 2026. It was measured at
+2560 px and 3440 px in the production build: the shell stayed at 1920 px with
+315 px and 755 px dead on each side, 44 percent of an ultrawide window unused,
+and not one grid changed its column count between the two. Nothing in `app/` or
+`components/` carried a `2xl:` prefix at all, so above 1280 px only the padding
+ever moved. It now steps to 150rem at 1920 px and 180rem at 2560 px, which
+leaves 16 percent unused at 3440 px instead of 44.
+
+What jumped in August was the flush line, not the width. Header, footer and page
+content still share one shell and move together, so a step changes all three at
+once and no route can disagree with another. Below 1920 px every one of these
+rules is unreachable, which is what makes "the phone is untouched" a property of
+the tooling rather than a claim to re-test.
+
 `container-page` carries `width: 100%` and that is load-bearing, not tidiness: as
 a flex child, `margin-inline: auto` otherwise shrinks the element to its content
 width and centres that. The home page hero is `flex flex-col`, and its section sat
 17 px inset while the proof line below it sat 700 px inset.
 
-Horizontal padding steps 1rem, 2rem at 768 px, 3rem at 1536 px. Section rhythm is
+Horizontal padding steps 1rem, 2rem at 768 px, 3rem at 1536 px, 4rem at 1920 px. Section rhythm is
 `2.5rem` vertical, `3.5rem` from the medium breakpoint.
 
 Card interiors come in two sizes and the distinction is repetition, not
@@ -316,6 +330,17 @@ capping the whole page to fix one grid gives the site a different width per rout
 which is what happened between 22 and 24 August 2026. The KPI grid on both
 statistics pages carries its own floor instead: `minmax(min(100%, 300px), 1fr)`
 settles at five columns inside the 1920 px shell, so the 14 tiles fall as 5 + 5 + 4.
+
+A fluid grid needs a second half to that rule above 1920 px: the *minimum* has to
+grow too, otherwise a wider window only buys more columns and the cards get
+smaller. Measured on /packages before the change: 4 columns of 362 px at 1920 px,
+7 of 335 px at 3440 px. `--grid-card` and `--grid-card-wide` in `app/globals.css`
+step the minimum instead, and the numbers answer to two rules that are checked by
+measuring, not by reasoning: no card is narrower than it is at 1920 px, and no
+step ever costs a column. The first draft failed the second one - 380 px at
+1920 px dropped /packages from four columns to three, so a wider window showed
+fewer products. It now reads 351 / 353 / 362 / 412 / 478 px across
+1440 / 1854 / 1920 / 2560 / 3440.
 At 260 px they fell as 6 + 6 + 2, with two orphans in the last row.
 
 **The Long Measure Rule.** The three legal pages run a deliberately wide column,

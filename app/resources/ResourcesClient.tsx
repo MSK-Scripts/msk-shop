@@ -180,7 +180,7 @@ function Section({ title, resources, t, lang }: {
       <h2 className="mb-5 font-mono text-xs font-bold uppercase tracking-widest text-[var(--color-muted-foreground)]">
         {title}
       </h2>
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,340px),1fr))] gap-4">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,var(--grid-card-wide)),1fr))] gap-4">
         {resources.map(res => <ResourceCard key={res.resourceName} res={res} t={t} lang={lang} />)}
       </div>
     </section>

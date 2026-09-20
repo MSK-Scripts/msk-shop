@@ -200,7 +200,7 @@ export default function StatsClient({
             between the H1 and the 14 tiles. */}
         <section aria-labelledby="figures-heading">
           <h2 id="figures-heading" className="sr-only">{t.region_figures}</h2>
-          <div className="mb-4 grid grid-cols-[repeat(auto-fill,minmax(min(100%,300px),1fr))] gap-4">
+          <div className="mb-4 grid grid-cols-[repeat(auto-fill,minmax(min(100%,var(--grid-card)),1fr))] gap-4">
             {cards.map(c => <StatCard key={c.label} {...c} />)}
           </div>
         </section>

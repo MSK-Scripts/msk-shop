@@ -149,7 +149,7 @@ export default async function CategoryPage({
               H3. Visible, the heading would be a duplicate; the
               category name already sits above it as H1. */}
           <h2 id="category-results-heading" className="sr-only">{t.region_results}</h2>
-          <div className="grid gap-6 grid-cols-[repeat(auto-fill,minmax(min(100%,300px),1fr))]">
+          <div className="grid gap-6 grid-cols-[repeat(auto-fill,minmax(min(100%,var(--grid-card)),1fr))]">
             {category.packages.map(pkg => (
               <PackageCard
                 key={pkg.id}

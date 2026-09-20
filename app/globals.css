@@ -10,6 +10,16 @@
    Inspiriert von GitHub-Dark im Dark-Mode + MSK-Grün als Brand-Accent.
    ============================================================================ */
 @theme {
+  /* Breakpoints above Tailwind's built-in 2xl (96rem / 1536 px). Declared here
+     so they work as `3xl:` / `4xl:` variants in markup, not only as raw media
+     queries. Measured on 2026-09-20: below 1920 px the page already fills the
+     viewport edge to edge, so nothing here can affect a phone or a laptop.
+     That is the point - every rule above 1920 px is unreachable further down,
+     which makes "mobile stays untouched" a property of the tooling rather than
+     a claim that has to be re-tested. */
+  --breakpoint-3xl: 120rem;
+  --breakpoint-4xl: 160rem;
+
   /* Typografie — 100% lokal über @fontsource-variable */
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: "JetBrains Mono Variable", ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
@@ -325,6 +335,41 @@
   50%      { opacity: 0.5; transform: scale(0.85); }
 }
 
+/* ----------------------------------------------------------------------------
+   Card grid minimums
+   ----------------------------------------------------------------------------
+   Every card grid on the site is `repeat(auto-fill|auto-fit, minmax(min(100%,
+   X), 1fr))`. That is already fluid, but the minimum was a constant, and a
+   constant minimum means a wider window buys more columns rather than bigger
+   cards. Measured on 2026-09-20 on /packages: 4 columns of 362 px at 1920,
+   7 columns of 335 px at 3440. The cards got *smaller* the more room there was.
+
+   Staggering the minimum turns the extra width into card size first and column
+   count second.
+
+   Two rules the numbers have to satisfy, both verified by measurement rather
+   than reasoning - the first draft broke the second one:
+
+   1. No card is ever narrower than it is at 1920 px.
+   2. No step ever costs a column. A first attempt used 380px at 1920 and
+      /packages dropped from 4 columns to 3 right at the breakpoint, so a wider
+      window showed *fewer* products. 340px keeps the 4 columns and grows them
+      from 362 px to 380 px, which is what was wanted.
+
+   `--grid-card-wide` exists because the resources page starts at 340px (its
+   cards carry a sparkline beside the figures). It only needs its own value
+   below 2560 px; above that both land on the same width. */
+:root {
+  --grid-card: 300px;
+  --grid-card-wide: 340px;
+}
+@media (min-width: 1920px) {
+  :root { --grid-card: 340px; }
+}
+@media (min-width: 2560px) {
+  :root { --grid-card: 400px; --grid-card-wide: 440px; }
+}
+
 /* ============================================================================
    Utilities — Container, Eyebrow, Hero-Decor
    ============================================================================ */
@@ -356,6 +401,30 @@
 }
 @media (min-width: 1536px) {
   .container-page { padding-inline: 3rem; }
+}
+/* Above 1920 px the cap grows in two steps. Measured on 2026-09-20 in the
+   production build: at 2560 px the shell sat at 1920 px with 315 px dead on
+   each side, at 3440 px with 755 px - 44 percent of the window unused, and not
+   a single grid changed its column count between the two. The cause was one
+   line, the fixed 120rem cap, because nothing in app/ or components/ uses a
+   `2xl:` prefix at all.
+
+   The shell is the flush line that header, content and footer share. Keeping
+   them on one line is what stopped the 640 px jump between routes back on
+   24 August 2026, so the cap moves for all of them together or not at all.
+   Content that does not benefit from the extra width keeps an inner cap of its
+   own instead of a second shell: `.legal-content` caps its text elements at
+   82rem, the hero caps both of its columns and centres the pair, and the
+   section intros use
+   `max-w-[NNch]`. Measured on 2026-09-20 across 1920/2560/3440: exactly one
+   text block on the home page exceeds 95 characters per line, and it reads the
+   same at all three widths. So the caps that exist already hold - resist
+   adding a general-purpose one until a measurement asks for it. */
+@media (min-width: 1920px) {
+  .container-page { max-width: 150rem; padding-inline: 4rem; }
+}
+@media (min-width: 2560px) {
+  .container-page { max-width: 180rem; }
 }
 
 /* Es gab bis zum 24.08.2026 zwei weitere Stufen: `container-wide` (160rem) für

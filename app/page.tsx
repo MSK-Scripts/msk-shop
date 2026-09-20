@@ -74,7 +74,7 @@ export default async function HomePage() {
     <>
       {/* The proof line sits inside the hero, not below it: it is the proof for
           the hero's claim and must therefore be visible without scrolling. */}
-      <Hero lang={lang} stat={headline} releases={releases}>
+      <Hero lang={lang} releases={releases}>
         <ProofLine lang={lang} stats={stats} servers={headline} docPages={docPages} />
       </Hero>
       <Catalog lang={lang} />
