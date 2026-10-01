@@ -218,6 +218,19 @@ export const giveawayMetadata  = (lang: Lang) => metadataFor(GIVEAWAY, lang)
 export const ticketBotAppJsonLd = (lang: Lang) => appJsonLdFor(TICKETBOT, lang)
 export const giveawayAppJsonLd  = (lang: Lang) => appJsonLdFor(GIVEAWAY, lang)
 
+/**
+ * Path, name and search description of the three landing pages in one
+ * language, for `/llms.txt`. The name is the page title without the brand
+ * suffix, which a list that already stands under the brand does not need.
+ */
+export function botLandingEntries(lang: Lang): Array<{ path: string; title: string; description: string }> {
+  return [TICKETBOT, TICKETBOT_COMPARE, GIVEAWAY].map(bot => ({
+    path:        bot.paths[lang],
+    title:       bot.seo[lang].title.replace(/ \| MSK Scripts$/, ''),
+    description: bot.seo[lang].description,
+  }))
+}
+
 /** All four landing page paths, for the sitemap. */
 export const BOT_LANDING_PATHS = {
   ticketbot:        TICKETBOT.paths,

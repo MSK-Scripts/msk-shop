@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 
+import { PACKAGE_DESCRIPTIONS, PACKAGE_SEO, SITE_CONFIG } from '@/lib/config'
 import { alternatePaths } from '@/lib/lang'
 import type { Lang } from '@/lib/i18n'
 import type { OpenGraph } from 'next/dist/lib/metadata/types/opengraph-types'
@@ -118,6 +119,35 @@ export function packageImage(pkg: Pick<TebexPackage, 'image' | 'media'>): string
 
   const first = media.find(m => m.url)
   return first ? first.url : DEFAULT_OG_IMAGE
+}
+
+/**
+ * Title and description of a package as a search result should show them.
+ *
+ * Order: the curated search snippet, then the visible card text, then the
+ * Tebex excerpt, then the site tagline. The raw Tebex name contains the word
+ * "FiveM" nowhere, and Encrypted/Source differ in it only by one word; both
+ * are exactly what `PACKAGE_SEO` straightens out.
+ *
+ * Lives here because two places need the same answer, the metadata of the
+ * package page and `/llms.txt`, and two copies of a fallback chain end up
+ * with two different chains.
+ */
+export function packageSnippet(
+  pkg: Pick<TebexPackage, 'id' | 'name' | 'description'>,
+  lang: Lang,
+): { title: string; description: string } {
+  const snippet = PACKAGE_SEO[pkg.id]?.[lang]
+  return {
+    title: snippet?.title ?? pkg.name,
+    // `||` and not `??`: an empty excerpt is as good as none, and `??` would
+    // have stopped at the empty string instead of reaching the tagline.
+    description:
+      snippet?.description
+      || PACKAGE_DESCRIPTIONS[pkg.id]
+      || plainExcerpt(pkg.description)
+      || SITE_CONFIG.tagline,
+  }
 }
 
 /**

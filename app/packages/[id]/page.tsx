@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { PACKAGE_BADGES, PACKAGE_TAGS, PACKAGE_DESCRIPTIONS, PACKAGE_SEO, SITE_CONFIG } from '@/lib/config'
 import { sanitizeTebexHtml } from '@/lib/sanitize'
-import { alternatesFor, openGraphFor, packageImage, plainExcerpt } from '@/lib/seo'
+import { alternatesFor, openGraphFor, packageImage, packageSnippet } from '@/lib/seo'
 import { JsonLd } from '@/components/JsonLd'
 import { breadcrumbJsonLd, productJsonLd } from '@/lib/jsonLd'
 import { getRequestLang } from '@/lib/serverLang'
@@ -40,18 +40,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     const pkg = await getPackage(id)
     const canonical = `/packages/${pkg.id}`
     const image = packageImage(pkg)
-    const snippet = PACKAGE_SEO[pkg.id]?.[lang]
-
-    // Order: curated search snippet, then the visible card text,
-    // then the Tebex excerpt. The raw Tebex name contains the word "FiveM"
-    // nowhere, and Encrypted/Source differ in it only by one
-    // word; both are exactly what PACKAGE_SEO straightens out.
-    const description =
-      snippet?.description ??
-      PACKAGE_DESCRIPTIONS[pkg.id] ??
-      plainExcerpt(pkg.description) ??
-      SITE_CONFIG.tagline
-    const title = snippet?.title ?? pkg.name
+    const { title, description } = packageSnippet(pkg, lang)
 
     return {
       title,

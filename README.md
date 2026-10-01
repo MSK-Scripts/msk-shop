@@ -141,6 +141,7 @@ app/                        Next.js App Router pages & API routes
 ├── checkout/               Post-payment redirect handler
 ├── giveaway/               Giveaway Bot landing page + verify/, dashboard/, stats/, g/[token]/
 ├── images/                 Gallery: overview, [category]/, [category]/[name]/, upload/
+├── llms.txt/               /llms.txt: map of the site for language models, built by lib/llms.ts
 ├── login/                  Login page
 ├── packages/               Package list + [id]/ detail pages
 ├── report/                 DSA content report form
@@ -193,7 +194,7 @@ lib/                        Server and shared logic, grouped by area:
 ├── giveawayControl.ts, giveawayDb.ts, giveawayStats.ts, giveawayManager.ts   Giveaway Bot
 ├── legalForms.ts           Withdrawal, cancellation and DSA report handling
 ├── i18n.ts, lang.ts, serverLang.ts   Translations and /de/ routing
-├── seo.ts, pageSeo.ts, botSeo.ts, jsonLd.ts, sitemap.ts   Metadata and structured data
+├── seo.ts, pageSeo.ts, botSeo.ts, jsonLd.ts, sitemap.ts, llms.ts   Metadata, structured data, /llms.txt
 ├── rateLimit.ts, sanitize.ts, db.ts   Rate limiting, HTML sanitizing, database pool
 └── config.ts               Shop configuration (featured packages, badges, news popup)
 

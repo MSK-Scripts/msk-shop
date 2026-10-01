@@ -84,7 +84,7 @@ describe('istEinmaligeAdresse', () => {
    * the XSL, every API route, favicon, logo and the `_next` assets.
    */
   it('erkennt die Dateien, die es pro Site nur einmal gibt', () => {
-    for (const p of ['/robots.txt', '/sitemap.xml', '/sitemap.xsl', '/favicon.ico', '/logo.png']) {
+    for (const p of ['/robots.txt', '/sitemap.xml', '/sitemap.xsl', '/llms.txt', '/favicon.ico', '/logo.png']) {
       expect(istEinmaligeAdresse(p), p).toBe(true)
     }
   })

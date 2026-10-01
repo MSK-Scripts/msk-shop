@@ -69,6 +69,7 @@ const EINMALIG_EXAKT = new Set([
   '/sitemap.xml',
   '/sitemap-images.xml',
   '/sitemap.xsl',
+  '/llms.txt',
   '/favicon.ico',
   '/logo.png',
 ])
