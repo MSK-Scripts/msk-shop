@@ -110,7 +110,10 @@ function CatalogCard({ row, lang }: { row: Row; lang: Lang }) {
         {row.image ? (
           <Image
             src={row.image}
-            alt=""
+            // The image is the only content of this link. With an empty alt
+            // the link has no name at all, for a screen reader as for a
+            // crawler that reads the picture through its text.
+            alt={row.name}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
             className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"

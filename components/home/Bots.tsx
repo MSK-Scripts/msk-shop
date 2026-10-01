@@ -104,7 +104,9 @@ export function Bots({ lang }: { lang: Lang }) {
                 {bot.image ? (
                   <Image
                     src={bot.image}
-                    alt=""
+                    // The banner shows logo and wordmark of the bot, so it
+                    // says something and is named after it.
+                    alt={`MSK ${bot.name}`}
                     fill
                     // Gemessen, nicht geraten: eine Spalte unter dem
                     // md-Breakpoint, darueber die halbe Breite, und ab xl greift
