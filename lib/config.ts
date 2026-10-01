@@ -7,6 +7,8 @@ export const SITE_CONFIG = {
   discord: 'https://discord.gg/5hHSBRHvJE',
   github: 'https://github.com/MSK-Scripts',
   docs: 'https://docu.msk-scripts.de',
+  /** The contact address from the imprint. */
+  email: 'info@msk-scripts.de',
 }
 
 // ── Featured Package IDs ─────────────────────────────────────

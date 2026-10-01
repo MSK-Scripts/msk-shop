@@ -9,12 +9,13 @@ import { PackagePrice } from '@/components/packages/PackagePrice'
 import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
-import { PACKAGE_BADGES, PACKAGE_TAGS, PACKAGE_DESCRIPTIONS, PACKAGE_SEO, SITE_CONFIG } from '@/lib/config'
+import { PACKAGE_BADGES, PACKAGE_TAGS, PACKAGE_DESCRIPTIONS } from '@/lib/config'
 import { sanitizeTebexHtml } from '@/lib/sanitize'
 import { alternatesFor, openGraphFor, packageImage, packageSnippet } from '@/lib/seo'
 import { JsonLd } from '@/components/JsonLd'
 import { breadcrumbJsonLd, productJsonLd } from '@/lib/jsonLd'
 import { getRequestLang } from '@/lib/serverLang'
+import { localePath } from '@/lib/lang'
 import { packagesTranslations } from '@/lib/i18n'
 import type { BadgeVariant } from '@/components/ui/Badge'
 
@@ -90,13 +91,14 @@ export default async function PackageDetailPage({
   return (
     <div className="container-page py-10 md:py-14">
       {/* Structured data. The breadcrumb values must match the visible
-          navigation directly below. */}
+          navigation directly below, in the language of the page: on `/de` the
+          trail reads "Start › Pakete" and links to the German addresses. */}
       <JsonLd
         data={[
-          productJsonLd(pkg, configDescription),
+          productJsonLd(pkg, configDescription, lang),
           breadcrumbJsonLd([
-            { name: 'Home',     path: '/' },
-            { name: 'Packages', path: '/packages' },
+            { name: t.breadcrumb_home,     path: localePath(lang, '/') },
+            { name: t.breadcrumb_packages, path: localePath(lang, '/packages') },
             { name: pkg.name },
           ]),
         ]}

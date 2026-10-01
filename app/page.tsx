@@ -11,6 +11,8 @@ import { FreeScripts } from '@/components/home/FreeScripts'
 import { CustomPackages } from '@/components/home/CustomPackages'
 import { CTASection } from '@/components/home/CTASection'
 import { alternatesFor, openGraphFor } from '@/lib/seo'
+import { JsonLd } from '@/components/JsonLd'
+import { webSiteJsonLd } from '@/lib/jsonLd'
 import { loadHeadlineStat } from '@/lib/fivestats'
 import { loadDocPageCount } from '@/lib/docsPages'
 import { loadReleases } from '@/lib/releases'
@@ -72,6 +74,9 @@ export default async function HomePage() {
 
   return (
     <>
+      {/* The site as an entity, next to the Organization from the root layout.
+          Only here: the home page is the one address that stands for the site. */}
+      <JsonLd data={webSiteJsonLd()} />
       {/* The proof line sits inside the hero, not below it: it is the proof for
           the hero's claim and must therefore be visible without scrolling. */}
       <Hero lang={lang} releases={releases}>

@@ -9,6 +9,7 @@ import { PACKAGE_BADGES, PACKAGE_TAGS, PACKAGE_DESCRIPTIONS, CATEGORY_SEO, resol
 import { sanitizeTebexHtml, pickLanguageBlock } from '@/lib/sanitize'
 import { categoriesTranslations, packagesTranslations } from '@/lib/i18n'
 import { getRequestLang } from '@/lib/serverLang'
+import { localePath } from '@/lib/lang'
 import { alternatesFor, DEFAULT_OG_IMAGE, openGraphFor, plainExcerpt } from '@/lib/seo'
 import { JsonLd } from '@/components/JsonLd'
 import { breadcrumbJsonLd } from '@/lib/jsonLd'
@@ -99,11 +100,11 @@ export default async function CategoryPage({
     // and DESIGN.md names the wide container for exactly that. During the
     // container cleanup on 22.08. this page had been overlooked.
     <div className="container-page py-10 md:py-14">
-      {/* Must match the visible breadcrumb below. */}
+      {/* Must match the visible breadcrumb below, in the language of the page. */}
       <JsonLd
         data={breadcrumbJsonLd([
-          { name: 'Home',     path: '/' },
-          { name: 'Packages', path: '/packages' },
+          { name: t.breadcrumb_home,     path: localePath(lang, '/') },
+          { name: t.breadcrumb_packages, path: localePath(lang, '/packages') },
           { name: category.name },
         ])}
       />

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { breadcrumbJsonLd, organizationJsonLd, productJsonLd, softwareApplicationJsonLd } from '@/lib/jsonLd'
+import { breadcrumbJsonLd, organizationJsonLd, productJsonLd, softwareApplicationJsonLd, webSiteJsonLd } from '@/lib/jsonLd'
 import type { TebexPackage } from '@/types/tebex'
 
 function makePackage(overrides: Partial<TebexPackage> = {}): TebexPackage {
@@ -182,5 +182,47 @@ describe('organizationJsonLd describe option', () => {
     expect(org.name).toBe('MSK Scripts')
     expect(org).toHaveProperty('url')
     expect(org).toHaveProperty('sameAs')
+  })
+})
+
+describe('productJsonLd language', () => {
+  // Until 01.10.2026 the German page named the English address in `url` and
+  // `offers.url`, against its own canonical.
+  it('names the address of the page it sits on', () => {
+    const en = productJsonLd(makePackage(), undefined, 'en')
+    const de = productJsonLd(makePackage(), undefined, 'de')
+
+    expect(String(en.url)).toMatch(/[^/]\/packages\/5732587$/)
+    expect(String(de.url)).toMatch(/\/de\/packages\/5732587$/)
+    expect((de.offers as Record<string, unknown>).url).toBe(de.url)
+  })
+
+  it('stays on the default language when none is given', () => {
+    expect(productJsonLd(makePackage()).url).toBe(productJsonLd(makePackage(), undefined, 'en').url)
+  })
+})
+
+describe('webSiteJsonLd', () => {
+  it('describes one site in both languages, published by the organisation', () => {
+    const site = webSiteJsonLd()
+    const org = organizationJsonLd()
+
+    expect(site['@type']).toBe('WebSite')
+    expect(site.url).toBe(org.url)
+    expect(site.inLanguage).toEqual(['en', 'de'])
+    expect((site.publisher as Record<string, unknown>).name).toBe(org.name)
+  })
+
+  // A SearchAction promises a results page. The site has a search dialog, no
+  // such page, and markup for something that does not exist is a false claim.
+  it('announces no search it does not have', () => {
+    expect(webSiteJsonLd().potentialAction).toBeUndefined()
+  })
+})
+
+describe('organizationJsonLd contact', () => {
+  it('carries the contact address, with and without the description', () => {
+    expect(organizationJsonLd().email).toBe('info@msk-scripts.de')
+    expect(organizationJsonLd({ describe: false }).email).toBe('info@msk-scripts.de')
   })
 })

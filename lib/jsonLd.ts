@@ -1,4 +1,6 @@
 import { SITE_CONFIG } from '@/lib/config'
+import type { Lang } from '@/lib/i18n'
+import { DEFAULT_LANG, localePath } from '@/lib/lang'
 import { resolveDisplayPrice } from '@/lib/price'
 import { absoluteUrl, siteUrl } from '@/lib/siteUrl'
 import { packageImage, plainExcerpt } from '@/lib/seo'
@@ -56,11 +58,37 @@ export function organizationJsonLd(opts: { describe?: boolean } = {}): JsonLdObj
     url:        siteUrl(),
     logo:       absoluteUrl('/logo.png'),
     ...(describe ? { description: SITE_CONFIG.tagline } : {}),
+    // The address from the imprint. Without a way to reach it, a reader of the
+    // markup cannot tell a business from a name someone typed in.
+    email:      SITE_CONFIG.email,
     sameAs: [
       SITE_CONFIG.github,
       SITE_CONFIG.discord,
       'https://www.musiker15.de',
     ],
+  }
+}
+
+/**
+ * The site itself, for the home page.
+ *
+ * One entity for both language versions: `/` and `/de` are the same site, so
+ * the node names both languages instead of existing twice. There is no
+ * `SearchAction`, because the site has no search results page a crawler could
+ * be sent to.
+ */
+export function webSiteJsonLd(): JsonLdObject {
+  return {
+    '@context':  SCHEMA,
+    '@type':     'WebSite',
+    name:        'MSK Scripts',
+    url:         siteUrl(),
+    inLanguage:  ['en', 'de'],
+    publisher: {
+      '@type': 'Organization',
+      name:    'MSK Scripts',
+      url:     siteUrl(),
+    },
   }
 }
 
@@ -197,10 +225,16 @@ export function faqPageJsonLd(entries: FaqEntry[]): JsonLdObject {
  * authenticated basket ident that a crawler never has. Taking them into
  * account here would produce markup that does not match the rendered page.
  * See `resolveDisplayPrice` in `lib/price.ts`.
+ *
+ * **Address:** the page the markup sits on. Until 01.10.2026 `url` and
+ * `offers.url` always named the English page, so the German one pointed a
+ * crawler away from itself, to an address its own canonical contradicts. Name
+ * and description stay as Tebex delivers them: that is what both language
+ * versions show.
  */
-export function productJsonLd(pkg: TebexPackage, description?: string): JsonLdObject {
+export function productJsonLd(pkg: TebexPackage, description?: string, lang: Lang = DEFAULT_LANG): JsonLdObject {
   const { price } = resolveDisplayPrice(pkg.base_price ?? 0, pkg.total_price ?? pkg.base_price ?? 0)
-  const url = absoluteUrl(`/packages/${pkg.id}`)
+  const url = absoluteUrl(localePath(lang, `/packages/${pkg.id}`))
 
   const product: JsonLdObject = {
     '@context': SCHEMA,
