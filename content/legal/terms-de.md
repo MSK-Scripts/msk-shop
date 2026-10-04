@@ -4,7 +4,7 @@ Stand: September 2026
 
 ## § 1 Geltungsbereich
 
-(1) Diese AGB gelten zwischen Moritz Kohm, handelnd als „MSK Scripts“, c/o Impressumservice Dein-Impressum, Stettiner Str. 41, 35410 Hungen („MSK Scripts“, „wir“) und dir für:
+(1) Diese AGB gelten zwischen Moritz Kohm, handelnd als „MSK Scripts“, Hauptstraße 103, 68535 Edingen-Neckarhausen („MSK Scripts“, „wir“) und dir für:
 
 - den **Shop** unter www.msk-scripts.de (FiveM-Ressourcen), soweit MSK Scripts Lizenzgeber ist – Verkäufer ist Tebex Limited (§ 2);
 - den **Ticket-Bot-Transcript-Service** einschließlich Hosted Bot Management (§§ 5–7);

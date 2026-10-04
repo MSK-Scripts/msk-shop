@@ -20,10 +20,10 @@ Um Ihr Widerrufsrecht auszuüben, müssen Sie uns
 
 Moritz Kohm
 MSK Scripts
-c/o Impressumservice Dein-Impressum
-Stettiner Str. 41
-35410 Hungen
+Hauptstraße 103  
+68535 Edingen-Neckarhausen  
 Deutschland
+
 E-Mail: info@msk-scripts.de
 
 mittels einer eindeutigen Erklärung (z. B. ein mit der Post versandter Brief oder E-Mail) über Ihren Entschluss, diesen Vertrag zu widerrufen, informieren. Sie können dafür das beigefügte Muster-Widerrufsformular verwenden, das jedoch nicht vorgeschrieben ist.
@@ -54,9 +54,8 @@ Haben Sie verlangt, dass die Dienstleistungen während der Widerrufsfrist beginn
 
 An
 Moritz Kohm, MSK Scripts
-c/o Impressumservice Dein-Impressum
-Stettiner Str. 41
-35410 Hungen
+Hauptstraße 103  
+68535 Edingen-Neckarhausen  
 Deutschland
 E-Mail: info@msk-scripts.de
 

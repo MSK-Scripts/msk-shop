@@ -6,7 +6,7 @@ This is a translation for your convenience. The German version at www.msk-script
 
 ## § 1 Scope
 
-(1) These Terms apply between Moritz Kohm, trading as "MSK Scripts", c/o Impressumservice Dein-Impressum, Stettiner Str. 41, 35410 Hungen ("MSK Scripts", "we") and you for:
+(1) These Terms apply between Moritz Kohm, trading as "MSK Scripts", Hauptstraße 103, 68535 Edingen-Neckarhausen ("MSK Scripts", "we") and you for:
 
 - the **shop** at www.msk-scripts.de (FiveM resources), insofar as MSK Scripts is the licensor – the seller is Tebex Limited (§ 2);
 - the **Ticket Bot transcript service** including Hosted Bot Management (§§ 5–7);

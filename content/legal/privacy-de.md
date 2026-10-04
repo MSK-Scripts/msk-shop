@@ -7,7 +7,8 @@ Diese Datenschutzerklärung gilt für www.msk-scripts.de und die Subdomains docu
 ## 1. Verantwortlicher
 
 **Moritz Kohm** (MSK Scripts)
-c/o Impressumservice Dein-Impressum, Stettiner Str. 41, 35410 Hungen, Deutschland
+Hauptstraße 103, 68535 Edingen-Neckarhausen, Deutschland
+
 E-Mail: info@msk-scripts.de
 
 Ein Datenschutzbeauftragter ist gesetzlich nicht erforderlich und nicht bestellt.

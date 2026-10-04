@@ -8,9 +8,8 @@ This is a translation for your convenience. The German version is authoritative.
 
 **Moritz Kohm**
 trading as "MSK Scripts" (sole proprietorship)
-c/o Impressumservice Dein-Impressum
-Stettiner Str. 41
-35410 Hungen
+Hauptstraße 103  
+68535 Edingen-Neckarhausen  
 Germany
 
 ## Contact

@@ -9,7 +9,8 @@ This privacy policy applies to www.msk-scripts.de and the subdomains docu., disc
 ## 1. Controller
 
 **Moritz Kohm** (MSK Scripts)
-c/o Impressumservice Dein-Impressum, Stettiner Str. 41, 35410 Hungen, Germany
+Hauptstraße 103, 68535 Edingen-Neckarhausen, Germany
+
 Email: info@msk-scripts.de
 
 A data protection officer is not legally required and has not been appointed.

@@ -6,9 +6,8 @@ Angaben gemäß § 5 DDG – gilt für www.msk-scripts.de sowie die Subdomains f
 
 **Moritz Kohm**
 handelnd unter der Geschäftsbezeichnung „MSK Scripts“ (Einzelunternehmen)
-c/o Impressumservice Dein-Impressum
-Stettiner Str. 41
-35410 Hungen
+Hauptstraße 103  
+68535 Edingen-Neckarhausen  
 Deutschland
 
 ## Kontakt

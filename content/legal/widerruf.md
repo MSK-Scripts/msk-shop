@@ -22,10 +22,10 @@ To exercise your right of withdrawal, you must inform us
 
 Moritz Kohm
 MSK Scripts
-c/o Impressumservice Dein-Impressum
-Stettiner Str. 41
-35410 Hungen
+Hauptstraße 103  
+68535 Edingen-Neckarhausen  
 Germany
+
 Email: info@msk-scripts.de
 
 by means of a clear statement (e.g. a letter sent by post or an email) of your decision to withdraw from this contract. You may use the attached model withdrawal form, but it is not obligatory.
@@ -56,9 +56,8 @@ If you requested that the services begin during the withdrawal period, you shall
 
 To
 Moritz Kohm, MSK Scripts
-c/o Impressumservice Dein-Impressum
-Stettiner Str. 41
-35410 Hungen
+Hauptstraße 103  
+68535 Edingen-Neckarhausen  
 Germany
 Email: info@msk-scripts.de
 
