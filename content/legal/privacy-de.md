@@ -1,6 +1,6 @@
 # Datenschutzerklärung
 
-Stand: September 2026
+Stand: Oktober 2026
 
 Diese Datenschutzerklärung gilt für www.msk-scripts.de und die Subdomains docu., discord., paste. und s.msk-scripts.de sowie für die von MSK Scripts betriebenen Discord-Bots. Für **MSK Forms** (forms.msk-scripts.de) gilt eine eigene Datenschutzerklärung; MSK Paste und MSK Shortener haben zusätzlich Kurzhinweise auf ihren Seiten.
 

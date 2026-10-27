@@ -81,4 +81,4 @@ Der Nutzung der hier veröffentlichten Kontaktdaten zur Übersendung nicht ausdr
 
 ---
 
-*Stand: September 2026*
+*Stand: Oktober 2026*

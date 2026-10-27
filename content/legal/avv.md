@@ -2,7 +2,7 @@
 
 pursuant to Art. 28 (3) GDPR
 
-Last updated: September 2026
+Last updated: October 2026
 
 This is a translation for your convenience. The German version at www.msk-scripts.de/de/terms/avv is authoritative.
 

@@ -11,6 +11,14 @@ import { getLegalContent, renderMarkdown } from '@/lib/markdown'
 
 const LEGAL_DIR = path.join(process.cwd(), 'content', 'legal')
 
+// Month names of both languages, mapped to the month number.
+const MONTHS: Record<string, number> = {
+  Januar: 1, January: 1, Februar: 2, February: 2, März: 3, March: 3,
+  April: 4, Mai: 5, May: 5, Juni: 6, June: 6, Juli: 7, July: 7,
+  August: 8, September: 9, Oktober: 10, October: 10, November: 11,
+  Dezember: 12, December: 12,
+}
+
 const SLUGS = [
   'imprint', 'imprint-de',
   'privacy', 'privacy-de',
@@ -51,10 +59,10 @@ describe('Rechtstexte', () => {
       const text = fs.readFileSync(path.join(LEGAL_DIR, f), 'utf-8')
       const m = text.match(/(?:Stand|Last updated):\s*\**\s*([A-Za-zä]+\s+\d{4})/)
       expect(m, `${f} nennt keinen Stand`).not.toBeNull()
-      // Month names differ per language; what is compared is the year
-      // plus the position in the calendar via the month index of each
-      // version. In practice the year plus "September/September" is enough.
-      stamps.add(m![1].replace('September', 'M9'))
+      // Month names differ per language, so compare year and month number.
+      const [month, year] = m![1].split(/\s+/)
+      expect(MONTHS[month], `${f}: unbekannter Monat "${month}"`).toBeDefined()
+      stamps.add(`${year}-${MONTHS[month]}`)
     }
     expect(stamps.size, `verschiedene Staende: ${[...stamps].join(', ')}`).toBe(1)
   })
