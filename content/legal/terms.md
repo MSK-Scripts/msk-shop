@@ -2,7 +2,7 @@
 
 Last updated: October 2026
 
-This is a translation for your convenience. The German version at www.msk-scripts.de/de/terms is authoritative. German statutory references (§ = section, Art. = article) are kept unchanged.
+German statutory references (§ = section, Art. = article) are kept unchanged.
 
 ## § 1 Scope
 
@@ -18,7 +18,7 @@ For **MSK Forms**, the terms at forms.msk-scripts.de/terms apply.
 
 (2) A consumer is any natural person who enters into a legal transaction for purposes that are predominantly outside their trade, business or profession (§ 13 BGB); an entrepreneur is anyone acting in the exercise of their trade, business or profession (§ 14 BGB).
 
-(3) These Terms are available at www.msk-scripts.de/terms and can be saved and printed. The contract language is German; the English version is provided for information, and in the event of discrepancies the German version prevails.
+(3) These Terms are available at www.msk-scripts.de/en/legal/terms and can be saved and printed. The contract language is German; the English version is provided for information, and in the event of discrepancies the German version prevails.
 
 ## § 2 Shop: contracting party, payment, delivery
 
@@ -75,7 +75,7 @@ Prices are final prices. Our services are VAT-exempt under the small business sc
 
 (3) We may cancel the subscription with four weeks notice to the end of a billing period; in the event of serious violations (§ 10) without notice.
 
-(4) **Right of withdrawal:** Consumers have a 14-day right of withdrawal. The withdrawal instructions with the model form and the electronic withdrawal function "Withdraw from contract" can be found at www.msk-scripts.de/terms/widerruf. If the service begins during the withdrawal period at your request, on withdrawal you owe the proportionate value of the service provided up to that point; during the free trial period nothing is owed.
+(4) **Right of withdrawal:** Consumers have a 14-day right of withdrawal. The withdrawal instructions with the model form and the electronic withdrawal function "Withdraw from contract" can be found at www.msk-scripts.de/en/legal/withdrawal. If the service begins during the withdrawal period at your request, on withdrawal you owe the proportionate value of the service provided up to that point; during the free trial period nothing is owed.
 
 (5) We announce price changes at least six weeks in advance in text form; they take effect from the next billing period after that deadline. You may cancel until then.
 
@@ -83,7 +83,7 @@ Prices are final prices. Our services are VAT-exempt under the small business sc
 
 (1) **API key:** The key is tied to one Discord server and must be kept secret. On re-verification the previous key becomes invalid. In the event of misuse we may block keys.
 
-(2) **Responsibility for content:** Transcripts and attachments are created by your bot; you are responsible for their content. For the storage you conclude the data processing agreement with us at www.msk-scripts.de/terms/avv (Art. 28 GDPR) and ensure that your users are informed about the storage at MSK Scripts. Illegal content, infringements of third-party rights and malicious code are not permitted.
+(2) **Responsibility for content:** Transcripts and attachments are created by your bot; you are responsible for their content. For the storage you conclude the data processing agreement with us at www.msk-scripts.de/en/legal/dpa (Art. 28 GDPR) and ensure that your users are informed about the storage at MSK Scripts. Illegal content, infringements of third-party rights and malicious code are not permitted.
 
 (3) **Public URLs:** Transcripts are accessible via random, unlinked URLs to anyone who knows the URL. You decide who you pass links on to. After the retention period expires, transcripts are deleted; beyond that there is no claim to availability.
 

@@ -22,6 +22,7 @@ export default function ImprintPage() {
       htmlDe={renderMarkdown(getLegalContent('imprint-de'))}
       breadcrumbKey="legal_imprint"
       href="/legal/imprint"
+      notice="imprint"
     />
   )
 }

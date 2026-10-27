@@ -16,7 +16,7 @@ Für **MSK Forms** gelten die AGB unter forms.msk-scripts.de/terms.
 
 (2) Verbraucher ist jede natürliche Person, die ein Rechtsgeschäft zu Zwecken abschließt, die überwiegend weder ihrer gewerblichen noch selbständigen beruflichen Tätigkeit zugerechnet werden können (§ 13 BGB); Unternehmer ist, wer in Ausübung seiner gewerblichen oder selbständigen beruflichen Tätigkeit handelt (§ 14 BGB).
 
-(3) Die AGB sind unter www.msk-scripts.de/de/terms abrufbar, speicherbar und druckbar. Vertragssprache ist Deutsch; die englische Fassung dient der Information, bei Abweichungen gilt die deutsche.
+(3) Die AGB sind unter www.msk-scripts.de/de/rechtliches/agb abrufbar, speicherbar und druckbar. Vertragssprache ist Deutsch; die englische Fassung dient der Information, bei Abweichungen gilt die deutsche.
 
 ## § 2 Shop: Vertragspartner, Zahlung, Lieferung
 
@@ -73,7 +73,7 @@ Preise sind Endpreise. Unsere Leistungen sind als Kleinunternehmer nach § 19 US
 
 (3) Wir können das Abonnement mit einer Frist von vier Wochen zum Ende eines Abrechnungszeitraums kündigen; bei schweren Verstößen (§ 10) fristlos.
 
-(4) **Widerrufsrecht:** Verbrauchern steht ein 14-tägiges Widerrufsrecht zu. Die Widerrufsbelehrung mit Muster-Formular und der elektronischen Widerrufsfunktion „Vertrag widerrufen“ findest du unter www.msk-scripts.de/de/terms/widerruf. Beginnt die Leistung auf deinen Wunsch während der Widerrufsfrist, schuldest du bei Widerruf den anteiligen Wert der bis dahin erbrachten Leistung; während der kostenlosen Testphase fällt nichts an.
+(4) **Widerrufsrecht:** Verbrauchern steht ein 14-tägiges Widerrufsrecht zu. Die Widerrufsbelehrung mit Muster-Formular und der elektronischen Widerrufsfunktion „Vertrag widerrufen“ findest du unter www.msk-scripts.de/de/rechtliches/widerrufsbelehrung. Beginnt die Leistung auf deinen Wunsch während der Widerrufsfrist, schuldest du bei Widerruf den anteiligen Wert der bis dahin erbrachten Leistung; während der kostenlosen Testphase fällt nichts an.
 
 (5) Preisänderungen kündigen wir mindestens sechs Wochen vorher in Textform an; sie gelten erst ab dem nächsten Abrechnungszeitraum nach Ablauf der Frist. Du kannst bis dahin kündigen.
 
@@ -81,7 +81,7 @@ Preise sind Endpreise. Unsere Leistungen sind als Kleinunternehmer nach § 19 US
 
 (1) **API-Schlüssel:** Der Schlüssel ist an einen Discord-Server gebunden und geheim zu halten. Bei erneuter Verifizierung wird der bisherige Schlüssel ungültig. Bei Missbrauch können wir Schlüssel sperren.
 
-(2) **Verantwortung für Inhalte:** Transkripte und Anhänge erzeugt dein Bot; für ihren Inhalt bist du verantwortlich. Du schließt für die Speicherung mit uns die Vereinbarung zur Auftragsverarbeitung unter www.msk-scripts.de/de/terms/avv (Art. 28 DSGVO) ab und stellst sicher, dass deine Nutzer über die Speicherung bei MSK Scripts informiert sind. Unzulässig sind rechtswidrige Inhalte, Rechtsverletzungen Dritter und Schadcode.
+(2) **Verantwortung für Inhalte:** Transkripte und Anhänge erzeugt dein Bot; für ihren Inhalt bist du verantwortlich. Du schließt für die Speicherung mit uns die Vereinbarung zur Auftragsverarbeitung unter www.msk-scripts.de/de/rechtliches/avv (Art. 28 DSGVO) ab und stellst sicher, dass deine Nutzer über die Speicherung bei MSK Scripts informiert sind. Unzulässig sind rechtswidrige Inhalte, Rechtsverletzungen Dritter und Schadcode.
 
 (3) **Öffentliche URLs:** Transkripte sind über zufällige, nicht verlinkte URLs für jeden abrufbar, der die URL kennt. Du entscheidest, wem du Links weitergibst. Nach Ablauf der Speicherdauer werden Transkripte gelöscht; darüber hinaus besteht kein Anspruch auf Verfügbarkeit.
 

@@ -22,6 +22,7 @@ export default function WithdrawalPage() {
       htmlDe={renderMarkdown(getLegalContent('widerruf-de'))}
       breadcrumbKey="legal_widerruf"
       href="/legal/withdrawal"
+      notice="withdrawal"
     />
   )
 }

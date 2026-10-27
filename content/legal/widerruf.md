@@ -2,8 +2,6 @@
 
 Last updated: October 2026
 
-This is a translation for your convenience. The German version at www.msk-scripts.de/de/terms/widerruf is authoritative and is the wording that applies to the statutory model instruction.
-
 These withdrawal instructions apply to **paid subscriptions** (Ticket Bot transcript service Premium, Hosted and Business, as well as MSK Forms Pro and Enterprise) for which MSK Scripts is your contracting party and Stripe merely handles the payment.
 
 They do **not** apply to purchases in the shop: there, Tebex Limited is the seller and provides its own withdrawal instructions during the order process (https://checkout.tebex.io/terms).
@@ -30,7 +28,7 @@ Email: info@msk-scripts.de
 
 by means of a clear statement (e.g. a letter sent by post or an email) of your decision to withdraw from this contract. You may use the attached model withdrawal form, but it is not obligatory.
 
-You can also exercise your right of withdrawal online at https://www.msk-scripts.de/vertrag-widerrufen. If you use this online function, we will send you an acknowledgement of receipt on a durable medium (e.g. by email) without delay, containing information on the content of the withdrawal declaration as well as the date and time it was received.
+You can also exercise your right of withdrawal online at https://www.msk-scripts.de/en/withdraw-contract. If you use this online function, we will send you an acknowledgement of receipt on a durable medium (e.g. by email) without delay, containing information on the content of the withdrawal declaration as well as the date and time it was received.
 
 To meet the withdrawal deadline, it is sufficient for you to send your communication concerning your exercise of the right of withdrawal before the withdrawal period has expired.
 

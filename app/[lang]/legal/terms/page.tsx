@@ -22,6 +22,7 @@ export default function TermsPage() {
       htmlDe={renderMarkdown(getLegalContent('terms-de'))}
       breadcrumbKey="legal_terms"
       href="/legal/terms"
+      notice="terms"
     />
   )
 }

@@ -22,6 +22,7 @@ export default function PrivacyPage() {
       htmlDe={renderMarkdown(getLegalContent('privacy-de'))}
       breadcrumbKey="legal_privacy"
       href="/legal/privacy"
+      notice="privacy"
     />
   )
 }

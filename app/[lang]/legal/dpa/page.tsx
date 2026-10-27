@@ -22,6 +22,7 @@ export default function DpaPage() {
       htmlDe={renderMarkdown(getLegalContent('avv-de'))}
       breadcrumbKey="legal_avv"
       href="/legal/dpa"
+      notice="dpa"
     />
   )
 }

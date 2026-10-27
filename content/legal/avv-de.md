@@ -4,7 +4,7 @@ gemäß Art. 28 Abs. 3 DSGVO
 
 Stand: Oktober 2026
 
-Diese Vereinbarung wird Vertragsbestandteil, sobald du als Betreiber eines Discord-Servers den **Ticket-Bot-Transcript-Service**, das **Hosted Bot Management** oder **MSK Forms** aktivierst („Auftraggeber“, „du“). Auftragsverarbeiter ist Moritz Kohm, MSK Scripts, Hauptstraße 103, 68535 Edingen-Neckarhausen („MSK Scripts“, „wir“). Du kannst diese Vereinbarung jederzeit unter https://www.msk-scripts.de/de/terms/avv abrufen und für deine Unterlagen speichern.
+Diese Vereinbarung wird Vertragsbestandteil, sobald du als Betreiber eines Discord-Servers den **Ticket-Bot-Transcript-Service**, das **Hosted Bot Management** oder **MSK Forms** aktivierst („Auftraggeber“, „du“). Auftragsverarbeiter ist Moritz Kohm, MSK Scripts, Hauptstraße 103, 68535 Edingen-Neckarhausen („MSK Scripts“, „wir“). Du kannst diese Vereinbarung jederzeit unter https://www.msk-scripts.de/de/rechtliches/avv abrufen und für deine Unterlagen speichern.
 
 ## 1. Gegenstand und Dauer
 
