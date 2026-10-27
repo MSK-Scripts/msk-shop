@@ -1,6 +1,6 @@
 # Widerrufsbelehrung
 
-Stand: September 2026
+Stand: Oktober 2026
 
 Diese Widerrufsbelehrung gilt für **kostenpflichtige Abonnements** (Ticket-Bot-Transcript-Service Premium, Hosted und Business sowie MSK Forms Pro und Enterprise), bei denen MSK Scripts dein Vertragspartner ist und Stripe lediglich die Zahlung abwickelt.
 
@@ -43,7 +43,7 @@ Haben Sie verlangt, dass die Dienstleistungen während der Widerrufsfrist beginn
 ## Ergänzende Hinweise
 
 - Während der **kostenlosen Testphase** fällt kein Entgelt an; ein Widerruf in dieser Zeit ist kostenfrei.
-- Das Widerrufsrecht erlischt nach § 356 Abs. 4 BGB, wenn wir die Dienstleistung vollständig erbracht haben und Sie vor Beginn ausdrücklich zugestimmt und bestätigt haben, dass Sie Ihr Widerrufsrecht bei vollständiger Vertragserfüllung verlieren. Bei laufenden Monatsabonnements ist dies innerhalb der ersten 14 Tage regelmäßig nicht der Fall.
+- Das Widerrufsrecht erlischt nach § 356 Abs. 5 BGB, wenn wir die Dienstleistung vollständig erbracht haben und Sie vor Beginn ausdrücklich zugestimmt und bestätigt haben, dass Sie Ihr Widerrufsrecht bei vollständiger Vertragserfüllung verlieren. Bei laufenden Monatsabonnements ist dies innerhalb der ersten 14 Tage regelmäßig nicht der Fall.
 - Unabhängig vom Widerrufsrecht können Sie Abonnements jederzeit zum Ende des Abrechnungszeitraums über „Verträge hier kündigen“ im Seitenfuß kündigen (§ 312k BGB).
 
 ---

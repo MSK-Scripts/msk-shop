@@ -1,6 +1,6 @@
 # Withdrawal Instructions
 
-Last updated: September 2026
+Last updated: October 2026
 
 This is a translation for your convenience. The German version at www.msk-scripts.de/de/terms/widerruf is authoritative and is the wording that applies to the statutory model instruction.
 
@@ -45,7 +45,7 @@ If you requested that the services begin during the withdrawal period, you shall
 ## Additional notes
 
 - No charge is incurred during the **free trial period**; a withdrawal during that time is free of charge.
-- The right of withdrawal expires under § 356 (4) BGB if we have fully performed the service and you expressly consented and acknowledged, before performance began, that you lose your right of withdrawal upon full performance of the contract. For ongoing monthly subscriptions this is regularly not the case within the first 14 days.
+- The right of withdrawal expires under § 356 (5) BGB if we have fully performed the service and you expressly consented and acknowledged, before performance began, that you lose your right of withdrawal upon full performance of the contract. For ongoing monthly subscriptions this is regularly not the case within the first 14 days.
 - Irrespective of the right of withdrawal, you can cancel subscriptions at any time with effect from the end of the billing period via "Cancel contracts here" in the site footer (§ 312k BGB).
 
 ---

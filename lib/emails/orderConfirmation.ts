@@ -75,8 +75,9 @@ export function buildOrderConfirmation(input: OrderConfirmationInput): BuiltEmai
   const rows = [
     de ? `Leistung: Ticket-Bot-Transcript-Service ${tierLabel}` : `Service: Ticket Bot transcript service ${tierLabel}`,
     de ? `Discord-Server: ${guildLabel}`                        : `Discord server: ${guildLabel}`,
-    de ? `Preis: ${price} pro Monat, keine Umsatzsteuer ausgewiesen (§ 19 UStG)`
-       : `Price: ${price} per month, no VAT shown (§ 19 UStG)`,
+    de ? `Preis: ${price} pro Monat` : `Price: ${price} per month`,
+    de ? 'Steuerfreie Leistung, Kleinunternehmer nach § 19 UStG'
+       : 'VAT-exempt supply, small business under § 19 UStG',
     de ? 'Laufzeit: ein Monat, verlängert sich monatlich'
        : 'Term: one month, renews monthly',
     ...(trialLine ? [trialLine] : []),

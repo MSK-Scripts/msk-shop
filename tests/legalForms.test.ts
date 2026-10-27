@@ -193,6 +193,16 @@ describe('Bestellbestaetigung (§ 312f BGB)', () => {
     expect(mail.text).not.toContain('/de/terms')
   })
 
+  it('states the VAT exemption under § 19 UStG in both languages', () => {
+    // § 34a UStDV requires a note on the exemption. Since 2025 § 19 UStG is
+    // an exemption, so "no VAT shown" no longer describes it correctly.
+    const de = buildOrderConfirmation({ lang: 'de', ...base })
+    const en = buildOrderConfirmation({ lang: 'en', ...base })
+    expect(de.text).toContain('Steuerfreie Leistung, Kleinunternehmer nach § 19 UStG')
+    expect(en.text).toContain('VAT-exempt supply, small business under § 19 UStG')
+    expect(de.text).not.toContain('ausgewiesen')
+  })
+
   it('weist die Testphase samt Ende aus', () => {
     const mail = buildOrderConfirmation({
       lang: 'de', ...base, inTrial: true, trialEndsAt: new Date('2026-09-16T00:00:00Z'),

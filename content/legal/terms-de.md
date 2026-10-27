@@ -1,6 +1,6 @@
 # Allgemeine Geschäftsbedingungen (AGB)
 
-Stand: September 2026
+Stand: Oktober 2026
 
 ## § 1 Geltungsbereich
 
@@ -57,7 +57,7 @@ Kostenlos bereitgestellte Ressourcen (z. B. msk_core, msk_fuel), der Ticket-Bot,
 
 Wahlweise mit jährlicher Abrechnung: **49 €/Jahr** (Premium), **99 €/Jahr** (Hosted), **199 €/Jahr** (Business). Die Leistungen sind dieselben, die Laufzeit beträgt dann zwölf Monate (§ 6 Abs. 1).
 
-Preise sind Endpreise; Umsatzsteuer wird nach § 19 UStG nicht ausgewiesen.
+Preise sind Endpreise. Unsere Leistungen sind als Kleinunternehmer nach § 19 UStG umsatzsteuerfrei, Umsatzsteuer wird nicht berechnet.
 
 (2) **Branding-Verzicht:** Für Server mit aktivem Premium-, Hosted- oder Business-Abonnement verzichten wir auf die Zusatzbedingung nach § 4; der Hinweis darf entfernt werden. Der Verzicht endet mit dem Abonnement.
 
@@ -139,6 +139,8 @@ Wir können diese AGB bei triftigem Grund (Rechtsänderung, Rechtsprechung, Änd
 
 (2) Es gilt deutsches Recht unter Ausschluss des UN-Kaufrechts. Für Verbraucher mit gewöhnlichem Aufenthalt in einem anderen EU-Staat bleiben die zwingenden Schutzvorschriften ihres Aufenthaltsstaats unberührt (Art. 6 Abs. 2 Rom I).
 
-(3) Gegenüber Kaufleuten, juristischen Personen des öffentlichen Rechts und öffentlich-rechtlichen Sondervermögen ist Gerichtsstand Mannheim. Für Verbraucher gelten die gesetzlichen Gerichtsstände.
+(3) Vertragssprachen sind Deutsch und Englisch. Diese AGB liegen in einer deutschen und einer englischen Fassung vor, die englische Fassung ist eine Übersetzung. Bei Widersprüchen oder Bedeutungsunterschieden zwischen beiden Fassungen ist die deutsche Fassung maßgeblich. Ist der Kunde Verbraucher, kann er sich auf die englische Fassung berufen, soweit sie für ihn günstiger ist.
 
-(4) Sollten einzelne Bestimmungen unwirksam sein, bleibt der Vertrag im Übrigen wirksam; es gelten die gesetzlichen Regelungen.
+(4) Gegenüber Kaufleuten, juristischen Personen des öffentlichen Rechts und öffentlich-rechtlichen Sondervermögen ist Gerichtsstand Mannheim. Für Verbraucher gelten die gesetzlichen Gerichtsstände.
+
+(5) Sollten einzelne Bestimmungen unwirksam sein, bleibt der Vertrag im Übrigen wirksam; es gelten die gesetzlichen Regelungen.

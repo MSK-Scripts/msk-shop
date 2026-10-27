@@ -625,8 +625,8 @@ export const dashboardTranslations = {
     sub_confirm_title:    'Check your order',
     sub_confirm_service:  'Service',
     sub_confirm_price:    'Total price',
-    sub_confirm_price_value: '{price} per month, no VAT shown (§ 19 UStG)',
-    sub_confirm_price_value_year: '{price} per year, no VAT shown (§ 19 UStG)',
+    sub_confirm_price_value: '{price} per month, VAT-exempt as a small business under § 19 UStG',
+    sub_confirm_price_value_year: '{price} per year, VAT-exempt as a small business under § 19 UStG',
     sub_confirm_term:     'Term',
     sub_confirm_term_value:
                           'One month, renews monthly, can be cancelled at any time to the end of the billing period.',
@@ -905,8 +905,8 @@ export const dashboardTranslations = {
     sub_confirm_title:    'Bestellung prüfen',
     sub_confirm_service:  'Leistung',
     sub_confirm_price:    'Gesamtpreis',
-    sub_confirm_price_value: '{price} pro Monat, keine Umsatzsteuer ausgewiesen (§ 19 UStG)',
-    sub_confirm_price_value_year: '{price} pro Jahr, keine Umsatzsteuer ausgewiesen (§ 19 UStG)',
+    sub_confirm_price_value: '{price} pro Monat, steuerfrei als Kleinunternehmer nach § 19 UStG',
+    sub_confirm_price_value_year: '{price} pro Jahr, steuerfrei als Kleinunternehmer nach § 19 UStG',
     sub_confirm_term:     'Laufzeit',
     sub_confirm_term_value:
                           'Ein Monat, verlängert sich monatlich, jederzeit zum Ende des Abrechnungszeitraums kündbar.',
@@ -1912,12 +1912,16 @@ export const layoutTranslations = {
     footer_powered_by: 'Powered by',
     footer_built_by:   'Built by',
     // Trust line above the copyright. Every claim is backed by the T&C:
-    //   § 2 (Tebex as merchant of record), § 3 (single-server licence),
-    //   § 4 (refunds case by case).
-    footer_trust_checkout: 'Checkout and payment are handled by Tebex Limited as merchant of record.',
-    footer_trust_license:  'Single-server license',
-    footer_trust_refund:   'Refunds case by case',
-    footer_trust_vat:      'All prices include VAT',
+    //   § 2 (Tebex as merchant of record, refunds via Tebex), § 3
+    //   (single-server licence), § 5 (subscriptions VAT-exempt, § 19 UStG).
+    // "Statutory" must stay: without it the withdrawal right reads like an
+    // extra service (UWG annex no. 10), and "refunds case by case" alone
+    // misstates consumer rights (§ 5 (2) no. 7 UWG).
+    footer_trust_checkout:  'Checkout and payment are handled by Tebex Limited as merchant of record.',
+    footer_trust_license:   'Single-server license',
+    footer_trust_statutory: 'Your statutory rights (withdrawal, warranty) are unaffected',
+    footer_trust_refund:    'Voluntary refunds case by case',
+    footer_trust_vat:       'Shop prices include VAT, subscriptions VAT-exempt under § 19 UStG',
     footer_payment_label:  'Payment methods:',
     legal_imprint:     'Imprint',
     legal_privacy:     'Privacy Policy',
@@ -1980,10 +1984,11 @@ export const layoutTranslations = {
     footer_rights:     'Alle Rechte vorbehalten.',
     footer_powered_by: 'Bereitgestellt über',
     footer_built_by:   'Erstellt von',
-    footer_trust_checkout: 'Checkout und Zahlung wickelt Tebex Limited als Merchant of Record ab.',
-    footer_trust_license:  'Single-Server-Lizenz',
-    footer_trust_refund:   'Rückerstattung im Einzelfall',
-    footer_trust_vat:      'Alle Preise inkl. MwSt.',
+    footer_trust_checkout:  'Checkout und Zahlung wickelt Tebex Limited als Merchant of Record ab.',
+    footer_trust_license:   'Lizenz für einen Server',
+    footer_trust_statutory: 'Gesetzliche Rechte (Widerruf, Gewährleistung) bleiben unberührt',
+    footer_trust_refund:    'Freiwillige Erstattungen im Einzelfall',
+    footer_trust_vat:       'Shop-Preise inkl. MwSt., Abos steuerfrei nach § 19 UStG',
     footer_payment_label:  'Zahlungsarten:',
     legal_imprint:     'Impressum',
     legal_privacy:     'Datenschutz',

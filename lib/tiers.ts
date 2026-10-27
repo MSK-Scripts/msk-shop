@@ -43,7 +43,7 @@ export interface TierConfig {
   /** Max uploads per hour per API key (rate limiting). */
   uploadsPerHour: number;
   /**
-   * Monthly price in euro cents, VAT not shown (§ 19 UStG).
+   * Monthly price in euro cents, VAT-exempt (§ 19 UStG).
    *
    * Lives here rather than only in the marketing copy because § 312j Abs. 2
    * BGB requires the total price to be shown *immediately before* the order

@@ -2,7 +2,7 @@
 
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 import Image from 'next/image'
-import { Receipt, ShieldCheck, Undo2 } from 'lucide-react'
+import { Receipt, Scale, ShieldCheck, Undo2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useLang } from '@/components/i18n/LangProvider'
 import { PaymentMarks } from '@/components/layout/PaymentMarks'
@@ -173,17 +173,18 @@ export function Footer() {
           </div>{/* /Link-Spalten */}
         </div>
 
-        {/* Vertrauenszeile. Jede Aussage ist in den AGB gedeckt und verlinkt
-            dorthin: § 2 Tebex als Merchant of Record, § 3 Single-Server-Lizenz,
-            § 4 Rückerstattung im Einzelfall. */}
+        {/* Trust line. Every claim links to the text that backs it: § 3 of the
+            T&C (licence), the withdrawal instructions (statutory rights),
+            § 2 (3) of the T&C (refunds via Tebex). */}
         <div className="mt-10 border-t border-[var(--color-border)] pt-6 text-center">
           <p className="text-xs text-[var(--color-muted-foreground)]">
             {t.footer_trust_checkout}
           </p>
           <ul className="mt-3 flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
             {[
-              { icon: ShieldCheck, label: t.footer_trust_license, href: '/terms' },
-              { icon: Undo2,       label: t.footer_trust_refund,  href: '/terms' },
+              { icon: ShieldCheck, label: t.footer_trust_license,   href: '/terms' },
+              { icon: Scale,       label: t.footer_trust_statutory, href: '/terms/widerruf' },
+              { icon: Undo2,       label: t.footer_trust_refund,    href: '/terms' },
               { icon: Receipt,     label: t.footer_trust_vat },
             ].map(item => (
               <li key={item.label} className="flex items-center gap-1.5 text-xs text-[var(--color-muted-foreground)]">

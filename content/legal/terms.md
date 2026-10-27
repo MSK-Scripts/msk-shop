@@ -1,6 +1,6 @@
 # Terms and Conditions
 
-Last updated: September 2026
+Last updated: October 2026
 
 This is a translation for your convenience. The German version at www.msk-scripts.de/de/terms is authoritative. German statutory references (§ = section, Art. = article) are kept unchanged.
 
@@ -59,7 +59,7 @@ Resources provided free of charge (e.g. msk_core, msk_fuel), the Ticket Bot, the
 
 Optionally billed yearly: **€49/year** (Premium), **€99/year** (Hosted), **€199/year** (Business). The services are the same; the term is then twelve months (§ 6 (1)).
 
-Prices are final prices; VAT is not shown pursuant to § 19 UStG.
+Prices are final prices. Our services are VAT-exempt under the small business scheme of § 19 UStG; no VAT is charged.
 
 (2) **Branding waiver:** For servers with an active Premium, Hosted or Business subscription we waive the additional term under § 4; the notice may be removed. The waiver ends with the subscription.
 
@@ -141,6 +141,8 @@ We may change these Terms for good cause (change in the law, case law, change to
 
 (2) German law applies, excluding the UN Convention on Contracts for the International Sale of Goods. For consumers with their habitual residence in another EU state, the mandatory protective provisions of their state of residence remain unaffected (Art. 6 (2) Rome I).
 
-(3) Towards merchants, legal persons under public law and special funds under public law, the place of jurisdiction is Mannheim. For consumers, the statutory places of jurisdiction apply.
+(3) The contract languages are German and English. These Terms are available in German and in English; the English version is a translation. If the two versions conflict or differ in meaning, the German version prevails. A customer who is a consumer may rely on the English version where it is more favourable to them.
 
-(4) Should individual provisions be invalid, the remainder of the contract remains effective; the statutory provisions then apply.
+(4) Towards merchants, legal persons under public law and special funds under public law, the place of jurisdiction is Mannheim. For consumers, the statutory places of jurisdiction apply.
+
+(5) Should individual provisions be invalid, the remainder of the contract remains effective; the statutory provisions then apply.
