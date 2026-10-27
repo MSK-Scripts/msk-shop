@@ -360,9 +360,8 @@ export type Resolution =
   /**
    * Render a page. `path` is the internal path (basis for canonical and
    * hreflang), `target` the address Next routes (`/de/legal/terms`).
-   * `remember` is true when the visitor chose the language by its prefix.
    */
-  | { kind: 'page'; lang: Lang; path: string; target: string; remember: boolean }
+  | { kind: 'page'; lang: Lang; path: string; target: string }
 
 function targetOf(lang: Lang, internal: string): string {
   return internal === '/' ? `/${lang}` : `/${lang}${internal}`
@@ -403,25 +402,25 @@ export function resolveRequest(
       return { kind: 'redirect', status: 308, location: publicPath(DEFAULT_LANG, internal) }
     }
     if (looksLikeFile(pathname)) return { kind: 'pass' }
-    return { kind: 'page', lang: DEFAULT_LANG, path: pathname, target: targetOf(DEFAULT_LANG, pathname), remember: false }
+    return { kind: 'page', lang: DEFAULT_LANG, path: pathname, target: targetOf(DEFAULT_LANG, pathname) }
   }
 
   const { lang, rest } = prefixed
 
   // `/de/api/...` is not a page, and not a reason to redirect either.
   if (isExemptPath(rest)) {
-    return { kind: 'page', lang, path: rest, target: pathname, remember: false }
+    return { kind: 'page', lang, path: rest, target: pathname }
   }
 
   const internal = resolveInternal(lang, rest)
   if (internal === null) {
-    return { kind: 'page', lang, path: rest, target: pathname, remember: true }
+    return { kind: 'page', lang, path: rest, target: pathname }
   }
 
   const canonical = publicPath(lang, internal)
   if (canonical !== pathname) return { kind: 'redirect', status: 308, location: canonical }
 
-  return { kind: 'page', lang, path: internal, target: targetOf(lang, internal), remember: true }
+  return { kind: 'page', lang, path: internal, target: targetOf(lang, internal) }
 }
 
 /**

@@ -5,7 +5,18 @@ import { Translate as Languages } from '@/components/icons'
 import { useLang } from './LangProvider'
 import { Button } from '@/components/ui/Button'
 import { layoutTranslations } from '@/lib/i18n'
+import { LANG_COOKIE } from '@/lib/routes'
 import { cn } from '@/lib/utils'
+
+/**
+ * Stores the language a visitor chose here, so that `/` opens in it next
+ * time. This click is the only place the cookie is written: the language
+ * is in the address anyway, and the privacy policy promises no language
+ * cookie without the visitor's own choice.
+ */
+function rememberLanguage(lang: string): void {
+  document.cookie = `${LANG_COOKIE}=${lang}; Path=/; Max-Age=31536000; SameSite=Lax; Secure`
+}
 
 const languages = [
   { code: 'de', label: 'Deutsch' },
@@ -79,7 +90,7 @@ export function LanguageDropdown() {
               role="menuitem"
               hrefLang={l.code}
               aria-current={lang === l.code ? 'true' : undefined}
-              onClick={() => setOpen(false)}
+              onClick={() => { rememberLanguage(l.code); setOpen(false) }}
               className={cn(
                 'flex w-full items-center justify-between gap-4 rounded-md px-3 py-2 text-sm outline-none transition-colors',
                 'hover:bg-[var(--color-muted)] focus-visible:bg-[var(--color-muted)]',

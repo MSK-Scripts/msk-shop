@@ -306,18 +306,10 @@ export function proxy(request: NextRequest) {
           new URL(`${resolution.target}${request.nextUrl.search}`, request.url),
           { request: { headers: requestHeaders } },
         )
-    // Remember the version used last, so that `/` leads there next time.
-    // Only on a real page request and only when the value changes; HttpOnly,
-    // because no script needs it.
-    if (resolution.remember && !isPrefetch && request.cookies.get(LANG_COOKIE)?.value !== resolution.lang) {
-      response.cookies.set(LANG_COOKIE, resolution.lang, {
-        path:     '/',
-        maxAge:   365 * 24 * 60 * 60,
-        httpOnly: true,
-        secure:   true,
-        sameSite: 'lax',
-      })
-    }
+    // No language cookie is set here. The language is in the address, and
+    // `msk_lang` is only written by the language switcher when a visitor
+    // chooses a language (components/i18n/LanguageDropdown.tsx). The privacy
+    // policy promises exactly that; tests/routes.test.ts guards it.
   }
 
   // Response-Header — diese werden tatsächlich an den Browser geliefert.

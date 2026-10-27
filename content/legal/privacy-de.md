@@ -42,7 +42,7 @@ Wir setzen ausschließlich technisch notwendige Cookies und Speicherobjekte, die
 | `msk_upload_session` | Bildergalerie | Anmeldung für das Einreichen von Bildern | 7 Tage |
 | `msk_admin_oauth_state` | Admin-Bereich | CSRF-Schutz im Discord-Login | 10 Min. |
 | `msk_admin_session` | Admin-Bereich | Anmeldung im internen Admin-Bereich | 1 Std. |
-| `msk_lang` | Shop | merkt sich die zuletzt genutzte Sprachfassung (`/en` oder `/de`), damit www.msk-scripts.de in ihr öffnet | 12 Monate |
+| `msk_lang` | Shop | nur wenn du die Sprache über den Umschalter wechselst: merkt sich diese Wahl, damit www.msk-scripts.de in ihr öffnet | 12 Monate |
 | `NEXT_LOCALE` | Paste, Shortener | Sprachwahl | 12 Monate |
 
 **localStorage (Shop, wird nicht an unseren Server gesendet):**
@@ -50,7 +50,7 @@ Wir setzen ausschließlich technisch notwendige Cookies und Speicherobjekte, die
 
 **sessionStorage (Shop):** `discordReturnPath`, `wantDiscordAuth`, `pendingBasketIdent`, `pendingPackageId`, `pendingPackageType` – merken den laufenden Kauf während des CFX.re-/Discord-Logins; gelöscht beim Schließen des Tabs.
 
-Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO (Login, Warenkorb) bzw. lit. f DSGVO (Sprache). Die Sprache der Hauptseite steckt in der URL (`/en/`, `/de/`); `msk_lang` merkt sich nur, welche Fassung du zuletzt genutzt hast, damit www.msk-scripts.de dich dorthin führt.
+Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO (Login, Warenkorb) bzw. lit. f DSGVO (Sprache). Die Sprache der Hauptseite steckt in der URL (`/en/`, `/de/`), dafür wird kein Cookie gesetzt. `msk_lang` entsteht nur, wenn du die Sprache selbst über den Umschalter wechselst.
 
 ## 5. Shop (Tebex, CFX.re, Discord)
 
