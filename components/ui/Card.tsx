@@ -13,9 +13,10 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
     <div
       ref={ref}
       className={cn(
-        'rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] text-[var(--color-card-foreground)]',
-        'shadow-[var(--shadow-card)] transition-all duration-200',
-        hoverLift && 'hover:-translate-y-1 hover:shadow-[var(--shadow-card-hover)] hover:border-[color-mix(in_oklab,var(--color-primary)_30%,var(--color-border))]',
+        'rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] text-[var(--color-card-foreground)]',
+        'shadow-[var(--shadow-card)] transition-[border-color,box-shadow] duration-150',
+        // A clickable card answers with a green border and a shadow, it does not jump.
+        hoverLift && 'hover:shadow-[var(--shadow-card-hover)] hover:border-[var(--color-primary)]',
         className,
       )}
       {...props}

@@ -218,10 +218,10 @@
   --color-badge-fivem:    #b04200;
   --color-badge-sale:     #c90000;
 
-  /* Radien */
+  /* Radii: 6 px for controls (rounded-md), 10 px for cards (rounded-lg). */
   --radius-sm: 0.25rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.625rem;
   --radius-xl: 1rem;
 
   /* Schatten */
@@ -360,6 +360,13 @@
 
   :target {
     scroll-margin-top: 5rem;
+  }
+
+  /* The page behind an open modal <dialog> (components/ui/Dialog.tsx) stops
+     scrolling. A stylesheet rule instead of a script that sets inline styles,
+     so the nonce CSP has nothing to block. */
+  html:has(dialog[open]:modal) {
+    overflow: hidden;
   }
 }
 

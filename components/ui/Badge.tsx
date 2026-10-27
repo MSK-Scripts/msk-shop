@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils'
 export type BadgeVariant =
   | 'default'
   | 'primary'
+  | 'tag'
   | 'outline'
   | 'sale'
   | 'esx'
@@ -27,6 +28,9 @@ const variantClasses: Record<BadgeVariant, string> = {
     'bg-[color-mix(in_oklab,var(--color-primary)_12%,transparent)] text-[var(--color-primary)] border-[color-mix(in_oklab,var(--color-primary)_30%,transparent)]',
   outline:
     'bg-transparent text-[var(--color-muted-foreground)] border-[var(--color-border)]',
+  // Soft green tag, e.g. for frameworks on a product card (4.88:1 light, 6.29:1 dark).
+  tag:
+    'bg-[var(--color-accent-soft)] text-[var(--color-primary)] border-transparent',
   standalone:
     'bg-[color-mix(in_oklab,var(--color-primary)_12%,transparent)] text-[var(--color-primary)] border-[color-mix(in_oklab,var(--color-primary)_30%,transparent)]',
   // Ökosystem-Badges: Fläche, Rahmen und Text leiten sich aus einem einzigen
