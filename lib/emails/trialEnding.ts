@@ -7,10 +7,11 @@
 //
 // Everything here is pure so it can be tested without SMTP or Stripe.
 
+import { publicPath } from '@/lib/routes';
+
 export type MailLang = 'en' | 'de';
 
 const BASE_URL = 'https://www.msk-scripts.de';
-const DASHBOARD_URL = `${BASE_URL}/ticketbot/dashboard`;
 
 /**
  * Pick the mail language from the customer's Stripe locales. German only for an
@@ -63,6 +64,7 @@ export interface BuiltEmail {
 export function buildTrialEndingEmail(input: TrialEndingInput): BuiltEmail {
   const { lang, guildLabel, trialEndsAt, price } = input;
   const date = formatTrialEnd(trialEndsAt, lang);
+  const dashboardUrl = `${BASE_URL}${publicPath(lang, '/dashboard/ticket-bot')}`;
 
   const copy = lang === 'de'
     ? {
@@ -103,7 +105,7 @@ export function buildTrialEndingEmail(input: TrialEndingInput): BuiltEmail {
     '',
     copy.keep,
     '',
-    `${copy.cta}: ${DASHBOARD_URL}`,
+    `${copy.cta}: ${dashboardUrl}`,
     '',
     copy.signoff,
   ].join('\n');
@@ -117,7 +119,7 @@ export function buildTrialEndingEmail(input: TrialEndingInput): BuiltEmail {
     <p style="margin:0 0 16px;line-height:1.6;">${escapeHtml(copy.action)}</p>
     <p style="margin:0 0 24px;line-height:1.6;">${escapeHtml(copy.keep)}</p>
     <p style="margin:0 0 24px;">
-      <a href="${DASHBOARD_URL}" style="display:inline-block;background:#00E676;color:#0a0b0d;text-decoration:none;font-weight:bold;padding:12px 20px;border-radius:8px;">${escapeHtml(copy.cta)}</a>
+      <a href="${dashboardUrl}" style="display:inline-block;background:#00E676;color:#0a0b0d;text-decoration:none;font-weight:bold;padding:12px 20px;border-radius:8px;">${escapeHtml(copy.cta)}</a>
     </p>
     <p style="margin:0;color:#b0adb8;font-size:13px;white-space:pre-line;">${escapeHtml(copy.signoff)}</p>
   </div>

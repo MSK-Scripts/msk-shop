@@ -41,7 +41,7 @@ import { GithubMark } from '@/components/icons/GithubMark'
 /**
  * Die Giveaway-Bot-Landingpage, einmal gebaut, zweimal gerendert.
  *
- * `/giveaway` mit `lang="en"`, `/de/giveaway` mit `lang="de"`. Wie beim
+ * `/en/discord/giveaway-bot` mit `lang="en"`, `/de/discord/giveaway-bot` mit `lang="de"`. Wie beim
  * Ticket-Bot ist die Sprache pro Route fest, nicht cookie-abhängig. Nur Icons
  * und Layout stehen hier, die Texte in `content/giveaway-copy.ts`.
  */

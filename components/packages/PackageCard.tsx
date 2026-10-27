@@ -50,7 +50,7 @@ export function PackageCard({ pkg, tags, badges, description, lang }: Props) {
           // Zweiter Weg zum selben Ziel, deshalb aus der Tabreihenfolge und aus
           // dem Accessibility-Baum heraus: der Titel darunter ist der Link.
           <Link
-            href={`/packages/${pkg.id}`}
+            href={`/fivem/${pkg.id}`}
             aria-hidden
             tabIndex={-1}
             className="absolute inset-0"
@@ -103,7 +103,7 @@ export function PackageCard({ pkg, tags, badges, description, lang }: Props) {
             Auf einer Produktkarte erwartet man beides anklickbar. */}
         <CardTitle className="text-lg">
           <Link
-            href={`/packages/${pkg.id}`}
+            href={`/fivem/${pkg.id}`}
             className="rounded-sm outline-offset-4 hover:text-[var(--color-primary)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--color-ring)]"
           >
             {pkg.name}
@@ -168,7 +168,7 @@ export function PackageCard({ pkg, tags, badges, description, lang }: Props) {
                   )}
             </Button>
             <Button asChild size="md" variant="outline" className="tap-target">
-              <Link href={`/packages/${pkg.id}`} prefetch={true}>
+              <Link href={`/fivem/${pkg.id}`} prefetch={true}>
                 {t.card_details}
               </Link>
             </Button>

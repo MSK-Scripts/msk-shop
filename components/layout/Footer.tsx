@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button'
 import { useLang } from '@/components/i18n/LangProvider'
 import { PaymentMarks } from '@/components/layout/PaymentMarks'
 import { layoutTranslations } from '@/lib/i18n'
+import { isBotPath } from '@/lib/routes'
 import { GithubMark } from '@/components/icons/GithubMark'
 
 const ECOSYSTEM_LINKS = [
@@ -41,24 +42,23 @@ function ColumnTitle({ children }: { children: React.ReactNode }) {
 
 export function Footer() {
   const { lang, path } = useLang()
-  // Die beiden Bot-Landingpages richten sich an ein anderes Publikum als der
-  // Shop. `path` kommt bereits ohne Sprachpraefix, die Pruefung gilt also fuer
-  // /ticketbot und /de/ticketbot gleichermassen.
-  const isBotPage = path.startsWith('/ticketbot') || path.startsWith('/giveaway')
+  // The bot pages address another audience than the shop. `path` is the
+  // internal path, so the check holds for both language versions.
+  const isBotPage = isBotPath(path)
   const t = layoutTranslations[lang]
 
   const shopLinks = [
-    { label: t.footer_all_packages, href: '/packages' },
-    { label: t.footer_resource_stats, href: '/resources' },
-    { label: t.footer_image_gallery, href: '/images' },
+    { label: t.footer_all_packages, href: '/fivem' },
+    { label: t.footer_resource_stats, href: '/stats' },
+    { label: t.footer_image_gallery, href: '/tools/images' },
   ]
   // Eigene Spalte für die beiden Bot-Landingpages. Sie hingen vorher an genau
   // einer internen Quelle, dem „Bots"-Menü im Header. Das Sprachpräfix setzt
   // `LocaleLink` selbst, hier steht deshalb der nackte Pfad — ein eigenes
   // Präfix ergab hier `/de/de/ticketbot`.
   const botLinks = [
-    { label: 'Discord Ticket Bot',   href: '/ticketbot' },
-    { label: 'Discord Giveaway Bot', href: '/giveaway' },
+    { label: 'Discord Ticket Bot',   href: '/discord/ticket-bot' },
+    { label: 'Discord Giveaway Bot', href: '/discord/giveaway-bot' },
   ]
   // Support-Spalte: die Kanäle, über die Kunden vor und nach dem Kauf Hilfe
   // bekommen. Die E-Mail ist dieselbe, die § 4 der AGB für Rückerstattungen
@@ -70,11 +70,11 @@ export function Footer() {
   ]
   // Legal-Labels sind sprachabhängig (z. B. Imprint ⇄ Impressum).
   const legalLinks = [
-    { label: t.legal_imprint,  href: '/terms/imprint' },
-    { label: t.legal_privacy,  href: '/terms/privacy' },
-    { label: t.legal_terms,    href: '/terms' },
-    { label: t.legal_widerruf, href: '/terms/widerruf' },
-    { label: t.legal_avv,      href: '/terms/avv' },
+    { label: t.legal_imprint,  href: '/legal/imprint' },
+    { label: t.legal_privacy,  href: '/legal/privacy' },
+    { label: t.legal_terms,    href: '/legal/terms' },
+    { label: t.legal_widerruf, href: '/legal/withdrawal' },
+    { label: t.legal_avv,      href: '/legal/dpa' },
   ]
   // Eigene Spalte für die drei Pflichtschaltflächen.
   //
@@ -83,8 +83,8 @@ export function Footer() {
   // Textseiten wäre sie genau das nicht. Der Wortlaut der Beschriftungen ist
   // vorgegeben und darf nicht zu „Widerruf" oder „Kündigung" verkürzt werden.
   const dutyLinks = [
-    { label: t.legal_revoke, href: '/vertrag-widerrufen' },
-    { label: t.legal_cancel, href: '/vertrag-kuendigen' },
+    { label: t.legal_revoke, href: '/withdraw-contract' },
+    { label: t.legal_cancel, href: '/cancel-contract' },
     { label: t.legal_report, href: '/report' },
   ]
 
@@ -182,9 +182,9 @@ export function Footer() {
           </p>
           <ul className="mt-3 flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
             {[
-              { icon: ShieldCheck, label: t.footer_trust_license,   href: '/terms' },
-              { icon: Scale,       label: t.footer_trust_statutory, href: '/terms/widerruf' },
-              { icon: Undo2,       label: t.footer_trust_refund,    href: '/terms' },
+              { icon: ShieldCheck, label: t.footer_trust_license,   href: '/legal/terms' },
+              { icon: Scale,       label: t.footer_trust_statutory, href: '/legal/withdrawal' },
+              { icon: Undo2,       label: t.footer_trust_refund,    href: '/legal/terms' },
               { icon: Receipt,     label: t.footer_trust_vat },
             ].map(item => (
               <li key={item.label} className="flex items-center gap-1.5 text-xs text-[var(--color-muted-foreground)]">

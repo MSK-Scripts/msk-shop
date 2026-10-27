@@ -11,15 +11,15 @@ import type { Lang } from '@/lib/i18n'
  * gibt Google einen beschreibenden Ankertext statt nur „Ticket Bot" in der
  * Navigation.
  *
- * Der Link bleibt in derselben Sprachfassung: von `/de/ticketbot` geht es auf
- * `/de/giveaway`, nicht auf die englische Seite. Das Präfix setzt `LocaleLink`,
+ * Der Link bleibt in derselben Sprachfassung: von `/de/discord/ticket-bot` geht es auf
+ * `/de/discord/giveaway-bot`, nicht auf die englische Seite. Das Präfix setzt `LocaleLink`,
  * hier steht der nackte Pfad.
  */
 export function BotCrossLink({ lang, current }: { lang: Lang; current: 'ticketbot' | 'giveaway' }) {
   const toGiveaway = current === 'ticketbot'
   const de = lang === 'de'
 
-  const href = toGiveaway ? '/giveaway' : '/ticketbot'
+  const href = toGiveaway ? '/discord/giveaway-bot' : '/discord/ticket-bot'
 
   const label = toGiveaway ? 'Discord Giveaway Bot' : 'Discord Ticket Bot'
   const lead  = de ? 'Ebenfalls von MSK Scripts:' : 'Also from MSK Scripts:'

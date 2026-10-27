@@ -51,8 +51,14 @@ describe('buildTrialEndingEmail', () => {
 
   it('links the dashboard in both the text and the html part', () => {
     const mail = buildTrialEndingEmail({ ...base, lang: 'en' })
-    expect(mail.text).toContain('https://www.msk-scripts.de/ticketbot/dashboard')
-    expect(mail.html).toContain('https://www.msk-scripts.de/ticketbot/dashboard')
+    expect(mail.text).toContain('https://www.msk-scripts.de/en/dashboard/ticket-bot')
+    expect(mail.html).toContain('https://www.msk-scripts.de/en/dashboard/ticket-bot')
+  })
+
+  it('links the dashboard in the language of the mail', () => {
+    const mail = buildTrialEndingEmail({ ...base, lang: 'de' })
+    expect(mail.text).toContain('https://www.msk-scripts.de/de/dashboard/ticket-bot')
+    expect(mail.html).toContain('https://www.msk-scripts.de/de/dashboard/ticket-bot')
   })
 
   it('escapes the guild name so a server called "<script>" cannot inject html', () => {

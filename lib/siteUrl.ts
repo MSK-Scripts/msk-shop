@@ -13,7 +13,7 @@ export function siteUrl(): string {
   return raw.replace(/\/+$/, '')
 }
 
-/** Absolute URL for an internal path, e.g. `absoluteUrl('/packages')`. */
+/** Absolute URL for a public path, e.g. `absoluteUrl('/en/fivem')`. */
 export function absoluteUrl(path: string): string {
   return `${siteUrl()}${path.startsWith('/') ? path : `/${path}`}`
 }

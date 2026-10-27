@@ -7,9 +7,13 @@ import { fetchUserGuilds }              from '@/lib/discordGuilds';
 import type { RawGuild }                from '@/lib/discordGuilds';
 import { reconcileGuildAccess }         from '@/lib/guildAccess';
 import { isRecheckState }               from '@/lib/accessRecheck';
+import { getPreferredLang } from '@/lib/serverLang'
+import { publicPath } from '@/lib/routes'
 
 export async function GET(req: Request) {
   const baseUrl      = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://www.msk-scripts.de';
+  // Back to the page in the language the visitor came from.
+  const lang = await getPreferredLang();
   const { searchParams } = new URL(req.url);
   const code         = searchParams.get('code');
   const state        = searchParams.get('state');
@@ -33,8 +37,8 @@ export async function GET(req: Request) {
   // set, so this cannot bounce.
   const fail = (reason: string) => {
     const res = NextResponse.redirect(
-      recheck ? `${baseUrl}/ticketbot/dashboard`
-              : `${baseUrl}/ticketbot/verify?error=${reason}`,
+      recheck ? `${baseUrl}${publicPath(lang, '/dashboard/ticket-bot')}`
+              : `${baseUrl}${publicPath(lang, `/dashboard/ticket-bot/verify?error=${reason}`)}`,
     );
     res.cookies.delete('msk_oauth_state');
     return res;
@@ -116,7 +120,7 @@ export async function GET(req: Request) {
   if (recheck) {
     // Straight back to the dashboard. No verify session: the person already
     // holds a dashboard session, and the wizard state would only be litter.
-    const res = NextResponse.redirect(`${baseUrl}/ticketbot/dashboard`);
+    const res = NextResponse.redirect(`${baseUrl}${publicPath(lang, '/dashboard/ticket-bot')}`);
     res.cookies.delete('msk_oauth_state');
     return res;
   }
@@ -124,7 +128,7 @@ export async function GET(req: Request) {
   // Store guild list + Discord user ID in the signed session, redirect to guild selection
   const adminGuilds: DiscordGuild[] = manageable.map(g => ({ id: g.id, name: g.name, icon: g.icon }));
   const updatedSession = signSession({ discordUserId, guilds: adminGuilds });
-  const res            = NextResponse.redirect(`${baseUrl}/ticketbot/verify?step=select`);
+  const res            = NextResponse.redirect(`${baseUrl}${publicPath(lang, '/dashboard/ticket-bot/verify?step=select')}`);
 
   res.cookies.set('msk_verify_session', updatedSession, {
     httpOnly: true,

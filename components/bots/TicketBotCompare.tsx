@@ -178,7 +178,7 @@ export function TicketBotCompare({ lang }: { lang: Lang }) {
           </p>
           <div className="mt-7 flex flex-wrap justify-center gap-3">
             <Button asChild>
-              <Link href="/ticketbot/verify" prefetch={false}>
+              <Link href="/dashboard/ticket-bot/verify" prefetch={false}>
                 {t.ctaPrimary}
                 <ArrowRight className="h-4 w-4" />
               </Link>

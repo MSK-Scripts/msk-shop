@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next'
 
-import { istEinmaligeAdresse, localePath } from '@/lib/lang'
+import { LANGS } from '@/lib/lang'
+import { isExemptPath, publicPath } from '@/lib/routes'
 import { siteUrl } from '@/lib/siteUrl'
 
 /**
@@ -12,12 +13,12 @@ import { siteUrl } from '@/lib/siteUrl'
  * budget on pages that never belong in the index.
  *
  * **Every block applies in both languages.** Since the language is in the path,
- * `/de/cart` is an address of its own, and a line `Disallow: /cart` says nothing
- * about it. Measured on 23.08.2026: `/de/login` and `/de/cart` were
- * crawlable and carried `index, follow`. That is why the list is generated from
- * one source for both versions instead of maintaining it twice by hand.
+ * `/de/warenkorb` is an address of its own, and a line `Disallow: /en/cart` says
+ * nothing about it. Measured on 23.08.2026: `/de/login` and `/de/cart` were
+ * crawlable and carried `index, follow`. That is why the list holds internal
+ * paths and the route table writes the public form for each language.
  */
-const GESPERRT = [
+const BLOCKED = [
   '/api/',
   '/admin',
   '/account',
@@ -26,21 +27,16 @@ const GESPERRT = [
   '/login',
   '/auth/',
   '/botproxy',
-  '/ticketbot/verify',
-  '/ticketbot/dashboard',
-  '/giveaway/verify',
-  '/giveaway/dashboard',
-  '/giveaway/g/',
+  '/dashboard/',
+  '/discord/giveaway-bot/g/',
 ]
 
 export default function robots(): MetadataRoute.Robots {
-  // `localePath` adds no prefix to a path in the default language, so the
-  // English version stays exactly as written. What exists only once anyway
-  // (API, Auth, Botproxy) gets no second line: under `/de/` that has returned
-  // a 404 since 23.08.2026, and blocking an address that does not exist is
-  // just noise in a file that someone is supposed to be able to read.
-  const disallow = GESPERRT.flatMap(p =>
-    istEinmaligeAdresse(p) ? [p] : [localePath('en', p), localePath('de', p)])
+  // What exists only once (API, Auth, Botproxy) gets no prefixed line: under
+  // `/en/` and `/de/` it is a 404, and blocking an address that does not exist
+  // is just noise in a file that someone is supposed to be able to read.
+  const disallow = BLOCKED.flatMap(p =>
+    isExemptPath(p.replace(/\/$/, '')) ? [p] : LANGS.map(lang => publicPath(lang, p)))
 
   return {
     rules: [

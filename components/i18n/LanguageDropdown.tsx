@@ -66,14 +66,13 @@ export function LanguageDropdown() {
             // Navigation zur Gegenstueck-URL. Damit greifen Mittelklick,
             // "in neuem Tab oeffnen" und der Zurueck-Knopf.
             //
-            // Bewusst `<a>` statt `next/link`: beide Adressen zeigen nach dem
-            // Rewrite auf denselben Routenbaum (`/de/packages` wird intern zu
-            // `/packages`). Der Client-Router sieht deshalb keinen
-            // Segmentwechsel und rendert weder Seite noch Layout neu — die
-            // Adresse wechselte, der Text blieb englisch. Ein Dokument-Request
-            // laesst den Server alles neu rendern, inklusive Titel und
-            // `<html lang>`. Das kostet einmal Ladezeit an einer Stelle, die
-            // man hoechstens einmal pro Besuch benutzt.
+            // Deliberately `<a>` instead of `next/link`: the switch changes
+            // the root segment `[lang]`, and a document request lets the
+            // server render everything anew, including title and
+            // `<html lang>`. Before the redesign both addresses even pointed
+            // to the same route tree, and the client router kept the English
+            // text. It costs one page load at a place used at most once per
+            // visit.
             <a
               key={l.code}
               href={hrefFor(l.code)}

@@ -1,4 +1,5 @@
 import type { Lang } from '@/lib/i18n'
+import { publicPath } from '@/lib/routes'
 
 /**
  * Sichtbare Texte der Ticket-Bot-Landingpage, je Sprache.
@@ -124,7 +125,7 @@ export interface TicketBotCopy {
 }
 
 const en: TicketBotCopy = {
-  altHref:  '/de/ticketbot',
+  altHref:  publicPath('de', '/discord/ticket-bot'),
   altLabel: 'Diese Seite auf Deutsch',
 
   badge: 'Discord Ticket Bot',
@@ -307,7 +308,7 @@ const en: TicketBotCopy = {
 }
 
 const de: TicketBotCopy = {
-  altHref:  '/ticketbot',
+  altHref:  publicPath('en', '/discord/ticket-bot'),
   altLabel: 'This page in English',
 
   badge: 'Discord Ticket Bot',

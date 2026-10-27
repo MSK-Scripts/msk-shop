@@ -1,4 +1,6 @@
 import { describe, it, expect } from 'vitest'
+import { readdirSync } from 'node:fs'
+import { join, relative, sep } from 'node:path'
 
 import {
   LEGACY_ROUTES, ROUTES, alternatePaths, chooseRootLang, internalPath, isExemptPath,
@@ -11,6 +13,19 @@ function sample(pattern: string): string {
   return pattern.replace(/\[([^\]]+)\]/g, (_, name: string) => `sample-${name}`)
 }
 
+/** Internal paths of all pages under app/[lang], from the file tree. */
+function pagesOnDisk(): string[] {
+  const root = join(process.cwd(), 'app', '[lang]')
+  const walk = (dir: string): string[] => readdirSync(dir, { withFileTypes: true }).flatMap(item =>
+    item.isDirectory() ? walk(join(dir, item.name)) : item.name === 'page.tsx' ? [dir] : [])
+  return walk(root)
+    .map(dir => `/${relative(root, dir).split(sep).join('/')}`.replace(/\/$/, '') || '/')
+    // The catch-all only exists to render the 404 inside the layout.
+    .filter(path => !path.includes('[...'))
+}
+
+/** Table entries whose pages come in later phases of the redesign. */
+const PLANNED = ['/fivem/free', '/fivem/all-access', '/discord', '/tools', '/about']
 
 describe('route table', () => {
   it('gives every internal path a public form in both languages', () => {
@@ -89,6 +104,24 @@ describe('route table', () => {
   })
 })
 
+describe('route table and file tree', () => {
+  const onDisk = pagesOnDisk()
+
+  it('finds the pages at all', () => {
+    expect(onDisk.length).toBeGreaterThan(30)
+  })
+
+  it('has an entry for every page under app/[lang]', () => {
+    const known = new Set(ROUTES.map(r => r.internal))
+    expect(onDisk.filter(p => !known.has(p))).toEqual([])
+  })
+
+  it('has a page for every entry except the planned ones', () => {
+    const pages = new Set(onDisk)
+    expect(ROUTES.map(r => r.internal).filter(p => !pages.has(p))).toEqual(PLANNED)
+  })
+})
+
 describe('publicPath', () => {
   it('translates the approved German paths', () => {
     expect(publicPath('de', '/')).toBe('/de')
@@ -113,6 +146,11 @@ describe('publicPath', () => {
     expect(publicPath('de', '/dashboard/ticket-bot/verify?error=x')).toBe('/de/dashboard/ticket-bot/verify?error=x')
     expect(publicPath('de', '/legal/terms#section-3')).toBe('/de/rechtliches/agb#section-3')
     expect(publicPath('de', '/cart?a=1#b')).toBe('/de/warenkorb?a=1#b')
+  })
+
+  it('keeps a trailing slash, which robots.txt depends on', () => {
+    expect(publicPath('de', '/dashboard/')).toBe('/de/dashboard/')
+    expect(publicPath('de', '/discord/giveaway-bot/g/')).toBe('/de/discord/giveaway-bot/g/')
   })
 
   it('names both versions for hreflang', () => {

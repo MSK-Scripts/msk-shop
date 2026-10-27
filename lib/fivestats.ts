@@ -91,8 +91,8 @@ function num(v: unknown): number {
 function buildLinks(entry: ResourceStatEntry): ResourceLink[] {
   if (entry.tier === 'paid' && entry.packages) {
     return [
-      { label: 'Encrypted', href: `/packages/${entry.packages.encrypted}`, external: false, variant: 'primary' },
-      { label: 'Source',    href: `/packages/${entry.packages.source}`,    external: false, variant: 'secondary' },
+      { label: 'Encrypted', href: `/fivem/${entry.packages.encrypted}`, external: false, variant: 'primary' },
+      { label: 'Source',    href: `/fivem/${entry.packages.source}`,    external: false, variant: 'secondary' },
     ]
   }
   if (entry.github) {

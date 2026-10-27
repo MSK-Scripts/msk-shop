@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getBasketCreateAuth, TEBEX_BASE, TEBEX_HEADERS } from './auth'
 import { rateLimit, getClientIp } from '@/lib/rateLimit'
+import { getPreferredLang } from '@/lib/serverLang'
+import { publicPath } from '@/lib/routes'
 
 const PUBLIC_TOKEN = process.env.NEXT_PUBLIC_TEBEX_PUBLIC_TOKEN!
 // Always use server-side BASE_URL for redirect URLs — client cannot inject arbitrary URLs
@@ -15,10 +17,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
     }
 
+    // Tebex sends the buyer back here: in the language they shop in.
+    const lang = await getPreferredLang()
     const basketBody: Record<string, unknown> = {
       // Redirect URLs always come from server ENV — never from client body
-      complete_url: `${BASE_URL}/checkout?status=complete`,
-      cancel_url: `${BASE_URL}/cart`,
+      complete_url: `${BASE_URL}${publicPath(lang, '/checkout?status=complete')}`,
+      cancel_url: `${BASE_URL}${publicPath(lang, '/cart')}`,
       complete_auto_redirect: false,
       ip_address: ip,
     }

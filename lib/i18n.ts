@@ -1835,7 +1835,7 @@ export const cartTranslations = {
 } as const;
 
 // ── Category pages ───────────────────────────────────────────────────────────
-// `/categories/[id]` resolved no language at all until 2026-08-22: the page
+// `/fivem/categories/[id]` resolved no language at all until 2026-08-22: the page
 // served `lang="de"` from the root layout with every text below in English.
 export const categoriesTranslations = {
   en: {

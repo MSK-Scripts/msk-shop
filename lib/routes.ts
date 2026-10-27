@@ -226,7 +226,10 @@ function translate(path: string, from: Side, to: Side): string | null {
     const params = matchPrefix(pattern, segs)
     if (!params) continue
     const target = segments(to === 'internal' ? r.internal : r.public[to])
-    return join([...fill(target, params), ...segs.slice(pattern.length)])
+    const out = join([...fill(target, params), ...segs.slice(pattern.length)])
+    // A trailing slash is meaningful in robots.txt (`/dashboard/` blocks the
+    // branch, not the word), so it survives the translation.
+    return out !== '/' && path.endsWith('/') ? `${out}/` : out
   }
   return null
 }
@@ -419,4 +422,13 @@ export function resolveRequest(
   if (canonical !== pathname) return { kind: 'redirect', status: 308, location: canonical }
 
   return { kind: 'page', lang, path: internal, target: targetOf(lang, internal), remember: true }
+}
+
+/**
+ * Pages of the Discord bots rather than the FiveM shop: landings, stats,
+ * result pages and dashboards. Header and footer address another audience
+ * there.
+ */
+export function isBotPath(internal: string): boolean {
+  return ['/discord', '/dashboard'].some(p => internal === p || internal.startsWith(`${p}/`))
 }

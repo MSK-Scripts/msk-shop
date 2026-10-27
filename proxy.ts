@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-import { DEFAULT_LANG, LANG_HEADER, PATH_HEADER, istEinmaligeAdresse, splitLangPath } from '@/lib/lang'
+import { DEFAULT_LANG, LANG_HEADER, PATH_HEADER } from '@/lib/lang'
+import { LANG_COOKIE, resolveRequest } from '@/lib/routes'
 
 // Diese Datei hieß bis Next 16 `middleware.ts`. Next 16 hat die Konvention in
 // `proxy.ts` umbenannt (die alte warnt beim Build und entfällt später), die
@@ -18,6 +19,10 @@ import { DEFAULT_LANG, LANG_HEADER, PATH_HEADER, istEinmaligeAdresse, splitLangP
 
 interface RateRule { prefix: string; limit: number; windowMs: number }
 
+// Page rules match the internal path without language (`/tools/images`),
+// not the address: `/en/tools/images` and `/de/web-tools/images` are the same
+// page and share one bucket. API paths have no language and stay as they are.
+//
 // Greift die ERSTE passende Regel (Reihenfolge = Priorität). NUR echte
 // Public-Flächen — die bot-authentifizierten /api/giveaway-result/* Routen
 // werden bewusst NICHT IP-limitiert (der Bot ruft sie als einzelne Server-IP
@@ -25,13 +30,14 @@ interface RateRule { prefix: string; limit: number; windowMs: number }
 // aussperren — Schutz dort übernimmt der Bearer-Secret + das Body-Limit).
 const RATE_RULES: RateRule[] = [
   { prefix: '/api/giveaway/auth', limit: 10,  windowMs: 5 * 60_000 }, // OAuth-Spam bremsen
-  { prefix: '/giveaway/g/',       limit: 60,  windowMs: 60_000 },     // öffentliche Ergebnis-Seiten
+  { prefix: '/discord/giveaway-bot/g/', limit: 60, windowMs: 60_000 }, // public result pages
   // Bildergalerie: das Blättern wird gedeckelt, die Bilder selbst nicht. Die
   // liegen auf cdn.msk-scripts.de und laufen gar nicht durch diesen Prozess —
   // sie müssen offen bleiben, sonst kann ein FiveM-NUI sie nicht laden.
   // Gedeckelt wird also genau der teure Teil: wer den Bestand durchpaginieren
   // will, braucht pro Seite eine Datenbankabfrage. 120 pro Minute trifft im
   // Normalbetrieb niemanden, eine Suche löst höchstens eine Anfrage aus.
+  // (`/images` is `/tools/images` since the redesign.)
   // Die 120 auf `/images` waren zu eng und haben am 25.08.2026 einen normalen
   // Besucher ausgesperrt: das Raster zeigt 60 Kacheln, und Next holte fuer
   // jede sichtbare die Detailseite vor. Zwei Seitenaufrufe rissen das Limit,
@@ -53,7 +59,7 @@ const RATE_RULES: RateRule[] = [
   { prefix: '/api/images/upload/auth', limit: 10,  windowMs: 5 * 60_000 },
   { prefix: '/api/images/upload',      limit: 20,  windowMs: 60_000 },
   { prefix: '/api/images',        limit: 300, windowMs: 60_000 },
-  { prefix: '/images',            limit: 600, windowMs: 60_000 },
+  { prefix: '/tools/images',      limit: 600, windowMs: 60_000 },
   // Die drei Pflichtformulare (§ 356a BGB, § 312k BGB, Art. 16 DSA). Jede
   // Absendung schreibt eine Zeile und verschickt zwei Mails, das gehört
   // gedeckelt. Die Zahl ist aber bewusst hoch genug, dass sie niemanden
@@ -175,8 +181,19 @@ export function proxy(request: NextRequest) {
     }
   }
 
+  // ── Language and address: what happens to this request ──────────────────────
+  // The whole policy lives in `resolveRequest` (lib/routes.ts) and is tested
+  // there: `/` redirects by cookie and Accept-Language, every page has exactly
+  // one address per language, and every other known form (an old address, the
+  // English words under /de) gets a 308 to it.
+  const resolution = resolveRequest(pathname, {
+    cookie:         request.cookies.get(LANG_COOKIE)?.value,
+    acceptLanguage: request.headers.get('accept-language'),
+  })
+
   // ── Rate-Limiting (pro IP, pro Routen-Präfix) ───────────────────────────────
-  const rule = RATE_RULES.find((r) => pathname.startsWith(r.prefix))
+  const ratePath = resolution.kind === 'page' ? resolution.path : pathname
+  const rule = RATE_RULES.find((r) => ratePath.startsWith(r.prefix))
   if (rule) {
     const key = `${rule.prefix}:${clientIp(request)}`
     if (isRateLimited(key, rule.limit, rule.windowMs, now)) {
@@ -260,32 +277,48 @@ export function proxy(request: NextRequest) {
     requestHeaders.set('Content-Security-Policy', csp)
   }
 
-  // Sprache steckt im Pfad: Englisch auf der Wurzel, Deutsch unter /de/.
-  // `/de/pakete` wird intern auf `/pakete` umgeschrieben und die Sprache in
-  // einen Header gelegt. So gibt es den Routenbaum genau einmal, statt jede
-  // Seite doppelt anzulegen, und Server Components sehen beides.
+  // The language is in the path: every page lives under /en/ or /de/. The
+  // German address (`/de/rechtliches/agb`) is rewritten onto the folder
+  // (`/de/legal/terms`); the English one already is the folder. Language and
+  // internal path go to the Server Components as headers; the internal path is
+  // the basis for canonical, hreflang and the language switcher.
   //
-  // Der sprachlose Pfad ist ausserdem die Basis für Canonical, hreflang und
-  // den Sprachumschalter, der zur Gegenstück-URL navigiert.
-  //
-  // Ein Präfix vor einer Adresse, die es nur einmal gibt, ist keine
-  // Übersetzung, sondern ein zweiter Name für dieselbe Datei. Solche Anfragen
-  // werden nicht umgeschrieben und laufen damit ins 404, das ihnen zusteht:
-  // `/de/sitemap.xml` lieferte sonst dieselben 17 774 Bytes wie die Wurzel.
-  const roh = splitLangPath(pathname)
-  const { lang, path } = istEinmaligeAdresse(roh.path)
-    ? { lang: DEFAULT_LANG, path: pathname }
-    : roh
-
-  requestHeaders.set(LANG_HEADER, lang)
-  requestHeaders.set(PATH_HEADER, path)
-
-  const response = lang === 'en'
-    ? NextResponse.next({ request: { headers: requestHeaders } })
-    : NextResponse.rewrite(
-        new URL(`${path}${request.nextUrl.search}`, request.url),
-        { request: { headers: requestHeaders } },
-      )
+  // An address that exists only once (API, sitemap, OAuth callback) passes
+  // through untouched. With a prefix in front (`/de/sitemap.xml`) it is not a
+  // translation but a second name for the same file, and gets the 404 it
+  // deserves.
+  let response: NextResponse
+  if (resolution.kind === 'redirect') {
+    const target = new URL(`${resolution.location}${request.nextUrl.search}`, request.url)
+    response = NextResponse.redirect(target, resolution.status)
+    // `/` answers differently depending on the cookie and the browser language.
+    if (resolution.status === 307) response.headers.set('Vary', 'Cookie, Accept-Language')
+  } else if (resolution.kind === 'pass') {
+    requestHeaders.set(LANG_HEADER, DEFAULT_LANG)
+    requestHeaders.set(PATH_HEADER, pathname)
+    response = NextResponse.next({ request: { headers: requestHeaders } })
+  } else {
+    requestHeaders.set(LANG_HEADER, resolution.lang)
+    requestHeaders.set(PATH_HEADER, resolution.path)
+    response = resolution.target === pathname
+      ? NextResponse.next({ request: { headers: requestHeaders } })
+      : NextResponse.rewrite(
+          new URL(`${resolution.target}${request.nextUrl.search}`, request.url),
+          { request: { headers: requestHeaders } },
+        )
+    // Remember the version used last, so that `/` leads there next time.
+    // Only on a real page request and only when the value changes; HttpOnly,
+    // because no script needs it.
+    if (resolution.remember && !isPrefetch && request.cookies.get(LANG_COOKIE)?.value !== resolution.lang) {
+      response.cookies.set(LANG_COOKIE, resolution.lang, {
+        path:     '/',
+        maxAge:   365 * 24 * 60 * 60,
+        httpOnly: true,
+        secure:   true,
+        sameSite: 'lax',
+      })
+    }
+  }
 
   // Response-Header — diese werden tatsächlich an den Browser geliefert.
   // Eine Prefetch-Antwort ist kein Dokument, sie trägt deshalb keine CSP:
@@ -307,6 +340,8 @@ export function proxy(request: NextRequest) {
 // Next.js bzw. Apache direkt aus und brauchen die Header-Pipeline nicht.
 // Nexts Router-Prefetches laufen bewusst MIT durch, sonst greift der
 // Sprach-Rewrite für sie nicht und `/de/<pfad>` prefetcht einen 404.
+// (Still true with the translated paths: `/de/rechtliches/agb` exists as a
+// route only after the rewrite onto `/de/legal/terms`.)
 // Begründung und Messung stehen oben in `proxy()` beim Nonce.
 //
 // `api/transcript/upload` ist BEWUSST ausgenommen: läuft der Proxy auf einer

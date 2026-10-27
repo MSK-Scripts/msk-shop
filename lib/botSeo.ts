@@ -2,11 +2,12 @@ import type { Metadata } from 'next'
 
 import type { Lang } from '@/lib/i18n'
 import { softwareApplicationJsonLd, type JsonLdObject } from '@/lib/jsonLd'
+import { X_DEFAULT_PATH, alternatePaths } from '@/lib/routes'
 
 /**
  * Metadata and structured data of the two bot landing pages.
  *
- * Each page exists twice (`/ticketbot` and `/de/ticketbot`). The
+ * Each page exists twice (`/en/discord/ticket-bot` and `/de/discord/ticket-bot`). The
  * hreflang pairs are therefore kept in exactly one place: a canonical that points to
  * the wrong language version, or an hreflang without a return link, is
  * worse than none at all, because Google then treats the pages as duplicates.
@@ -46,7 +47,7 @@ interface BotDefinition {
 }
 
 const TICKETBOT: BotDefinition = {
-  paths: { en: '/ticketbot', de: '/de/ticketbot' },
+  paths: alternatePaths('/discord/ticket-bot'),
   image: '/discord_ticketbot_banner.webp',
   appName: 'MSK Discord Ticket Bot',
   codeRepository: 'https://github.com/MSK-Scripts/discord_ticketbot',
@@ -85,7 +86,7 @@ const TICKETBOT: BotDefinition = {
 }
 
 const TICKETBOT_COMPARE: BotDefinition = {
-  paths: { en: '/ticketbot/compare', de: '/de/ticketbot/compare' },
+  paths: alternatePaths('/discord/ticket-bot/compare'),
   image: '/discord_ticketbot_banner.webp',
   appName: 'MSK Discord Ticket Bot',
   codeRepository: 'https://github.com/MSK-Scripts/discord_ticketbot',
@@ -124,7 +125,7 @@ const TICKETBOT_COMPARE: BotDefinition = {
 }
 
 const GIVEAWAY: BotDefinition = {
-  paths: { en: '/giveaway', de: '/de/giveaway' },
+  paths: alternatePaths('/discord/giveaway-bot'),
   image: '/msk-giveaway-bot-banner.webp',
   appName: 'MSK Discord Giveaway Bot',
   codeRepository: 'https://github.com/MSK-Scripts/discord_giveawaybot',
@@ -178,7 +179,7 @@ function metadataFor(bot: BotDefinition, lang: Lang): Metadata {
       languages: {
         'en':        bot.paths.en,
         'de':        bot.paths.de,
-        'x-default': bot.paths.en,
+        'x-default': X_DEFAULT_PATH,
       },
     },
     openGraph: {

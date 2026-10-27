@@ -46,11 +46,11 @@ const BOTS: BotEntry[] = [
     name: 'Ticket Bot',
     Icon: MessageSquare,
     image: '/msk-ticket-bot-banner.webp',
-    href: '/ticketbot',
+    href: '/discord/ticket-bot',
     links: [
-      { key: 'verify',    href: '/ticketbot/verify' },
-      { key: 'dashboard', href: '/ticketbot/dashboard' },
-      { key: 'stats',     href: '/ticketbot/stats' },
+      { key: 'verify',    href: '/dashboard/ticket-bot/verify' },
+      { key: 'dashboard', href: '/dashboard/ticket-bot' },
+      { key: 'stats',     href: '/discord/ticket-bot/stats' },
     ],
   },
   {
@@ -58,10 +58,10 @@ const BOTS: BotEntry[] = [
     name: 'Giveaway Bot',
     Icon: Gift,
     image: '/msk-giveaway-bot-banner.webp',
-    href: '/giveaway',
+    href: '/discord/giveaway-bot',
     links: [
-      { key: 'dashboard', href: '/giveaway/dashboard' },
-      { key: 'stats',     href: '/giveaway/stats' },
+      { key: 'dashboard', href: '/dashboard/giveaway-bot' },
+      { key: 'stats',     href: '/discord/giveaway-bot/stats' },
     ],
   },
 ]

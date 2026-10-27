@@ -1,7 +1,7 @@
 import { getCategories, getPackages } from '@/lib/tebex'
 import { listCategories } from '@/lib/images'
 import { absoluteUrl } from '@/lib/siteUrl'
-import { alternatePaths } from '@/lib/lang'
+import { X_DEFAULT_PATH, alternatePaths } from '@/lib/routes'
 
 /**
  * Sitemap: data assembly and serialization.
@@ -42,24 +42,24 @@ export const SITEMAP_STYLESHEET = '/sitemap.xsl'
 /** Static, publicly indexable pages. */
 const STATIC_ROUTES = [
   '/',
-  '/packages',
-  '/resources',
-  '/images',
-  '/images/upload',
-  '/ticketbot',
-  '/ticketbot/compare',
-  '/giveaway',
-  '/ticketbot/stats',
-  '/giveaway/stats',
-  '/terms',
-  '/terms/imprint',
-  '/terms/privacy',
-  '/terms/widerruf',
-  '/terms/avv',
+  '/fivem',
+  '/stats',
+  '/tools/images',
+  '/tools/images/upload',
+  '/discord/ticket-bot',
+  '/discord/ticket-bot/compare',
+  '/discord/giveaway-bot',
+  '/discord/ticket-bot/stats',
+  '/discord/giveaway-bot/stats',
+  '/legal/terms',
+  '/legal/imprint',
+  '/legal/privacy',
+  '/legal/withdrawal',
+  '/legal/dpa',
   // The three mandatory forms belong in the sitemap, not in robots.txt:
   // they must be reachable without logging in and without searching.
-  '/vertrag-widerrufen',
-  '/vertrag-kuendigen',
+  '/withdraw-contract',
+  '/cancel-contract',
   '/report',
 ]
 
@@ -88,7 +88,7 @@ function newest(dates: Array<Date | undefined>): Date | undefined {
  * mismatched pair.
  *
  * Since 22.08.2026 this applies to the whole tree and no longer only to the
- * two bot landing pages: the language is in the path, `/de/packages` is a
+ * two bot landing pages: the language is in the path, `/de/fivem` is a
  * separate address with its own content.
  */
 function bothLanguages(path: string, lastModified?: Date): SitemapEntry[] {
@@ -96,7 +96,7 @@ function bothLanguages(path: string, lastModified?: Date): SitemapEntry[] {
   const alternates = {
     'en':        absoluteUrl(alt.en),
     'de':        absoluteUrl(alt.de),
-    'x-default': absoluteUrl(alt.en),
+    'x-default': absoluteUrl(X_DEFAULT_PATH),
   }
   return (['en', 'de'] as const).map(lang => ({
     url: absoluteUrl(alt[lang]),
@@ -123,14 +123,14 @@ export async function buildSitemapEntries(): Promise<SitemapEntry[]> {
   ])
 
   const packageEntries: SitemapEntry[] = packages.flatMap(pkg =>
-    bothLanguages(`/packages/${pkg.id}`, parseTimestamp(pkg.updated_at)),
+    bothLanguages(`/fivem/${pkg.id}`, parseTimestamp(pkg.updated_at)),
   )
 
   // `getCategories()` queries with `includePackages=1`, so the packages are
   // already there. A category page changes exactly when one of its packages
   // changes.
   const categoryEntries: SitemapEntry[] = categories.flatMap(cat =>
-    bothLanguages(`/categories/${cat.id}`, newest((cat.packages ?? []).map(pkg => parseTimestamp(pkg.updated_at)))),
+    bothLanguages(`/fivem/categories/${cat.id}`, newest((cat.packages ?? []).map(pkg => parseTimestamp(pkg.updated_at)))),
   )
 
   // Gallery: the overview and category pages belong here, the individual
@@ -147,7 +147,7 @@ export async function buildSitemapEntries(): Promise<SitemapEntry[]> {
 
   const imageCategoryEntries: SitemapEntry[] = imageCategories
     .filter(c => c.count > 0)
-    .flatMap(c => bothLanguages(`/images/${c.slug}`))
+    .flatMap(c => bothLanguages(`/tools/images/${c.slug}`))
 
   return [...staticEntries, ...packageEntries, ...categoryEntries, ...imageCategoryEntries]
 }

@@ -27,7 +27,7 @@ export function CategoryCard({
   const Icon = (category.icon && ICONS[category.icon]) || Package
 
   return (
-    <Link href={`/images/${category.slug}`} className="group block">
+    <Link href={`/tools/images/${category.slug}`} className="group block">
       <Card hoverLift className="h-full p-5 text-center">
         <Icon
           className="mx-auto mb-3 h-7 w-7 text-[var(--color-primary)]"

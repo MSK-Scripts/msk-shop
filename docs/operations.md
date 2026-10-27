@@ -133,10 +133,10 @@ ADMIN_EMAIL=info@msk-scripts.de
 # Hosted bot management, one subfolder per guild: {BOT_CONFIG_BASE_PATH}/{guild_id}/
 BOT_CONFIG_BASE_PATH=/opt/customer_ticketbots
 
-# Public stats, comma-separated API keys to keep out of /ticketbot/stats
+# Public stats, comma-separated API keys to keep out of /en/discord/ticket-bot/stats
 STATS_IGNORED_API_KEYS=key1,key2,key3
 
-# Resource statistics (the /resources page)
+# Resource statistics (the /en/stats page)
 FIVESTATS_API_KEY=your_fivestats_api_key
 ```
 

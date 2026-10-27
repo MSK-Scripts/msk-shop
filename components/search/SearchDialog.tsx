@@ -150,7 +150,7 @@ export function SearchDialog({ open, onClose }: Props) {
                 return (
                   <li key={pkg.id}>
                     <Link
-                      href={`/packages/${pkg.id}`}
+                      href={`/fivem/${pkg.id}`}
                       prefetch={true}
                       onClick={onClose}
                       className="flex items-center gap-3 rounded-md p-2 transition-colors hover:bg-[var(--color-muted)]"
@@ -189,7 +189,7 @@ export function SearchDialog({ open, onClose }: Props) {
             <span className="font-mono">ESC</span> to close
           </span>
           <Link
-            href="/packages"
+            href="/fivem"
             onClick={onClose}
             className="font-mono transition-colors hover:text-[var(--color-foreground)]"
           >

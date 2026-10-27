@@ -1,5 +1,6 @@
 import type { Lang } from '@/lib/i18n'
 import type { LabelledText } from '@/content/ticketbot-copy'
+import { publicPath } from '@/lib/routes'
 
 /**
  * Sichtbare Texte der Giveaway-Bot-Landingpage, je Sprache.
@@ -77,7 +78,7 @@ export interface GiveawayCopy {
 }
 
 const en: GiveawayCopy = {
-  altHref:  '/de/giveaway',
+  altHref:  publicPath('de', '/discord/giveaway-bot'),
   altLabel: 'Diese Seite auf Deutsch',
 
   badge: 'Discord Giveaway Bot',
@@ -195,7 +196,7 @@ const en: GiveawayCopy = {
 }
 
 const de: GiveawayCopy = {
-  altHref:  '/giveaway',
+  altHref:  publicPath('en', '/discord/giveaway-bot'),
   altLabel: 'This page in English',
 
   badge: 'Discord Giveaway Bot',

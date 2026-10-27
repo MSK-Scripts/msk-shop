@@ -180,17 +180,22 @@ describe('Bestellbestaetigung (§ 312f BGB)', () => {
     expect(mail.text).toContain('Premium+')
     expect(mail.text).toContain('6,99 €')
     expect(mail.text).toContain('verlängert sich monatlich')
-    expect(mail.text).toContain('/de/terms')
-    expect(mail.text).toContain('/de/terms/widerruf')
-    expect(mail.text).toContain('/de/vertrag-kuendigen')
+    expect(mail.text).toContain('https://www.msk-scripts.de/de/rechtliches/agb')
+    expect(mail.text).toContain('https://www.msk-scripts.de/de/rechtliches/widerrufsbelehrung')
+    expect(mail.text).toContain('https://www.msk-scripts.de/de/vertrag-widerrufen')
+    expect(mail.text).toContain('https://www.msk-scripts.de/de/vertrag-kuendigen')
+    expect(mail.text).toContain('https://www.msk-scripts.de/de/dashboard/ticket-bot')
   })
 
-  it('verlinkt fuer englische Kunden die Wurzelfassung', () => {
-    // The language lives in the path: English sits at the root. A link to
-    // /de/terms in an English mail leads to a German text.
+  it('links the English version for English customers', () => {
+    // The language lives in the path. A link to /de/rechtliches/agb in an
+    // English mail leads to a German text.
     const mail = buildOrderConfirmation({ lang: 'en', ...base })
-    expect(mail.text).toContain('https://www.msk-scripts.de/terms')
-    expect(mail.text).not.toContain('/de/terms')
+    expect(mail.text).toContain('https://www.msk-scripts.de/en/legal/terms')
+    expect(mail.text).toContain('https://www.msk-scripts.de/en/legal/withdrawal')
+    expect(mail.text).toContain('https://www.msk-scripts.de/en/withdraw-contract')
+    expect(mail.text).toContain('https://www.msk-scripts.de/en/cancel-contract')
+    expect(mail.text).not.toContain('/de/')
   })
 
   it('states the VAT exemption under § 19 UStG in both languages', () => {

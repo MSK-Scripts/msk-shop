@@ -1,4 +1,5 @@
 import type { Lang } from '@/lib/i18n'
+import { publicPath } from '@/lib/routes'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Vergleichsseite "welchen Discord Ticket Bot nehmen".
@@ -60,7 +61,7 @@ export interface TicketBotCompareCopy {
 export const COMPARE_DATA_DATE = '2026-08-29'
 
 const en: TicketBotCompareCopy = {
-  altHref:  '/de/ticketbot/compare',
+  altHref:  publicPath('de', '/discord/ticket-bot/compare'),
   altLabel: 'Diese Seite auf Deutsch',
 
   badge: 'Comparison',
@@ -157,7 +158,7 @@ const en: TicketBotCompareCopy = {
 }
 
 const de: TicketBotCompareCopy = {
-  altHref:  '/ticketbot/compare',
+  altHref:  publicPath('en', '/discord/ticket-bot/compare'),
   altLabel: 'This page in English',
 
   badge: 'Vergleich',

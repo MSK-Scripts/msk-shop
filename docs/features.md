@@ -13,15 +13,15 @@ The shop side:
 - Catalog filters, per-package badges, tags and custom descriptions
 - A "custom packages" section for things that don't live on Tebex (Discord bots, GitHub repos and so on)
 - Measured shop figures on the homepage (hidden rather than shown stale when the nightly snapshot is too old) and a release feed read from the public `MSK-Scripts/VERSIONS` repository
-- Live resource statistics page (`/resources`) powered by fivestats.io: server counts, ranking and a 7-day trend chart for every MSK resource
-- English at the root and German under `/de/`, with canonical and hreflang tags on every public page and a generated sitemap
+- Live resource statistics page (`/en/stats`, `/de/statistiken`) powered by fivestats.io: server counts, ranking and a 7-day trend chart for every MSK resource
+- Every page under `/en/` and `/de/` with translated German paths from one route table (`lib/routes.ts`); `/` redirects by remembered choice, then browser language; old addresses answer 308; canonical and hreflang on every public page and a generated sitemap
 - Legal pages in English and German, written in plain Markdown so they can be edited without touching code
 - The legally required forms that work without an account: contract withdrawal (`/vertrag-widerrufen`), contract cancellation (`/vertrag-kuendigen`) and a DSA content report (`/report`), each with an email receipt
 - Configurable news popup, with an optional copyable coupon code
 
 The Ticket Bot platform:
 
-- Public statistics page (`/ticketbot/stats`), with an allowlist via `STATS_IGNORED_API_KEYS`
+- Public statistics page (`/en/discord/ticket-bot/stats`), with an allowlist via `STATS_IGNORED_API_KEYS`
 - Verify flow over Discord OAuth: API key issuance and account-scoped ownership
 - Ownership follows Discord: a guild whose owner lost Administrator or Manage Server gets a 14-day grace period, then disappears from their dashboard and can be claimed by the new admin team
 - Transcript hosting with attachment support, backed by MariaDB. Uploads are hardened with an extension allowlist, `<uuid>.<ext>` filenames and `sharp` image re-encoding
@@ -39,14 +39,14 @@ The Giveaway Bot platform:
 
 - Free, invite-based Discord giveaways: button entry (no privileged intents), restart-safe scheduling, weighted bonus entries, eligibility rules (roles, account age, membership), pause and resume, templates, and winner reroll
 - Web dashboard to create and manage giveaways and per-server settings straight from the browser (Discord login, open to server managers and members holding the configured giveaway manager role)
-- A shareable public results page per finished giveaway, plus a live, anonymous stats page (`/giveaway/stats`, EN/DE)
+- A shareable public results page per finished giveaway, plus a live, anonymous stats page (`/en/discord/giveaway-bot/stats`, EN/DE)
 - Multilingual bot (EN / DE / FR / ES) with per-guild branding
 
 The image gallery:
 
-- Public gallery (`/images`) of GTA V vehicles, peds, weapons and items plus MSK brand assets, with full-text search
+- Public gallery (`/en/tools/images`) of GTA V vehicles, peds, weapons and items plus MSK brand assets, with full-text search
 - Images served from `cdn.msk-scripts.de` in three sizes (PNG original, 400 px and 160 px WebP), with CORS open so FiveM NUIs can load them
-- Community submissions (`/images/upload`) through Discord login: files are re-encoded by `sharp` on arrival, kept in a quarantine outside any web root, and published only after moderation
+- Community submissions (`/en/tools/images/upload`) through Discord login: files are re-encoded by `sharp` on arrival, kept in a quarantine outside any web root, and published only after moderation
 
 The admin dashboard (`/admin`):
 

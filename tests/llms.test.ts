@@ -25,12 +25,12 @@ describe('renderLlmsTxt', () => {
   it('lists a package under the curated search title, not the raw Tebex name', () => {
     const curated = PACKAGE_SEO[5732587].en
 
-    expect(text).toContain(`- [${curated.title}](${siteUrl()}/packages/5732587): ${curated.description}`)
+    expect(text).toContain(`- [${curated.title}](${siteUrl()}/en/fivem/5732587): ${curated.description}`)
     expect(text).not.toContain('MSK Garage - Encrypted Version')
   })
 
   it('falls back to the Tebex name and a plain-text excerpt for a package without a snippet', () => {
-    expect(text).toContain(`- [Unlisted Package](${siteUrl()}/packages/999): Plain Tebex text.`)
+    expect(text).toContain(`- [Unlisted Package](${siteUrl()}/en/fivem/999): Plain Tebex text.`)
   })
 
   it('carries all three bot landing pages with the description their own page uses', () => {
@@ -47,7 +47,7 @@ describe('renderLlmsTxt', () => {
     const bare = renderLlmsTxt([])
 
     expect(bare).toContain('## FiveM scripts')
-    expect(bare).toContain(`](${siteUrl()}/packages): `)
+    expect(bare).toContain(`](${siteUrl()}/en/fivem): `)
     expect(bare).toContain('## Discord bots')
     expect(bare).not.toMatch(/## [^\n]+\n\n## /)
   })

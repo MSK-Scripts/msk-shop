@@ -7,7 +7,7 @@ import { homeTranslations, type Lang } from '@/lib/i18n'
 /**
  * Die kostenlosen FiveM-Scripts.
  *
- * Sie standen zwischenzeitlich nur noch auf `/resources`, wo es um Live-Server-
+ * Sie standen zwischenzeitlich nur noch auf `/stats`, wo es um Live-Server-
  * zahlen geht, nicht um das Script selbst. Damit war das halbe Angebot von der
  * Startseite verschwunden, obwohl msk_core die Grundlage der bezahlten
  * Resourcen ist und die Zahl im Hero-Badge stellt.
@@ -52,7 +52,7 @@ export function FreeScripts({ lang }: { lang: Lang }) {
             </p>
           </div>
           <Link
-            href="/resources"
+            href="/stats"
             className="inline-flex items-center gap-1 text-sm font-semibold text-[var(--color-primary)] transition-colors hover:underline"
           >
             {t.free_scripts_stats}

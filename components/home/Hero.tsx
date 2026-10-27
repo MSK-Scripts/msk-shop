@@ -63,7 +63,7 @@ export function Hero({
 
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild size="lg">
-                <Link href="/packages">
+                <Link href="/fivem">
                   {t.hero_btn_browse}
                   <ArrowRight className="h-4 w-4" />
                 </Link>

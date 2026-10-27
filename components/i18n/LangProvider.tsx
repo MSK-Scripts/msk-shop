@@ -4,13 +4,13 @@ import { createContext, useContext, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 
 import type { Lang } from '@/lib/i18n'
-import { localePath, splitLangPath } from '@/lib/lang'
+import { parsePublicPath, publicPath } from '@/lib/routes'
 import { useHydrated } from '@/lib/useHydrated'
 
 interface LangContextValue {
   /** Sprache der laufenden Seite, aus dem Pfad abgeleitet. */
   lang: Lang
-  /** Pfad ohne Sprachpräfix, Basis für Links in die jeweils andere Fassung. */
+  /** Interner Pfad (`/legal/terms`), Basis für Links in die jeweils andere Fassung. */
   path: string
   /** Adresse derselben Seite in der gewünschten Sprache. */
   hrefFor: (lang: Lang) => string
@@ -21,8 +21,8 @@ interface LangContextValue {
 const FALLBACK: LangContextValue = {
   lang: 'en',
   path: '/',
-  hrefFor: lang => localePath(lang, '/'),
-  localize: path => path,
+  hrefFor: lang => publicPath(lang, '/'),
+  localize: path => publicPath('en', path),
 }
 
 const LangContext = createContext<LangContextValue>(FALLBACK)
@@ -54,11 +54,12 @@ export function LangProvider({
   const pathname = usePathname()
   const hydrated = useHydrated()
 
-  // Vor der Hydration die Server-Werte, danach die Adressleiste. `usePathname`
-  // liefert server-seitig den **umgeschriebenen** Pfad (`/packages`), im
-  // Browser aber den echten (`/de/packages`) — ohne diesen Riegel wäre das ein
-  // Hydration-Unterschied und React würfe den Teilbaum weg.
-  const fromUrl = splitLangPath(pathname || initialPath)
+  // Before hydration the server values, afterwards the address bar.
+  // `usePathname` can return the **rewritten** path on the server
+  // (`/de/legal/terms`) and the real one in the browser
+  // (`/de/rechtliches/agb`); the route table reads both as the same page, and
+  // the gate keeps the server render and the hydration identical anyway.
+  const fromUrl = parsePublicPath(pathname || publicPath(initialLang, initialPath))
   const lang = hydrated ? fromUrl.lang : initialLang
   const path = hydrated ? fromUrl.path : initialPath
 
@@ -74,8 +75,8 @@ export function LangProvider({
   const value: LangContextValue = {
     lang,
     path,
-    hrefFor: target => localePath(target, path),
-    localize: target => localePath(lang, target),
+    hrefFor: target => publicPath(target, path),
+    localize: target => publicPath(lang, target),
   }
 
   return <LangContext.Provider value={value}>{children}</LangContext.Provider>

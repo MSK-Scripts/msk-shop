@@ -78,29 +78,29 @@ interface NavItem {
  * „Home" entfällt, das Logo führt bereits dorthin.
  */
 const NAV_ITEMS: NavItem[] = [
-  { label: "Packages", href: "/packages", withCategories: true },
+  { label: "Packages", href: "/fivem", withCategories: true },
   {
     label: "Bots",
-    href: "/ticketbot",
+    href: "/discord/ticket-bot",
     children: [
       // verify/dashboard sind session-abhängig + können redirect() liefern →
       // nicht prefetchen (sonst stale Redirect aus dem Router-Cache).
-      { label: "Overview", href: "/ticketbot", section: "Ticket Bot" },
-      { label: "Verify", href: "/ticketbot/verify", prefetch: false },
-      { label: "Dashboard", href: "/ticketbot/dashboard", prefetch: false },
-      { label: "Statistics", href: "/ticketbot/stats" },
-      { label: "Overview", href: "/giveaway", section: "Giveaway Bot" },
-      { label: "Dashboard", href: "/giveaway/dashboard", prefetch: false },
-      { label: "Statistics", href: "/giveaway/stats" },
+      { label: "Overview", href: "/discord/ticket-bot", section: "Ticket Bot" },
+      { label: "Verify", href: "/dashboard/ticket-bot/verify", prefetch: false },
+      { label: "Dashboard", href: "/dashboard/ticket-bot", prefetch: false },
+      { label: "Statistics", href: "/discord/ticket-bot/stats" },
+      { label: "Overview", href: "/discord/giveaway-bot", section: "Giveaway Bot" },
+      { label: "Dashboard", href: "/dashboard/giveaway-bot", prefetch: false },
+      { label: "Statistics", href: "/discord/giveaway-bot/stats" },
     ],
   },
   {
     label: "Resources",
-    href: "/resources",
+    href: "/stats",
     children: [
       { label: "Documentation", href: "https://docu.msk-scripts.de" },
-      { label: "Resource Stats", href: "/resources" },
-      { label: "Image Gallery", href: "/images" },
+      { label: "Resource Stats", href: "/stats" },
+      { label: "Image Gallery", href: "/tools/images" },
       { label: "GitHub", href: "https://github.com/MSK-Scripts" },
     ],
   },
@@ -239,7 +239,7 @@ function HeaderInner() {
   }
 
   // Gegen den Pfad OHNE Sprachpräfix vergleichen, nicht gegen die Adresse.
-  // `/de/packages`.startsWith('/packages') ist falsch, deshalb war auf jeder
+  // `/de/fivem`.startsWith('/fivem') ist falsch, deshalb war auf jeder
   // deutschen Seite kein einziger Navigationspunkt hervorgehoben.
   const isActive = (href: string) =>
     href === '/' ? langlosPath === '/' : langlosPath.startsWith(href)
@@ -356,7 +356,7 @@ function HeaderInner() {
       <>
         {sectionHeading(t.nav_categories)}
         {categories.map(cat =>
-          renderDropdownChild({ label: cat.name, href: `/categories/${cat.id}` }, onNavigate),
+          renderDropdownChild({ label: cat.name, href: `/fivem/categories/${cat.id}` }, onNavigate),
         )}
       </>
     )
@@ -413,7 +413,7 @@ function HeaderInner() {
                 {renderCategoryEntries(() => setOpenDropdown(null))}
                 <div className="my-1 h-px bg-[var(--color-border)]" />
                 <Link
-                  href="/packages"
+                  href="/fivem"
                   prefetch
                   role="menuitem"
                   onClick={() => setOpenDropdown(null)}

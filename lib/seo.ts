@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 import { PACKAGE_DESCRIPTIONS, PACKAGE_SEO, SITE_CONFIG } from '@/lib/config'
-import { alternatePaths } from '@/lib/lang'
+import { X_DEFAULT_PATH, alternatePaths } from '@/lib/routes'
 import type { Lang } from '@/lib/i18n'
 import type { OpenGraph } from 'next/dist/lib/metadata/types/opengraph-types'
 
@@ -158,7 +158,8 @@ export function packageSnippet(
  * an hreflang pair makes Google treat one of the two versions as a duplicate,
  * and an hreflang without a return link is ignored.
  *
- * `path` is the language-less path, i.e. `/packages`, not `/de/packages`.
+ * `path` is the internal path (`/legal/terms`), not a public address
+ * (`/de/rechtliches/agb`): the route table turns it into both versions.
  */
 export function alternatesFor(lang: Lang, path: string): NonNullable<Metadata['alternates']> {
   const alt = alternatePaths(path)
@@ -167,7 +168,9 @@ export function alternatesFor(lang: Lang, path: string): NonNullable<Metadata['a
     languages: {
       en:          alt.en,
       de:          alt.de,
-      'x-default': alt.en,
+      // The root picks a language and redirects: the page for everyone
+      // whose browser asks for neither of the two.
+      'x-default': X_DEFAULT_PATH,
     },
   }
 }

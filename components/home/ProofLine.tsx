@@ -46,7 +46,7 @@ export function ProofLine({
     entries.push({
       value: num(servers.serverCount),
       label: t.proof_servers,
-      href: '/resources',
+      href: '/stats',
     })
   }
   if (stats) {

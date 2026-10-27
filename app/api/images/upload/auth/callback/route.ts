@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { cookies }      from 'next/headers'
 
+import { publicPath } from '@/lib/routes'
+import { getPreferredLang } from '@/lib/serverLang'
 import {
   signUploadSession,
   UPLOAD_SESSION_COOKIE,
@@ -16,6 +18,8 @@ import {
  */
 export async function GET(req: Request) {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://www.msk-scripts.de'
+  // Back to the page in the language the visitor came from.
+  const lang = await getPreferredLang()
   const { searchParams } = new URL(req.url)
   const code  = searchParams.get('code')
   const state = searchParams.get('state')
@@ -24,7 +28,7 @@ export async function GET(req: Request) {
   const storedState = cookieStore.get(UPLOAD_STATE_COOKIE)?.value
 
   const fail = (reason: string) => {
-    const res = NextResponse.redirect(`${baseUrl}/images/upload?error=${reason}`)
+    const res = NextResponse.redirect(`${baseUrl}${publicPath(lang, `/tools/images/upload?error=${reason}`)}`)
     res.cookies.delete(UPLOAD_STATE_COOKIE)
     return res
   }
@@ -69,7 +73,7 @@ export async function GET(req: Request) {
   }
   if (!discordUserId) return fail('discord_user_failed')
 
-  const res = NextResponse.redirect(`${baseUrl}/images/upload`)
+  const res = NextResponse.redirect(`${baseUrl}${publicPath(lang, '/tools/images/upload')}`)
   res.cookies.set(UPLOAD_SESSION_COOKIE, signUploadSession({ discordUserId, displayName }), {
     httpOnly: true,
     secure:   true,

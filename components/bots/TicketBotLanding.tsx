@@ -45,7 +45,7 @@ import { TICKETBOT_COPY, type TicketBotTierCard } from '@/content/ticketbot-copy
 /**
  * Die Ticket-Bot-Landingpage, einmal gebaut, zweimal gerendert.
  *
- * `/ticketbot` rendert sie mit `lang="en"`, `/de/ticketbot` mit `lang="de"`.
+ * `/en/discord/ticket-bot` rendert sie mit `lang="en"`, `/de/discord/ticket-bot` mit `lang="de"`.
  * Beide Routen sind sprachlich **fest**, nicht cookie-abhängig: zwei URLs mit
  * identischem Inhalt in derselben Sprache wären Duplicate Content, und das
  * hreflang-Paar in den Metadaten wäre gelogen.
@@ -57,7 +57,7 @@ import { TICKETBOT_COPY, type TicketBotTierCard } from '@/content/ticketbot-copy
 // ── Icon-Reihenfolgen. Müssen zu den Listen in content/ticketbot-copy.ts passen.
 
 const HUB_ICONS = [KeyRound, LayoutDashboard, BarChart3] as const
-const HUB_HREFS = ['/ticketbot/verify', '/ticketbot/dashboard', '/ticketbot/stats'] as const
+const HUB_HREFS = ['/dashboard/ticket-bot/verify', '/dashboard/ticket-bot', '/discord/ticket-bot/stats'] as const
 const HUB_VARIANTS = ['primary', 'outline', 'outline'] as const
 
 const FEATURE_ICONS = [
@@ -149,7 +149,7 @@ export function TicketBotLanding({ lang }: { lang: Lang }) {
 
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Button asChild size="lg">
-              <Link href="/ticketbot/verify" prefetch={false}>
+              <Link href="/dashboard/ticket-bot/verify" prefetch={false}>
                 {t.heroCtaKey}
                 <ArrowRight className="h-4 w-4" />
               </Link>
@@ -174,7 +174,7 @@ export function TicketBotLanding({ lang }: { lang: Lang }) {
           <p className="mt-6 text-sm text-[var(--color-muted-foreground)]">
             {t.heroProof}{' '}
             <Link
-              href="/ticketbot/stats"
+              href="/discord/ticket-bot/stats"
               prefetch={false}
               className="text-[var(--color-primary)] underline-offset-4 hover:underline"
             >
@@ -265,7 +265,7 @@ export function TicketBotLanding({ lang }: { lang: Lang }) {
                 <Button asChild variant={HUB_VARIANTS[i]} className="w-full">
                   {/* verify/dashboard sind session-abhängig: kein Prefetch, sonst
                       cacht der Client-Router die Redirect-Entscheidung. */}
-                  <Link href={href} prefetch={href === '/ticketbot/stats' ? undefined : false}>
+                  <Link href={href} prefetch={href === '/discord/ticket-bot/stats' ? undefined : false}>
                     {card.cta}
                     <ArrowRight className="h-4 w-4" />
                   </Link>
@@ -338,7 +338,7 @@ export function TicketBotLanding({ lang }: { lang: Lang }) {
 
         <div className="mt-8 text-center">
           <Button asChild size="lg">
-            <Link href="/ticketbot/verify" prefetch={false}>
+            <Link href="/dashboard/ticket-bot/verify" prefetch={false}>
               {t.verifyCta}
               <ArrowRight className="h-4 w-4" />
             </Link>
@@ -404,7 +404,7 @@ export function TicketBotLanding({ lang }: { lang: Lang }) {
               </p>
               <div className="mt-7 flex flex-wrap gap-3">
                 <Button asChild>
-                  <Link href="/ticketbot/dashboard" prefetch={false}>
+                  <Link href="/dashboard/ticket-bot" prefetch={false}>
                     <LayoutDashboard className="h-4 w-4" />
                     {t.hostedCtaDashboard}
                   </Link>
@@ -508,7 +508,7 @@ export function TicketBotLanding({ lang }: { lang: Lang }) {
                 </ul>
 
                 <Button asChild variant={accent ? 'primary' : 'outline'} className="w-full">
-                  <Link href="/ticketbot/verify" prefetch={false}>
+                  <Link href="/dashboard/ticket-bot/verify" prefetch={false}>
                     {card.cta}
                     <ArrowRight className="h-4 w-4" />
                   </Link>
@@ -570,7 +570,7 @@ export function TicketBotLanding({ lang }: { lang: Lang }) {
             </p>
             <div className="mt-7 flex flex-wrap justify-center gap-3">
               <Button asChild size="lg">
-                <Link href="/ticketbot/verify" prefetch={false}>
+                <Link href="/dashboard/ticket-bot/verify" prefetch={false}>
                   {t.ctaKey}
                   <ArrowRight className="h-4 w-4" />
                 </Link>

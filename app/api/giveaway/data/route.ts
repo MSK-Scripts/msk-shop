@@ -3,6 +3,8 @@ import { cookies }                           from 'next/headers';
 import { parseGiveawaySession, GIVEAWAY_SESSION_COOKIE } from '@/lib/giveawaySession';
 import { controlGet }                        from '@/lib/giveawayControl';
 import { query }                             from '@/lib/db';
+import { getPreferredLang } from '@/lib/serverLang';
+import { publicPath } from '@/lib/routes';
 
 // Read proxy to the bot control endpoint. guildId ALWAYS comes from the session.
 const ALLOWED = new Set(['giveaways', 'giveaway', 'settings', 'roles', 'channels', 'templates', 'tebex', 'tebexPackages']);
@@ -60,10 +62,11 @@ export async function GET(req: Request) {
         [session.guildId],
       );
       const base = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://www.msk-scripts.de';
+      const lang = await getPreferredLang();
       const byId = new Map(rows.map((r) => [r.giveaway_id, r.token] as const));
       payload.giveaways = payload.giveaways.map((g) => {
         const token = byId.get(g.id);
-        return token ? { ...g, resultUrl: `${base}/giveaway/g/${token}` } : g;
+        return token ? { ...g, resultUrl: `${base}${publicPath(lang, `/discord/giveaway-bot/g/${token}`)}` } : g;
       });
       return NextResponse.json(payload, { status });
     }

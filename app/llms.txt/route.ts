@@ -4,8 +4,8 @@ import { getPackages } from '@/lib/tebex'
 /**
  * /llms.txt, see `renderLlmsTxt`.
  *
- * Exists once per site: `lib/lang.ts` lists the address in
- * `istEinmaligeAdresse`, so `/de/llms.txt` is not rewritten onto this route
+ * Exists once per site: `lib/routes.ts` lists the address in
+ * `isExemptPath`, so `/de/llms.txt` is not rewritten onto this route
  * and answers with the 404 it should.
  */
 

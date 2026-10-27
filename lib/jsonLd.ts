@@ -1,6 +1,7 @@
 import { SITE_CONFIG } from '@/lib/config'
 import type { Lang } from '@/lib/i18n'
-import { DEFAULT_LANG, localePath } from '@/lib/lang'
+import { DEFAULT_LANG } from '@/lib/lang'
+import { publicPath } from '@/lib/routes'
 import { resolveDisplayPrice } from '@/lib/price'
 import { absoluteUrl, siteUrl } from '@/lib/siteUrl'
 import { packageImage, plainExcerpt } from '@/lib/seo'
@@ -94,7 +95,7 @@ export function webSiteJsonLd(): JsonLdObject {
 
 export interface SoftwareApplicationInput {
   name:         string
-  /** Internal path of the landing page, e.g. `/ticketbot` or `/de/giveaway`. */
+  /** Public path of the landing page, e.g. `/en/discord/ticket-bot` or `/de/discord/giveaway-bot`. */
   path:         string
   description:  string
   /** Internal path or absolute URL of the preview image. */
@@ -234,7 +235,7 @@ export function faqPageJsonLd(entries: FaqEntry[]): JsonLdObject {
  */
 export function productJsonLd(pkg: TebexPackage, description?: string, lang: Lang = DEFAULT_LANG): JsonLdObject {
   const { price } = resolveDisplayPrice(pkg.base_price ?? 0, pkg.total_price ?? pkg.base_price ?? 0)
-  const url = absoluteUrl(localePath(lang, `/packages/${pkg.id}`))
+  const url = absoluteUrl(publicPath(lang, `/fivem/${pkg.id}`))
 
   const product: JsonLdObject = {
     '@context': SCHEMA,

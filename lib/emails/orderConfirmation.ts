@@ -11,6 +11,7 @@
 // Hence this mail. Pure and testable without SMTP, like `trialEnding.ts`.
 
 import type { MailLang } from './trialEnding';
+import { publicPath } from '@/lib/routes';
 
 const BASE_URL = 'https://www.msk-scripts.de';
 
@@ -54,12 +55,15 @@ export function buildOrderConfirmation(input: OrderConfirmationInput): BuiltEmai
   const { lang, tierLabel, guildLabel, price, inTrial, trialEndsAt } = input;
   const de = lang === 'de';
 
+  // The route table writes the address in the mail's language, so a German
+  // customer lands on /de/rechtliches/agb and not on the English text.
+  const url = (path: string) => `${BASE_URL}${publicPath(lang, path)}`;
   const links = {
-    terms:      `${BASE_URL}${de ? '/de' : ''}/terms`,
-    withdrawal: `${BASE_URL}${de ? '/de' : ''}/terms/widerruf`,
-    revoke:     `${BASE_URL}${de ? '/de' : ''}/vertrag-widerrufen`,
-    cancel:     `${BASE_URL}${de ? '/de' : ''}/vertrag-kuendigen`,
-    dashboard:  `${BASE_URL}${de ? '/de' : ''}/ticketbot/dashboard`,
+    terms:      url('/legal/terms'),
+    withdrawal: url('/legal/withdrawal'),
+    revoke:     url('/withdraw-contract'),
+    cancel:     url('/cancel-contract'),
+    dashboard:  url('/dashboard/ticket-bot'),
   };
 
   const subject = de

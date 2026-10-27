@@ -67,7 +67,7 @@ function Variant({
 }) {
   return (
     <Link
-      href={`/packages/${pkg.id}`}
+      href={`/fivem/${pkg.id}`}
       prefetch={false}
       className={'group/variant min-w-0 ' + (align === 'right' ? 'text-right' : '')}
     >
@@ -204,7 +204,7 @@ export async function Catalog({ lang }: { lang: Lang }) {
         key: r.resourceName,
         name: r.displayName,
         description: PACKAGE_DESCRIPTIONS[lead.id] ?? plainExcerpt(lead.description ?? '', 140),
-        href: `/packages/${lead.id}`,
+        href: `/fivem/${lead.id}`,
         image: lead.image ?? null,
         badges: PACKAGE_BADGES[lead.id],
         tags: PACKAGE_TAGS[lead.id],
@@ -230,7 +230,7 @@ export async function Catalog({ lang }: { lang: Lang }) {
           </p>
         </div>
         <Link
-          href="/packages"
+          href="/fivem"
           className="inline-flex items-center gap-1 text-sm font-semibold text-[var(--color-primary)] transition-colors hover:underline"
         >
           {t.catalog_all}

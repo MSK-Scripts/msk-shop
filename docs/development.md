@@ -65,31 +65,32 @@ app/                        Next.js App Router pages & API routes
 │   ├── transcripts/        Dashboard transcript list for the owner's guild
 │   ├── verify/             Verify status / complete / check-guild / redirect-dashboard
 │   └── webhook/stripe/     Stripe webhook handler (signature-verified)
-├── account/                User account page
-├── admin/                  Admin dashboard (one *Tab.tsx per area)
-├── auth/discord/           Discord OAuth callback (purchase flow)
+├── [lang]/                 Every page, once, under /en and /de (English folder names = /en paths)
+│   ├── layout.tsx          Root layout of the shop, sets <html lang>
+│   ├── [...rest]/          Catch-all: unknown addresses get the 404 inside the layout
+│   ├── account/            User account page
+│   ├── admin/              Admin dashboard (one *Tab.tsx per area, English UI in both languages)
+│   ├── cart/, checkout/    Cart page, post-payment redirect handler
+│   ├── fivem/              Package list, [id]/ detail pages, categories/[id]/
+│   ├── discord/            ticket-bot/ (landing, compare/, stats/), giveaway-bot/ (landing, stats/, g/[token]/)
+│   ├── dashboard/          ticket-bot/ and giveaway-bot/ dashboards, each with verify/
+│   ├── tools/images/       Gallery: overview, [category]/, [category]/[name]/, upload/
+│   ├── stats/              Resource statistics page (fivestats.io)
+│   ├── legal/              terms/, imprint/, privacy/, withdrawal/, dpa/
+│   ├── withdraw-contract/  Contract withdrawal form (§ 356a BGB)
+│   ├── cancel-contract/    Contract cancellation form (§ 312k BGB)
+│   ├── report/             DSA content report form
+│   └── login/              Login page
+├── auth/discord/           Tebex Discord return (own root layout, no language prefix)
 ├── botproxy/               Reverse proxy route for the hosted bot dashboard
-├── cart/                   Cart page
-├── categories/[id]/        Category pages
-├── checkout/               Post-payment redirect handler
-├── giveaway/               Giveaway Bot landing page + verify/, dashboard/, stats/, g/[token]/
-├── images/                 Gallery: overview, [category]/, [category]/[name]/, upload/
 ├── llms.txt/               /llms.txt: map of the site for language models, built by lib/llms.ts
-├── login/                  Login page
-├── packages/               Package list + [id]/ detail pages
-├── report/                 DSA content report form
-├── resources/              Resource statistics page (fivestats.io)
-├── sitemap.xml/            Sitemap route (+ sitemap.xsl/, sitemap-images.xml/)
-├── terms/                  Terms, imprint/, privacy/, avv/ (data processing), widerruf/
-├── ticketbot/              Ticket Bot landing page + verify/, dashboard/, stats/
-├── vertrag-kuendigen/      Contract cancellation form (§ 312k BGB)
-└── vertrag-widerrufen/     Contract withdrawal form (§ 356a BGB)
+└── sitemap.xml/            Sitemap route (+ sitemap.xsl/, sitemap-images.xml/)
 
 components/
 ├── bots/                   Ticket Bot and Giveaway Bot landing pages, comparison table
 ├── cart/                   Slide-in cart drawer
 ├── home/                   Homepage sections (Hero, ProofLine, Catalog, Bots, HowItWorks, ...)
-├── i18n/                   LangProvider, LanguageDropdown, LocaleLink (keeps the /de/ prefix)
+├── i18n/                   LangProvider, LanguageDropdown, LocaleLink (internal path -> address of the page language)
 ├── icons/                  Local brand marks (GitHub and others)
 ├── images/                 Gallery cards, search, copy-URL button, brand notice
 ├── layout/                 Header, Footer, payment marks
@@ -103,7 +104,7 @@ components/
 
 content/
 ├── custom-packages.ts      Non-Tebex packages (Discord bots, GitHub, etc.)
-├── resource-stats.ts       Resource list for the /resources page
+├── resource-stats.ts       Resource list for the /stats page
 ├── ticketbot-copy.ts, giveaway-copy.ts, ticketbot-compare-copy.ts   Landing page texts (EN + DE)
 └── legal/                  Editable Markdown legal texts, one file per language
 
@@ -126,7 +127,8 @@ lib/                        Server and shared logic, grouped by area:
 │   imagePipeline.ts, imageSyncCheck.ts                 Image gallery and CDN
 ├── giveawayControl.ts, giveawayDb.ts, giveawayStats.ts, giveawayManager.ts   Giveaway Bot
 ├── legalForms.ts           Withdrawal, cancellation and DSA report handling
-├── i18n.ts, lang.ts, serverLang.ts   Translations and /de/ routing
+├── i18n.ts, lang.ts, serverLang.ts   Translations, language basics
+├── routes.ts               Route table: public address per language, old addresses, proxy decision
 ├── seo.ts, pageSeo.ts, botSeo.ts, jsonLd.ts, sitemap.ts, llms.ts   Metadata, structured data, /llms.txt
 ├── rateLimit.ts, sanitize.ts, db.ts   Rate limiting, HTML sanitizing, database pool
 └── config.ts               Shop configuration (featured packages, badges, news popup)
@@ -225,8 +227,8 @@ export const NEWS_POPUP = {
   enabled: true,
   title: 'Discord Ticket Bot',
   text: 'Get your API Key now and create a ticket system for your community!',
-  button: { label: 'Get API Key', href: '/ticketbot/verify' },
-  secondButton: { label: 'Dashboard', href: '/ticketbot/dashboard' },
+  button: { label: 'Get API Key', href: '/dashboard/ticket-bot/verify' },
+  secondButton: { label: 'Dashboard', href: '/dashboard/ticket-bot' },
   coupon: null, // or e.g. 'NEWSHOP20', renders a copyable coupon field
 }
 

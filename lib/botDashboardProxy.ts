@@ -36,7 +36,7 @@ export const PROXY_USER_HEADER   = 'x-dashboard-user'
 export const PROXY_HOST = (process.env.BOT_DASHBOARD_HOST || 'bot-dashboard.msk-scripts.de').toLowerCase()
 
 /** Where to bounce a browser that arrives without a valid proxy session. */
-export const RETURN_URL = process.env.BOT_DASHBOARD_RETURN_URL || 'https://www.msk-scripts.de/ticketbot/dashboard'
+export const RETURN_URL = process.env.BOT_DASHBOARD_RETURN_URL || 'https://www.msk-scripts.de/en/dashboard/ticket-bot'
 
 const SNOWFLAKE_RE = /^\d{17,20}$/
 

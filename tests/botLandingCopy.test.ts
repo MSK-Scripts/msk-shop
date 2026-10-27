@@ -167,15 +167,16 @@ describe('hreflang pairing', () => {
       const languages = build(lang).alternates?.languages as Record<string, string>
       expect(languages.en).toBe(paths.en)
       expect(languages.de).toBe(paths.de)
-      expect(languages['x-default']).toBe(paths.en)
+      // The root picks the language and redirects: the hreflang fallback.
+      expect(languages['x-default']).toBe('/')
     }
   })
 
   it('each version canonicalises to its own URL', () => {
-    expect(ticketBotMetadata('en').alternates?.canonical).toBe('/ticketbot')
-    expect(ticketBotMetadata('de').alternates?.canonical).toBe('/de/ticketbot')
-    expect(giveawayMetadata('en').alternates?.canonical).toBe('/giveaway')
-    expect(giveawayMetadata('de').alternates?.canonical).toBe('/de/giveaway')
+    expect(ticketBotMetadata('en').alternates?.canonical).toBe('/en/discord/ticket-bot')
+    expect(ticketBotMetadata('de').alternates?.canonical).toBe('/de/discord/ticket-bot')
+    expect(giveawayMetadata('en').alternates?.canonical).toBe('/en/discord/giveaway-bot')
+    expect(giveawayMetadata('de').alternates?.canonical).toBe('/de/discord/giveaway-bot')
   })
 
   it('the alternate link on the page points at the hreflang partner', () => {

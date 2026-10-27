@@ -44,14 +44,14 @@ describe('breadcrumbJsonLd', () => {
   it('nummeriert ab 1 und verlinkt alle bis auf die aktuelle Seite', () => {
     const crumbs = breadcrumbJsonLd([
       { name: 'Home',     path: '/' },
-      { name: 'Packages', path: '/packages' },
+      { name: 'Packages', path: '/en/fivem' },
       { name: 'MSK Garage' },
     ])
 
     const items = crumbs.itemListElement as Array<Record<string, unknown>>
     expect(items).toHaveLength(3)
     expect(items.map(i => i.position)).toEqual([1, 2, 3])
-    expect(items[1].item).toMatch(/\/packages$/)
+    expect(items[1].item).toMatch(/\/en\/fivem$/)
 
     // The last element is the current page and deliberately gets no `item`.
     expect(items[2].item).toBeUndefined()
@@ -69,7 +69,7 @@ describe('productJsonLd', () => {
     expect(offer.price).toBe('19.99')
     expect(offer.priceCurrency).toBe('EUR')
     expect(offer.availability).toBe('https://schema.org/InStock')
-    expect(String(offer.url)).toMatch(/\/packages\/5732587$/)
+    expect(String(offer.url)).toMatch(/\/en\/fivem\/5732587$/)
   })
 
   // The crawler never sees an authenticated basket, so never the sale.
@@ -114,7 +114,7 @@ describe('productJsonLd', () => {
 describe('softwareApplicationJsonLd', () => {
   const app = softwareApplicationJsonLd({
     name:        'MSK Discord Ticket Bot',
-    path:        '/de/ticketbot',
+    path:        '/de/discord/ticket-bot',
     description: 'Kostenloser Discord Ticket Bot zum Selbsthosten.',
     image:       '/discord_ticketbot_banner.webp',
     inLanguage:  'de-DE',
@@ -127,13 +127,13 @@ describe('softwareApplicationJsonLd', () => {
   })
 
   it('macht aus internen Pfaden absolute URLs', () => {
-    expect(String(app.url)).toMatch(/^https?:\/\/.+\/de\/ticketbot$/)
+    expect(String(app.url)).toMatch(/^https?:\/\/.+\/de\/discord\/ticket-bot$/)
     expect(String(app.image)).toMatch(/^https?:\/\/.+\/discord_ticketbot_banner\.webp$/)
   })
 
   it('lässt eine bereits absolute Bild-URL unangetastet', () => {
     const withCdn = softwareApplicationJsonLd({
-      name: 'x', path: '/giveaway', description: 'x',
+      name: 'x', path: '/en/discord/giveaway-bot', description: 'x',
       image: 'https://cdn.example/banner.png', inLanguage: 'en-US',
     })
     expect(withCdn.image).toBe('https://cdn.example/banner.png')
@@ -158,7 +158,7 @@ describe('softwareApplicationJsonLd', () => {
     expect(app.sameAs).toBeUndefined()
 
     const oss = softwareApplicationJsonLd({
-      name: 'x', path: '/giveaway', description: 'x', image: '/x.webp',
+      name: 'x', path: '/en/discord/giveaway-bot', description: 'x', image: '/x.webp',
       inLanguage: 'en-US', codeRepository: 'https://github.com/MSK-Scripts/discord_giveawaybot',
     })
     expect(oss.codeRepository).toBe('https://github.com/MSK-Scripts/discord_giveawaybot')
@@ -192,8 +192,8 @@ describe('productJsonLd language', () => {
     const en = productJsonLd(makePackage(), undefined, 'en')
     const de = productJsonLd(makePackage(), undefined, 'de')
 
-    expect(String(en.url)).toMatch(/[^/]\/packages\/5732587$/)
-    expect(String(de.url)).toMatch(/\/de\/packages\/5732587$/)
+    expect(String(en.url)).toMatch(/\/en\/fivem\/5732587$/)
+    expect(String(de.url)).toMatch(/\/de\/fivem\/5732587$/)
     expect((de.offers as Record<string, unknown>).url).toBe(de.url)
   })
 
