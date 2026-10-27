@@ -135,11 +135,11 @@ describe('publicPath', () => {
 
   it('keeps the value of a dynamic segment', () => {
     expect(publicPath('de', '/fivem/5732587')).toBe('/de/fivem/5732587')
-    expect(publicPath('de', '/tools/images/weapons/pistol')).toBe('/de/web-tools/images/weapons/pistol')
+    expect(publicPath('de', '/tools/images/weapons/pistol')).toBe('/de/web-tools/bilder/weapons/pistol')
   })
 
   it('keeps English sub-segments below a translated parent', () => {
-    expect(publicPath('de', '/tools/images/whatever/deep/path')).toBe('/de/web-tools/images/whatever/deep/path')
+    expect(publicPath('de', '/tools/images/whatever/deep/path')).toBe('/de/web-tools/bilder/whatever/deep/path')
   })
 
   it('keeps query string and hash', () => {
@@ -222,11 +222,11 @@ const OLD_ADDRESSES: Array<[string, string]> = [
   // the German versions under the old scheme
   ['/de/packages',               '/de/fivem'],
   ['/de/packages/5732587',       '/de/fivem/5732587'],
-  ['/de/categories/2105296',     '/de/fivem/categories/2105296'],
+  ['/de/categories/2105296',     '/de/fivem/kategorien/2105296'],
   ['/de/resources',              '/de/statistiken'],
-  ['/de/images',                 '/de/web-tools/images'],
-  ['/de/images/upload',          '/de/web-tools/images/upload'],
-  ['/de/images/weapons/pistol',  '/de/web-tools/images/weapons/pistol'],
+  ['/de/images',                 '/de/web-tools/bilder'],
+  ['/de/images/upload',          '/de/web-tools/bilder/hochladen'],
+  ['/de/images/weapons/pistol',  '/de/web-tools/bilder/weapons/pistol'],
   ['/de/terms',                  '/de/rechtliches/agb'],
   ['/de/terms/imprint',          '/de/rechtliches/impressum'],
   ['/de/terms/privacy',          '/de/rechtliches/datenschutz'],
@@ -235,12 +235,12 @@ const OLD_ADDRESSES: Array<[string, string]> = [
   ['/de/vertrag-widerrufen',     '/de/vertrag-widerrufen'],
   ['/de/vertrag-kuendigen',      '/de/vertrag-kuendigen'],
   ['/de/ticketbot',              '/de/discord/ticket-bot'],
-  ['/de/ticketbot/compare',      '/de/discord/ticket-bot/compare'],
-  ['/de/ticketbot/stats',        '/de/discord/ticket-bot/stats'],
+  ['/de/ticketbot/compare',      '/de/discord/ticket-bot/vergleich'],
+  ['/de/ticketbot/stats',        '/de/discord/ticket-bot/statistik'],
   ['/de/ticketbot/dashboard',    '/de/dashboard/ticket-bot'],
   ['/de/ticketbot/verify',       '/de/dashboard/ticket-bot/verify'],
   ['/de/giveaway',               '/de/discord/giveaway-bot'],
-  ['/de/giveaway/stats',         '/de/discord/giveaway-bot/stats'],
+  ['/de/giveaway/stats',         '/de/discord/giveaway-bot/statistik'],
   ['/de/giveaway/g/abc123',      '/de/discord/giveaway-bot/g/abc123'],
   ['/de/giveaway/dashboard',     '/de/dashboard/giveaway-bot'],
   ['/de/giveaway/verify',        '/de/dashboard/giveaway-bot/verify'],
@@ -272,7 +272,7 @@ describe('old addresses', () => {
   it('sends the English form under /de to the German one', () => {
     expect(resolveRequest('/de/legal/terms')).toEqual({ kind: 'redirect', status: 308, location: '/de/rechtliches/agb' })
     expect(resolveRequest('/de/fivem/free')).toEqual({ kind: 'redirect', status: 308, location: '/de/fivem/kostenlos' })
-    expect(resolveRequest('/de/tools/images/weapons')).toEqual({ kind: 'redirect', status: 308, location: '/de/web-tools/images/weapons' })
+    expect(resolveRequest('/de/tools/images/weapons')).toEqual({ kind: 'redirect', status: 308, location: '/de/web-tools/bilder/weapons' })
   })
 
   it('sends the German form under /en to the English one', () => {

@@ -17,7 +17,7 @@ import { getRequestLang } from '@/lib/serverLang'
  * reason why the counterarguments here are not cosmetic.
  *
  * Bilingual via the path like the landing pages: `/en/discord/ticket-bot/compare` and
- * `/de/discord/ticket-bot/compare` are two indexable addresses with reciprocal
+ * `/de/discord/ticket-bot/vergleich` are two indexable addresses with reciprocal
  * hreflang, the language comes from the request.
  */
 export async function generateMetadata(): Promise<Metadata> {

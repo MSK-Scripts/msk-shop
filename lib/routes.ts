@@ -21,8 +21,9 @@ import { DEFAULT_LANG, LANGS, isLang } from '@/lib/lang'
  *     (a dynamic segment stays dynamic, it only keeps its value).
  *
  * Below a listed path, further segments keep their English name in both
- * languages: `/tools/images/weapons` is `/de/web-tools/images/weapons`.
- * Only what is listed here gets translated.
+ * languages, and the value of a dynamic segment never changes:
+ * `/tools/images/weapons` is `/de/web-tools/bilder/weapons`. Only what is
+ * listed here gets translated (sub-path words decided on 27.10.2026).
  */
 
 export interface RouteDef {
@@ -43,21 +44,21 @@ export const ROUTES: readonly RouteDef[] = [
   route('/fivem/[id]'),
   route('/fivem/free',            '/fivem/kostenlos'),
   route('/fivem/all-access',      '/fivem/alle-scripts'),
-  route('/fivem/categories/[id]'),
+  route('/fivem/categories/[id]', '/fivem/kategorien/[id]'),
 
   route('/discord'),
   route('/discord/ticket-bot'),
-  route('/discord/ticket-bot/compare'),
-  route('/discord/ticket-bot/stats'),
+  route('/discord/ticket-bot/compare',    '/discord/ticket-bot/vergleich'),
+  route('/discord/ticket-bot/stats',      '/discord/ticket-bot/statistik'),
   route('/discord/giveaway-bot'),
-  route('/discord/giveaway-bot/stats'),
+  route('/discord/giveaway-bot/stats',    '/discord/giveaway-bot/statistik'),
   route('/discord/giveaway-bot/g/[token]'),
 
   route('/tools',                           '/web-tools'),
-  route('/tools/images',                    '/web-tools/images'),
-  route('/tools/images/upload',             '/web-tools/images/upload'),
-  route('/tools/images/[category]',         '/web-tools/images/[category]'),
-  route('/tools/images/[category]/[name]',  '/web-tools/images/[category]/[name]'),
+  route('/tools/images',                    '/web-tools/bilder'),
+  route('/tools/images/upload',             '/web-tools/bilder/hochladen'),
+  route('/tools/images/[category]',         '/web-tools/bilder/[category]'),
+  route('/tools/images/[category]/[name]',  '/web-tools/bilder/[category]/[name]'),
 
   route('/about',    '/ueber-msk'),
   route('/stats',    '/statistiken'),
