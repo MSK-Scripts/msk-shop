@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Loader2, UserPlus, Trash2 } from 'lucide-react'
+import { CircleNotch as Loader2, UserPlus, Trash as Trash2 } from '@/components/icons'
 import { ADMIN_PERMISSIONS, PERMISSION_LABELS, type AdminPermission } from '@/lib/adminPerms'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'

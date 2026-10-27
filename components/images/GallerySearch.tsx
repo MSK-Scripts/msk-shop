@@ -1,6 +1,6 @@
 'use client'
 
-import { Search, X } from 'lucide-react'
+import { MagnifyingGlass as Search, X } from '@/components/icons'
 import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
 

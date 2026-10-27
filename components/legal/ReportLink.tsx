@@ -1,6 +1,6 @@
 'use client'
 
-import { Flag } from 'lucide-react'
+import { Flag } from '@/components/icons'
 
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 import { useLang } from '@/components/i18n/LangProvider'

@@ -4,10 +4,21 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import {
-  Globe, CheckCircle, AlertCircle, Clock, Trash2,
-  ExternalLink, Loader2, Info, LogOut,
-  FileText, Server, CreditCard, ChevronDown, type LucideIcon,
-} from 'lucide-react'
+  Globe,
+  CheckCircle,
+  WarningCircle as AlertCircle,
+  Clock,
+  Trash as Trash2,
+  ArrowSquareOut as ExternalLink,
+  CircleNotch as Loader2,
+  Info,
+  SignOut as LogOut,
+  FileText,
+  HardDrives as Server,
+  CreditCard,
+  CaretDown as ChevronDown,
+  type IconComponent,
+} from '@/components/icons'
 import { dashboardTranslations } from '@/lib/i18n'
 import { useLang } from '@/components/i18n/LangProvider'
 import { TIER_CONFIG, formatTierPrice, yearlyMonthsFree, type BillingInterval, type Tier } from '@/lib/tiers'
@@ -192,7 +203,7 @@ function GuildPanel({
   const { localize } = useLang()
 
   const [tab, setTab] = useState<TabKey>('domain')
-  const tabs: { key: TabKey; label: string; icon: LucideIcon }[] = [
+  const tabs: { key: TabKey; label: string; icon: IconComponent }[] = [
     { key: 'domain',      label: t.tab_domain,      icon: Globe },
     { key: 'transcripts', label: t.tab_transcripts, icon: FileText },
     // Shown for every paying tier, not only for an already-hosted guild: this is

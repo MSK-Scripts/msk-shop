@@ -1,5 +1,5 @@
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft } from '@/components/icons'
 import { Button } from '@/components/ui/Button'
 
 export default function NotFound() {

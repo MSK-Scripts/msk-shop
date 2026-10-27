@@ -2,7 +2,7 @@
 
 import { useState }   from 'react';
 import { useRouter }  from 'next/navigation';
-import { Gift, LogIn, ShieldCheck } from 'lucide-react';
+import { Gift, SignIn as LogIn, ShieldCheck } from '@/components/icons';
 import { giveawayDashboardTranslations } from '@/lib/i18n';
 import { useLang }    from '@/components/i18n/LangProvider';
 import { Card }       from '@/components/ui/Card';

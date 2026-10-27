@@ -1,5 +1,5 @@
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight } from '@/components/icons'
 import { Button } from '@/components/ui/Button'
 import { ReleaseFeed } from '@/components/home/ReleaseFeed'
 import { SITE_CONFIG } from '@/lib/config'

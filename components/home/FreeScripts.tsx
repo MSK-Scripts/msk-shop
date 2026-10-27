@@ -1,5 +1,5 @@
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight } from '@/components/icons'
 import { CustomPackageCard } from '@/components/home/CustomPackageCard'
 import { CUSTOM_PACKAGES } from '@/content/custom-packages'
 import { homeTranslations, type Lang } from '@/lib/i18n'

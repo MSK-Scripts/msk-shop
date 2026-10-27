@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { ChevronLeft, ChevronRight, Download } from 'lucide-react'
+import { CaretLeft as ChevronLeft, CaretRight as ChevronRight, DownloadSimple as Download } from '@/components/icons'
 import { notFound } from 'next/navigation'
 
 import { CopyUrlButton } from '@/components/images/CopyUrlButton'

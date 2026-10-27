@@ -1,11 +1,37 @@
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 import {
-  ArrowRight, KeyRound, LayoutDashboard, BarChart3, Ticket, ClipboardList,
-  UserCheck, Flag, Star, Clock, FileText, MessageSquareText, Globe, Lock,
-  Megaphone, Bell, MessageSquare,
-  Check, X, ServerCog, RefreshCw, Terminal, RotateCcw, Database,
-  ShieldCheck, Users, Languages, Rocket, Trash2, EyeOff, Wallet,
-} from 'lucide-react'
+  ArrowRight,
+  Key as KeyRound,
+  SquaresFour as LayoutDashboard,
+  ChartBar as BarChart3,
+  Ticket,
+  ClipboardText as ClipboardList,
+  UserCheck,
+  Flag,
+  Star,
+  Clock,
+  FileText,
+  ChatText as MessageSquareText,
+  Globe,
+  Lock,
+  Megaphone,
+  Bell,
+  ChatText as MessageSquare,
+  Check,
+  X,
+  HardDrives as ServerCog,
+  ArrowsClockwise as RefreshCw,
+  TerminalWindow as Terminal,
+  ArrowCounterClockwise as RotateCcw,
+  Database,
+  ShieldCheck,
+  Users,
+  Translate as Languages,
+  Rocket,
+  Trash as Trash2,
+  EyeSlash as EyeOff,
+  Wallet,
+} from '@/components/icons'
 
 import { BotCrossLink } from '@/components/bots/BotCrossLink'
 import { Button } from '@/components/ui/Button'

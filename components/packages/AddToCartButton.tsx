@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
-import { ShoppingCart, Loader2, Download, Gift, X, LogIn } from 'lucide-react'
+import { ShoppingCart, CircleNotch as Loader2, DownloadSimple as Download, Gift, X, SignIn as LogIn } from '@/components/icons'
 import { useCart } from '@/lib/useCart'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'

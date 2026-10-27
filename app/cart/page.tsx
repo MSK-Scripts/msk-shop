@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
-import { Trash2, ShoppingBag, Loader2, ArrowLeft, Tag, ShieldCheck, Lock, Globe } from 'lucide-react'
+import { Trash as Trash2, ShoppingBag, CircleNotch as Loader2, ArrowLeft, Tag, ShieldCheck, Lock, Globe } from '@/components/icons'
 import { useCart } from '@/lib/useCart'
 import { useCartStore } from '@/store/cart'
 import { useLang } from '@/components/i18n/LangProvider'

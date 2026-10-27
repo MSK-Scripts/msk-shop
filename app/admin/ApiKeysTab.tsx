@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { Loader2, AlertCircle, Pencil, Eye, EyeOff, Copy, Check, Globe, X, EyeClosed } from 'lucide-react'
+import { CircleNotch as Loader2, WarningCircle as AlertCircle, PencilSimple as Pencil, Eye, EyeSlash as EyeOff, Copy, Check, Globe, X, EyeClosed } from '@/components/icons'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'

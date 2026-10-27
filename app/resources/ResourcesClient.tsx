@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
-import { Server, TrendingUp, TrendingDown, Minus, ArrowUpRight, Hash } from 'lucide-react'
+import { HardDrives as Server, TrendUp as TrendingUp, TrendDown as TrendingDown, Minus, ArrowUpRight, Hash } from '@/components/icons'
 import { resourceStatsTranslations, type Lang } from '@/lib/i18n'
 import { useLang } from '@/components/i18n/LangProvider'
 import { Card } from '@/components/ui/Card'

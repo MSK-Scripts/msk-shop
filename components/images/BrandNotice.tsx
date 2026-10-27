@@ -1,4 +1,4 @@
-import { Copyright } from 'lucide-react'
+import { Copyright } from '@/components/icons'
 
 import { imagesTranslations, type Lang } from '@/lib/i18n'
 import { cn } from '@/lib/utils'

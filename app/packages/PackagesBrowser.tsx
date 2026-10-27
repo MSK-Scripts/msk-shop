@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
-import { ChevronDown, SlidersHorizontal, X } from 'lucide-react'
+import { CaretDown as ChevronDown, SlidersHorizontal, X } from '@/components/icons'
 import { PackageCard } from '@/components/packages/PackageCard'
 import { PACKAGE_BADGES, PACKAGE_TAGS, PACKAGE_DESCRIPTIONS } from '@/lib/config'
 import {

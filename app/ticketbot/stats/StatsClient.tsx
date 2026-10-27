@@ -1,6 +1,6 @@
 'use client'
 
-import { FileText, Key, HardDrive, Paperclip, CreditCard, BarChart3, Globe, Server, TrendingUp, Database, Activity, Files, Maximize2, Gift, HeartHandshake } from 'lucide-react'
+import { FileText, Key, HardDrive, Paperclip, CreditCard, ChartBar as BarChart3, Globe, HardDrives as Server, TrendUp as TrendingUp, Database, Pulse as Activity, Files, ArrowsOut as Maximize2, Gift, HandHeart as HeartHandshake } from '@/components/icons'
 import { statsTranslations, type Lang } from '@/lib/i18n'
 import { useLang } from '@/components/i18n/LangProvider'
 import { Card } from '@/components/ui/Card'

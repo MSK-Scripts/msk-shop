@@ -2,9 +2,16 @@
 
 import { useEffect, useState } from 'react'
 import {
-  Server, Gift, Sparkles, Users, Trophy, BarChart3,
-  TrendingUp, Layers, Flame,
-} from 'lucide-react'
+  HardDrives as Server,
+  Gift,
+  Sparkle as Sparkles,
+  Users,
+  Trophy,
+  ChartBar as BarChart3,
+  TrendUp as TrendingUp,
+  Stack as Layers,
+  Flame,
+} from '@/components/icons'
 import { giveawayStatsTranslations, type Lang } from '@/lib/i18n'
 import { useLang } from '@/components/i18n/LangProvider'
 import { Card } from '@/components/ui/Card'

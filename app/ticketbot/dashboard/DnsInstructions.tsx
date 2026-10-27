@@ -1,6 +1,6 @@
 'use client'
 
-import { AlertCircle, Loader2, RefreshCw } from 'lucide-react'
+import { WarningCircle as AlertCircle, CircleNotch as Loader2, ArrowsClockwise as RefreshCw } from '@/components/icons'
 import { dashboardTranslations } from '@/lib/i18n'
 import { Button } from '@/components/ui/Button'
 

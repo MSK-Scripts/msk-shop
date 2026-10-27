@@ -2,8 +2,15 @@
 
 import { useEffect, useRef, useState } from 'react'
 import {
-  Loader2, Upload, CheckCircle2, Clock, XCircle, LogOut, ShieldCheck, ImagePlus,
-} from 'lucide-react'
+  CircleNotch as Loader2,
+  UploadSimple as Upload,
+  CheckCircle as CheckCircle2,
+  Clock,
+  XCircle,
+  SignOut as LogOut,
+  ShieldCheck,
+  ImageSquare as ImagePlus,
+} from '@/components/icons'
 
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'

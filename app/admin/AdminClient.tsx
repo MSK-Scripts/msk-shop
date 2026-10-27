@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { LogOut, Check, X } from 'lucide-react'
+import { SignOut as LogOut, Check, X } from '@/components/icons'
 import {
   ADMIN_PERMISSIONS,
   PERMISSION_LABELS,

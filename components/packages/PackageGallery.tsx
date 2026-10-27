@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import { ChevronLeft, ChevronRight, ZoomIn, X } from 'lucide-react'
+import { CaretLeft as ChevronLeft, CaretRight as ChevronRight, MagnifyingGlassPlus as ZoomIn, X } from '@/components/icons'
 import { cn } from '@/lib/utils'
 import type { TebexPackage } from '@/types/tebex'
 import { packagesTranslations, type Lang } from '@/lib/i18n'

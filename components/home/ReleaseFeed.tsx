@@ -1,4 +1,4 @@
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight } from '@/components/icons'
 import { homeTranslations, type Lang } from '@/lib/i18n'
 import { SITE_CONFIG } from '@/lib/config'
 import type { ReleaseEntry } from '@/lib/releases'

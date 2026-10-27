@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
-import { MessageSquare, Gift, type LucideIcon } from 'lucide-react'
+import { ChatText as MessageSquare, Gift, type IconComponent } from '@/components/icons'
 import { Card, CardContent, CardTitle, CardDescription } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { homeTranslations, type Lang } from '@/lib/i18n'
@@ -30,7 +30,7 @@ interface BotEntry {
   key: string
   name: string
   /** Shown on the panel when `image` is empty. */
-  Icon: LucideIcon
+  Icon: IconComponent
   /** Path under `public/`, or '' for the icon fallback. */
   image: string
   href: string

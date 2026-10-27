@@ -5,8 +5,17 @@ import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 import Image from 'next/image'
 import { useSearchParams, usePathname } from 'next/navigation'
 import {
-  ShoppingCart, Menu, X, User, LogOut, Loader2, ChevronDown, Search, ArrowRight, ExternalLink,
-} from 'lucide-react'
+  ShoppingCart,
+  List as Menu,
+  X,
+  User,
+  SignOut as LogOut,
+  CircleNotch as Loader2,
+  CaretDown as ChevronDown,
+  MagnifyingGlass as Search,
+  ArrowRight,
+  ArrowSquareOut as ExternalLink,
+} from '@/components/icons'
 import { useCartStore } from '@/store/cart'
 import { useCart } from '@/lib/useCart'
 import { Button } from '@/components/ui/Button'

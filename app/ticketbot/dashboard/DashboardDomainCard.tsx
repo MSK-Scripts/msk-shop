@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { AlertCircle, CheckCircle, ExternalLink, Globe, Info, Loader2, Trash2 } from 'lucide-react'
+import { WarningCircle as AlertCircle, CheckCircle, ArrowSquareOut as ExternalLink, Globe, Info, CircleNotch as Loader2, Trash as Trash2 } from '@/components/icons'
 import { dashboardTranslations } from '@/lib/i18n'
 import { useLang }               from '@/components/i18n/LangProvider'
 import { Button }                from '@/components/ui/Button'

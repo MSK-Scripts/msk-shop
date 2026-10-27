@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
-import { ChevronRight, ArrowLeft } from 'lucide-react'
+import { CaretRight as ChevronRight, ArrowLeft } from '@/components/icons'
 import { getPackage, getPackages } from '@/lib/tebex'
 import { AddToCartButton } from '@/components/packages/AddToCartButton'
 import { PackageGallery } from '@/components/packages/PackageGallery'

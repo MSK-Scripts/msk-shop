@@ -1,4 +1,4 @@
-import { AlertCircle } from 'lucide-react'
+import { WarningCircle as AlertCircle } from '@/components/icons'
 import { Card } from '@/components/ui/Card'
 
 /**

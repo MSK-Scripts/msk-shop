@@ -1,5 +1,5 @@
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
-import { ExternalLink, ArrowLeft } from 'lucide-react'
+import { ArrowSquareOut as ExternalLink, ArrowLeft } from '@/components/icons'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { getRequestLang } from '@/lib/serverLang'

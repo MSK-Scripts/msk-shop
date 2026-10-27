@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Loader2, Gift, Undo2, ChevronLeft, ChevronRight } from 'lucide-react'
+import { CircleNotch as Loader2, Gift, ArrowCounterClockwise as Undo2, CaretLeft as ChevronLeft, CaretRight as ChevronRight } from '@/components/icons'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'

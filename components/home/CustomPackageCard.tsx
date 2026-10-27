@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { ExternalLink } from 'lucide-react'
+import { ArrowSquareOut as ExternalLink } from '@/components/icons'
 import { Card, CardContent, CardTitle, CardDescription } from '@/components/ui/Card'
 import { Badge, type BadgeVariant } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'

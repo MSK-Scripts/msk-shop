@@ -1,6 +1,6 @@
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 import Image from 'next/image'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight } from '@/components/icons'
 import { getPackages } from '@/lib/tebex'
 import { resolveDisplayPrice } from '@/lib/price'
 import { plainExcerpt } from '@/lib/seo'

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Loader2 } from 'lucide-react'
+import { CircleNotch as Loader2 } from '@/components/icons'
 
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 import { useLang } from '@/components/i18n/LangProvider'

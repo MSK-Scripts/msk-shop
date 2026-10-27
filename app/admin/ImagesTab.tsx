@@ -2,10 +2,23 @@
 
 import { useMemo, useState } from 'react'
 import {
-  Loader2, Search, Pencil, Check, X, Eye, EyeOff, ExternalLink,
-  ShieldQuestion, ThumbsUp, ThumbsDown, RefreshCw, ChevronLeft, ChevronRight,
-  Trash2, AlertTriangle,
-} from 'lucide-react'
+  CircleNotch as Loader2,
+  MagnifyingGlass as Search,
+  PencilSimple as Pencil,
+  Check,
+  X,
+  Eye,
+  EyeSlash as EyeOff,
+  ArrowSquareOut as ExternalLink,
+  ShieldWarning as ShieldQuestion,
+  ThumbsUp,
+  ThumbsDown,
+  ArrowsClockwise as RefreshCw,
+  CaretLeft as ChevronLeft,
+  CaretRight as ChevronRight,
+  Trash as Trash2,
+  Warning as AlertTriangle,
+} from '@/components/icons'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'

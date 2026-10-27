@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { AlertCircle, Archive, ChevronDown, ExternalLink, Info, Loader2, RotateCcw, Server, Trash2 } from 'lucide-react'
+import { WarningCircle as AlertCircle, Archive, CaretDown as ChevronDown, ArrowSquareOut as ExternalLink, Info, CircleNotch as Loader2, ArrowCounterClockwise as RotateCcw, HardDrives as Server, Trash as Trash2 } from '@/components/icons'
 import { dashboardTranslations } from '@/lib/i18n'
 import { useLang }               from '@/components/i18n/LangProvider'
 import { useJsonResource }       from '@/lib/useAdminResource'

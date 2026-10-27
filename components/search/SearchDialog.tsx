@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 import Image from 'next/image'
-import { Search, X, Loader2, ArrowRight } from 'lucide-react'
+import { MagnifyingGlass as Search, X, CircleNotch as Loader2, ArrowRight } from '@/components/icons'
 import { getPackages } from '@/lib/tebex'
 import type { TebexPackage } from '@/types/tebex'
 

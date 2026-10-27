@@ -1,5 +1,5 @@
 import { notFound }    from 'next/navigation';
-import { Trophy, Gift, Users, CalendarClock } from 'lucide-react';
+import { Trophy, Gift, Users, CalendarBlank as CalendarClock } from '@/components/icons';
 import { queryOne }     from '@/lib/db';
 import { Card }         from '@/components/ui/Card';
 import { getRequestLang } from '@/lib/serverLang';

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
-import { ShoppingCart, Loader2, LogIn } from 'lucide-react'
+import { ShoppingCart, CircleNotch as Loader2, SignIn as LogIn } from '@/components/icons'
 import { useCart } from '@/lib/useCart'
 import { useSalePricesStore } from '@/store/salePrices'
 import { resolveDisplayPrice } from '@/lib/price'

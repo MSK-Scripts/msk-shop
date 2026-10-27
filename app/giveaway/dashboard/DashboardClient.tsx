@@ -3,10 +3,30 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  Gift, Plus, Pause, Play, Square, Ban, Dice5, Pencil, Clock,
-  LogOut, RefreshCw, Settings as SettingsIcon, Loader2, ExternalLink,
-  Store, Ticket, Eye, EyeOff, Trash2, ShieldCheck, LayoutTemplate, Save, Zap,
-} from 'lucide-react';
+  Gift,
+  Plus,
+  Pause,
+  Play,
+  Stop as Square,
+  Prohibit as Ban,
+  DiceFive as Dice5,
+  PencilSimple as Pencil,
+  Clock,
+  SignOut as LogOut,
+  ArrowsClockwise as RefreshCw,
+  GearSix as SettingsIcon,
+  CircleNotch as Loader2,
+  ArrowSquareOut as ExternalLink,
+  Storefront as Store,
+  Ticket,
+  Eye,
+  EyeSlash as EyeOff,
+  Trash as Trash2,
+  ShieldCheck,
+  Layout as LayoutTemplate,
+  FloppyDisk as Save,
+  Lightning as Zap,
+} from '@/components/icons';
 import { giveawayDashboardTranslations, type Lang } from '@/lib/i18n';
 import { useLang } from '@/components/i18n/LangProvider';
 import { Card } from '@/components/ui/Card';

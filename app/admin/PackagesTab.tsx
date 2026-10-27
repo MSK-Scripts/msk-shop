@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Loader2, Pencil, EyeOff } from 'lucide-react'
+import { CircleNotch as Loader2, PencilSimple as Pencil, EyeSlash as EyeOff } from '@/components/icons'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'

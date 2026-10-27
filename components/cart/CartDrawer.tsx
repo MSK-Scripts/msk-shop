@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { X, ShoppingBag, Trash2, Tag, Loader2, ChevronDown } from 'lucide-react'
+import { X, ShoppingBag, Trash as Trash2, Tag, CircleNotch as Loader2, CaretDown as ChevronDown } from '@/components/icons'
 import { useCartStore } from '@/store/cart'
 import { useCart } from '@/lib/useCart'
 import { Button } from '@/components/ui/Button'

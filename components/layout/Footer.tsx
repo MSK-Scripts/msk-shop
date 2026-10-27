@@ -2,7 +2,7 @@
 
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 import Image from 'next/image'
-import { Receipt, Scale, ShieldCheck, Undo2 } from 'lucide-react'
+import { Receipt, Scales as Scale, ShieldCheck, ArrowCounterClockwise as Undo2 } from '@/components/icons'
 import { Button } from '@/components/ui/Button'
 import { useLang } from '@/components/i18n/LangProvider'
 import { PaymentMarks } from '@/components/layout/PaymentMarks'

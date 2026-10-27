@@ -2,9 +2,15 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import {
-  FileText, ExternalLink, Search, RotateCcw, Paperclip,
-  ChevronLeft, ChevronRight, Loader2,
-} from 'lucide-react'
+  FileText,
+  ArrowSquareOut as ExternalLink,
+  MagnifyingGlass as Search,
+  ArrowCounterClockwise as RotateCcw,
+  Paperclip,
+  CaretLeft as ChevronLeft,
+  CaretRight as ChevronRight,
+  CircleNotch as Loader2,
+} from '@/components/icons'
 import { dashboardTranslations, type Lang } from '@/lib/i18n'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'

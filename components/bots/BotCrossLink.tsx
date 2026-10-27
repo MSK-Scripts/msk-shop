@@ -1,5 +1,5 @@
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
-import { Gift, Ticket } from 'lucide-react'
+import { Gift, Ticket } from '@/components/icons'
 
 import type { Lang } from '@/lib/i18n'
 

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
-import { X, Copy, Check } from 'lucide-react'
+import { X, Copy, Check } from '@/components/icons'
 import type { NewsPopupSettings } from '@/lib/newsPopup'
 import { Button } from '@/components/ui/Button'
 import { useHydrated } from '@/lib/useHydrated'

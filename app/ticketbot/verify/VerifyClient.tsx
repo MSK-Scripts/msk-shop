@@ -3,9 +3,16 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import {
-  CheckCircle, Copy, Check, AlertCircle, Loader2,
-  ExternalLink, Globe, RefreshCw, LayoutDashboard,
-} from 'lucide-react'
+  CheckCircle,
+  Copy,
+  Check,
+  WarningCircle as AlertCircle,
+  CircleNotch as Loader2,
+  ArrowSquareOut as ExternalLink,
+  Globe,
+  ArrowsClockwise as RefreshCw,
+  SquaresFour as LayoutDashboard,
+} from '@/components/icons'
 import type { DiscordGuild, VerifySession } from '@/lib/session'
 import { translations } from '@/lib/i18n'
 import { useLang } from '@/components/i18n/LangProvider'

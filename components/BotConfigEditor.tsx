@@ -2,9 +2,20 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import {
-  AlertCircle, CheckCircle, Info, Loader2, RefreshCw,
-  Play, Square, RotateCcw, Terminal, Download, X, ScrollText, Activity,
-} from 'lucide-react'
+  WarningCircle as AlertCircle,
+  CheckCircle,
+  Info,
+  CircleNotch as Loader2,
+  ArrowsClockwise as RefreshCw,
+  Play,
+  Stop as Square,
+  ArrowCounterClockwise as RotateCcw,
+  TerminalWindow as Terminal,
+  DownloadSimple as Download,
+  X,
+  Scroll as ScrollText,
+  Pulse as Activity,
+} from '@/components/icons'
 import { dashboardTranslations, type Lang } from '@/lib/i18n'
 
 // ── Types ──────────────────────────────────────────────────────────────────────

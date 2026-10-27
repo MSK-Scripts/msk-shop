@@ -1,4 +1,4 @@
-import { ArrowRight, BookOpen, Check, Info, Languages } from 'lucide-react'
+import { ArrowRight, BookOpen, Check, Info, Translate as Languages } from '@/components/icons'
 
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 

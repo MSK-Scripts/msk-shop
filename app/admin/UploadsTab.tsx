@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { Loader2, ThumbsUp, ThumbsDown, ExternalLink, Clock } from 'lucide-react'
+import { CircleNotch as Loader2, ThumbsUp, ThumbsDown, ArrowSquareOut as ExternalLink, Clock } from '@/components/icons'
 
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'

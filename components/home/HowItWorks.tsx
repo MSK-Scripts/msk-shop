@@ -1,4 +1,4 @@
-import { ArrowRight, KeyRound, PackageSearch, Rocket, ShieldCheck } from 'lucide-react'
+import { ArrowRight, Key as KeyRound, Package as PackageSearch, Rocket, ShieldCheck } from '@/components/icons'
 
 import { Button } from '@/components/ui/Button'
 import { SITE_CONFIG } from '@/lib/config'

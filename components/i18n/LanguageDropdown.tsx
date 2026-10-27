@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Languages } from 'lucide-react'
+import { Translate as Languages } from '@/components/icons'
 import { useLang } from './LangProvider'
 import { Button } from '@/components/ui/Button'
 import { layoutTranslations } from '@/lib/i18n'

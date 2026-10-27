@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-import { ImagePlus } from 'lucide-react'
+import { ImageSquare as ImagePlus } from '@/components/icons'
 
 import { CategoryCard } from '@/components/images/CategoryCard'
 import { Card } from '@/components/ui/Card'

@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
-import { CheckCircle, XCircle, ArrowLeft } from 'lucide-react'
+import { CheckCircle, XCircle, ArrowLeft } from '@/components/icons'
 import { useCartStore } from '@/store/cart'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
