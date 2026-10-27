@@ -6,8 +6,10 @@
 /* ============================================================================
    MSK Shop — Design-Tokens (Tailwind v4 CSS-First Config)
    ============================================================================
-   Light-Mode-Tokens sind Default; .dark-Scope (siehe @layer base) überschreibt sie.
-   Inspiriert von GitHub-Dark im Dark-Mode + MSK-Grün als Brand-Accent.
+   Light tokens are the default; the .dark scope (see @layer base) overrides
+   them. Since the redesign (Phase 0, 27.10.2026): neutral anthracite for
+   ground and bands, MSK green as the visible brand colour. Values and the
+   places green belongs to are in the redesign plan, section 4.4, in the vault.
    ============================================================================ */
 @theme {
   /* Breakpoints above Tailwind's built-in 2xl (96rem / 1536 px). Declared here
@@ -20,9 +22,32 @@
   --breakpoint-3xl: 120rem;
   --breakpoint-4xl: 160rem;
 
-  /* Typografie — 100% lokal über @fontsource-variable */
-  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-mono: "JetBrains Mono Variable", ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+  /* Type, loaded locally through @fontsource-variable. Archivo for headings
+     and product names (with its width axis), Source Sans 3 for everything
+     else, and no web font for code: the system monospace is enough there. */
+  --font-sans: "Source Sans 3 Variable", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Archivo Variable", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Mono", "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+
+  /* Fluid type scale. The minimum is the phone size, the size grows with the
+     window and stops at the UWQHD value. Every maximum is at most 2.5 times
+     its minimum, so browser zoom still reaches 200 % (WCAG 1.4.4). */
+  --text-display: clamp(2.25rem, 1.2rem + 2.4vw, 5rem);
+  --text-display--line-height: 1.06;
+  --text-h2: clamp(1.75rem, 1.2rem + 1.1vw, 3rem);
+  --text-h2--line-height: 1.15;
+  --text-h3: clamp(1.25rem, 1.05rem + 0.45vw, 1.75rem);
+  --text-h3--line-height: 1.25;
+  --text-product: clamp(1.375rem, 1.1rem + 0.55vw, 2rem);
+  --text-product--line-height: 1.15;
+  --text-lead: clamp(1.1875rem, 1rem + 0.35vw, 1.5rem);
+  --text-lead--line-height: 1.55;
+  --text-body: clamp(1.0625rem, 0.9rem + 0.2vw, 1.25rem);
+  --text-body--line-height: 1.6;
+  --text-small: clamp(0.9375rem, 0.85rem + 0.12vw, 1.0625rem);
+  --text-small--line-height: 1.5;
+  --text-label: clamp(0.8125rem, 0.75rem + 0.08vw, 0.9375rem);
+  --text-label--line-height: 1.4;
 
   /* Farben — Light-Mode (Default)
      Die Werte hier sind auf WCAG AA gerechnet, nicht nach Augenmaß gewählt.
@@ -35,18 +60,18 @@
      Ton (L 0,964), die Karte sitzt mit L 0,985 darüber. Verschoben wurde
      ausschließlich die Helligkeit, Farbton und Buntheit der Zink-Achse
      bleiben, damit der Charakter des Themes derselbe ist. */
-  --color-background:         #f3f3f4;
-  --color-foreground:         #0a0a0a;
-  --color-muted:              #e8e8e9;
-  /* 4,64:1 auf --color-muted, 5,13:1 auf dem Grund. Musste mit den Flächen
-     mitwandern: auf dem tieferen --color-muted lag der Vorgänger #6b6b74 nur
-     noch bei 4,25:1. */
-  --color-muted-foreground:   #66666f;
-  --color-border:             #d6d6d9;
-  --color-input:              #d6d6d9;
+  --color-background:         #f6f6f4;
+  --color-foreground:         #1c1d1f;
+  --color-muted:              #ededea;
+  /* 5.64:1 on --color-muted, 6.12:1 on the ground, 6.62:1 on a card. */
+  --color-muted-foreground:   #5a5d61;
+  --color-border:             #dcdcd8;
+  /* Border of form controls. Unlike --color-border it must reach 3:1 against
+     what surrounds it (WCAG 1.4.11): 3.61:1 on a card, 3.33:1 on the ground. */
+  --color-input:              #84878b;
   --color-ring:               #27762e;
-  --color-card:               #fafafb;
-  --color-card-foreground:    #0a0a0a;
+  --color-card:               #ffffff;
+  --color-card-foreground:    #1c1d1f;
 
   /* Brand: MSK-Grün — beide Werte sind echte Pixelfarben aus `public/logo.png`
 
@@ -61,12 +86,30 @@
      --color-primary  #27762e  kommt 1693-mal im Logo vor
      --color-accent   #60b02f  kommt 1361-mal vor, das hellste gesättigte Grün
 
-     primary trägt beide Rollen: Füllung mit weißem Label (5,65:1) und grüne
-     Textfarbe (5,09:1 auf dem Grund, 4,61:1 auf --color-muted, 5,42:1 auf der
-     Karte). Der Vorgänger #3a7d1c lag auf dem tieferen --color-muted bei
-     4,14:1 und damit unter AA. */
+     primary carries both roles: fill with a white label (5.65:1) and green
+     text (5.22:1 on the ground, 4.81:1 on --color-muted, 5.65:1 on a card). */
   --color-primary:            #27762e;
   --color-primary-foreground: #ffffff;
+  --color-primary-hover:      #1d5e23;   /* white label 7.84:1 */
+  /* Soft green behind selected or highlighted things: a chosen variant,
+     table heads, framework tags. Text 14.57:1, muted text 5.71:1, green
+     text 4.88:1 on it. */
+  --color-accent-soft:        #e8f1e4;
+
+  /* Anthracite band (hero, dark sections) and the MSK green band before the
+     footer. Both keep their colours in the dark theme, so they are defined
+     once here. Measured: band text 13.19:1, muted 6.79:1, green on the band
+     6.69:1, dark label on the band green 8.24:1; on the green band white
+     5.65:1, muted 5.00:1, the white button with --color-primary-hover 7.84:1. */
+  --color-band:                    #26282b;
+  --color-band-foreground:         #f2f2f0;
+  --color-band-muted:              #adb0b4;
+  --color-band-line:               #3b3e42;
+  --color-band-accent:             #7cc04b;
+  --color-band-accent-foreground:  #101710;
+  --color-brand:                   #27762e;
+  --color-brand-foreground:        #ffffff;
+  --color-brand-muted:             #eaf4e6;
   /* Fläche, nicht Text: als Textfarbe misst dieses Grün auf der Karte 2,54:1,
      und als kleiner Statuspunkt verfehlt es dort die 3:1 für Nicht-Text. Genau
      das stand bis zum 23.08.2026 im BotConfigEditor. Wer eine grüne Schrift
@@ -75,8 +118,8 @@
      weil DESIGN.md die zweite Grünstufe führt, gerendert wird es nicht. */
   --color-accent:             #60b02f;
   --color-accent-foreground:  #0a0a0a;
-  --color-secondary:          #e8e8e9;
-  --color-secondary-foreground: #18181b;
+  --color-secondary:          #ededea;
+  --color-secondary-foreground: #1c1d1f;
 
   /* Funktional — jeweils so tief, dass weißer Text auf der Füllung AA erreicht.
      Zwei mussten mit --color-muted nachziehen: auf der tieferen Kachel fiel
@@ -89,12 +132,11 @@
      gerendert. Bekommt es je eine Aufgabe, braucht es eine eigene Stufe. */
   --color-success:            #27762e;
   --color-success-foreground: #ffffff;
-  --color-warning:            #9f5300;   /* auf dem tieferen --color-muted lag
-                                            der Vorgänger #a45709 bei 4,35:1 */
+  --color-warning:            #8f4e08;   /* 5.49:1 on the tile, 6.44:1 on a card */
   --color-warning-foreground: #ffffff;
-  --color-danger:             #c81e1e;   /* 4,66:1 auf der Kachel */
+  --color-danger:             #b3261e;   /* 5.57:1 on the tile, 6.54:1 on a card */
   --color-danger-foreground:  #ffffff;
-  --color-info:               #0369a1;   /* 5,20:1 auf der Kachel */
+  --color-info:               #0b5d94;   /* 5.95:1 on the tile, 6.98:1 on a card */
   --color-info-foreground:    #ffffff;
   /* Zwei Tokens, weil die Marke zwei Rollen trägt: als Fläche muss sie dunkel
      genug für weiße Beschriftung sein, als Textfarbe hell genug für den dunklen
@@ -156,7 +198,9 @@
      hellen Theme also auf Weiß, und dort misst die normale Zeile 1,48:1: das
      gesamte Log war unlesbar. Auf der dunklen Fläche liegen alle sieben
      zwischen 6,8:1 und 12,8:1. */
-  --color-console:        #0d1117;
+  /* Anthracite rather than the former GitHub dark #0d1117, which the redesign
+     rules out. Dark enough that the log colours below keep their contrast. */
+  --color-console:        #141517;
   --color-log-text:       #d4d4d8;
   --color-log-dim:        #a1a1aa;
   --color-log-error:      #f87171;
@@ -192,54 +236,51 @@
 }
 
 /* ============================================================================
-   Dark-Mode-Tokens — GitHub-Dark inspiriert + MSK-Grün
+   Dark tokens: anthracite, its own palette rather than an inversion
    ============================================================================
-   Die Flächen liegen seit dem 23.08.2026 eine Stufe höher (Grund L 0,176 →
-   0,216, Karte 0,220 → 0,259, Rahmen 0,330 → 0,365). Verschoben wurde nur die
-   Helligkeit; Farbton und Buntheit der GitHub-Dark-Achse bleiben, damit das
-   Theme sich nicht anders anfühlt, sondern nur weniger schwarz.
+   The tile (--color-muted) sits below the ground here and the card above it,
+   so both still read as separate layers. The bands keep their light-theme
+   values, they are anthracite and green in both themes.
    ============================================================================ */
 @layer base {
   .dark {
-    --color-background:         #161a20;
-    --color-foreground:         #e6edf3;
-    --color-muted:              #1f242c;
-    --color-muted-foreground:   #8b949e;
-    --color-border:             #393f47;
-    --color-input:              #393f47;
-    --color-ring:               #60b02f;
-    --color-card:               #1f242c;
-    --color-card-foreground:    #e6edf3;
+    --color-background:         #18191b;
+    --color-foreground:         #ececea;
+    --color-muted:              #111214;
+    --color-muted-foreground:   #a7a9ad;
+    --color-border:             #313337;
+    --color-input:              #6d7075;   /* 3.20:1 on a card, 3.54:1 on the ground */
+    --color-ring:               #6dbb3d;
+    --color-card:               #212225;
+    --color-card-foreground:    #ececea;
 
-    /* Dieselbe Logo-Pixelfarbe wie --color-accent im Light-Theme: das hellste
-       gesättigte Grün des Logos, hier als Textfarbe (6,44:1 auf dem Grund,
-       5,75:1 auf der Karte). */
-    --color-primary:            #60b02f;
-    /* Dunkler Text auf hellem Grün: 6,44:1. Weiß darauf wären 2,71:1, das
-       MSK-Grün ist im Dark-Mode zu hell, um Weiß zu tragen. Der Wert ist der
-       neue Grund, nicht mehr #0d1117 — das ist jetzt nur noch die Konsole. */
-    --color-primary-foreground: #161a20;
+    /* Green as text: 7.64:1 on the ground, 6.99:1 on a card. White on it
+       would be too weak, so the label is dark (7.79:1). */
+    --color-primary:            #6dbb3d;
+    --color-primary-foreground: #0e150e;
+    --color-primary-hover:      #86cc58;
+    --color-accent-soft:        #1d2a1f;
     /* Heller als das Logo selbst wird (L 0,833 gegen dessen Maximum 0,688),
        deshalb keine Pixelfarbe, sondern dessen hellster Farbton mit
        fortgeschriebener Buntheit. Nur Fläche, dunkles Label darauf: 11,11:1. */
     --color-accent:             #82e649;
-    --color-accent-foreground:  #161a20;
-    --color-secondary:          #2b3037;
-    --color-secondary-foreground: #e6edf3;
+    --color-accent-foreground:  #18191b;
+    --color-secondary:          #2a2b2e;
+    --color-secondary-foreground: #ececea;
 
     /* Im Dark-Mode sind die Funktionsfarben hell. Ihre Beschriftung muss
        deshalb dunkel sein, sonst erben sie das weiße Label aus dem Light-Block
        und landen bei 2,1 bis 2,8:1. */
-    --color-danger:             #f87171;
-    --color-danger-foreground:  #161a20;
-    --color-success:            #7ada44;
-    --color-success-foreground: #161a20;
-    --color-info:               #38bdf8;
-    --color-info-foreground:    #161a20;
+    --color-danger:             #f28b80;
+    --color-danger-foreground:  #18191b;
+    --color-success:            #6dbb3d;
+    --color-success-foreground: #18191b;
+    --color-info:               #72b6e6;
+    --color-info-foreground:    #18191b;
     /* Muss hier stehen, sonst erbt Dark das für Weiß abgedunkelte Light-Orange
        und wird auf dem dunklen Grund unlesbar. */
-    --color-warning:            #f59e0b;
-    --color-warning-foreground: #161a20;
+    --color-warning:            #e2a457;
+    --color-warning-foreground: #18191b;
     /* 5,49:1 auf dem aufgehellten Grund. Die Flächenfarbe bleibt unverändert. */
     --color-discord-text:       #7d86f5;
 
@@ -293,6 +334,8 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -304,8 +347,13 @@
     color: var(--color-foreground);
   }
 
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    text-wrap: balance;
+  }
+
   :focus-visible {
-    outline: 2px solid var(--color-ring);
+    outline: 3px solid var(--color-ring);
     outline-offset: 2px;
     border-radius: var(--radius-sm);
   }
@@ -356,18 +404,18 @@
       window showed *fewer* products. 340px keeps the 4 columns and grows them
       from 362 px to 380 px, which is what was wanted.
 
-   `--grid-card-wide` exists because the resources page starts at 340px (its
-   cards carry a sparkline beside the figures). It only needs its own value
-   below 2560 px; above that both land on the same width. */
+   `--grid-card-wide` exists because the resources page starts wider (its
+   cards carry a sparkline beside the figures).
+
+   Since the redesign (Phase 0, 27.10.2026) the minimum grows continuously
+   instead of in steps: 351 px at 1440, 381 at 1920, 421 at 2560, 477 at 3440.
+   The page column and its gutter grow the same way, so header, content and
+   footer still share one edge at every width. */
 :root {
-  --grid-card: 300px;
-  --grid-card-wide: 340px;
-}
-@media (min-width: 1920px) {
-  :root { --grid-card: 340px; }
-}
-@media (min-width: 2560px) {
-  :root { --grid-card: 400px; --grid-card-wide: 440px; }
+  --page-gutter: clamp(1rem, 4vw, 7.5rem);
+  --page-column: clamp(72rem, 84vw, 180rem);
+  --grid-card: clamp(18rem, 16.25rem + 6.3vw, 30rem);
+  --grid-card-wide: clamp(20.5rem, 18.75rem + 6.3vw, 32.5rem);
 }
 
 /* ============================================================================
@@ -392,40 +440,19 @@
      die Kennzahlenzeile darunter 700 px, und beide damit auf einer anderen
      Kante als Kopf- und Fusszeile. */
   width: 100%;
-  max-width: 120rem;
+  max-width: calc(var(--page-column) + 2 * var(--page-gutter));
   margin-inline: auto;
-  padding-inline: 1rem;
+  padding-inline: max(var(--page-gutter), env(safe-area-inset-left, 0px)) max(var(--page-gutter), env(safe-area-inset-right, 0px));
 }
-@media (min-width: 768px) {
-  .container-page { padding-inline: 2rem; }
-}
-@media (min-width: 1536px) {
-  .container-page { padding-inline: 3rem; }
-}
-/* Above 1920 px the cap grows in two steps. Measured on 2026-09-20 in the
-   production build: at 2560 px the shell sat at 1920 px with 315 px dead on
-   each side, at 3440 px with 755 px - 44 percent of the window unused, and not
-   a single grid changed its column count between the two. The cause was one
-   line, the fixed 120rem cap, because nothing in app/ or components/ uses a
-   `2xl:` prefix at all.
+/* The shell is the flush line that header, content and footer share, so it
+   grows for all of them together. Until 27.10.2026 it grew in steps at 768,
+   1536, 1920 and 2560 px; now column and gutter follow the window without
+   steps (see :root above). About 16 percent of the window stays unused from
+   1440 px up, as measured for WQHD and UWQHD on 2026-09-20.
 
-   The shell is the flush line that header, content and footer share. Keeping
-   them on one line is what stopped the 640 px jump between routes back on
-   24 August 2026, so the cap moves for all of them together or not at all.
    Content that does not benefit from the extra width keeps an inner cap of its
-   own instead of a second shell: `.legal-content` caps its text elements at
-   82rem, the hero caps both of its columns and centres the pair, and the
-   section intros use
-   `max-w-[NNch]`. Measured on 2026-09-20 across 1920/2560/3440: exactly one
-   text block on the home page exceeds 95 characters per line, and it reads the
-   same at all three widths. So the caps that exist already hold - resist
-   adding a general-purpose one until a measurement asks for it. */
-@media (min-width: 1920px) {
-  .container-page { max-width: 150rem; padding-inline: 4rem; }
-}
-@media (min-width: 2560px) {
-  .container-page { max-width: 180rem; }
-}
+   own instead of a second shell: `.legal-content` caps its text elements, the
+   hero caps both of its columns, the section intros use `max-w-[NNch]`. */
 
 /* Es gab bis zum 24.08.2026 zwei weitere Stufen: `container-wide` (160rem) für
    Kartenraster und `container-app` (90rem) für Arbeitsflächen. Damit hatte die
@@ -463,10 +490,11 @@
   transform: translate(-50%, -50%);
 }
 
-/* Lesebreite. Bewusst in rem und nicht in ch: `ch` ist die Breite der Null,
-   und die misst in Inter 10 px, die mittlere Buchstabenbreite aber 7,8 px.
-   `65ch` ergibt damit 656 px und darin 84 Zeichen pro Zeile, nicht 65. 34rem
-   sind gemessen rund 70 Zeichen, also das obere Ende des bequemen Bereichs. */
+/* Reading width. In rem rather than ch on purpose: `ch` is the width of the
+   zero, which is wider than the average letter. Measured with Inter (the font
+   until 27.10.2026), `65ch` gave 84 characters per line instead of 65, and
+   34rem about 70. Source Sans 3 is a little narrower, so 34rem now holds
+   slightly more; re-measure when a page relies on the exact count. */
 @utility container-prose {
   max-width: 34rem;
   margin-inline: auto;

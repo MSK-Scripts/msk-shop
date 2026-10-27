@@ -81,6 +81,20 @@ describe.each([
     ['Text auf Karte',                 t['card-foreground'],     t.card,       4.5],
     ['Text auf Sekundärfüllung',       t['secondary-foreground'], t.secondary, 4.5],
     ['Text auf Akzentfüllung',         t['accent-foreground'],   t.accent,     4.5],
+    // Redesign tokens (Phase 0, 27.10.2026): soft green surface, hover,
+    // anthracite band, green band, and the 3:1 border of form controls.
+    ['Text on the soft green surface',       t.foreground,                 t['accent-soft'],   4.5],
+    ['Muted text on the soft green surface', t['muted-foreground'],        t['accent-soft'],   4.5],
+    ['Green text on the soft green surface', t.primary,                    t['accent-soft'],   4.5],
+    ['Label on the primary hover fill',      t['primary-foreground'],      t['primary-hover'], 4.5],
+    ['Text in the anthracite band',          t['band-foreground'],         t.band,             4.5],
+    ['Muted text in the anthracite band',    t['band-muted'],              t.band,             4.5],
+    ['Green text in the anthracite band',    t['band-accent'],             t.band,             4.5],
+    ['Label on green in the band',           t['band-accent-foreground'],  t['band-accent'],   4.5],
+    ['Text in the green band',               t['brand-foreground'],        t.brand,            4.5],
+    ['Muted text in the green band',         t['brand-muted'],             t.brand,            4.5],
+    ['Form control border on a card',        t.input,                      t.card,             3],
+    ['Form control border on the ground',    t.input,                      t.background,       3],
     // The four colours of the breakdown charts on both statistics pages.
     // They appear as text on the tinted tile, not only as bar fill.
     // Before, they were raw Tailwind classes this test could not see:

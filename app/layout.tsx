@@ -3,8 +3,9 @@ import { headers } from 'next/headers'
 
 // Fonts are loaded 100% locally via @fontsource-variable.
 // No communication with fonts.googleapis.com, not even at build time.
-import '@fontsource-variable/inter'
-import '@fontsource-variable/jetbrains-mono'
+// Archivo with both axes (weight and width), Source Sans 3 with weight.
+import '@fontsource-variable/archivo/standard.css'
+import '@fontsource-variable/source-sans-3'
 
 import './globals.css'
 
@@ -145,7 +146,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         </a>
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
+          defaultTheme="system"
           enableSystem
           disableTransitionOnChange
           nonce={nonce}
