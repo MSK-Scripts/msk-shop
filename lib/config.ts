@@ -22,17 +22,6 @@ export const BOT_DOCS = {
   giveaway: `${SITE_CONFIG.docs}/discord/discord_giveaway/getting-started/`,
 } as const
 
-// ── Featured Package IDs ─────────────────────────────────────
-// Add the Tebex package IDs you want to show on the homepage.
-// Find the ID in your Tebex control panel URL when editing a package.
-// Example: https://creator.tebex.io/packages/1234567 → ID is 1234567
-
-export const FEATURED_PACKAGE_IDS: number[] = [
-  5301828,
-  6446947,
-  5732588,
-]
-
 // ── Subscription packages ─────────────────────────────────────
 // The two all-access subscriptions from the Tebex "Subscriptions" category.
 // They existed for a while without ever appearing on the homepage, which meant

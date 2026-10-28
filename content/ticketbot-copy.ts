@@ -2,15 +2,13 @@ import type { Lang } from '@/lib/i18n'
 import { publicPath } from '@/lib/routes'
 
 /**
- * Sichtbare Texte der Ticket-Bot-Landingpage, je Sprache.
+ * Visible texts of the ticket bot landing page, per language.
  *
- * Warum hier und nicht in `lib/i18n.ts`: Das sind rund 120 Marketing-Strings pro
- * Sprache, die nur eine einzige Seite betreffen. In `lib/i18n.ts` würden sie die
- * geteilten Tabellen zumutlos aufblähen. Die Icons bleiben in
- * `components/bots/TicketBotLanding.tsx` und werden positionsgleich zu den
- * Listen hier gehalten, genau wie bei `HOME_FEATURE_ICONS`.
+ * Here rather than in `lib/i18n.ts` because they are long marketing texts for
+ * one page only; in the shared tables they would only add bulk. Layout and
+ * links stay in `components/bots/TicketBotLanding.tsx`.
  *
- * **Reihenfolge ist Vertrag.** Every list must have the same length and order
+ * **Order is a contract.** Every list must have the same length and order
  * in both languages; `hubCards` also matches `HUB_HREFS` in the component, and
  * `tierCards` the tier order there. `tests/botLandingCopy.test.ts` checks it.
  *

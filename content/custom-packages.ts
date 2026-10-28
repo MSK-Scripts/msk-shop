@@ -1,28 +1,27 @@
 // ═══════════════════════════════════════════════════════════════
 //  CUSTOM PACKAGES
-//  Packages that are NOT from Tebex (e.g. Discord Bots, GitHub)
-//  These appear on the homepage below the Tebex packages.
+//  What is not sold through Tebex: the free FiveM scripts on GitHub and
+//  the web tools. FREE_SCRIPT_IDS and WEB_TOOL_IDS below pick them for the
+//  home page, /fivem/free and /tools. Button labels come from the
+//  translations, not from here.
 // ═══════════════════════════════════════════════════════════════
 //
 //  HOW TO ADD A PACKAGE:
-//  Copy one of the examples below and fill in your details.
+//  Copy one of the entries below, fill in your details and add its id to
+//  FREE_SCRIPT_IDS or WEB_TOOL_IDS.
 //
 //  FIELDS:
-//    id          → unique string (anything you want, e.g. "discord-bot-1")
-//    name        → package name shown on the card
-//    description → short description (1-2 sentences)
-//    price       → (optional) price as string, e.g. "€9.99" or "Free"
-//    isFree      → (optional) set to true if the package is free
-//    image       → URL to a preview image (or leave empty "")
-//    link        → where the primary button points (GitHub, Discord, website...)
-//    linkLabel   → label of the primary button, e.g. "View on GitHub" / "Get Bot"
-//    secondaryLink      → (optional) where the secondary button points
-//    secondaryLinkLabel → (optional) label of the secondary button
-//                  Both secondary fields must be set for the second button to appear.
-//    badges      → list of badges to show (label + variant)
-//                  variants: "esx" | "qb" | "standalone" | "js" | "ts" | "lua" | "py" | "discord" | "fivem"
-//                  Add as many badges as you want, or leave the array empty []
-//    tags        → list of tags to show (e.g. ['Installation', 'Configuration'])
+//    id            → unique string, e.g. "msk_core"
+//    name          → name shown on the page
+//    description   → short description (1-2 sentences), English
+//    descriptionDe → (optional) the German description
+//    image         → screenshot of a web tool: a file in public/ or a URL.
+//                    The free scripts show no picture.
+//    link          → where the main button points (GitHub, live site)
+//    secondaryLink → (optional) a second button, e.g. the GitHub repository
+//    docsLink      → (optional) start page of the documentation
+//    badges        → tags such as frameworks, e.g. [{ label: "ESX" }];
+//                    every tag has the same soft green look
 //
 // ═══════════════════════════════════════════════════════════════
 
@@ -32,35 +31,26 @@ export interface CustomPackage {
   description: string
   /** German version of `description`. Without it the German page shows the English one. */
   descriptionDe?: string
-  price?: string
-  isFree?: boolean
   image: string
   link: string
-  linkLabel: string
   secondaryLink?: string
-  secondaryLinkLabel?: string
   /**
    * Start page of the documentation, where there is one. Checked against the
    * sitemap of docu.msk-scripts.de on 28.10.2026; msk_givevehicle has none.
    */
   docsLink?: string
-  badges: { label: string; variant: 'esx' | 'qb' | 'standalone' | 'js' | 'ts' | 'lua' | 'py' | 'discord' | 'fivem' }[]
-  tags: string[]
+  badges: { label: string }[]
 }
 
 export const CUSTOM_PACKAGES: CustomPackage[] = [
-  // ─── EXAMPLE — Delete or edit this ──────────────────────────
+  // ─── EXAMPLE, delete or edit this ───────────────────────────
   // {
   //   id: 'msk-discord-bot',
   //   name: 'MSK Discord Bot',
   //   description: 'A powerful Discord bot for your FiveM community with role sync, ticket system and more.',
-  //   price: 'Free',
-  //   isFree: true,
   //   image: '',
   //   link: 'https://github.com/MSK-Scripts/msk-discord-bot',
-  //   linkLabel: 'View on GitHub',
-  //   badges: [{ label: 'Discord', variant: 'standalone' }],
-  //   tags: ['Role Sync', 'Ticket System', 'Moderation'],
+  //   badges: [{ label: 'Discord' }],
   // },
   // ────────────────────────────────────────────────────────────
 
@@ -72,37 +62,29 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
       "Our core library for our resources, providing common utilities, and more.",
     descriptionDe:
       "Unsere Kernbibliothek für unsere Ressourcen, mit gemeinsamen Hilfsfunktionen und mehr.",
-    price: "Free",
-    isFree: true,
     image: "msk_core-banner.webp",
     link: "https://github.com/MSK-Scripts/msk_core",
-    linkLabel: "View on GitHub",
     docsLink: "https://docu.msk-scripts.de/docs/msk_core/",
     badges: [
-      { label: "FiveM", variant: "fivem" },
-      { label: "Lua", variant: "lua" },
-      { label: "Standalone", variant: "standalone" },
+      { label: "FiveM" },
+      { label: "Lua" },
+      { label: "Standalone" },
     ],
-    tags: ["Library for MSK Scripts", "Utilities"],
   },
   {
     id: "msk_enginetoggle",
     name: "MSK EngineToggle",
     description: "A simple resource for toggling the FiveM engine on and off.",
     descriptionDe: "Eine einfache Ressource, um den Motor in FiveM an- und auszuschalten.",
-    price: "Free",
-    isFree: true,
     image: "msk_enginetoggle-banner.webp",
     link: "https://github.com/MSK-Scripts/msk_enginetoggle",
-    linkLabel: "View on GitHub",
     docsLink: "https://docu.msk-scripts.de/docs/msk_enginetoggle/",
     badges: [
-      { label: "FiveM", variant: "fivem" },
-      { label: "Lua", variant: "lua" },
-      { label: "ESX", variant: "esx" },
-      { label: "QBCore", variant: "qb" },
+      { label: "FiveM" },
+      { label: "Lua" },
+      { label: "ESX" },
+      { label: "QBCore" },
     ],
-    tags: ["EngineToggle", "Vehicle Management"],
   },
   {
     id: "msk_givevehicle",
@@ -111,35 +93,27 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
       "Give, spawn, delete & manage vehicles through an in-game admin dashboard",
     descriptionDe:
       "Fahrzeuge vergeben, spawnen, löschen und verwalten, über ein Admin-Dashboard im Spiel",
-    price: "Free",
-    isFree: true,
     image: "msk_givevehicle-banner.webp",
     link: "https://github.com/MSK-Scripts/msk_givevehicle",
-    linkLabel: "View on GitHub",
     badges: [
-      { label: "FiveM", variant: "fivem" },
-      { label: "Lua", variant: "lua" },
-      { label: "ESX", variant: "esx" },
-      { label: "QBCore", variant: "qb" },
+      { label: "FiveM" },
+      { label: "Lua" },
+      { label: "ESX" },
+      { label: "QBCore" },
     ],
-    tags: ["Give Vehicle", "Vehicle Management", "Admin Dashboard"],
   },
   /* {
     id: 'msk_jobGPS',
     name: 'MSK JobGPS',
     description: 'A simple resource for providing GPS coordinates for job locations.',
-    price: 'Free',
-    isFree: true,
     image: '',
     link: 'https://github.com/MSK-Scripts/msk_jobGPS',
-    linkLabel: 'View on GitHub',
     badges: [
-      { label: 'FiveM', variant: 'fivem' },
-      { label: 'Lua', variant: 'lua' },
-      { label: 'ESX', variant: 'esx' },
-      { label: 'QBCore', variant: 'qb' },
+      { label: 'FiveM' },
+      { label: 'Lua' },
+      { label: 'ESX' },
+      { label: 'QBCore' },
     ],
-    tags: ['Job GPS', 'Location Tracking'],
   }, */
   {
     id: "msk_fuel",
@@ -148,19 +122,15 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
       "The complete fuel state (level, max volume, fuel type) is stored on StateBags and is therefore fully network-synchronized between all players.",
     descriptionDe:
       "Der komplette Tankzustand (Füllstand, Tankgröße, Kraftstoffart) liegt in StateBags und ist dadurch zwischen allen Spielern über das Netzwerk synchron.",
-    price: "Free",
-    isFree: true,
     image: "msk_fuel-banner.webp",
     link: "https://github.com/MSK-Scripts/msk_fuel",
-    linkLabel: "View on GitHub",
     docsLink: "https://docu.msk-scripts.de/docs/msk_fuel/",
     badges: [
-      { label: "FiveM", variant: "fivem" },
-      { label: "Lua", variant: "lua" },
-      { label: "ESX", variant: "esx" },
-      { label: "QBCore", variant: "qb" },
+      { label: "FiveM" },
+      { label: "Lua" },
+      { label: "ESX" },
+      { label: "QBCore" },
     ],
-    tags: ["Fuel Consumption", "Realistic Fuel System", "Vehicle Management"],
   },
   {
     id: "msk-forms",
@@ -171,12 +141,9 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
       "Eine moderne Plattform für Formulare und Bewerbungen, mit Statusrückmeldung und nativer Discord-Anbindung.",
     image: "msk_forms.webp",
     link: "https://forms.msk-scripts.de/",
-    linkLabel: "View LIVE",
     secondaryLink: "https://github.com/MSK-Scripts/msk-forms",
-    secondaryLinkLabel: "GitHub",
     docsLink: "https://docu.msk-scripts.de/ecosystem/msk-forms/",
-    badges: [{ label: "TypeScript", variant: "ts" }],
-    tags: ["Form Builder", "Application Management", "Discord Integration"],
+    badges: [{ label: "TypeScript" }],
   },
   {
     id: "msk-paste",
@@ -187,12 +154,9 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
       "Ein einfaches Paste-Tool, um Code-Schnipsel mit deinem Team zu teilen.",
     image: "msk_paste.webp",
     link: "https://paste.msk-scripts.de/",
-    linkLabel: "View LIVE",
     secondaryLink: "https://github.com/MSK-Scripts/msk-paste",
-    secondaryLinkLabel: "GitHub",
     docsLink: "https://docu.msk-scripts.de/ecosystem/msk-paste/",
-    badges: [{ label: "TypeScript", variant: "ts" }],
-    tags: ["Code Sharing", "Collaboration", "Syntax Highlighting"],
+    badges: [{ label: "TypeScript" }],
   },
   {
     id: "msk-shortener",
@@ -203,12 +167,9 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
       "Schneller, datenschutzfreundlicher Linkkürzer. Keine Cookies, keine Tracker, keine Anmeldung.",
     image: "msk_shortener.webp",
     link: "https://s.msk-scripts.de/",
-    linkLabel: "View LIVE",
     secondaryLink: "https://github.com/MSK-Scripts/msk-shortener",
-    secondaryLinkLabel: "GitHub",
     docsLink: "https://docu.msk-scripts.de/ecosystem/msk-shortener/",
-    badges: [{ label: "TypeScript", variant: "ts" }],
-    tags: ["URL Shortening", "Privacy-Friendly"],
+    badges: [{ label: "TypeScript" }],
   },
 ];
 
@@ -226,9 +187,3 @@ export const WEB_TOOL_IDS = ['msk-forms', 'msk-paste', 'msk-shortener'] as const
 export function packagesById(ids: readonly string[]): CustomPackage[] {
   return ids.flatMap(id => CUSTOM_PACKAGES.filter(p => p.id === id))
 }
-
-// ═══════════════════════════════════════════════════════════════
-//  SECTION TITLE
-//  Change the title of the custom packages section
-// ═══════════════════════════════════════════════════════════════
-export const CUSTOM_PACKAGES_TITLE = 'FREE FiveM Scripts'

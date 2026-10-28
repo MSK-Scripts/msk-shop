@@ -3,22 +3,15 @@ import type { LabelledText } from '@/content/ticketbot-copy'
 import { publicPath } from '@/lib/routes'
 
 /**
- * Sichtbare Texte der Giveaway-Bot-Landingpage, je Sprache.
+ * Visible texts of the giveaway bot landing page, per language.
  *
- * Gleiche Aufteilung wie `content/ticketbot-copy.ts`: Texte hier, Icons in
- * `components/bots/GiveawayLanding.tsx`, Reihenfolge ist Vertrag zwischen
- * beidem. `tests/botLandingCopy.test.ts` prüft, dass EN und DE gleich lang
- * bleiben.
+ * Same split as `content/ticketbot-copy.ts`: texts here, layout in
+ * `components/bots/GiveawayLanding.tsx`. `tests/botLandingCopy.test.ts`
+ * checks that EN and DE keep the same lists.
  *
- * Die Slash-Befehle selbst (`/gcreate`, `/gsettings`, …) werden bewusst NICHT
- * übersetzt: Sie heißen im Bot in jeder Sprache gleich.
+ * The slash commands (`/gcreate`, `/gsettings`, ...) are deliberately not
+ * translated: they have the same name in every language of the bot.
  */
-
-export interface CommandRow {
-  cmd:  string
-  who:  string
-  text: string
-}
 
 export interface GiveawayCopy {
   altHref:  string
