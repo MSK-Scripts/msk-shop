@@ -511,10 +511,15 @@ export function isShopPath(internal: string): boolean {
 }
 
 /**
- * Pages behind a login or in the middle of a purchase: admin, bot
- * dashboards, account, checkout, login. They are not public pages, so they
- * do not get the green closing band that asks for questions before a purchase.
+ * Whether a page ends with the green closing band that asks for questions
+ * before a purchase. Not on pages behind a login or in the middle of a
+ * purchase (admin, bot dashboards, account, checkout, login), and not on the
+ * legal texts and contract pages: a sales prompt next to the withdrawal or
+ * cancellation function distracts from it.
  */
-export function isWorkspacePath(internal: string): boolean {
-  return isAtOrBelow(internal, ['/admin', '/dashboard', '/account', '/checkout', '/login'])
+export function hasClosingBand(internal: string): boolean {
+  return !isAtOrBelow(internal, [
+    '/admin', '/dashboard', '/account', '/checkout', '/login',
+    '/legal', '/withdraw-contract', '/cancel-contract', '/report',
+  ])
 }

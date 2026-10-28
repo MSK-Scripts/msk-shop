@@ -10,7 +10,7 @@ import { PaymentMarks } from '@/components/layout/PaymentMarks'
 import { ThemeSwitch } from '@/components/theme/ThemeSwitch'
 import { SITE_CONFIG } from '@/lib/config'
 import { layoutTranslations, type Lang } from '@/lib/i18n'
-import { isShopPath, isWorkspacePath } from '@/lib/routes'
+import { hasClosingBand, isShopPath } from '@/lib/routes'
 
 interface FooterLink {
   label: string
@@ -155,7 +155,7 @@ export function Footer() {
 
   return (
     <footer>
-      {!isWorkspacePath(path) && <ClosingBand lang={lang} />}
+      {hasClosingBand(path) && <ClosingBand lang={lang} />}
 
       <div className="surface-band">
         <div className="container-page grid gap-12 py-[clamp(3rem,2rem+3vw,6rem)]">
