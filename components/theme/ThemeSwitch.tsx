@@ -18,23 +18,39 @@ import { cn } from '@/lib/utils'
  * The stored choice is only known in the browser, so before hydration no
  * button is pressed; the server and the first client render stay identical.
  */
-export function ThemeSwitch({ tone = 'page', className }: { tone?: 'page' | 'band'; className?: string }) {
+export interface ThemeSwitchLabels {
+  group: string
+  system: string
+  light: string
+  dark: string
+}
+
+export function ThemeSwitch({ tone = 'page', className, labels }: {
+  tone?: 'page' | 'band'
+  className?: string
+  /**
+   * Labels of a page that is not in the language of its address: the admin is
+   * English only (decision E3), also under `/de/admin`.
+   */
+  labels?: ThemeSwitchLabels
+}) {
   const { lang } = useLang()
-  const t = layoutTranslations[lang]
+  const layout = layoutTranslations[lang]
+  const t = labels ?? { group: layout.action_theme, system: layout.theme_system, light: layout.theme_light, dark: layout.theme_dark }
   const { theme, setTheme } = useTheme()
   const hydrated = useHydrated()
   const current = hydrated ? (theme ?? 'system') : null
 
   const items = [
-    { value: 'system', label: t.theme_system, Icon: Monitor },
-    { value: 'light',  label: t.theme_light,  Icon: Sun },
-    { value: 'dark',   label: t.theme_dark,   Icon: Moon },
+    { value: 'system', label: t.system, Icon: Monitor },
+    { value: 'light',  label: t.light,  Icon: Sun },
+    { value: 'dark',   label: t.dark,   Icon: Moon },
   ] as const
 
   return (
     <div
       role="group"
-      aria-label={t.action_theme}
+      aria-label={t.group}
       className={cn(
         'inline-flex w-fit overflow-hidden rounded-md border-[1.5px]',
         tone === 'band' ? 'border-[var(--color-band-muted)]' : 'border-[var(--color-input)]',

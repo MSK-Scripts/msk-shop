@@ -437,6 +437,18 @@
   --page-column: clamp(72rem, 84vw, 180rem);
   --grid-card: clamp(18rem, 16.25rem + 6.3vw, 30rem);
   --grid-card-wide: clamp(20.5rem, 18.75rem + 6.3vw, 32.5rem);
+
+  /* App shell of the three dashboards (plan 6.3, components/dashboard).
+     Denser than the public pages: a smaller top bar and gutter, because the
+     content is tables and forms rather than sections. The sidebar grows a
+     little with the window; the content column stops at 130rem, so a row of
+     a table stays readable on UWQHD. */
+  --app-topbar: clamp(3.5rem, 3.1rem + 0.6vw, 4.25rem);
+  --app-sidebar: clamp(16.5rem, 14rem + 3vw, 21rem);
+  --app-gutter: clamp(1rem, 0.6rem + 1.6vw, 3rem);
+  --app-gutter-y: clamp(1.25rem, 0.9rem + 1.2vw, 2.75rem);
+  --app-content: 130rem;
+  --app-tabbar: 3.75rem;
 }
 
 /* ============================================================================

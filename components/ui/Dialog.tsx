@@ -8,6 +8,8 @@ interface DialogProps {
   onClose: () => void
   title: ReactNode
   description?: ReactNode
+  /** Content between the description and the buttons, a field say. */
+  body?: ReactNode
   children?: ReactNode
   className?: string
 }
@@ -23,7 +25,7 @@ interface DialogProps {
  * Buttons go in as children; the confirming one last, red only when the
  * action destroys something.
  */
-export function Dialog({ open, onClose, title, description, children, className }: DialogProps) {
+export function Dialog({ open, onClose, title, description, body, children, className }: DialogProps) {
   const ref = useRef<HTMLDialogElement>(null)
   const titleId = useId()
   const descriptionId = useId()
@@ -54,6 +56,7 @@ export function Dialog({ open, onClose, title, description, children, className 
         {description && (
           <p id={descriptionId} className="text-small text-[var(--color-muted-foreground)]">{description}</p>
         )}
+        {body && <div className="mt-1.5">{body}</div>}
         {children && <div className="mt-1.5 flex flex-wrap justify-end gap-3">{children}</div>}
       </div>
     </dialog>

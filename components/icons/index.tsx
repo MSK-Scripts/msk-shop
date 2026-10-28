@@ -29,6 +29,8 @@ import {
   CaretDown as CaretDownBase,
   CaretLeft as CaretLeftBase,
   CaretRight as CaretRightBase,
+  CaretUp as CaretUpBase,
+  CaretUpDown as CaretUpDownBase,
   ChartBar as ChartBarBase,
   ChatCircle as ChatCircleBase,
   ChatText as ChatTextBase,
@@ -155,6 +157,8 @@ export const Car = decorative(CarBase)
 export const CaretDown = decorative(CaretDownBase)
 export const CaretLeft = decorative(CaretLeftBase)
 export const CaretRight = decorative(CaretRightBase)
+export const CaretUp = decorative(CaretUpBase)
+export const CaretUpDown = decorative(CaretUpDownBase)
 export const ChartBar = decorative(ChartBarBase)
 export const ChatCircle = decorative(ChatCircleBase)
 export const ChatText = decorative(ChatTextBase)
