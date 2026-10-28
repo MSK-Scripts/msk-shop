@@ -289,9 +289,9 @@ The short version, the full write-up is in [SECURITY.md](../SECURITY.md):
 
 Everything is Tailwind CSS v4 (CSS-first). The design tokens are `@theme` variables (`--color-*`) in **`app/globals.css`**, and `tailwind.config.ts` only holds the content paths. The `.dark` scope (set by `next-themes`) overrides the tokens. MSK green (`--color-primary`) is the brand accent, `#27762e` in light mode and `#60b02f` in dark mode, both sampled from the logo. The design system is documented in [DESIGN.md](../DESIGN.md).
 
-Fonts are Inter (`--font-sans`) and JetBrains Mono (`--font-mono`), fully self-hosted through `@fontsource-variable` (imported in `app/layout.tsx`, no `next/font/google`, so nothing gets fetched from Google).
+Fonts are Source Sans 3 (`--font-sans`) for text and Archivo (`--font-display`) for headings, fully self-hosted through `@fontsource-variable` (imported in `app/[lang]/layout.tsx`, no `next/font/google`, so nothing gets fetched from Google). Code uses the system `ui-monospace` (`--font-mono`), without a web font of its own.
 
-There is a backward-compat layer in `globals.css` that keeps the old `msk-*` utility classes (`msk-btn-primary`, `msk-card`, `msk-input`, `msk-badge`, `msk-label` and friends) and the legacy token aliases (`bg`, `surface`, `border`, `accent`, `text` and so on) mapped onto the new `--color-*` tokens. That way code that hasn't been migrated yet (mainly `BotConfigEditor`) still renders correctly in both themes.
+The old `msk-*` utility classes (`msk-btn-primary`, `msk-card` and friends) and the legacy token aliases (`bg-surface`, `text-dim` and so on) are gone since Phase 8 of the redesign, when the last component that used them (the hosted bot's control panel, then `BotConfigEditor`) was rebuilt. Use the `--color-*` tokens and the building blocks in `components/ui` and `components/dashboard`.
 
 A couple of theme-specific styles also live in `globals.css`:
 
