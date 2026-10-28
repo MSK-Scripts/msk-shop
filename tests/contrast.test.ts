@@ -113,6 +113,8 @@ describe.each([
     ['Diagrammfarbe Magenta auf Kachel',  t['chart-fuchsia'],      t.muted,      4.5],
     ['Gefahrfarbe als Text auf Kachel',    t.danger,                t.muted,      4.5],
     ['Gefahrfarbe als Text auf Karte',     t.danger,                t.card,       4.5],
+    // Field errors of the coupon code sit on the page ground of the cart (Phase 6).
+    ['Error text on the ground',           t.danger,                t.background, 4.5],
     // Live log console of the hosted bot. Its surface is dark in both themes,
     // so both runs show the same numbers here.
     // Before, the console sat on `--color-background`, so in the light theme
