@@ -175,8 +175,8 @@ describe('basket calls', () => {
     const files = [
       'lib/tebex.ts', 'lib/useCart.ts', 'lib/cartLines.ts', 'lib/basketFlow.ts', 'store/cart.ts',
       ...readdirSync(join(root, 'components/cart')).map(f => `components/cart/${f}`),
-      ...readdirSync(join(root, 'app/[lang]/cart')).map(f => `app/[lang]/cart/${f}`),
-      ...readdirSync(join(root, 'app/[lang]/checkout')).map(f => `app/[lang]/checkout/${f}`),
+      ...readdirSync(join(root, 'app/[lang]/(site)/cart')).map(f => `app/[lang]/(site)/cart/${f}`),
+      ...readdirSync(join(root, 'app/[lang]/(site)/checkout')).map(f => `app/[lang]/(site)/checkout/${f}`),
     ]
     for (const file of files) {
       const source = readFileSync(join(root, file), 'utf8')

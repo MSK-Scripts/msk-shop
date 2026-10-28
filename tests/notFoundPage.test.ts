@@ -39,8 +39,8 @@ vi.mock('next/navigation', async importOriginal => ({
 import { LANG_HEADER, NOT_FOUND_HEADER } from '@/lib/lang'
 import { resolveRequest } from '@/lib/routes'
 import { proxy } from '@/proxy'
-import UnknownPage from '@/app/[lang]/[...rest]/page'
-import ProductRoute from '@/app/[lang]/fivem/[slug]/page'
+import UnknownPage from '@/app/[lang]/(site)/[...rest]/page'
+import ProductRoute from '@/app/[lang]/(site)/fivem/[slug]/page'
 import { generateMetadata as layoutMetadata } from '@/app/[lang]/layout'
 
 const request = (path: string, headers: Record<string, string> = {}) =>

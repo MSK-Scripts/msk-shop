@@ -7,7 +7,9 @@ import { STATIC_PRODUCT_INDEX, productTarget, type ProductIndex } from '@/lib/pr
  * language.
  *
  * Every page exists exactly once in the code, under `app/[lang]/` with an
- * English folder name. That folder path is the **internal path**, and it is
+ * English folder name. Route groups in between (`(site)` for the public pages)
+ * only pick a layout and are no part of any path. The folder path without
+ * them is the **internal path**, and it is
  * also the English public path. The German public path can translate any
  * segment (`/legal/terms` becomes `/rechtliches/agb`), so the proxy rewrites
  * the German form onto the internal one. Links, the language switcher,

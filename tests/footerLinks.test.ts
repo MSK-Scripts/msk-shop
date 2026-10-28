@@ -72,7 +72,7 @@ describe('footer legal links', () => {
     const legal = footerColumns(lang).slice(2).flatMap(col => col.links)
     const trust = trustItems(lang).flatMap(item => (item.href ? [item.href] : []))
     for (const href of [...legal.map(l => l.href), ...trust]) {
-      expect(existsSync(join(process.cwd(), 'app', '[lang]', ...href.split('/').filter(Boolean), 'page.tsx')), href).toBe(true)
+      expect(existsSync(join(process.cwd(), 'app', '[lang]', '(site)', ...href.split('/').filter(Boolean), 'page.tsx')), href).toBe(true)
     }
   })
 

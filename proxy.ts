@@ -324,7 +324,7 @@ export async function proxy(request: NextRequest) {
     response = NextResponse.next({ request: { headers: requestHeaders } })
   } else if (resolution.unknown) {
     // An address the route table does not know. It is rendered by the
-    // catch-all `app/[lang]/[...rest]`, which shows the 404 page inside the
+    // catch-all `app/[lang]/(site)/[...rest]`, which shows the 404 page inside the
     // shop layout when this header is set. The status comes from here: a
     // thrown `notFound()` would give the right status too, but Next answers
     // it with an empty error shell without `lang` and renders the page only

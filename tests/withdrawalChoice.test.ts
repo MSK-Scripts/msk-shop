@@ -2,7 +2,7 @@ import { createElement, type ComponentProps } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 
-import { WithdrawalClient } from '@/app/[lang]/withdraw-contract/WithdrawalClient'
+import { WithdrawalClient } from '@/app/[lang]/(site)/withdraw-contract/WithdrawalClient'
 import { LangProvider } from '@/components/i18n/LangProvider'
 import { LEGAL_LINKS, legalFormTranslations, type Lang } from '@/lib/i18n'
 import { parseContractChoice, withdrawalTarget, type ContractChoice } from '@/lib/withdrawalChoice'

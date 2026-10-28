@@ -10,20 +10,11 @@ import '@fontsource-variable/source-sans-3'
 
 import '../globals.css'
 
-import { Header } from '@/components/layout/Header'
-import { Footer } from '@/components/layout/Footer'
-import { CartDrawer } from '@/components/cart/CartDrawer'
-import { SalePriceFetcher } from '@/components/SalePriceFetcher'
-import { NewsPopup } from '@/components/ui/NewsPopup'
 import { ThemeProvider } from '@/components/theme/ThemeProvider'
 import { LangProvider } from '@/components/i18n/LangProvider'
 import { LANG_HEADER, NOT_FOUND_HEADER, PATH_HEADER, isLang, langFromHeader } from '@/lib/lang'
-import { loadNewsPopup } from '@/lib/siteSettings'
 import { layoutTranslations } from '@/lib/i18n'
 import { siteUrl } from '@/lib/siteUrl'
-import { JsonLd } from '@/components/JsonLd'
-import { organizationJsonLd } from '@/lib/jsonLd'
-import { isBotPath } from '@/lib/routes'
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -137,23 +128,11 @@ export default async function RootLayout({
   const hdrs = await headers()
   const nonce = hdrs.get('x-nonce') ?? undefined
 
-  // Announcement popup. Editable in /admin since 19.09.2026, so switching a
-  // two-day banner on no longer costs a commit, a CI run and a deploy. Cached
-  // for 30 s in lib/siteSettings.ts and fail-soft: a database blip returns the
-  // disabled default rather than taking the layout down.
-  const newsPopup = await loadNewsPopup()
-
   // The internal path comes from proxy.ts. Server Components do not see the
   // address otherwise, and the switcher needs the path to navigate to the
   // counterpart URL.
   const path = hdrs.get(PATH_HEADER) || '/'
   const t = layoutTranslations[lang]
-
-  // On the two bot landing pages the Organization markup carries no
-  // industry description. The site-wide line names FiveM first, and exactly
-  // from that language models concluded that the ticket bot was a
-  // FiveM extension. Omitted rather than replaced, see organizationJsonLd().
-  const botLanding = isBotPath(path)
 
   return (
     // `data-scroll-behavior="smooth"` is not decoration but a requirement
@@ -185,14 +164,14 @@ export default async function RootLayout({
           disableTransitionOnChange
           nonce={nonce}
         >
+          {/*
+            Everything below is either the public site (`(site)/layout.tsx`:
+            header, footer, cart, news popup) or one of the three dashboards
+            with their own app shell (plan 6.3). Both render the `<main
+            id="main">` the skip link points to, so it exists exactly once.
+          */}
           <LangProvider lang={lang} path={path}>
-            <JsonLd data={organizationJsonLd({ describe: !botLanding })} />
-            <Header />
-            <CartDrawer />
-            <SalePriceFetcher />
-            <NewsPopup settings={newsPopup} />
-            <main id="main" tabIndex={-1} className="flex-1">{children}</main>
-            <Footer />
+            {children}
           </LangProvider>
         </ThemeProvider>
       </body>

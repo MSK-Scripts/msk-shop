@@ -20,7 +20,10 @@ function pagesOnDisk(): string[] {
   const walk = (dir: string): string[] => readdirSync(dir, { withFileTypes: true }).flatMap(item =>
     item.isDirectory() ? walk(join(dir, item.name)) : item.name === 'page.tsx' ? [dir] : [])
   return walk(root)
-    .map(dir => `/${relative(root, dir).split(sep).join('/')}`.replace(/\/$/, '') || '/')
+    // A route group, `(site)` say, is a folder for a shared layout and no
+    // segment of the address (Next's own rule), so it is left out.
+    .map(dir => relative(root, dir).split(sep).filter(seg => !/^\(.*\)$/.test(seg)).join('/'))
+    .map(rel => `/${rel}`.replace(/\/$/, '') || '/')
     // The catch-all only exists to render the 404 inside the layout.
     .filter(path => !path.includes('[...'))
 }
