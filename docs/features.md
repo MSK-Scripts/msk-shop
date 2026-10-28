@@ -10,18 +10,20 @@ The shop side:
 - FiveM (CFX.re) login through Tebex, plus Discord OAuth so roles get assigned after a purchase
 - Gift packages with an optional recipient Discord ID
 - Coupon codes (apply and remove)
-- Catalog filters, per-package badges, tags and custom descriptions
-- A "custom packages" section for things that don't live on Tebex (Discord bots, GitHub repos and so on)
-- Measured shop figures on the homepage (hidden rather than shown stale when the nightly snapshot is too old) and a release feed read from the public `MSK-Scripts/VERSIONS` repository
-- Live resource statistics page (`/resources`) powered by fivestats.io: server counts, ranking and a 7-day trend chart for every MSK resource
-- English at the root and German under `/de/`, with canonical and hreflang tags on every public page and a generated sitemap
+- One product per script with Encrypted and Source as a choice on its page, a framework filter in the catalogue, framework tags and a summary per product
+- The free FiveM scripts on GitHub (`/en/fivem/free`) and the web tools (`/en/tools`), kept in `content/custom-packages.ts` because Tebex does not sell them
+- Measured shop figures on the homepage (hidden rather than shown stale when the nightly snapshot is too old); the release feed read from the public `MSK-Scripts/VERSIONS` repository (`lib/releases.ts`) on the product pages
+- Header with the three product lines (FiveM scripts, Discord bots, web tools) and their pages, an account entry that keeps the shop login (CFX.re) and the bot logins (Discord) apart, and a theme switch (system, light, dark) in the account menu and the footer; no search until the catalogue reaches about 20 products
+- An unknown address gets a server-rendered 404 page in its language with the status 404, set by the proxy
+- Live resource statistics page (`/en/stats`, `/de/statistiken`) powered by fivestats.io: server counts, ranking and a 7-day trend chart for every MSK resource
+- Every page under `/en/` and `/de/` with translated German paths from one route table (`lib/routes.ts`); `/` redirects by remembered choice, then browser language; old addresses answer 308; canonical and hreflang on every public page and a generated sitemap
 - Legal pages in English and German, written in plain Markdown so they can be edited without touching code
-- The legally required forms that work without an account: contract withdrawal (`/vertrag-widerrufen`), contract cancellation (`/vertrag-kuendigen`) and a DSA content report (`/report`), each with an email receipt
-- Configurable news popup, with an optional copyable coupon code
+- The legally required forms that work without an account: contract withdrawal (`/en/withdraw-contract`, `/de/vertrag-widerrufen`), contract cancellation (`/en/cancel-contract`, `/de/vertrag-kuendigen`) and a DSA content report (`/en/report`, `/de/inhalt-melden`), each with an email receipt
+- News popup with an optional copyable coupon code, switched and edited in the admin without a deploy
 
 The Ticket Bot platform:
 
-- Public statistics page (`/ticketbot/stats`), with an allowlist via `STATS_IGNORED_API_KEYS`
+- Public statistics page (`/en/discord/ticket-bot/stats`), with an allowlist via `STATS_IGNORED_API_KEYS`
 - Verify flow over Discord OAuth: API key issuance and account-scoped ownership
 - Ownership follows Discord: a guild whose owner lost Administrator or Manage Server gets a 14-day grace period, then disappears from their dashboard and can be claimed by the new admin team
 - Transcript hosting with attachment support, backed by MariaDB. Uploads are hardened with an extension allowlist, `<uuid>.<ext>` filenames and `sharp` image re-encoding
@@ -39,14 +41,14 @@ The Giveaway Bot platform:
 
 - Free, invite-based Discord giveaways: button entry (no privileged intents), restart-safe scheduling, weighted bonus entries, eligibility rules (roles, account age, membership), pause and resume, templates, and winner reroll
 - Web dashboard to create and manage giveaways and per-server settings straight from the browser (Discord login, open to server managers and members holding the configured giveaway manager role)
-- A shareable public results page per finished giveaway, plus a live, anonymous stats page (`/giveaway/stats`, EN/DE)
+- A shareable public results page per finished giveaway, plus a live, anonymous stats page (`/en/discord/giveaway-bot/stats`, EN/DE)
 - Multilingual bot (EN / DE / FR / ES) with per-guild branding
 
 The image gallery:
 
-- Public gallery (`/images`) of GTA V vehicles, peds, weapons and items plus MSK brand assets, with full-text search
+- Public gallery (`/en/tools/images`) of GTA V vehicles, peds, weapons and items plus MSK brand assets, with full-text search
 - Images served from `cdn.msk-scripts.de` in three sizes (PNG original, 400 px and 160 px WebP), with CORS open so FiveM NUIs can load them
-- Community submissions (`/images/upload`) through Discord login: files are re-encoded by `sharp` on arrival, kept in a quarantine outside any web root, and published only after moderation
+- Community submissions (`/en/tools/images/upload`) through Discord login: files are re-encoded by `sharp` on arrival, kept in a quarantine outside any web root, and published only after moderation
 
 The admin dashboard (`/admin`):
 
@@ -54,6 +56,7 @@ The admin dashboard (`/admin`):
 - Tebex store management through the Plugin API: payments (including free grants and refunds), player lookup, coupons, gift cards, bans and package edits
 - Ticket Bot API keys and tier overrides
 - Image gallery management: edit, move and delete images, moderate submissions, run a file/database sync check
+- Email and IP addresses masked on the server, revealed per row with an audit entry; areas without the permission stay listed with the permission they need ([admin dashboard guide](admin-dashboard.md))
 
 And on the infrastructure side:
 

@@ -2,6 +2,8 @@ import { NextResponse }    from 'next/server';
 import { authorizeGuild }  from '@/lib/dashboardAuth';
 import { queryOne }        from '@/lib/db';
 import { getStripe, priceIdForTier, TRIAL_DAYS } from '@/lib/stripe';
+import { getPreferredLang } from '@/lib/serverLang'
+import { publicPath } from '@/lib/routes'
 
 // ── Stripe Checkout ──────────────────────────────────────────────────────────
 //
@@ -86,6 +88,8 @@ export async function POST(req: Request): Promise<NextResponse> {
   const trialEligible = !customer || customer.trial_used === 0;
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://www.msk-scripts.de';
+  // Back to the page in the language the visitor came from.
+  const lang = await getPreferredLang();
 
   try {
     const stripe  = getStripe();
@@ -103,8 +107,8 @@ export async function POST(req: Request): Promise<NextResponse> {
       // on its own, so it has to end cleanly instead of rolling into an invoice
       // nobody can pay. See `trial_settings` below.
       payment_method_collection: trialEligible ? 'if_required' : 'always',
-      success_url: `${baseUrl}/ticketbot/dashboard?checkout=success`,
-      cancel_url:  `${baseUrl}/ticketbot/dashboard?checkout=cancelled`,
+      success_url: `${baseUrl}${publicPath(lang, '/dashboard/ticket-bot?checkout=success')}`,
+      cancel_url:  `${baseUrl}${publicPath(lang, '/dashboard/ticket-bot?checkout=cancelled')}`,
       metadata:    { guild_id: guildId, discord_user_id: discordUserId },
       subscription_data: {
         metadata: { guild_id: guildId, discord_user_id: discordUserId },

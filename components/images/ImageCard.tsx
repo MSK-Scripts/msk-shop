@@ -17,7 +17,7 @@ import type { ImageRecord } from '@/lib/images'
 export function ImageCard({ image, priority = false }: { image: ImageRecord; priority?: boolean }) {
   return (
     <Link
-      href={`/images/${image.category}/${image.name}`}
+      href={`/tools/images/${image.category}/${image.name}`}
       // Kein Prefetch. Ein Raster zeigt 60 Kacheln, und Next holt fuer jeden
       // sichtbaren Link die Zielseite vor: 60 server-gerenderte Detailseiten
       // mit je zwei Datenbankabfragen, von denen der Besucher hoechstens eine

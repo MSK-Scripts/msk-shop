@@ -1,565 +1,231 @@
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
-import {
-  ArrowRight, KeyRound, LayoutDashboard, BarChart3, Ticket, ClipboardList,
-  UserCheck, Flag, Star, Clock, FileText, MessageSquareText, Globe, Lock,
-  Megaphone, Bell, MessageSquare,
-  Check, X, ServerCog, RefreshCw, Terminal, RotateCcw, Database,
-  ShieldCheck, Users, Languages, Rocket, Trash2, EyeOff, Wallet,
-} from 'lucide-react'
+import { ArrowRight, ShieldCheck, Translate as Languages } from '@/components/icons'
 
 import { BotCrossLink } from '@/components/bots/BotCrossLink'
+import { TicketBotTiers } from '@/components/bots/TicketBotTiers'
+import { Section, TextLink } from '@/components/home/Section'
+import { FactList } from '@/components/page/FactList'
+import { Accent, HeroFacts, PageHero } from '@/components/page/PageHero'
 import { Button } from '@/components/ui/Button'
-import { Badge } from '@/components/ui/Badge'
-import { Card } from '@/components/ui/Card'
-import { SITE_CONFIG } from '@/lib/config'
-import { TIER_CONFIG, formatTierPrice, yearlyMonthsFree, type Tier } from '@/lib/tiers'
-import type { Lang } from '@/lib/i18n'
-import { TICKETBOT_COPY, type TicketBotTierCard } from '@/content/ticketbot-copy'
+import { TICKETBOT_COPY } from '@/content/ticketbot-copy'
+import { BOT_DOCS, SITE_CONFIG } from '@/lib/config'
+import { homeTranslations, layoutTranslations, packagesTranslations, type Lang } from '@/lib/i18n'
+import { TRIAL_DAYS } from '@/lib/stripe'
+import { cheapestPaidTier, formatTierPrice } from '@/lib/tiers'
 
 /**
- * Die Ticket-Bot-Landingpage, einmal gebaut, zweimal gerendert.
+ * The ticket bot landing page, built once, rendered twice: `/en/discord/ticket-bot`
+ * with `lang="en"`, `/de/discord/ticket-bot` with `lang="de"`. The language
+ * comes from the path, never from a cookie: two addresses with the same text
+ * would be duplicate content and the hreflang pair a lie.
  *
- * `/ticketbot` rendert sie mit `lang="en"`, `/de/ticketbot` mit `lang="de"`.
- * Beide Routen sind sprachlich **fest**, nicht cookie-abhängig: zwei URLs mit
- * identischem Inhalt in derselben Sprache wären Duplicate Content, und das
- * hreflang-Paar in den Metadaten wäre gelogen.
+ * Layout per plan 5.7 since Phase 5 of the redesign (28.10.2026): the head on
+ * the anthracite band with the price beside it, then function by function,
+ * the plans as a table with the price statement under it, and requirements
+ * plus documentation where the FAQ used to be (decision E4). The rows of
+ * equal icon cards are gone (exclusion list 4.2).
  *
- * Hier stehen ausschließlich Icons und Layout. Jeder sichtbare String kommt aus
- * `content/ticketbot-copy.ts`, positionsgleich zu den Icon-Arrays unten.
+ * Every visible string comes from `content/ticketbot-copy.ts`, every price
+ * and limit from lib/tiers.ts.
  */
 
-// ── Icon-Reihenfolgen. Müssen zu den Listen in content/ticketbot-copy.ts passen.
+/** Targets of the three `hubCards`, in their order. */
+const HUB_HREFS = ['/dashboard/ticket-bot/verify', '/dashboard/ticket-bot', '/discord/ticket-bot/stats'] as const
 
-const HUB_ICONS = [KeyRound, LayoutDashboard, BarChart3] as const
-const HUB_HREFS = ['/ticketbot/verify', '/ticketbot/dashboard', '/ticketbot/stats'] as const
-const HUB_VARIANTS = ['primary', 'outline', 'outline'] as const
+/** Verify and the dashboard depend on the session: never prefetched. */
+const prefetch = (href: string) => (href.startsWith('/dashboard') ? false : undefined)
 
-const FEATURE_ICONS = [
-  Ticket, ClipboardList, UserCheck, Flag, Star, Clock, FileText, MessageSquareText,
-  Globe, Lock, RotateCcw, Bell, Megaphone, Database, LayoutDashboard,
-] as const
-
-const PROBLEM_ICONS = [Trash2, EyeOff, Wallet] as const
-
-const VERIFY_ICONS = [MessageSquare, ServerCog, KeyRound, Rocket] as const
-
-const DASHBOARD_ICONS = [LayoutDashboard, Terminal, Users, UserCheck] as const
-
-const HOSTED_ICONS = [ServerCog, RefreshCw, FileText, Globe] as const
-
-const TIER_KEYS: Tier[] = ['basic', 'premium', 'premium_plus', 'business']
-
-const mb = (bytes: number) => `${Math.round(bytes / (1024 * 1024))} MB`
+const code = 'rounded bg-[var(--color-muted)] px-1.5 py-0.5 font-mono text-[0.875em] text-[var(--color-foreground)]'
 
 export function TicketBotLanding({ lang }: { lang: Lang }) {
   const t = TICKETBOT_COPY[lang]
-
-  /** Feature-Zeilen einer Tarifkarte, Werte immer aus lib/tiers.ts. */
-  function tierFeatures(key: Tier) {
-    const c = TIER_CONFIG[key]
-    return [
-      { label: t.tierFeatureHosting, ok: true },
-      { label: t.tierFeatureTranscript.replace('{size}', mb(c.transcriptMaxBytes)), ok: true },
-      {
-        label: c.attachments
-          ? t.tierFeatureAttachments.replace('{size}', mb(c.attachmentMaxBytes))
-          : t.tierFeatureNoAttachments,
-        ok: c.attachments,
-      },
-      { label: t.tierFeatureDomain, ok: c.customDomain },
-      { label: t.tierFeatureBranding, ok: c.removeBranding },
-      {
-        // Ab zwei Jahren wird die Tagesangabe unlesbar: "3650 Tage" steht auf
-        // der teuersten Karte und die AGB nennt dieselbe Zahl "10 Jahre".
-        label: c.storageDays >= 730
-          ? t.tierFeatureStorageYears.replace('{n}', String(Math.round(c.storageDays / 365)))
-          : t.tierFeatureStorage.replace('{days}', String(c.storageDays)),
-        ok: true,
-      },
-      { label: t.tierFeatureUploads.replace('{n}', String(c.uploadsPerHour)), ok: true },
-      // Reads the tier table. Until 19.09.2026 this line was `ok: i > 0`, i.e.
-      // "every tier except the free one", hard-wired to the card's position.
-      // That happened to match the data back then and stopped matching the
-      // moment hosting moved up a tier, which is the sort of drift TypeScript
-      // cannot see.
-      { label: t.tierFeatureHosted, ok: c.botHosting },
-    ]
-  }
+  const home = homeTranslations[lang]
+  const nav = layoutTranslations[lang]
+  const crumbs = packagesTranslations[lang]
+  const newTab = { newTab: nav.nav_new_tab }
+  const from = formatTierPrice(cheapestPaidTier(), lang)
 
   return (
-    <div>
-      {/* ── Hero ──────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden border-b border-[var(--color-border)]">
-        <div aria-hidden className="hero-decor-gradient pointer-events-none absolute inset-0" />
-
-        <div className="container-page relative py-16 text-center md:py-20 lg:py-24">
-          <Badge variant="primary" className="mb-6">
-            <Ticket className="h-3.5 w-3.5" />
-            {t.badge}
-          </Badge>
-
-          {/* Das Keyword steht im H1, nicht nur im Badge und im <title>. */}
-          <h1 className="mx-auto max-w-3xl text-balance text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
-            {t.headline.lead}{' '}
-            <span className="text-[var(--color-primary)]">{t.headline.accent}</span>
-            {t.headline.tail}
-          </h1>
-
-          <p className="mx-auto mt-6 max-w-2xl text-pretty text-lg text-[var(--color-muted-foreground)] md:text-xl">
-            {t.heroText}
-          </p>
-
-          <div className="mt-7 flex flex-wrap justify-center gap-2">
-            {t.highlights.map(h => (
-              <span
-                key={h}
-                className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-1 text-xs font-medium text-[var(--color-muted-foreground)]"
-              >
-                <Check className="h-3 w-3 text-[var(--color-primary)]" />
-                {h}
-              </span>
-            ))}
-          </div>
-
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Button asChild size="lg">
-              <Link href="/ticketbot/verify" prefetch={false}>
+    <>
+      <PageHero
+        id="ticketbot-title"
+        crumbs={[
+          { label: crumbs.breadcrumb_home, href: '/' },
+          { label: nav.nav_discord, href: '/discord' },
+          { label: 'Ticket Bot' },
+        ]}
+        kicker={t.badge}
+        // The keyword stands in the h1, not only in the kicker and the <title>.
+        title={<>{t.headline.lead} <Accent>{t.headline.accent}</Accent>{t.headline.tail}</>}
+        lead={t.heroText}
+        actions={
+          <>
+            <Button asChild size="lg" variant="band">
+              <Link href="/dashboard/ticket-bot/verify" prefetch={false}>
                 {t.heroCtaKey}
-                <ArrowRight className="h-4 w-4" />
+                <ArrowRight className="h-5 w-5" />
+              </Link>
+            </Button>
+            <Button asChild size="lg" variant="band-outline">
+              <a href={BOT_DOCS.ticketbot} target="_blank" rel="noopener noreferrer">
+                {t.heroCtaDocs}
+                <span className="sr-only"> {nav.nav_new_tab}</span>
+              </a>
+            </Button>
+            <TextLink href={SITE_CONFIG.discord} external={newTab} tone="band">{t.heroCtaDiscord}</TextLink>
+          </>
+        }
+        aside={
+          <HeroFacts
+            label={t.badge}
+            lead={home.bot_price_ticket.replace('{price}', from)}
+            items={t.highlights}
+          />
+        }
+      >
+        {/* A link to the live figures instead of a number nobody can check. */}
+        <p className="max-w-[46ch] text-small text-[var(--color-band-muted)]">
+          {t.heroProof}{' '}
+          <Link href="/discord/ticket-bot/stats" className="font-semibold text-[var(--color-band-accent)] underline underline-offset-4 hover:text-[var(--color-band-foreground)]">
+            {t.heroProofCta}
+          </Link>
+        </p>
+        {/* A plain <a>: both addresses rewrite to the same route tree, so the
+            client router would see no segment change and keep the text, and
+            LocaleLink would prefix the partner address a second time. */}
+        <p className="text-small">
+          <a
+            href={t.altHref}
+            hrefLang={lang === 'en' ? 'de' : 'en'}
+            className="inline-flex min-h-11 items-center gap-1.5 text-[var(--color-band-muted)] underline-offset-4 hover:text-[var(--color-band-foreground)] hover:underline"
+          >
+            <Languages className="h-4 w-4" />
+            {t.altLabel}
+          </a>
+        </p>
+      </PageHero>
+
+      <Section id="problem-title" kicker={t.problemEyebrow} title={t.problemHeading}>
+        <div className="grid gap-5">
+          <FactList items={t.problems} wide />
+          <p className="max-w-[34rem] text-[var(--color-muted-foreground)]">{t.switchText}</p>
+          <div>
+            <TextLink href="/discord/ticket-bot/compare">{t.compareCta}</TextLink>
+          </div>
+        </div>
+      </Section>
+
+      <Section id="hub-title" kicker={t.hubEyebrow} title={t.hubHeading} intro={t.hubSub}>
+        <ul className="grid gap-x-[clamp(2rem,4cqi,5rem)] @3xl:grid-cols-2 @6xl:grid-cols-3">
+          {t.hubCards.map((card, i) => (
+            <li key={HUB_HREFS[i]} className="grid content-start gap-1.5 border-t border-[var(--color-border)] py-5">
+              <span className="kicker">{card.eyebrow}</span>
+              <h3 className="font-display text-lead font-[650]">{card.title}</h3>
+              <p className="max-w-[34rem] text-[var(--color-muted-foreground)]">{card.text}</p>
+              <div>
+                <TextLink href={HUB_HREFS[i]} prefetch={prefetch(HUB_HREFS[i])}>{card.cta}</TextLink>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </Section>
+
+      <Section id="verify-title" kicker={t.verifyEyebrow} title={t.verifyHeading}>
+        <div className="grid gap-5">
+          <FactList items={t.verifySteps} numbered />
+          <div>
+            <Button asChild size="lg">
+              <Link href="/dashboard/ticket-bot/verify" prefetch={false}>
+                {t.verifyCta}
+                <ArrowRight className="h-5 w-5" />
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </Section>
+
+      <Section id="features-title" kicker={t.featuresEyebrow} title={t.featuresHeading} intro={t.featuresSub}>
+        <FactList items={t.features} wide />
+      </Section>
+
+      {/* A screenshot of the bot's own web dashboard belongs here once one
+          exists; the section reads without it. */}
+      <Section
+        id="dashboard-title"
+        kicker={t.dashboardEyebrow}
+        title={t.dashboardHeading}
+        intro={
+          <>
+            {t.dashboardIntroA} <code className={code}>npm run dashboard</code> {t.dashboardIntroB}{' '}
+            <code className={code}>npm start</code> {t.dashboardIntroC}
+          </>
+        }
+        action={<TextLink href={BOT_DOCS.ticketbotDashboard} external={newTab}>{t.dashboardDocsCta}</TextLink>}
+      >
+        <div className="grid gap-5">
+          <p className="flex max-w-[40rem] items-start gap-2.5 text-[var(--color-muted-foreground)]">
+            <ShieldCheck className="mt-[0.25em] h-5 w-5 shrink-0 text-[var(--color-primary)]" />
+            <span>{t.dashboardSecure}</span>
+          </p>
+          <FactList items={t.dashboardItems} />
+        </div>
+      </Section>
+
+      <Section id="hosted-title" kicker={t.hostedEyebrow} title={t.hostedHeading} intro={t.hostedText}>
+        <div className="grid gap-5">
+          <FactList items={t.hostedItems} />
+          <div className="flex flex-wrap items-center gap-3">
+            <Button asChild>
+              <Link href="/dashboard/ticket-bot" prefetch={false}>{t.hostedCtaDashboard}</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <a href={SITE_CONFIG.discord} target="_blank" rel="noopener noreferrer">
+                {t.hostedCtaDiscord}
+                <span className="sr-only"> {nav.nav_new_tab}</span>
+              </a>
+            </Button>
+          </div>
+        </div>
+      </Section>
+
+      <Section
+        id="plans-title"
+        className="scroll-mt-[var(--header-height)]"
+        kicker={t.tiersEyebrow}
+        title={t.tiersHeading}
+        intro={
+          <>
+            {t.tiersSubLead}{' '}
+            <strong className="font-semibold text-[var(--color-foreground)]">
+              {t.tiersSubTrial.replace('{n}', String(TRIAL_DAYS))}
+            </strong>
+            {t.tiersSubTail}
+          </>
+        }
+      >
+        <TicketBotTiers lang={lang} />
+      </Section>
+
+      <Section id="requirements-title" kicker={t.reqKicker} title={t.ctaHeading} intro={t.ctaText}>
+        <div className="grid gap-5">
+          <FactList items={t.requirements} />
+          <div className="flex flex-wrap items-center gap-3">
+            <Button asChild size="lg">
+              <Link href="/dashboard/ticket-bot/verify" prefetch={false}>
+                {t.ctaKey}
+                <ArrowRight className="h-5 w-5" />
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline">
-              <a href={SITE_CONFIG.docs} target="_blank" rel="noopener noreferrer">
-                <FileText className="h-4 w-4" />
-                {t.heroCtaDocs}
-              </a>
-            </Button>
-            <Button asChild size="lg" variant="discord">
-              <a href={SITE_CONFIG.discord} target="_blank" rel="noopener noreferrer">
-                <MessageSquare className="h-4 w-4" />
-                {t.heroCtaDiscord}
+              <a href={BOT_DOCS.ticketbot} target="_blank" rel="noopener noreferrer">
+                {t.ctaDocs}
+                <span className="sr-only"> {nav.nav_new_tab}</span>
               </a>
             </Button>
           </div>
-
-          {/* Belegzeile. Statt einer Zahl, die niemand nachprüfen kann, steht
-              hier ein Verweis auf die Live-Statistik: kleine nachprüfbare
-              Zahlen wiegen mehr als grosse unbelegte. */}
-          <p className="mt-6 text-sm text-[var(--color-muted-foreground)]">
-            {t.heroProof}{' '}
-            <Link
-              href="/ticketbot/stats"
-              prefetch={false}
-              className="text-[var(--color-primary)] underline-offset-4 hover:underline"
-            >
-              {t.heroProofCta}
-            </Link>
-          </p>
-
-          {/* Sichtbarer Sprachwechsel. Ergänzt die hreflang-Angaben um einen
-              Link, dem sowohl Nutzer als auch Crawler folgen können. */}
-          <p className="mt-6 text-sm">
-            {/* Bewusst `<a>`: das ist ein Sprachwechsel, und beide Adressen
-                zeigen nach dem Rewrite auf denselben Routenbaum. Der
-                Client-Router sähe keinen Segmentwechsel und liesse den Text
-                stehen. Ausserdem darf `LocaleLink` hier nicht greifen, es
-                würde die Gegenstück-Adresse ein zweites Mal präfixieren. */}
-            <a
-              href={t.altHref}
-              hrefLang={lang === 'en' ? 'de' : 'en'}
-              className="inline-flex items-center gap-1.5 text-[var(--color-muted-foreground)] underline-offset-4 transition-colors hover:text-[var(--color-foreground)] hover:underline"
-            >
-              <Languages className="h-3.5 w-3.5" />
-              {t.altLabel}
-            </a>
-          </p>
+          <BotCrossLink lang={lang} current="ticketbot" />
         </div>
-      </section>
-
-      {/* ── Problem ───────────────────────────────────────────────────────── */}
-      <section className="container-page py-14 md:py-20">
-        <div className="mb-10 text-center">
-          <span className="eyebrow">{t.problemEyebrow}</span>
-          <h2 className="mt-3 text-2xl font-bold tracking-tight md:text-3xl">{t.problemHeading}</h2>
-        </div>
-
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          {t.problems.map((item, i) => {
-            const Icon = PROBLEM_ICONS[i]
-            return (
-              <Card key={item.title} className="flex flex-col p-6">
-                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--color-danger)]/10 text-[var(--color-danger)]">
-                  <Icon className="h-5 w-5" />
-                </div>
-                <h3 className="mb-2 font-bold tracking-tight">{item.title}</h3>
-                <p className="text-sm leading-relaxed text-[var(--color-muted-foreground)]">
-                  {item.text}
-                </p>
-              </Card>
-            )
-          })}
-        </div>
-      </section>
-
-      {/* ── Hub cards: Verify · Dashboard · Stats ─────────────────────────── */}
-      <section className="container-page py-14 md:py-20">
-        <div className="mb-10 text-center">
-          <span className="eyebrow">{t.hubEyebrow}</span>
-          <h2 className="mt-3 text-2xl font-bold tracking-tight md:text-3xl">{t.hubHeading}</h2>
-          <p className="mx-auto mt-3 max-w-xl text-sm text-[var(--color-muted-foreground)] md:text-base">
-            {t.hubSub}
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          {t.hubCards.map((card, i) => {
-            const Icon = HUB_ICONS[i]
-            const href = HUB_HREFS[i]
-            const accent = i === 0
-            return (
-              <Card key={href} hoverLift className="flex flex-col p-6">
-                <div className="mb-4 flex items-center gap-3">
-                  <div className={
-                    accent
-                      ? 'flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[var(--color-primary)]/15 text-[var(--color-primary)]'
-                      : 'flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[var(--color-muted)] text-[var(--color-muted-foreground)]'
-                  }>
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <span className="font-mono text-[0.6875rem] font-bold uppercase tracking-widest text-[var(--color-muted-foreground)]">
-                    {card.eyebrow}
-                  </span>
-                </div>
-
-                <h3 className="mb-2 text-xl font-bold tracking-tight">{card.title}</h3>
-                <p className="mb-6 flex-1 text-sm leading-relaxed text-[var(--color-muted-foreground)]">
-                  {card.text}
-                </p>
-
-                <Button asChild variant={HUB_VARIANTS[i]} className="w-full">
-                  {/* verify/dashboard sind session-abhängig: kein Prefetch, sonst
-                      cacht der Client-Router die Redirect-Entscheidung. */}
-                  <Link href={href} prefetch={href === '/ticketbot/stats' ? undefined : false}>
-                    {card.cta}
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </Button>
-              </Card>
-            )
-          })}
-        </div>
-      </section>
-
-      {/* ── Feature highlights ────────────────────────────────────────────── */}
-      <section className="border-t border-[var(--color-border)] bg-[color-mix(in_oklab,var(--color-muted)_40%,var(--color-background))]">
-        <div className="container-page py-14 md:py-20">
-          <div className="mb-10 text-center">
-            <span className="eyebrow">{t.featuresEyebrow}</span>
-            <h2 className="mt-3 text-2xl font-bold tracking-tight md:text-3xl">{t.featuresHeading}</h2>
-            <p className="mx-auto mt-3 max-w-xl text-sm text-[var(--color-muted-foreground)] md:text-base">
-              {t.featuresSub}
-            </p>
-          </div>
-
-          <div className="grid gap-5 grid-cols-[repeat(auto-fit,minmax(min(100%,var(--grid-card)),1fr))]">
-            {t.features.map((f, i) => {
-              const Icon = FEATURE_ICONS[i]
-              return (
-                <div
-                  key={f.title}
-                  className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5"
-                >
-                  <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--color-primary)]/15 text-[var(--color-primary)]">
-                    <Icon className="h-4 w-4" />
-                  </div>
-                  <h3 className="mb-1.5 font-bold tracking-tight">{f.title}</h3>
-                  <p className="text-sm leading-relaxed text-[var(--color-muted-foreground)]">{f.text}</p>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Verify flow ───────────────────────────────────────────────────── */}
-      <section className="container-page py-14 md:py-20">
-        <div className="mb-10 text-center">
-          <span className="eyebrow">{t.verifyEyebrow}</span>
-          <h2 className="mt-3 text-2xl font-bold tracking-tight md:text-3xl">{t.verifyHeading}</h2>
-        </div>
-
-        {/* Feste Spaltenzahlen statt `auto-fit`: mit vier Schritten trifft
-            `auto-fit` im Band zwischen etwa 900 und 1200 px drei Spalten und
-            lässt den vierten Schritt allein in der zweiten Reihe stehen. 1 / 2 / 4
-            geht immer auf, dieselbe Staffelung wie bei den Tarifkarten. */}
-        <div className="grid gap-5 grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
-          {t.verifySteps.map((step, i) => {
-            const Icon = VERIFY_ICONS[i]
-            return (
-              <div key={step.title} className="relative rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
-                <span className="absolute right-4 top-4 font-mono text-3xl font-bold leading-none text-[var(--color-border)]">
-                  {i + 1}
-                </span>
-                <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--color-primary)]/15 text-[var(--color-primary)]">
-                  <Icon className="h-4 w-4" />
-                </div>
-                <h3 className="mb-1.5 font-bold tracking-tight">{step.title}</h3>
-                <p className="text-sm leading-relaxed text-[var(--color-muted-foreground)]">{step.text}</p>
-              </div>
-            )
-          })}
-        </div>
-
-        <div className="mt-8 text-center">
-          <Button asChild size="lg">
-            <Link href="/ticketbot/verify" prefetch={false}>
-              {t.verifyCta}
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
-        </div>
-      </section>
-
-      {/* ── Self-hosted dashboard ─────────────────────────────────────────── */}
-      <section className="border-t border-[var(--color-border)]">
-        <div className="container-page py-14 md:py-20">
-          <div className="grid items-center gap-10 lg:grid-cols-2">
-            <div>
-              <span className="eyebrow">{t.dashboardEyebrow}</span>
-              <h2 className="mt-3 text-2xl font-bold tracking-tight md:text-3xl">{t.dashboardHeading}</h2>
-              <p className="mt-4 text-sm leading-relaxed text-[var(--color-muted-foreground)] md:text-base">
-                {t.dashboardIntroA}{' '}
-                <code className="rounded bg-[var(--color-muted)] px-1.5 py-0.5 font-mono text-[0.8125rem] text-[var(--color-foreground)]">npm run dashboard</code>
-                {' '}{t.dashboardIntroB}{' '}
-                <code className="rounded bg-[var(--color-muted)] px-1.5 py-0.5 font-mono text-[0.8125rem] text-[var(--color-foreground)]">npm start</code>
-                {' '}{t.dashboardIntroC}
-              </p>
-              <p className="mt-4 flex items-start gap-2.5 text-sm leading-relaxed text-[var(--color-muted-foreground)] md:text-base">
-                <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-primary)]" />
-                <span>{t.dashboardSecure}</span>
-              </p>
-              <div className="mt-7 flex flex-wrap gap-3">
-                <Button asChild variant="outline">
-                  <a href={`${SITE_CONFIG.docs}/discord/discord_ticketbot/dashboard`} target="_blank" rel="noopener noreferrer">
-                    <FileText className="h-4 w-4" />
-                    {t.dashboardDocsCta}
-                  </a>
-                </Button>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {t.dashboardItems.map((item, i) => {
-                const Icon = DASHBOARD_ICONS[i]
-                return (
-                  <div key={item.title} className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
-                    <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--color-primary)]/15 text-[var(--color-primary)]">
-                      <Icon className="h-4 w-4" />
-                    </div>
-                    <h3 className="mb-1.5 text-sm font-bold tracking-tight">{item.title}</h3>
-                    <p className="text-xs leading-relaxed text-[var(--color-muted-foreground)]">{item.text}</p>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Hosted bot management ─────────────────────────────────────────── */}
-      <section className="border-t border-[var(--color-border)] bg-[color-mix(in_oklab,var(--color-muted)_40%,var(--color-background))]">
-        <div className="container-page py-14 md:py-20">
-          <div className="grid items-center gap-10 lg:grid-cols-2">
-            <div>
-              <span className="eyebrow">{t.hostedEyebrow}</span>
-              <h2 className="mt-3 text-2xl font-bold tracking-tight md:text-3xl">{t.hostedHeading}</h2>
-              <p className="mt-4 text-sm leading-relaxed text-[var(--color-muted-foreground)] md:text-base">
-                {t.hostedText}
-              </p>
-              <div className="mt-7 flex flex-wrap gap-3">
-                <Button asChild>
-                  <Link href="/ticketbot/dashboard" prefetch={false}>
-                    <LayoutDashboard className="h-4 w-4" />
-                    {t.hostedCtaDashboard}
-                  </Link>
-                </Button>
-                <Button asChild variant="outline">
-                  <a href={SITE_CONFIG.discord} target="_blank" rel="noopener noreferrer">
-                    <MessageSquare className="h-4 w-4" />
-                    {t.hostedCtaDiscord}
-                  </a>
-                </Button>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {t.hostedItems.map((item, i) => {
-                const Icon = HOSTED_ICONS[i]
-                return (
-                  <div key={item.title} className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
-                    <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--color-primary)]/15 text-[var(--color-primary)]">
-                      <Icon className="h-4 w-4" />
-                    </div>
-                    <h3 className="mb-1.5 text-sm font-bold tracking-tight">{item.title}</h3>
-                    <p className="text-xs leading-relaxed text-[var(--color-muted-foreground)]">{item.text}</p>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Tiers / pricing ───────────────────────────────────────────────── */}
-      <section className="container-page py-14 md:py-20">
-        <div className="mb-10 text-center">
-          <span className="eyebrow">{t.tiersEyebrow}</span>
-          <h2 className="mt-3 text-2xl font-bold tracking-tight md:text-3xl">{t.tiersHeading}</h2>
-          <p className="mx-auto mt-3 max-w-xl text-sm text-[var(--color-muted-foreground)] md:text-base">
-            {t.tiersSubLead}{' '}
-            <span className="font-medium text-[var(--color-primary)]">{t.tiersSubTrial}</span>
-            {t.tiersSubTail}
-          </p>
-        </div>
-
-        {/* Vier Stufen: bei md zwei nebeneinander, erst ab xl alle vier. Vier
-            Karten in einer md-Reihe werden zu schmal fuer die Feature-Listen. */}
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
-          {t.tierCards.map((card: TicketBotTierCard, i) => {
-            const key = TIER_KEYS[i]
-            // Der hervorgehobene Tarif ist der mit dem Badge. Vorher stand hier
-            // `i === 1`, also eine zweite Stelle, an der dieselbe Entscheidung
-            // getroffen wurde; beim Verschieben des Badges wäre der Ring an der
-            // alten Karte stehen geblieben.
-            const accent = card.badge !== null
-            const monthsFree = yearlyMonthsFree(key)
-            return (
-              <Card
-                key={key}
-                hoverLift
-                className={
-                  accent
-                    ? 'relative flex flex-col p-6 ring-2 ring-[var(--color-primary)]'
-                    : 'relative flex flex-col p-6'
-                }
-              >
-                {card.badge && (
-                  <span className="absolute -top-3 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-full bg-[var(--color-primary)] px-3 py-1 text-[0.625rem] font-bold uppercase tracking-wider text-[var(--color-primary-foreground)] shadow-sm">
-                    {card.badge}
-                  </span>
-                )}
-
-                <h3 className="text-lg font-bold tracking-tight">{card.name}</h3>
-                <div className="mt-2 flex items-baseline gap-1.5">
-                  {/* Der Preis kommt aus TIER_CONFIG, nicht aus der Copy-Datei.
-                      Nur der kostenlose Tarif hat einen eigenen Text. */}
-                  <span className="font-mono text-3xl font-bold tracking-tight">
-                    {card.priceOverride ?? formatTierPrice(key, lang)}
-                  </span>
-                  <span className="text-sm text-[var(--color-muted-foreground)]">{card.priceSub}</span>
-                </div>
-                {monthsFree > 0 && (
-                  <p className="mt-1.5 text-xs text-[var(--color-muted-foreground)]">
-                    {t.tierPriceYear
-                      .replace('{price}', formatTierPrice(key, lang, 'yearly'))
-                      .replace('{n}', String(monthsFree))}
-                  </p>
-                )}
-
-                <ul className="mt-6 mb-6 flex-1 space-y-2.5">
-                  {tierFeatures(key).map(f => (
-                    <li key={f.label} className="flex items-center gap-2.5 text-sm">
-                      {f.ok ? (
-                        <Check className="h-4 w-4 shrink-0 text-[var(--color-primary)]" />
-                      ) : (
-                        <X className="h-4 w-4 shrink-0 text-[var(--color-muted-foreground)]" />
-                      )}
-                      <span className={f.ok ? '' : 'text-[var(--color-muted-foreground)] line-through'}>
-                        {f.label}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-
-                <Button asChild variant={accent ? 'primary' : 'outline'} className="w-full">
-                  <Link href="/ticketbot/verify" prefetch={false}>
-                    {card.cta}
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </Button>
-              </Card>
-            )
-          })}
-        </div>
-
-        {/* Per-guild note */}
-        <div className="mx-auto mt-8 flex max-w-3xl items-start gap-4 rounded-xl border border-[var(--color-primary)]/25 bg-[var(--color-primary)]/[0.04] p-5">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--color-primary)]/15 text-[var(--color-primary)]">
-            <ServerCog className="h-5 w-5" />
-          </div>
-          <div>
-            <h3 className="mb-1 font-bold tracking-tight">{t.tierNote.title}</h3>
-            <p className="text-sm text-[var(--color-muted-foreground)]">{t.tierNote.text}</p>
-          </div>
-        </div>
-      </section>
-
-      {/* ── FAQ ───────────────────────────────────────────────────────────── */}
-      <section className="container-page pb-14 md:pb-20">
-        <div className="mb-10 text-center">
-          <span className="eyebrow">{t.faqEyebrow}</span>
-          <h2 className="mt-3 text-2xl font-bold tracking-tight md:text-3xl">{t.faqHeading}</h2>
-        </div>
-
-        {/* `details`/`summary` statt eines Akkordeons mit State: es klappt ohne
-            JavaScript auf, der Browser übernimmt die ARIA-Semantik, und der
-            Antworttext steht im ausgelieferten HTML, wo eine Suchmaschine ihn
-            auch findet. */}
-        <div className="mx-auto max-w-3xl space-y-3">
-          {t.faq.map(item => (
-            <details
-              key={item.title}
-              className="group rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] px-5 py-4 [&_summary::-webkit-details-marker]:hidden"
-            >
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-medium tracking-tight">
-                {item.title}
-                <ArrowRight className="h-4 w-4 shrink-0 text-[var(--color-muted-foreground)] transition-transform group-open:rotate-90" />
-              </summary>
-              <p className="mt-3 text-sm leading-relaxed text-[var(--color-muted-foreground)]">
-                {item.text}
-              </p>
-            </details>
-          ))}
-        </div>
-      </section>
-
-      {/* ── Final CTA ─────────────────────────────────────────────────────── */}
-      <section className="container-page pb-14 md:pb-20">
-        <Card className="relative overflow-hidden p-8 text-center md:p-12">
-          <div aria-hidden className="hero-decor-gradient pointer-events-none absolute inset-0" />
-          <div className="relative">
-            <h2 className="text-2xl font-bold tracking-tight md:text-3xl">{t.ctaHeading}</h2>
-            <p className="mx-auto mt-3 max-w-lg text-sm text-[var(--color-muted-foreground)] md:text-base">
-              {t.ctaText}
-            </p>
-            <div className="mt-7 flex flex-wrap justify-center gap-3">
-              <Button asChild size="lg">
-                <Link href="/ticketbot/verify" prefetch={false}>
-                  {t.ctaKey}
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="outline">
-                <a href={SITE_CONFIG.docs} target="_blank" rel="noopener noreferrer">
-                  {t.ctaDocs}
-                </a>
-              </Button>
-            </div>
-          </div>
-        </Card>
-
-        <BotCrossLink lang={lang} current="ticketbot" />
-      </section>
-    </div>
+      </Section>
+    </>
   )
 }

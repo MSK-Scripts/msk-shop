@@ -3,7 +3,7 @@ import { cookies }                         from 'next/headers';
 import { query }                           from '@/lib/db';
 import { signAdminSession, ADMIN_SESSION_COOKIE } from '@/lib/adminSession';
 import { loadAdminMember }                 from '@/lib/adminAuth';
-import { localePath }                      from '@/lib/lang';
+import { publicPath }                      from '@/lib/routes';
 
 // Session-/cookie-dependent → never cache.
 export const dynamic = 'force-dynamic';
@@ -17,11 +17,11 @@ export async function GET(req: Request) {
   const cookieStore = await cookies();
   const storedState = cookieStore.get('msk_admin_oauth_state')?.value;
   // Set by the sign-in button when the login started on the German version.
-  // `localePath` builds the prefix, not this string: there is exactly one place
+  // `publicPath` builds the address, not this string: there is exactly one place
   // that knows what an address looks like in a given language, and a second
   // hand-written `/de` is the mistake the guard in `tests/localeLinks.test.ts`
   // has been catching since 23.08.2026.
-  const adminPath   = localePath(
+  const adminPath   = publicPath(
     cookieStore.get('msk_admin_oauth_lang')?.value === 'de' ? 'de' : 'en',
     '/admin',
   );

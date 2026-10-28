@@ -1,15 +1,18 @@
 import { NextResponse }   from 'next/server';
 import { adminRoute }     from '@/lib/adminApi';
 import { writeAudit }     from '@/lib/adminAudit';
+import { maskPersonalData } from '@/lib/adminMask';
 import { tebexPlugin, unwrapList, type TebexPayment } from '@/lib/tebexPlugin';
 
 // Session-/cookie-dependent → never cache.
 export const dynamic = 'force-dynamic';
 
-// List the most recent payments.
+// List the most recent payments. The buyer's email leaves masked, together
+// with any other address Tebex puts into a payment (lib/adminMask.ts); the
+// full one is a reveal per row (/api/admin/reveal).
 export const GET = adminRoute('payments.view', async () => {
   const payments = unwrapList<TebexPayment>(await tebexPlugin.payments.list(100));
-  return NextResponse.json({ payments });
+  return NextResponse.json({ payments: maskPersonalData(payments) }, { headers: { 'Cache-Control': 'no-store' } });
 });
 
 // Create a manual payment. `price: 0` grants the package(s) to a player for free.

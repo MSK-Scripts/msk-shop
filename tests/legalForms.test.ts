@@ -172,7 +172,7 @@ describe('Eingangsbestaetigungen', () => {
 
 describe('Bestellbestaetigung (§ 312f BGB)', () => {
   const base = {
-    tierLabel: 'Premium+', guildLabel: 'Atlas Roleplay', price: '6,99 €', inTrial: false,
+    tierLabel: 'Premium+', guildLabel: 'Atlas Roleplay', price: '6,99 €', interval: 'monthly', inTrial: false,
   } as const
 
   it('nennt Leistung, Preis, Laufzeit und verlinkt AGB und Widerruf', () => {
@@ -180,17 +180,31 @@ describe('Bestellbestaetigung (§ 312f BGB)', () => {
     expect(mail.text).toContain('Premium+')
     expect(mail.text).toContain('6,99 €')
     expect(mail.text).toContain('verlängert sich monatlich')
-    expect(mail.text).toContain('/de/terms')
-    expect(mail.text).toContain('/de/terms/widerruf')
-    expect(mail.text).toContain('/de/vertrag-kuendigen')
+    expect(mail.text).toContain('https://www.msk-scripts.de/de/rechtliches/agb')
+    expect(mail.text).toContain('https://www.msk-scripts.de/de/rechtliches/widerrufsbelehrung')
+    expect(mail.text).toContain('https://www.msk-scripts.de/de/vertrag-widerrufen')
+    expect(mail.text).toContain('https://www.msk-scripts.de/de/vertrag-kuendigen')
+    expect(mail.text).toContain('https://www.msk-scripts.de/de/dashboard/ticket-bot')
   })
 
-  it('verlinkt fuer englische Kunden die Wurzelfassung', () => {
-    // The language lives in the path: English sits at the root. A link to
-    // /de/terms in an English mail leads to a German text.
+  it('links the English version for English customers', () => {
+    // The language lives in the path. A link to /de/rechtliches/agb in an
+    // English mail leads to a German text.
     const mail = buildOrderConfirmation({ lang: 'en', ...base })
-    expect(mail.text).toContain('https://www.msk-scripts.de/terms')
-    expect(mail.text).not.toContain('/de/terms')
+    expect(mail.text).toContain('https://www.msk-scripts.de/en/legal/terms')
+    expect(mail.text).toContain('https://www.msk-scripts.de/en/legal/withdrawal')
+    expect(mail.text).toContain('https://www.msk-scripts.de/en/withdraw-contract')
+    expect(mail.text).toContain('https://www.msk-scripts.de/en/cancel-contract')
+    expect(mail.text).not.toContain('/de/')
+  })
+
+  it('sends a subscriber straight to the withdrawal form, past the question which contract', () => {
+    // The withdrawal page first asks whether it is a subscription or a shop
+    // purchase (draft 2.5). The confirmation of a subscription preselects it.
+    expect(buildOrderConfirmation({ lang: 'de', ...base }).text)
+      .toContain('https://www.msk-scripts.de/de/vertrag-widerrufen?contract=subscription')
+    expect(buildOrderConfirmation({ lang: 'en', ...base }).text)
+      .toContain('https://www.msk-scripts.de/en/withdraw-contract?contract=subscription')
   })
 
   it('states the VAT exemption under § 19 UStG in both languages', () => {
@@ -201,6 +215,43 @@ describe('Bestellbestaetigung (§ 312f BGB)', () => {
     expect(de.text).toContain('Steuerfreie Leistung, Kleinunternehmer nach § 19 UStG')
     expect(en.text).toContain('VAT-exempt supply, small business under § 19 UStG')
     expect(de.text).not.toContain('ausgewiesen')
+  })
+
+  // § 312f BGB: the mail confirms the contract content, and price and term are
+  // part of it. Until 28.10.2026 it only knew monthly plans, so a yearly
+  // subscriber read "49,00 € pro Monat" and "verlängert sich monatlich".
+  describe('price period and term follow the billing interval', () => {
+    const yearly = { ...base, tierLabel: 'Premium', price: '49,00 €', interval: 'yearly' } as const
+
+    it('states a monthly plan as per month, one month, renewing monthly', () => {
+      const de = buildOrderConfirmation({ ...base, lang: 'de' }).text
+      const en = buildOrderConfirmation({ ...base, lang: 'en' }).text
+      expect(de).toContain('Preis: 6,99 € pro Monat')
+      expect(de).toContain('Laufzeit: ein Monat, verlängert sich monatlich')
+      expect(en).toContain('Price: 6,99 € per month')
+      expect(en).toContain('Term: one month, renews monthly')
+      for (const text of [de, en]) {
+        expect(text).not.toMatch(/pro Jahr|jährlich|zwölf|per year|yearly|twelve/)
+      }
+    })
+
+    it('states a yearly plan as per year, twelve months, renewing yearly', () => {
+      const de = buildOrderConfirmation({ ...yearly, lang: 'de' }).text
+      const en = buildOrderConfirmation({ ...yearly, lang: 'en' }).text
+      expect(de).toContain('Preis: 49,00 € pro Jahr')
+      expect(de).toContain('Laufzeit: zwölf Monate, verlängert sich jährlich')
+      expect(en).toContain('Price: 49,00 € per year')
+      expect(en).toContain('Term: twelve months, renews yearly')
+      for (const text of [de, en]) {
+        expect(text).not.toMatch(/pro Monat|monatlich|ein Monat|per month|monthly|one month/)
+      }
+    })
+
+    it('carries the same lines into the HTML part', () => {
+      const html = buildOrderConfirmation({ ...yearly, lang: 'de' }).html
+      expect(html).toContain('<li>Preis: 49,00 € pro Jahr</li>')
+      expect(html).toContain('<li>Laufzeit: zwölf Monate, verlängert sich jährlich</li>')
+    })
   })
 
   it('weist die Testphase samt Ende aus', () => {

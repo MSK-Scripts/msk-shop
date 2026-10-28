@@ -1,3 +1,5 @@
+> **Historical document**, kept as written: it predates the redesign of 27 and 28 October 2026 (PR #61), so addresses, components and screens in it may differ from the code. The current guide is [admin-dashboard.md](admin-dashboard.md).
+
 # Admin Dashboard — Implementation Plan
 
 > Self-hosted Tebex admin dashboard on the shop website. Discord login + own
@@ -57,7 +59,7 @@ Owner is seeded once from `ADMIN_OWNER_DISCORD_ID`.
 
 **Foundation (Phase 1 — done):**
 - `lib/adminSession.ts` — signed `AdminSession { discordUserId }`, cookie `msk_admin_session`
-- `lib/adminPerms.ts` — permission constants, labels, `AdminTeamMember`, `memberHasPermission`
+- `lib/adminPerms.ts` — permission constants, role templates, `AdminTeamMember`, `memberHasPermission` (the labels live in `adminTranslations.permissions` since Phase 10 of the redesign)
 - `lib/adminAuth.ts` — `loadAdminMember()` (DB, live), `authorizeAdmin(token, perm)` → 200/401/403
 - `lib/adminAudit.ts` — `writeAudit()`
 - `lib/tebexPlugin.ts` — server-only Plugin API client (payments, coupons, giftCards, bans, packages, lookup)

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { adminRoute }   from '@/lib/adminApi'
+import { maskPersonalData } from '@/lib/adminMask'
 import { listUploads, type UploadStatus } from '@/lib/imageUploads'
 
 // Session-dependent → never cache.
@@ -19,6 +20,7 @@ export const GET = adminRoute(['images.view', 'images.manage', 'images.moderate'
   const raw = req.nextUrl.searchParams.get('status')
   const status = (STATUSES as string[]).includes(raw ?? '') ? (raw as UploadStatus | 'all') : 'pending'
 
+  // The submitter's note is free text; an address in it leaves masked.
   const uploads = await listUploads(status)
-  return NextResponse.json({ uploads }, { headers: { 'Cache-Control': 'no-store' } })
+  return NextResponse.json({ uploads: maskPersonalData(uploads) }, { headers: { 'Cache-Control': 'no-store' } })
 })

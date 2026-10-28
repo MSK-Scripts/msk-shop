@@ -5,7 +5,7 @@ import { queryOne, withTransaction } from '@/lib/db';
 import {
   getStripe, resolveTierFromPrice, isActiveSubStatus,
   priceIdFromSubscription, periodEndFromSubscription,
-  hasPaymentMethod, formatSubscriptionPrice,
+  hasPaymentMethod, formatSubscriptionPrice, billingIntervalFromSubscription,
 } from '@/lib/stripe';
 import { sendMail } from '@/lib/mail';
 import { buildTrialEndingEmail, pickMailLang } from '@/lib/emails/trialEnding';
@@ -164,6 +164,7 @@ async function handleTrialWillEnd(sub: Stripe.Subscription): Promise<void> {
     guildLabel:  row?.guild_name || guildId,
     trialEndsAt: new Date((trialEndSec ?? Math.floor(Date.now() / 1000)) * 1000),
     price:       formatSubscriptionPrice(sub, lang),
+    interval:    billingIntervalFromSubscription(sub),
   });
 
   try {
@@ -255,6 +256,9 @@ async function sendOrderConfirmation(sub: Stripe.Subscription): Promise<void> {
         tierLabel:   TIER_LABELS[tier],
         guildLabel:  row?.guild_name ?? guildId,
         price:       formatSubscriptionPrice(sub, lang),
+        // A yearly plan must read "per year" and "twelve months": the mail is
+        // the contract confirmation under § 312f BGB.
+        interval:    billingIntervalFromSubscription(sub),
         inTrial:     sub.status === 'trialing',
         trialEndsAt: trialEnd,
       }),

@@ -1,6 +1,6 @@
 'use client'
 
-import { Search, X } from 'lucide-react'
+import { MagnifyingGlass as Search, X } from '@/components/icons'
 import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
 
@@ -46,7 +46,7 @@ export function GallerySearch({
     const query = value.trim() ? `?q=${encodeURIComponent(value.trim())}` : ''
     // localize(), damit ein deutscher Besucher nicht bei jedem Tastendruck
     // auf die englische Adresse geworfen wird.
-    router.push(localize(`/images/${slug}${query}`))
+    router.push(localize(`/tools/images/${slug}${query}`))
   }
 
   function onChange(value: string) {

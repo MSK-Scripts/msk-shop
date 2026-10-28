@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { adminRoute }   from '@/lib/adminApi'
+import { maskPersonalData } from '@/lib/adminMask'
 import { listAdminImages, isAdminImageFilter } from '@/lib/adminImages'
 import { DEFAULT_PER_PAGE } from '@/lib/images'
 
@@ -31,5 +32,6 @@ export const GET = adminRoute(['images.view', 'images.manage', 'images.moderate'
     per:      Number(sp.get('per') ?? DEFAULT_PER_PAGE),
   })
 
-  return NextResponse.json({ result }, { headers: { 'Cache-Control': 'no-store' } })
+  // Source and licence note are free text; an address in them leaves masked.
+  return NextResponse.json({ result: { ...result, items: maskPersonalData(result.items) } }, { headers: { 'Cache-Control': 'no-store' } })
 })

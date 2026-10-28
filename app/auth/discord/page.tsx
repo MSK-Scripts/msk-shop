@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Loader2 } from 'lucide-react'
+import { CircleNotch as Loader2 } from '@/components/icons'
 import { Card } from '@/components/ui/Card'
 
 // Discord callback page — receives discord_id from Tebex OAuth redirect

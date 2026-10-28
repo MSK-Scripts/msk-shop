@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-import { DEFAULT_LANG, LANG_HEADER, PATH_HEADER, istEinmaligeAdresse, splitLangPath } from '@/lib/lang'
+import { DEFAULT_LANG, LANG_HEADER, NOT_FOUND_HEADER, PATH_HEADER } from '@/lib/lang'
+import { createLiveIndexLoader } from '@/lib/products'
+import { LANG_COOKIE, resolveRequest } from '@/lib/routes'
+import { getPackages } from '@/lib/tebex'
 
 // Diese Datei hieß bis Next 16 `middleware.ts`. Next 16 hat die Konvention in
 // `proxy.ts` umbenannt (die alte warnt beim Build und entfällt später), die
@@ -18,6 +21,10 @@ import { DEFAULT_LANG, LANG_HEADER, PATH_HEADER, istEinmaligeAdresse, splitLangP
 
 interface RateRule { prefix: string; limit: number; windowMs: number }
 
+// Page rules match the internal path without language (`/tools/images`),
+// not the address: `/en/tools/images` and `/de/web-tools/images` are the same
+// page and share one bucket. API paths have no language and stay as they are.
+//
 // Greift die ERSTE passende Regel (Reihenfolge = Priorität). NUR echte
 // Public-Flächen — die bot-authentifizierten /api/giveaway-result/* Routen
 // werden bewusst NICHT IP-limitiert (der Bot ruft sie als einzelne Server-IP
@@ -25,13 +32,14 @@ interface RateRule { prefix: string; limit: number; windowMs: number }
 // aussperren — Schutz dort übernimmt der Bearer-Secret + das Body-Limit).
 const RATE_RULES: RateRule[] = [
   { prefix: '/api/giveaway/auth', limit: 10,  windowMs: 5 * 60_000 }, // OAuth-Spam bremsen
-  { prefix: '/giveaway/g/',       limit: 60,  windowMs: 60_000 },     // öffentliche Ergebnis-Seiten
+  { prefix: '/discord/giveaway-bot/g/', limit: 60, windowMs: 60_000 }, // public result pages
   // Bildergalerie: das Blättern wird gedeckelt, die Bilder selbst nicht. Die
   // liegen auf cdn.msk-scripts.de und laufen gar nicht durch diesen Prozess —
   // sie müssen offen bleiben, sonst kann ein FiveM-NUI sie nicht laden.
   // Gedeckelt wird also genau der teure Teil: wer den Bestand durchpaginieren
   // will, braucht pro Seite eine Datenbankabfrage. 120 pro Minute trifft im
   // Normalbetrieb niemanden, eine Suche löst höchstens eine Anfrage aus.
+  // (`/images` is `/tools/images` since the redesign.)
   // Die 120 auf `/images` waren zu eng und haben am 25.08.2026 einen normalen
   // Besucher ausgesperrt: das Raster zeigt 60 Kacheln, und Next holte fuer
   // jede sichtbare die Detailseite vor. Zwei Seitenaufrufe rissen das Limit,
@@ -53,7 +61,7 @@ const RATE_RULES: RateRule[] = [
   { prefix: '/api/images/upload/auth', limit: 10,  windowMs: 5 * 60_000 },
   { prefix: '/api/images/upload',      limit: 20,  windowMs: 60_000 },
   { prefix: '/api/images',        limit: 300, windowMs: 60_000 },
-  { prefix: '/images',            limit: 600, windowMs: 60_000 },
+  { prefix: '/tools/images',      limit: 600, windowMs: 60_000 },
   // Die drei Pflichtformulare (§ 356a BGB, § 312k BGB, Art. 16 DSA). Jede
   // Absendung schreibt eine Zeile und verschickt zwei Mails, das gehört
   // gedeckelt. Die Zahl ist aber bewusst hoch genug, dass sie niemanden
@@ -144,7 +152,23 @@ function sweep(now: number): void {
 // msk-shop's strict nonce CSP would break the bot's app.
 const BOT_DASHBOARD_HOST = (process.env.BOT_DASHBOARD_HOST || 'bot-dashboard.msk-scripts.de').toLowerCase()
 
-export function proxy(request: NextRequest) {
+// Product addresses the configured products do not know (lib/products.ts) are
+// checked once more against Tebex, so a script added there without a deploy
+// still has its page. Loaded at most once a minute, and only for such an
+// address: a configured product or an old id of one never waits for it.
+const liveProductIndex = createLiveIndexLoader(getPackages)
+
+/**
+ * The redirect target with the query string of the request. A target can
+ * bring a query of its own (`?variant=source` for an old Source package id);
+ * the request's parameters are added behind it.
+ */
+function redirectTarget(location: string, search: string): string {
+  if (!search) return location
+  return location.includes('?') ? `${location}&${search.slice(1)}` : `${location}${search}`
+}
+
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
   const now = Date.now()
 
@@ -175,8 +199,24 @@ export function proxy(request: NextRequest) {
     }
   }
 
+  // ── Language and address: what happens to this request ──────────────────────
+  // The whole policy lives in `resolveRequest` (lib/routes.ts) and is tested
+  // there: `/` redirects by cookie and Accept-Language, every page has exactly
+  // one address per language, and every other known form (an old address, the
+  // English words under /de) gets a 308 to it.
+  const context = {
+    cookie:         request.cookies.get(LANG_COOKIE)?.value,
+    acceptLanguage: request.headers.get('accept-language'),
+  }
+  let resolution = resolveRequest(pathname, context)
+  if (resolution.kind === 'page' && resolution.uncertain) {
+    const products = await liveProductIndex()
+    if (products) resolution = resolveRequest(pathname, { ...context, products })
+  }
+
   // ── Rate-Limiting (pro IP, pro Routen-Präfix) ───────────────────────────────
-  const rule = RATE_RULES.find((r) => pathname.startsWith(r.prefix))
+  const ratePath = resolution.kind === 'page' ? resolution.path : pathname
+  const rule = RATE_RULES.find((r) => ratePath.startsWith(r.prefix))
   if (rule) {
     const key = `${rule.prefix}:${clientIp(request)}`
     if (isRateLimited(key, rule.limit, rule.windowMs, now)) {
@@ -259,33 +299,57 @@ export function proxy(request: NextRequest) {
     requestHeaders.set('x-nonce', nonce)
     requestHeaders.set('Content-Security-Policy', csp)
   }
+  // Only this proxy decides that an address is unknown, never the client.
+  requestHeaders.delete(NOT_FOUND_HEADER)
 
-  // Sprache steckt im Pfad: Englisch auf der Wurzel, Deutsch unter /de/.
-  // `/de/pakete` wird intern auf `/pakete` umgeschrieben und die Sprache in
-  // einen Header gelegt. So gibt es den Routenbaum genau einmal, statt jede
-  // Seite doppelt anzulegen, und Server Components sehen beides.
+  // The language is in the path: every page lives under /en/ or /de/. The
+  // German address (`/de/rechtliches/agb`) is rewritten onto the folder
+  // (`/de/legal/terms`); the English one already is the folder. Language and
+  // internal path go to the Server Components as headers; the internal path is
+  // the basis for canonical, hreflang and the language switcher.
   //
-  // Der sprachlose Pfad ist ausserdem die Basis für Canonical, hreflang und
-  // den Sprachumschalter, der zur Gegenstück-URL navigiert.
-  //
-  // Ein Präfix vor einer Adresse, die es nur einmal gibt, ist keine
-  // Übersetzung, sondern ein zweiter Name für dieselbe Datei. Solche Anfragen
-  // werden nicht umgeschrieben und laufen damit ins 404, das ihnen zusteht:
-  // `/de/sitemap.xml` lieferte sonst dieselben 17 774 Bytes wie die Wurzel.
-  const roh = splitLangPath(pathname)
-  const { lang, path } = istEinmaligeAdresse(roh.path)
-    ? { lang: DEFAULT_LANG, path: pathname }
-    : roh
-
-  requestHeaders.set(LANG_HEADER, lang)
-  requestHeaders.set(PATH_HEADER, path)
-
-  const response = lang === 'en'
-    ? NextResponse.next({ request: { headers: requestHeaders } })
-    : NextResponse.rewrite(
-        new URL(`${path}${request.nextUrl.search}`, request.url),
-        { request: { headers: requestHeaders } },
-      )
+  // An address that exists only once (API, sitemap, OAuth callback) passes
+  // through untouched. With a prefix in front (`/de/sitemap.xml`) it is not a
+  // translation but a second name for the same file, and gets the 404 it
+  // deserves.
+  let response: NextResponse
+  if (resolution.kind === 'redirect') {
+    const target = new URL(redirectTarget(resolution.location, request.nextUrl.search), request.url)
+    response = NextResponse.redirect(target, resolution.status)
+    // `/` answers differently depending on the cookie and the browser language.
+    if (resolution.status === 307) response.headers.set('Vary', 'Cookie, Accept-Language')
+  } else if (resolution.kind === 'pass') {
+    requestHeaders.set(LANG_HEADER, DEFAULT_LANG)
+    requestHeaders.set(PATH_HEADER, pathname)
+    response = NextResponse.next({ request: { headers: requestHeaders } })
+  } else if (resolution.unknown) {
+    // An address the route table does not know. It is rendered by the
+    // catch-all `app/[lang]/(site)/[...rest]`, which shows the 404 page inside the
+    // shop layout when this header is set. The status comes from here: a
+    // thrown `notFound()` would give the right status too, but Next answers
+    // it with an empty error shell without `lang` and renders the page only
+    // in the browser (WCAG 3.1.1, and nothing for a crawler to read).
+    requestHeaders.set(LANG_HEADER, resolution.lang)
+    requestHeaders.set(PATH_HEADER, resolution.path)
+    requestHeaders.set(NOT_FOUND_HEADER, '1')
+    response = NextResponse.rewrite(
+      new URL(`${resolution.target}${request.nextUrl.search}`, request.url),
+      { request: { headers: requestHeaders }, status: 404 },
+    )
+  } else {
+    requestHeaders.set(LANG_HEADER, resolution.lang)
+    requestHeaders.set(PATH_HEADER, resolution.path)
+    response = resolution.target === pathname
+      ? NextResponse.next({ request: { headers: requestHeaders } })
+      : NextResponse.rewrite(
+          new URL(`${resolution.target}${request.nextUrl.search}`, request.url),
+          { request: { headers: requestHeaders } },
+        )
+    // No language cookie is set here. The language is in the address, and
+    // `msk_lang` is only written by the language switcher when a visitor
+    // chooses a language (components/i18n/LanguageDropdown.tsx). The privacy
+    // policy promises exactly that; tests/routes.test.ts guards it.
+  }
 
   // Response-Header — diese werden tatsächlich an den Browser geliefert.
   // Eine Prefetch-Antwort ist kein Dokument, sie trägt deshalb keine CSP:
@@ -307,6 +371,8 @@ export function proxy(request: NextRequest) {
 // Next.js bzw. Apache direkt aus und brauchen die Header-Pipeline nicht.
 // Nexts Router-Prefetches laufen bewusst MIT durch, sonst greift der
 // Sprach-Rewrite für sie nicht und `/de/<pfad>` prefetcht einen 404.
+// (Still true with the translated paths: `/de/rechtliches/agb` exists as a
+// route only after the rewrite onto `/de/legal/terms`.)
 // Begründung und Messung stehen oben in `proxy()` beim Nonce.
 //
 // `api/transcript/upload` ist BEWUSST ausgenommen: läuft der Proxy auf einer

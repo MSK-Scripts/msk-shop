@@ -16,7 +16,7 @@ Ein Datenschutzbeauftragter ist gesetzlich nicht erforderlich und nicht bestellt
 ## 2. Rollen: Wer ist wofür verantwortlich?
 
 - Für Website, Shop-Anbindung, Konten, Abonnements und den technischen Betrieb sind **wir** Verantwortlicher.
-- Für den **Inhalt von Ticket-Transkripten** und für die Daten, die ein von dir gehosteter oder von uns für dich gehosteter Ticket-Bot verarbeitet, ist der **Betreiber des jeweiligen Discord-Servers** Verantwortlicher. Wir speichern und liefern diese Daten in seinem Auftrag (Auftragsverarbeitung, Art. 28 DSGVO) – die Vereinbarung dazu findest du unter https://www.msk-scripts.de/de/terms/avv.
+- Für den **Inhalt von Ticket-Transkripten** und für die Daten, die ein von dir gehosteter oder von uns für dich gehosteter Ticket-Bot verarbeitet, ist der **Betreiber des jeweiligen Discord-Servers** Verantwortlicher. Wir speichern und liefern diese Daten in seinem Auftrag (Auftragsverarbeitung, Art. 28 DSGVO) – die Vereinbarung dazu findest du unter https://www.msk-scripts.de/de/rechtliches/avv.
 - Für den **Giveaway-Bot** sind wir Verantwortlicher für die in unserer Datenbank gespeicherten Discord-IDs; der Server-Administrator ist verantwortlich für die Rechtmäßigkeit seiner Gewinnspiele.
 - Für **Zahlungen im Shop** ist Tebex Limited eigenständig Verantwortlicher; für **Stripe-Zahlungen** ist Stripe eigenständig Verantwortlicher.
 
@@ -42,6 +42,7 @@ Wir setzen ausschließlich technisch notwendige Cookies und Speicherobjekte, die
 | `msk_upload_session` | Bildergalerie | Anmeldung für das Einreichen von Bildern | 7 Tage |
 | `msk_admin_oauth_state` | Admin-Bereich | CSRF-Schutz im Discord-Login | 10 Min. |
 | `msk_admin_session` | Admin-Bereich | Anmeldung im internen Admin-Bereich | 1 Std. |
+| `msk_lang` | Shop | nur wenn du die Sprache über den Umschalter wechselst: merkt sich diese Wahl, damit www.msk-scripts.de in ihr öffnet | 12 Monate |
 | `NEXT_LOCALE` | Paste, Shortener | Sprachwahl | 12 Monate |
 
 **localStorage (Shop, wird nicht an unseren Server gesendet):**
@@ -49,7 +50,7 @@ Wir setzen ausschließlich technisch notwendige Cookies und Speicherobjekte, die
 
 **sessionStorage (Shop):** `discordReturnPath`, `wantDiscordAuth`, `pendingBasketIdent`, `pendingPackageId`, `pendingPackageType` – merken den laufenden Kauf während des CFX.re-/Discord-Logins; gelöscht beim Schließen des Tabs.
 
-Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO (Login, Warenkorb) bzw. lit. f DSGVO (Sprache). Die Sprache der Hauptseite steckt in der URL (`/de/`), dafür wird kein Cookie gesetzt.
+Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO (Login, Warenkorb) bzw. lit. f DSGVO (Sprache). Die Sprache der Hauptseite steckt in der URL (`/en/`, `/de/`), dafür wird kein Cookie gesetzt. `msk_lang` entsteht nur, wenn du die Sprache selbst über den Umschalter wechselst.
 
 ## 5. Shop (Tebex, CFX.re, Discord)
 

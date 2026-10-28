@@ -1,12 +1,16 @@
 import { NextResponse }              from 'next/server';
 import { randomBytes, timingSafeEqual } from 'crypto';
 import { query, queryOne }           from '@/lib/db';
+import { DEFAULT_LANG }            from '@/lib/lang';
+import { publicPath }              from '@/lib/routes';
 
 // Receives the result of a finished giveaway from the bot and hosts a public
 // result page. Auth: Bearer GIVEAWAY_RESULT_SECRET (timing-safe).
 // Privacy: ONLY winners (username) + anonymous participant count.
 const SECRET = process.env.GIVEAWAY_RESULT_SECRET ?? '';
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://www.msk-scripts.de';
+// The bot posts the link into a Discord channel whose readers may speak
+// either language; English is the fallback the root uses as well.
 
 function authorized(req: Request): boolean {
   if (!SECRET) return false;
@@ -85,5 +89,5 @@ export async function POST(req: Request) {
     );
   }
 
-  return NextResponse.json({ success: true, url: `${BASE_URL}/giveaway/g/${token}` });
+  return NextResponse.json({ success: true, url: `${BASE_URL}${publicPath(DEFAULT_LANG, `/discord/giveaway-bot/g/${token}`)}` });
 }

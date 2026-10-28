@@ -27,27 +27,14 @@ const nextConfig = {
    * sitzt also ohnehin vor dem Build und nicht darin.
    */
 
-  /**
-   * Permanente Redirects für Alt-URLs, die Google noch kennt und die aktuell
-   * 404 liefern (nachgewiesen im Search-Console-Bericht „Nicht gefunden").
-   *
-   *  - `/package/:id`  und `/category/:id`: altes Singular-Schema
-   *  - `/verify`, `/dashboard`, `/stats`:   vor dem Routen-Umbau vom 2026-06-06
-   *                                         lagen die Ticket-Bot-Seiten auf der
-   *                                         obersten Ebene (siehe CLAUDE.md)
-   *
-   * `permanent: true` ergibt 308, damit Google die Zielseite übernimmt und die
-   * Alt-URL aus dem Index fällt.
+  /*
+   * The redirects for old addresses (`/package/:id`, `/category/:id`,
+   * `/verify`, `/dashboard`, `/stats`) lived here until the redesign of
+   * 27.10.2026. They are in `LEGACY_ROUTES` (lib/routes.ts) now, with every
+   * other old address: from there they reach the new address with its
+   * language in one hop instead of pointing at a second old one, and a test
+   * checks each of them.
    */
-  async redirects() {
-    return [
-      { source: '/package/:id',  destination: '/packages/:id',   permanent: true },
-      { source: '/category/:id', destination: '/categories/:id', permanent: true },
-      { source: '/verify',       destination: '/ticketbot/verify',    permanent: true },
-      { source: '/dashboard',    destination: '/ticketbot/dashboard', permanent: true },
-      { source: '/stats',        destination: '/ticketbot/stats',     permanent: true },
-    ]
-  },
 }
 
 module.exports = nextConfig

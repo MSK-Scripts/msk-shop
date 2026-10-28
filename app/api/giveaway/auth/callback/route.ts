@@ -6,9 +6,13 @@ import { canManageGuild }          from '@/lib/discordPermissions';
 import { fetchUserGuilds }         from '@/lib/discordGuilds';
 import type { RawGuild }           from '@/lib/discordGuilds';
 import { resolveManagerGuilds }    from '@/lib/giveawayManager';
+import { getPreferredLang } from '@/lib/serverLang'
+import { publicPath } from '@/lib/routes'
 
 export async function GET(req: Request) {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://www.msk-scripts.de';
+  // Back to the page in the language the visitor came from.
+  const lang = await getPreferredLang();
   const { searchParams } = new URL(req.url);
   const code  = searchParams.get('code');
   const state = searchParams.get('state');
@@ -17,7 +21,7 @@ export async function GET(req: Request) {
   const storedState = cookieStore.get('msk_gw_oauth_state')?.value;
 
   if (!code || !state || state !== storedState) {
-    return NextResponse.redirect(`${baseUrl}/giveaway/verify?error=invalid_state`);
+    return NextResponse.redirect(`${baseUrl}${publicPath(lang, '/dashboard/giveaway-bot/verify?error=invalid_state')}`);
   }
 
   // Exchange the code for an access token.
@@ -36,10 +40,10 @@ export async function GET(req: Request) {
     });
     tokenData = await tokenRes.json();
   } catch {
-    return NextResponse.redirect(`${baseUrl}/giveaway/verify?error=discord_token_failed`);
+    return NextResponse.redirect(`${baseUrl}${publicPath(lang, '/dashboard/giveaway-bot/verify?error=discord_token_failed')}`);
   }
   if (!tokenData.access_token) {
-    return NextResponse.redirect(`${baseUrl}/giveaway/verify?error=discord_token_failed`);
+    return NextResponse.redirect(`${baseUrl}${publicPath(lang, '/dashboard/giveaway-bot/verify?error=discord_token_failed')}`);
   }
 
   // Fetch the user id and the guild list in parallel. The guild list goes
@@ -55,18 +59,18 @@ export async function GET(req: Request) {
       fetchUserGuilds(tokenData.access_token),
     ]);
     if (!userRes.ok) {
-      return NextResponse.redirect(`${baseUrl}/giveaway/verify?error=discord_guilds_failed`);
+      return NextResponse.redirect(`${baseUrl}${publicPath(lang, '/dashboard/giveaway-bot/verify?error=discord_guilds_failed')}`);
     }
     const discordUser = await userRes.json();
     discordUserId     = discordUser?.id;
     rawGuilds         = userGuilds.guilds;
     guildsComplete    = userGuilds.complete;
   } catch {
-    return NextResponse.redirect(`${baseUrl}/giveaway/verify?error=discord_guilds_failed`);
+    return NextResponse.redirect(`${baseUrl}${publicPath(lang, '/dashboard/giveaway-bot/verify?error=discord_guilds_failed')}`);
   }
 
   if (!discordUserId || !guildsComplete) {
-    return NextResponse.redirect(`${baseUrl}/giveaway/verify?error=discord_guilds_failed`);
+    return NextResponse.redirect(`${baseUrl}${publicPath(lang, '/dashboard/giveaway-bot/verify?error=discord_guilds_failed')}`);
   }
 
   // Guilds the user may manage on Discord (owner, Administrator or Manage
@@ -111,7 +115,7 @@ export async function GET(req: Request) {
   // Short-lived intermediate session (guild selection only), with its own
   // cookie name and scope.
   const sessionToken = signGiveawayVerify({ discordUserId, guilds: adminGuilds });
-  const res = NextResponse.redirect(`${baseUrl}/giveaway/verify?step=select`);
+  const res = NextResponse.redirect(`${baseUrl}${publicPath(lang, '/dashboard/giveaway-bot/verify?step=select')}`);
   res.cookies.set('msk_gw_verify', sessionToken, {
     httpOnly: true,
     secure:   true,

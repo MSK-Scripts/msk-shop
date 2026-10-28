@@ -1,104 +1,38 @@
-import type { Lang } from '@/lib/i18n'
-
 /**
- * Facet counting for the package catalogue.
+ * The catalogue filter, as plain functions so the rules can be tested.
  *
- * This lives in lib/ rather than inside the browser component so the ordering
- * rules can be tested. The two orders are deliberately different: variant and
- * compatibility entries have no natural sequence, so the most common one goes
- * first and ties fall back to the alphabet. Prices do have a natural sequence,
- * and sorting them by frequency is what produced the live order
- * "10-20 EUR, under 10 EUR, 20-40 EUR" (found 2026-08-22).
+ * Since Phase 4 of the redesign there is one facet, the framework (plan 5.5):
+ * it is what a FiveM server owner chooses by. The variant and price facets
+ * went with the grouping into products, because every product carries both
+ * variants and a "from" price sorts nothing. The "works with" facet went too:
+ * those names are requirements now, listed on the product page.
  */
 
 export interface Facet {
   /** Stable value used for comparison. */
   value: string
-  /** How many packages carry it, before this facet's own filter is applied. */
+  /** How many products carry it. */
   count: number
 }
 
-/** Price bucket boundaries in EUR. Chosen from the actual catalogue spread. */
-export const PRICE_STEPS = [10, 20, 40] as const
-
-/**
- * Every bucket, cheapest first. This array is also the render order of the
- * price facet, so the boundaries and the order can never drift apart.
- */
-export const PRICE_BUCKETS = [
-  `<${PRICE_STEPS[0]}`,
-  `${PRICE_STEPS[0]}-${PRICE_STEPS[1]}`,
-  `${PRICE_STEPS[1]}-${PRICE_STEPS[2]}`,
-  `${PRICE_STEPS[2]}+`,
-] as const
-
-export function priceBucket(price: number): string {
-  if (price < PRICE_STEPS[0]) return PRICE_BUCKETS[0]
-  if (price < PRICE_STEPS[1]) return PRICE_BUCKETS[1]
-  if (price < PRICE_STEPS[2]) return PRICE_BUCKETS[2]
-  return PRICE_BUCKETS[3]
-}
-
-export function bucketLabel(bucket: string, lang: Lang): string {
-  const under = lang === 'de' ? 'unter' : 'under'
-  const from = lang === 'de' ? 'ab' : 'from'
-  if (bucket.startsWith('<')) return `${under} ${bucket.slice(1)} €`
-  if (bucket.endsWith('+')) return `${from} ${bucket.slice(0, -1)} €`
-  const [lo, hi] = bucket.split('-')
-  return `${lo}–${hi} €`
-}
-
-function tally<T>(items: T[], pick: (item: T) => string[]): Facet[] {
+/** Facet values with their counts: most common first, ties alphabetical. */
+export function countBy<T>(items: readonly T[], pick: (item: T) => string[]): Facet[] {
   const counts = new Map<string, number>()
   for (const item of items) {
-    for (const value of pick(item)) counts.set(value, (counts.get(value) ?? 0) + 1)
+    for (const value of new Set(pick(item))) counts.set(value, (counts.get(value) ?? 0) + 1)
   }
-  return [...counts.entries()].map(([value, count]) => ({ value, count }))
-}
-
-/** Facets without a natural order: most common first, then alphabetical. */
-export function countBy<T>(items: T[], pick: (item: T) => string[]): Facet[] {
-  return tally(items, pick).sort((a, b) => b.count - a.count || a.value.localeCompare(b.value))
-}
-
-/** The price facet, always cheapest first regardless of how many land where. */
-export function countPriceBuckets<T>(items: T[], priceOf: (item: T) => number): Facet[] {
-  const rank = (value: string) => {
-    const i = PRICE_BUCKETS.indexOf(value as (typeof PRICE_BUCKETS)[number])
-    // An unknown bucket cannot happen while priceBucket() is the only source,
-    // but sorting it to the end beats silently placing it first.
-    return i === -1 ? PRICE_BUCKETS.length : i
-  }
-  return tally(items, item => [priceBucket(priceOf(item))]).sort(
-    (a, b) => rank(a.value) - rank(b.value),
-  )
+  return [...counts.entries()]
+    .map(([value, count]) => ({ value, count }))
+    .sort((a, b) => b.count - a.count || a.value.localeCompare(b.value))
 }
 
 /**
- * Short groups always stay fully visible. Only above this size is a collapser
- * worth it, otherwise it hides two rows behind a third.
+ * Whether a product passes the framework filter. Several ticked frameworks
+ * mean "any of them": a server runs one framework, and someone who ticks two
+ * is comparing, not looking for a script that needs both. Nothing ticked
+ * lets everything through.
  */
-const COLLAPSE_FROM = 6
-
-/**
- * Separates the facets that actually narrow things down from their tail.
- *
- * Reason: "Works with" had eleven entries, eight of them with a count of 2.
- * In today's catalogue two means "exactly one product", because every script
- * sits on the shelf twice, encrypted and source. A checkbox like that narrows
- * nothing, it jumps to a single product that is already visible on the same
- * page anyway.
- *
- * The threshold therefore comes from the data and not from a fixed number:
- * everything that occurs as rarely as the rarest entry moves behind the
- * collapser. That also survives the planned merging of the pairs, after which
- * the counts halve. If all entries are equally common, there is no tail and the
- * group stays fully visible.
- */
-export function splitFacets(facets: Facet[]): { primary: Facet[]; rest: Facet[] } {
-  if (facets.length < COLLAPSE_FROM) return { primary: facets, rest: [] }
-  const rarest = Math.min(...facets.map(f => f.count))
-  const primary = facets.filter(f => f.count > rarest)
-  if (primary.length === 0) return { primary: facets, rest: [] }
-  return { primary, rest: facets.filter(f => f.count <= rarest) }
+export function matchesFrameworks(selected: ReadonlySet<string>, frameworks: readonly string[]): boolean {
+  if (selected.size === 0) return true
+  return frameworks.some(f => selected.has(f))
 }

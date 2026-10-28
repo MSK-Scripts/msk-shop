@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { adminRoute }   from '@/lib/adminApi';
 import { writeAudit }   from '@/lib/adminAudit';
+import { maskPersonalData } from '@/lib/adminMask';
 import { tebexPlugin }  from '@/lib/tebexPlugin';
 import { couponState, countCouponStates, isTrue } from '@/lib/couponStatus';
 
@@ -32,7 +33,8 @@ export const GET = adminRoute('coupons.manage', async () => {
     state:      couponState(c, now),
   }));
 
-  return NextResponse.json({ result: { coupons, counts: countCouponStates(all, now), truncated } });
+  // Note and buyer name are free text; an address in them leaves masked.
+  return NextResponse.json({ result: { coupons: maskPersonalData(coupons), counts: countCouponStates(all, now), truncated } });
 });
 
 // Create a simple coupon (cart-wide, or scoped to package/category ids).

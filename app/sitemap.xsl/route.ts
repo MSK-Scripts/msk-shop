@@ -10,6 +10,10 @@
  * is guaranteed to be `text/xsl`. With `X-Content-Type-Options: nosniff` in play
  * the browser refuses the transformation if the type is wrong, and
  * the sitemap would look the way it did before.
+ *
+ * The colours are literal copies of the dark theme tokens in
+ * `app/globals.css` (ground, card, text, muted text, hairline, green), since
+ * the stylesheet stands alone and cannot read them.
  */
 
 const XSL = `<?xml version="1.0" encoding="UTF-8"?>
@@ -29,32 +33,32 @@ const XSL = `<?xml version="1.0" encoding="UTF-8"?>
           :root { color-scheme: dark; }
           body {
             margin: 0; padding: 2rem 1.25rem;
-            background: #161a20; color: #e6edf3;
+            background: #18191b; color: #ececea;
             font-family: ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
             font-size: 14px; line-height: 1.5;
           }
           .wrap { max-width: 1100px; margin: 0 auto; }
           h1 { font-size: 1.5rem; margin: 0 0 .25rem; }
-          p.meta { margin: 0 0 1.75rem; color: #8b949e; }
-          p.meta strong { color: #60b02f; }
-          .scroll { overflow-x: auto; border: 1px solid #393f47; border-radius: 10px; }
+          p.meta { margin: 0 0 1.75rem; color: #a7a9ad; }
+          p.meta strong { color: #6dbb3d; }
+          .scroll { overflow-x: auto; border: 1px solid #313337; border-radius: 10px; }
           table { border-collapse: collapse; width: 100%; min-width: 640px; }
-          th, td { text-align: left; padding: .6rem .85rem; border-bottom: 1px solid #2b3037; }
+          th, td { text-align: left; padding: .6rem .85rem; border-bottom: 1px solid #26282b; }
           th {
-            position: sticky; top: 0; background: #1f242c; color: #8b949e;
+            position: sticky; top: 0; background: #212225; color: #a7a9ad;
             font-weight: 600; font-size: .75rem; letter-spacing: .04em; text-transform: uppercase;
           }
           tr:last-child td { border-bottom: 0; }
-          tr:hover td { background: #1f242c; }
-          td.num { color: #8b949e; width: 3rem; font-variant-numeric: tabular-nums; }
-          a { color: #60b02f; text-decoration: none; }
+          tr:hover td { background: #212225; }
+          td.num { color: #a7a9ad; width: 3rem; font-variant-numeric: tabular-nums; }
+          a { color: #6dbb3d; text-decoration: none; }
           a:hover { text-decoration: underline; }
           td.date, td.langs {
             font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-            font-size: .8rem; color: #8b949e; white-space: nowrap;
+            font-size: .8rem; color: #a7a9ad; white-space: nowrap;
           }
-          .none { color: #7c848d; }
-          footer { margin-top: 1.5rem; color: #8b949e; font-size: .8rem; }
+          .none { color: #a7a9ad; }
+          footer { margin-top: 1.5rem; color: #a7a9ad; font-size: .8rem; }
         </style>
       </head>
       <body>

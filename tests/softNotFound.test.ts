@@ -33,10 +33,10 @@ const callsNotFound = (file: string) => /\bnotFound\(\)/.test(readFileSync(file,
 
 describe('loading.tsx and notFound()', () => {
   it('finds the pages that call notFound(), so the check below cannot pass on an empty list', () => {
-    const pages = files.filter(isPage).filter(callsNotFound).map(file => relative(APP, file))
+    const pages = files.filter(isPage).filter(callsNotFound).map(file => relative(APP, file).split(sep).join('/'))
 
-    expect(pages.some(page => page.startsWith('packages'))).toBe(true)
-    expect(pages.some(page => page.startsWith('categories'))).toBe(true)
+    expect(pages).toContain('[lang]/(site)/fivem/[slug]/page.tsx')
+    expect(pages).toContain('[lang]/(site)/fivem/categories/[id]/page.tsx')
   })
 
   it('has no loading.tsx at or above a page that calls notFound()', () => {

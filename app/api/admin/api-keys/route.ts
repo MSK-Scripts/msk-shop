@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { adminRoute }        from '@/lib/adminApi';
+import { maskApiKey }        from '@/lib/adminMask';
 import { query }             from '@/lib/db';
 import type { KeyOrigin }    from '@/lib/keyClassification';
 import type { Tier }         from '@/lib/tiers';
@@ -35,7 +36,9 @@ export const GET = adminRoute(['api_key.view', 'api_key.change'], async () => {
   const keys = rows.map(r => ({
     guildId:      r.guild_id,
     guildName:    r.guild_name,
-    apiKey:       r.api_key,
+    // Shortened here, not in the browser: the full key is a reveal per row
+    // (/api/admin/reveal), recorded in the audit log like every other.
+    apiKey:       maskApiKey(r.api_key),
     tier:         r.tier,
     customDomain: r.domain_status === 'active' ? r.custom_domain : null,
     domainStatus: r.domain_status,
@@ -48,7 +51,7 @@ export const GET = adminRoute(['api_key.view', 'api_key.change'], async () => {
     keyOrigin:     r.key_origin,
   }));
 
-  // Response carries raw guild API keys → never let any cache (even a private
-  // browser cache on a shared machine) persist it.
+  // Guild names and domains of customers → never let any cache (even a
+  // private browser cache on a shared machine) persist it.
   return NextResponse.json({ keys }, { headers: { 'Cache-Control': 'no-store' } });
 });

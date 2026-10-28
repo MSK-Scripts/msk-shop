@@ -8,6 +8,7 @@ import {
   RESOURCE_STATS_PERIOD_HOURS,
   type ResourceStatEntry,
 } from '@/content/resource-stats'
+import { productHrefForPackage } from '@/lib/products'
 
 // ─────────────────────────────────────────────────────────────
 //  fivestats.io API client (SERVER-ONLY)
@@ -91,8 +92,9 @@ function num(v: unknown): number {
 function buildLinks(entry: ResourceStatEntry): ResourceLink[] {
   if (entry.tier === 'paid' && entry.packages) {
     return [
-      { label: 'Encrypted', href: `/packages/${entry.packages.encrypted}`, external: false, variant: 'primary' },
-      { label: 'Source',    href: `/packages/${entry.packages.source}`,    external: false, variant: 'secondary' },
+      // Both lead to the one product page, with the variant chosen.
+      { label: 'Encrypted', href: productHrefForPackage(entry.packages.encrypted) ?? '/fivem', external: false, variant: 'primary' },
+      { label: 'Source',    href: productHrefForPackage(entry.packages.source) ?? '/fivem',    external: false, variant: 'secondary' },
     ]
   }
   if (entry.github) {

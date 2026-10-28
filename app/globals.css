@@ -1,162 +1,138 @@
 @import "tailwindcss";
 
-/* Dark-Mode via class-Variant — wird vom ThemeProvider (next-themes) gesetzt */
+/* Dark mode as a class variant, set by the ThemeProvider (next-themes). */
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ============================================================================
-   MSK Shop — Design-Tokens (Tailwind v4 CSS-First Config)
+   MSK Shop design tokens (Tailwind v4, CSS-first)
    ============================================================================
-   Light-Mode-Tokens sind Default; .dark-Scope (siehe @layer base) überschreibt sie.
-   Inspiriert von GitHub-Dark im Dark-Mode + MSK-Grün als Brand-Accent.
+   Light tokens are the default; the .dark scope (see @layer base) overrides
+   them. Neutral anthracite for ground and bands, MSK green as the visible
+   brand colour. DESIGN.md describes every token, its role and the fixed
+   places of green; tests/contrast.test.ts recomputes the pairs.
    ============================================================================ */
 @theme {
-  /* Breakpoints above Tailwind's built-in 2xl (96rem / 1536 px). Declared here
-     so they work as `3xl:` / `4xl:` variants in markup, not only as raw media
-     queries. Measured on 2026-09-20: below 1920 px the page already fills the
-     viewport edge to edge, so nothing here can affect a phone or a laptop.
-     That is the point - every rule above 1920 px is unreachable further down,
-     which makes "mobile stays untouched" a property of the tooling rather than
-     a claim that has to be re-tested. */
-  --breakpoint-3xl: 120rem;
-  --breakpoint-4xl: 160rem;
+  /* Type, loaded locally through @fontsource-variable. Archivo for headings
+     and product names (with its width axis), Source Sans 3 for everything
+     else, and no web font for code: the system monospace is enough there. */
+  --font-sans: "Source Sans 3 Variable", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Archivo Variable", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Mono", "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
 
-  /* Typografie — 100% lokal über @fontsource-variable */
-  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-mono: "JetBrains Mono Variable", ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+  /* Fluid type scale. The minimum is the phone size, the size grows with the
+     window and stops at the UWQHD value. Every maximum is at most 2.5 times
+     its minimum, so browser zoom still reaches 200 % (WCAG 1.4.4). */
+  --text-display: clamp(2.25rem, 1.2rem + 2.4vw, 5rem);
+  --text-display--line-height: 1.06;
+  --text-h2: clamp(1.75rem, 1.2rem + 1.1vw, 3rem);
+  --text-h2--line-height: 1.15;
+  --text-h3: clamp(1.25rem, 1.05rem + 0.45vw, 1.75rem);
+  --text-h3--line-height: 1.25;
+  --text-product: clamp(1.375rem, 1.1rem + 0.55vw, 2rem);
+  --text-product--line-height: 1.15;
+  --text-lead: clamp(1.1875rem, 1rem + 0.35vw, 1.5rem);
+  --text-lead--line-height: 1.55;
+  --text-body: clamp(1.0625rem, 0.9rem + 0.2vw, 1.25rem);
+  --text-body--line-height: 1.6;
+  --text-small: clamp(0.9375rem, 0.85rem + 0.12vw, 1.0625rem);
+  --text-small--line-height: 1.5;
+  --text-label: clamp(0.8125rem, 0.75rem + 0.08vw, 0.9375rem);
+  --text-label--line-height: 1.4;
 
-  /* Farben — Light-Mode (Default)
-     Die Werte hier sind auf WCAG AA gerechnet, nicht nach Augenmaß gewählt.
-     `tests/contrast.test.ts` liest sie aus dieser Datei und rechnet jedes Paar
-     nach, eine Änderung ohne Gegenrechnung fällt dort auf.
-
-     Die Neutralen liegen seit dem 23.08.2026 eine Stufe tiefer: der Grund war
-     reines Weiß und damit heller als jede Fläche darauf, es gab also nichts,
-     wovon sich eine Karte hätte abheben können. Jetzt trägt die Seite einen
-     Ton (L 0,964), die Karte sitzt mit L 0,985 darüber. Verschoben wurde
-     ausschließlich die Helligkeit, Farbton und Buntheit der Zink-Achse
-     bleiben, damit der Charakter des Themes derselbe ist. */
-  --color-background:         #f3f3f4;
-  --color-foreground:         #0a0a0a;
-  --color-muted:              #e8e8e9;
-  /* 4,64:1 auf --color-muted, 5,13:1 auf dem Grund. Musste mit den Flächen
-     mitwandern: auf dem tieferen --color-muted lag der Vorgänger #6b6b74 nur
-     noch bei 4,25:1. */
-  --color-muted-foreground:   #66666f;
-  --color-border:             #d6d6d9;
-  --color-input:              #d6d6d9;
+  /* Colours, light theme (default). Computed for WCAG AA, not chosen by eye:
+     tests/contrast.test.ts reads them from this file and recomputes every
+     pair, so a value changed without recomputing fails there. The ground
+     carries a tone (L 0.964) so that the white card has something to stand
+     out from. */
+  --color-background:         #f6f6f4;
+  --color-foreground:         #1c1d1f;
+  --color-muted:              #ededea;
+  /* 5.64:1 on --color-muted, 6.12:1 on the ground, 6.62:1 on a card. */
+  --color-muted-foreground:   #5a5d61;
+  --color-border:             #dcdcd8;
+  /* Border of form controls. Unlike --color-border it must reach 3:1 against
+     what surrounds it (WCAG 1.4.11): 3.61:1 on a card, 3.33:1 on the ground. */
+  --color-input:              #84878b;
   --color-ring:               #27762e;
-  --color-card:               #fafafb;
-  --color-card-foreground:    #0a0a0a;
+  --color-card:               #ffffff;
+  --color-card-foreground:    #1c1d1f;
 
-  /* Brand: MSK-Grün — beide Werte sind echte Pixelfarben aus `public/logo.png`
+  /* MSK green. `public/logo.png` is a gradient in which hue and chroma
+     follow the lightness (H 150.1 / C 0.076 at L 0.31, H 136.4 / C 0.179 at
+     L 0.69), so a green from the logo is a ramp, not one value: each green
+     takes the lightness its role needs for AA, the hue and chroma the logo
+     carries there, and is snapped to a pixel colour the logo contains.
+     #27762e occurs 1693 times in it.
 
-     Das Logo ist ein Verlauf, kein Flächenlogo, und Farbton wie Buntheit
-     hängen darin an der Helligkeit: bei L 0,31 misst es H 150,1° / C 0,076,
-     bei L 0,69 dann H 136,4° / C 0,179. Ein Grün „aus dem Logo" ist deshalb
-     nicht ein Wert, sondern eine Rampe. Jedes Grün hier bekommt die
-     Helligkeit, die seine Rolle für AA braucht, und dazu Farbton und Buntheit,
-     die das Logo bei genau dieser Helligkeit trägt. Anschließend wird auf die
-     nächstgelegene tatsächlich im Logo vorkommende Pixelfarbe geschnappt.
-
-     --color-primary  #27762e  kommt 1693-mal im Logo vor
-     --color-accent   #60b02f  kommt 1361-mal vor, das hellste gesättigte Grün
-
-     primary trägt beide Rollen: Füllung mit weißem Label (5,65:1) und grüne
-     Textfarbe (5,09:1 auf dem Grund, 4,61:1 auf --color-muted, 5,42:1 auf der
-     Karte). Der Vorgänger #3a7d1c lag auf dem tieferen --color-muted bei
-     4,14:1 und damit unter AA. */
+     primary carries both roles: fill with a white label (5.65:1) and green
+     text (5.22:1 on the ground, 4.81:1 on --color-muted, 5.65:1 on a card). */
   --color-primary:            #27762e;
   --color-primary-foreground: #ffffff;
-  /* Fläche, nicht Text: als Textfarbe misst dieses Grün auf der Karte 2,54:1,
-     und als kleiner Statuspunkt verfehlt es dort die 3:1 für Nicht-Text. Genau
-     das stand bis zum 23.08.2026 im BotConfigEditor. Wer eine grüne Schrift
-     oder einen grünen Punkt braucht, nimmt --color-primary.
-     Damit hat --color-accent derzeit keinen Konsumenten mehr; das Token bleibt,
-     weil DESIGN.md die zweite Grünstufe führt, gerendert wird es nicht. */
-  --color-accent:             #60b02f;
-  --color-accent-foreground:  #0a0a0a;
-  --color-secondary:          #e8e8e9;
-  --color-secondary-foreground: #18181b;
+  --color-primary-hover:      #1d5e23;   /* white label 7.84:1 */
+  /* Soft green behind selected or highlighted things: a chosen variant,
+     table heads, framework tags. Text 14.57:1, muted text 5.71:1, green
+     text 4.88:1 on it. */
+  --color-accent-soft:        #e8f1e4;
+  /* Grey fill of the secondary button, beside a primary one where both are
+     a real choice (the two variants on the resource statistics). */
+  --color-secondary:          #ededea;
+  --color-secondary-foreground: #1c1d1f;
 
-  /* Funktional — jeweils so tief, dass weißer Text auf der Füllung AA erreicht.
-     Zwei mussten mit --color-muted nachziehen: auf der tieferen Kachel fiel
-     warning auf 4,35:1 und primary auf 4,14:1. */
-  /* --color-success ist deckungsgleich mit --color-primary, und das ist kein Versehen: die Rampe
-     des Logos hat bei einer Helligkeit genau ein Grün, und beide Rollen
-     brauchen dieselbe. Der Vorgänger #157f3b lag mit H 149,6° zwar auf der
-     Logo-Achse, aber an einer Helligkeit, an der das Logo 144,6° trägt.
-     Sichtbar ändert das nichts, `--color-success` wird derzeit nirgends
-     gerendert. Bekommt es je eine Aufgabe, braucht es eine eigene Stufe. */
+  /* Anthracite band (hero, dark sections) and the MSK green band before the
+     footer. Both keep their colours in the dark theme, so they are defined
+     once here. Measured: band text 13.19:1, muted 6.79:1, green on the band
+     6.69:1, dark label on the band green 8.24:1; on the green band white
+     5.65:1, muted 5.00:1, the white button with --color-primary-hover 7.84:1. */
+  --color-band:                    #26282b;
+  --color-band-foreground:         #f2f2f0;
+  --color-band-muted:              #adb0b4;
+  --color-band-line:               #3b3e42;
+  --color-band-accent:             #7cc04b;
+  --color-band-accent-foreground:  #101710;
+  --color-brand:                   #27762e;
+  --color-brand-foreground:        #ffffff;
+  --color-brand-muted:             #eaf4e6;
+  /* The white button in the green band. Its label keeps the dark green in
+     both themes: --color-primary-hover turns light green in the dark theme
+     and would measure 1.9:1 on white there. 7.84:1 on white, 7.24:1 on the
+     hover fill (--color-brand-muted). */
+  --color-brand-button:            #ffffff;
+  --color-brand-button-foreground: #1d5e23;
+
+  /* Status colours of the dashboards, used as text, sign and border on the
+     ground, a card or the tile, never as a fill under text. danger is also
+     the fill of the destructive button, so it keeps a label colour.
+     success is the same value as primary on purpose: the logo ramp has one
+     green at that lightness, and both roles need it. */
   --color-success:            #27762e;
-  --color-success-foreground: #ffffff;
-  --color-warning:            #9f5300;   /* auf dem tieferen --color-muted lag
-                                            der Vorgänger #a45709 bei 4,35:1 */
-  --color-warning-foreground: #ffffff;
-  --color-danger:             #c81e1e;   /* 4,66:1 auf der Kachel */
+  --color-warning:            #8f4e08;   /* 5.49:1 on the tile, 6.44:1 on a card */
+  --color-danger:             #b3261e;   /* 5.57:1 on the tile, 6.54:1 on a card */
   --color-danger-foreground:  #ffffff;
-  --color-info:               #0369a1;   /* 5,20:1 auf der Kachel */
-  --color-info-foreground:    #ffffff;
-  /* Zwei Tokens, weil die Marke zwei Rollen trägt: als Fläche muss sie dunkel
-     genug für weiße Beschriftung sein, als Textfarbe hell genug für den dunklen
-     Grund. Ein einziger Wert kann beides nicht erfüllen. */
-  --color-discord:            #5865F2;   /* Fläche, Weiß darauf 4,61:1 */
-  --color-discord-text:       #525dea;   /* Text, im Dark-Mode überschrieben */
+  --color-info:               #0b5d94;   /* 5.95:1 on the tile, 6.98:1 on a card */
+  /* Discord blurple, the fill of Discord actions with a white label (4.61:1)
+     and the colour of the Discord mark beside them. */
+  --color-discord:            #5865F2;
 
-  /* Ökosystem-Badges (ESX, QBCore, Lua, …)
-     DESIGN.md lässt diese Fremdfarben ausdrücklich zu, weil ein Käufer nach
-     ihnen scannt. Genau deshalb müssen sie lesbar sein, und im Light-Theme
-     waren sie es nicht: die rohen Tailwind-Paletten lagen zwischen 1,46:1
-     (js) und 3,20:1 (sale) auf der getönten Badgefläche.
-
-     Sie standen als Tailwind-Klassen in `components/ui/Badge.tsx` und waren
-     damit für `tests/contrast.test.ts` unsichtbar, der ausschließlich
-     `--color-*` aus dieser Datei liest. Die Regel galt also nur auf dem Papier.
-
-     Die Werte sind gerechnet, nicht geschätzt: Farbton und Buntheit bleiben,
-     nur die Helligkeit wandert so weit, bis der Text auf seiner eigenen
-     12-%-Fläche 4,6:1 erreicht, also mit
-     etwas Abstand zur AA-Grenze von 4,5. Die Marke bleibt erkennbar, ESX ist weiterhin
-     orange. */
-  /* Vierte Farbe der Aufteilungsdiagramme auf den beiden Statistikseiten.
-     Die ersten drei Stufen sind `primary`, `warning` und `info`, die es
-     ohnehin gibt. Nur fuer diese eine fehlte eine, und rohe
-     Tailwind-Klassen taugten nicht: `rose-400` misst im hellen Theme
-     2,45:1 als Text auf der Kachel. */
+  /* Extra colours of the breakdown charts on the two statistics pages, after
+     primary, warning and info. Hue and chroma chosen, then the lightness
+     moved until the label reaches 4.6:1 on the tile it sits on. */
   --color-chart-rose:     #be123c;
-
-  /* Stufen fuenf bis sieben, dazugekommen mit Ungarisch, Polnisch und
-     Portugiesisch in der Sprachaufteilung der Giveaway-Statistik. Gleiches
-     Verfahren wie bei `chart-rose`: Farbton und Buntheit gewaehlt, dann die
-     Helligkeit gewandert, bis der Text auf seiner eigenen Kachel 4,6:1
-     erreicht. */
   --color-chart-violet:   #932cdd;
   --color-chart-teal:     #09716e;
   --color-chart-fuchsia:  #af1dab;
 
-  /* Tier-Badge Hosted (DB-Wert premium_plus) im Ticketbot-Dashboard. Stand bis zum 24.08.2026 als
-     hartverdrahtetes #9d65fe in der Komponente und war damit die einzige Farbe
-     der Anwendung, die `tests/contrast.test.ts` nicht sehen konnte: der Test
-     liest nur `--color-*` aus dieser Datei. Gemessen lag sie als Text auf ihrer
-     eigenen 10-%-Fläche bei 3,15:1 (hell) und 3,78:1 (dunkel), also in beiden
-     Themes unter AA, direkt neben `premium`, das über --color-primary läuft und
-     besteht. Farbton und Buntheit sind unverändert, nur die Helligkeit ist bis
-     4,6:1 gewandert. */
-  --color-tier-plus:      #8044dc;
-
-  /* Tier-Badge Business. Bernstein, damit es sich von premium (gruen) und
-     premium_plus (violett) auf einen Blick unterscheidet. Wie tier-plus gegen
-     die eigene 10-%-Flaeche gemessen: 4,87:1 hell, 5,77:1 dunkel. */
+  /* The Business tier in the ticket bot statistics. Amber, so it reads apart
+     from premium (green) and hosted (warning) at a glance. */
   --color-tier-business:  #7d6200;
 
-  /* Live-Log-Konsole des gehosteten Bots. Die Fläche ist in **beiden** Themes
-     dunkel, wie bei einem Terminal, und die Zeilenfarben sind gegen genau diese
-     Fläche gewählt. Sie ist der einzige verbliebene Ort für #0d1117, seit der
-     dunkle Grund eine Stufe höher liegt — die Konsole hebt sich damit jetzt
-     auch im Dark-Mode vom Grund ab, statt mit ihm zu verschmelzen. Vorher stand die Konsole auf `--color-background`, im
-     hellen Theme also auf Weiß, und dort misst die normale Zeile 1,48:1: das
-     gesamte Log war unlesbar. Auf der dunklen Fläche liegen alle sieben
-     zwischen 6,8:1 und 12,8:1. */
-  --color-console:        #0d1117;
+  /* Sale price beside the struck-through regular price. */
+  --color-sale:           #c90000;
+
+  /* Live log console of the hosted bot. The surface is dark in both themes,
+     like a terminal, and the line colours are chosen against exactly this
+     surface: all six lie between 6.8:1 and 12.8:1. Anthracite rather than
+     the GitHub dark #0d1117, which the redesign rules out. */
+  --color-console:        #141517;
   --color-log-text:       #d4d4d8;
   --color-log-dim:        #a1a1aa;
   --color-log-error:      #f87171;
@@ -164,103 +140,64 @@
   --color-log-ok:         #7ada44;
   --color-log-info:       #38bdf8;
 
-  --color-badge-esx:      #a84b00;
-  --color-badge-qb:       #8845c2;
-  --color-badge-lua:      #0f66be;
-  --color-badge-js:       #8d5d00;
-  --color-badge-ts:       #246aa9;
-  --color-badge-py:       #006ba9;
-  --color-badge-discord:  #5559cd;
-  --color-badge-fivem:    #b04200;
-  --color-badge-sale:     #c90000;
-
-  /* Radien */
+  /* Radii: 6 px for controls (rounded-md), 10 px for cards (rounded-lg). */
   --radius-sm: 0.25rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.625rem;
   --radius-xl: 1rem;
 
-  /* Schatten */
+  /* Shadows: a seam at rest, a lift on hover. */
   --shadow-card:       0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-card-hover: 0 8px 24px -8px rgb(0 0 0 / 0.12);
 
-  /* Animationen */
+  /* Animations */
   --animate-fade-in:    fadeIn 0.2s ease-out;
-  --animate-slide-up:   slideUp 0.3s ease-out;
-  --animate-slide-down: slideDown 0.3s ease-out;
   --animate-pulse-dot:  pulseDot 2s ease-in-out infinite;
 }
 
 /* ============================================================================
-   Dark-Mode-Tokens — GitHub-Dark inspiriert + MSK-Grün
+   Dark tokens: anthracite, its own palette rather than an inversion
    ============================================================================
-   Die Flächen liegen seit dem 23.08.2026 eine Stufe höher (Grund L 0,176 →
-   0,216, Karte 0,220 → 0,259, Rahmen 0,330 → 0,365). Verschoben wurde nur die
-   Helligkeit; Farbton und Buntheit der GitHub-Dark-Achse bleiben, damit das
-   Theme sich nicht anders anfühlt, sondern nur weniger schwarz.
+   The tile (--color-muted) sits below the ground here and the card above it,
+   so both still read as separate layers. The bands keep their light-theme
+   values, they are anthracite and green in both themes.
    ============================================================================ */
 @layer base {
   .dark {
-    --color-background:         #161a20;
-    --color-foreground:         #e6edf3;
-    --color-muted:              #1f242c;
-    --color-muted-foreground:   #8b949e;
-    --color-border:             #393f47;
-    --color-input:              #393f47;
-    --color-ring:               #60b02f;
-    --color-card:               #1f242c;
-    --color-card-foreground:    #e6edf3;
+    --color-background:         #18191b;
+    --color-foreground:         #ececea;
+    --color-muted:              #111214;
+    --color-muted-foreground:   #a7a9ad;
+    --color-border:             #313337;
+    --color-input:              #6d7075;   /* 3.20:1 on a card, 3.54:1 on the ground */
+    --color-ring:               #6dbb3d;
+    --color-card:               #212225;
+    --color-card-foreground:    #ececea;
 
-    /* Dieselbe Logo-Pixelfarbe wie --color-accent im Light-Theme: das hellste
-       gesättigte Grün des Logos, hier als Textfarbe (6,44:1 auf dem Grund,
-       5,75:1 auf der Karte). */
-    --color-primary:            #60b02f;
-    /* Dunkler Text auf hellem Grün: 6,44:1. Weiß darauf wären 2,71:1, das
-       MSK-Grün ist im Dark-Mode zu hell, um Weiß zu tragen. Der Wert ist der
-       neue Grund, nicht mehr #0d1117 — das ist jetzt nur noch die Konsole. */
-    --color-primary-foreground: #161a20;
-    /* Heller als das Logo selbst wird (L 0,833 gegen dessen Maximum 0,688),
-       deshalb keine Pixelfarbe, sondern dessen hellster Farbton mit
-       fortgeschriebener Buntheit. Nur Fläche, dunkles Label darauf: 11,11:1. */
-    --color-accent:             #82e649;
-    --color-accent-foreground:  #161a20;
-    --color-secondary:          #2b3037;
-    --color-secondary-foreground: #e6edf3;
+    /* Green as text: 7.64:1 on the ground, 6.99:1 on a card. White on it
+       would be too weak, so the label is dark (7.79:1). */
+    --color-primary:            #6dbb3d;
+    --color-primary-foreground: #0e150e;
+    --color-primary-hover:      #86cc58;
+    --color-accent-soft:        #1d2a1f;
+    --color-secondary:          #2a2b2e;
+    --color-secondary-foreground: #ececea;
 
-    /* Im Dark-Mode sind die Funktionsfarben hell. Ihre Beschriftung muss
-       deshalb dunkel sein, sonst erben sie das weiße Label aus dem Light-Block
-       und landen bei 2,1 bis 2,8:1. */
-    --color-danger:             #f87171;
-    --color-danger-foreground:  #161a20;
-    --color-success:            #7ada44;
-    --color-success-foreground: #161a20;
-    --color-info:               #38bdf8;
-    --color-info-foreground:    #161a20;
-    /* Muss hier stehen, sonst erbt Dark das für Weiß abgedunkelte Light-Orange
-       und wird auf dem dunklen Grund unlesbar. */
-    --color-warning:            #f59e0b;
-    --color-warning-foreground: #161a20;
-    /* 5,49:1 auf dem aufgehellten Grund. Die Flächenfarbe bleibt unverändert. */
-    --color-discord-text:       #7d86f5;
+    /* The status colours are light here. The destructive button therefore
+       needs a dark label, or it would inherit the white one and land near
+       2.5:1. */
+    --color-danger:             #f28b80;
+    --color-danger-foreground:  #18191b;
+    --color-success:            #6dbb3d;
+    --color-info:               #72b6e6;
+    --color-warning:            #e2a457;
 
-    /* Auf dem dunklen Grund tragen die Markenfarben selbst. Einzige Ausnahme
-       ist `sale`: #fb2c36 kam dort auf 4,13:1 und musste aufgehellt werden. */
     --color-chart-rose:     #fb7185;
     --color-chart-violet:   #b56ee7;
     --color-chart-teal:     #0d9c97;
     --color-chart-fuchsia:  #e24bdd;
-    --color-tier-plus:      #b27cff;
     --color-tier-business:  #d9a400;
-
-    --color-badge-esx:      #F7941D;
-    --color-badge-qb:       #c07eff;
-    --color-badge-lua:      #54a2ff;
-    --color-badge-js:       #fac800;
-    --color-badge-ts:       #5ca0e4;
-    --color-badge-py:       #00bcfe;
-    --color-badge-discord:  #8691ff;
-    --color-badge-fivem:    #ff8b1a;
-    --color-badge-sale:     #ff6663;
+    --color-sale:           #ff6663;
 
     --shadow-card:       0 1px 2px 0 rgb(0 0 0 / 0.4);
     --shadow-card-hover: 0 12px 32px -8px rgb(0 0 0 / 0.6);
@@ -272,19 +209,11 @@
 
   html {
     scroll-behavior: smooth;
-    /* Die Kopfzeile klebt mit 65 px (h-16 plus Rahmen) und z-index 50. Ohne
-       diese Zeile kann ein Element, zu dem der Browser selbst scrollt, darunter
-       liegen — WCAG 2.2 SC 2.4.11 (Focus Not Obscured).
-
-       Im Audit vom 24.08.2026 wurde kein Verstoss beobachtet, der Nachweis war
-       aber unvollstaendig: `element.focus()` scrollt anders als eine echte
-       Tabulatorfolge. Das hier ist die Absicherung, nicht die Behebung eines
-       bekannten Fehlers.
-
-       `:target` traegt weiter unten schon `scroll-margin-top: 5rem`. Das gilt
-       nur fuer Ankersprünge; diese Zeile deckt zusaetzlich das Scrollen beim
-       Fokuswechsel ab. */
-    scroll-padding-top: 4.5rem;
+    /* The header sticks at the top with z-index 50: --header-height plus its
+       4 px stripe and 1 px border. Without this an element the browser
+       scrolls to on focus can end up below it (WCAG 2.2 SC 2.4.11, Focus Not
+       Obscured). `:target` below covers jumps to an anchor. */
+    scroll-padding-top: calc(var(--header-height) + 1rem);
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
   }
@@ -293,6 +222,8 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -304,14 +235,26 @@
     color: var(--color-foreground);
   }
 
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    text-wrap: balance;
+  }
+
   :focus-visible {
-    outline: 2px solid var(--color-ring);
+    outline: 3px solid var(--color-ring);
     outline-offset: 2px;
     border-radius: var(--radius-sm);
   }
 
   :target {
     scroll-margin-top: 5rem;
+  }
+
+  /* The page behind an open modal <dialog> (components/ui/Dialog.tsx) stops
+     scrolling. A stylesheet rule instead of a script that sets inline styles,
+     so the nonce CSP has nothing to block. */
+  html:has(dialog[open]:modal) {
+    overflow: hidden;
   }
 }
 
@@ -322,134 +265,75 @@
   from { opacity: 0; }
   to   { opacity: 1; }
 }
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
 @keyframes pulseDot {
   0%, 100% { opacity: 1; transform: scale(1); }
   50%      { opacity: 0.5; transform: scale(0.85); }
 }
 
 /* ----------------------------------------------------------------------------
-   Card grid minimums
+   Layout tokens
    ----------------------------------------------------------------------------
-   Every card grid on the site is `repeat(auto-fill|auto-fit, minmax(min(100%,
-   X), 1fr))`. That is already fluid, but the minimum was a constant, and a
-   constant minimum means a wider window buys more columns rather than bigger
-   cards. Measured on 2026-09-20 on /packages: 4 columns of 362 px at 1920,
-   7 columns of 335 px at 3440. The cards got *smaller* the more room there was.
+   Column, gutter, card minimum and rhythm grow with the window through
+   clamp() instead of stepping at breakpoints. Page column and gutter grow
+   together, so header, content and footer share one edge at every width;
+   from 1440 px about 16 percent of the window stays unused.
 
-   Staggering the minimum turns the extra width into card size first and column
-   count second.
-
-   Two rules the numbers have to satisfy, both verified by measurement rather
-   than reasoning - the first draft broke the second one:
-
-   1. No card is ever narrower than it is at 1920 px.
-   2. No step ever costs a column. A first attempt used 380px at 1920 and
-      /packages dropped from 4 columns to 3 right at the breakpoint, so a wider
-      window showed *fewer* products. 340px keeps the 4 columns and grows them
-      from 362 px to 380 px, which is what was wanted.
-
-   `--grid-card-wide` exists because the resources page starts at 340px (its
-   cards carry a sparkline beside the figures). It only needs its own value
-   below 2560 px; above that both land on the same width. */
+   Every card grid is `repeat(auto-fill|auto-fit, minmax(min(100%,
+   var(--grid-card)), 1fr))`. The minimum grows too (351 px at 1440, 381 at
+   1920, 421 at 2560, 477 at 3440), so a wider window buys bigger cards first
+   and more columns second, instead of more and smaller cards. The rule the
+   numbers answer to: no card is narrower than at 1920 px, and no width ever
+   costs a column. `--grid-card-wide` is for cards that carry a sparkline
+   beside their figures (resource statistics). */
 :root {
-  --grid-card: 300px;
-  --grid-card-wide: 340px;
-}
-@media (min-width: 1920px) {
-  :root { --grid-card: 340px; }
-}
-@media (min-width: 2560px) {
-  :root { --grid-card: 400px; --grid-card-wide: 440px; }
+  /* Height of the sticky header bar, without its 4 px stripe. 60 px on a
+     phone, 80 px on UWQHD. */
+  --header-height: clamp(3.75rem, 3rem + 1vw, 5rem);
+  /* Vertical rhythm of the page sections and of the blocks inside them. */
+  --space-section: clamp(3rem, 1.5rem + 3.5vw, 7.5rem);
+  --space-stack: clamp(1.25rem, 0.75rem + 1vw, 2.5rem);
+  --page-gutter: clamp(1rem, 4vw, 7.5rem);
+  --page-column: clamp(72rem, 84vw, 180rem);
+  --grid-card: clamp(18rem, 16.25rem + 6.3vw, 30rem);
+  --grid-card-wide: clamp(20.5rem, 18.75rem + 6.3vw, 32.5rem);
+
+  /* App shell of the three dashboards (components/dashboard). Denser than
+     the public pages: a smaller top bar and gutter, because the content is
+     tables and forms rather than sections. The sidebar grows a little with
+     the window; the content column stops at 130rem, so a row of a table
+     stays readable on UWQHD. */
+  --app-topbar: clamp(3.5rem, 3.1rem + 0.6vw, 4.25rem);
+  --app-sidebar: clamp(16.5rem, 14rem + 3vw, 21rem);
+  --app-gutter: clamp(1rem, 0.6rem + 1.6vw, 3rem);
+  --app-gutter-y: clamp(1.25rem, 0.9rem + 1.2vw, 2.75rem);
+  --app-content: 130rem;
+  --app-tabbar: 3.75rem;
 }
 
 /* ============================================================================
-   Utilities — Container, Eyebrow, Hero-Decor
+   Utilities
    ============================================================================ */
-/* Standard-Shell. Der Deckel lag bis 02.08.2026 bei 80rem (1280 px), womit
-   selbst ein 4K-Monitor zwei Drittel schwarzen Rand zeigte. Jetzt 120rem
-   (1920 px).
-
-   Warum das gefahrlos ist: Seiten mit schmalem Inhalt (Login, Konto, Checkout,
-   404, Rechtstexte) setzen ihren eigenen Deckel per `mx-auto max-w-*` **innen**
-   und ändern sich dadurch überhaupt nicht. Breiter wird nur, was vorher schon
-   die volle Containerbreite gefüllt hat: Raster, Tabellen, Dashboards.
-
-   Seit dem 24.08.2026 ist das die **einzige** Shell der Seite. Kopfzeile,
-   Inhalt und Fusszeile sitzen dadurch auf jeder Route auf derselben Kante. */
+/* The one page shell of the public site. Header, content and footer all sit
+   in it, so they share one edge on every route. Content that does not gain
+   from the width keeps an inner cap of its own (`max-w-*` inside, the
+   measure caps of `.legal-content` and `.tebex-description`) instead of a
+   second shell; a new width step belongs here, with its reason, not in a
+   component. */
 @utility container-page {
-  /* `width: 100%` ist nicht kosmetisch, sondern trägt die ganze Regel: als Kind
-     eines Flex-Containers lässt `margin-inline: auto` das Element sonst auf
-     seine Inhaltsbreite schrumpfen und zentriert diese. Genau das passierte im
-     Hero der Startseite (`flex flex-col`): die Sektion stand 17 px eingerückt,
-     die Kennzahlenzeile darunter 700 px, und beide damit auf einer anderen
-     Kante als Kopf- und Fusszeile. */
+  /* `width: 100%` carries the rule: as the child of a flex container,
+     `margin-inline: auto` would otherwise shrink the element to its content
+     width and centre that, off the edge of header and footer. */
   width: 100%;
-  max-width: 120rem;
+  max-width: calc(var(--page-column) + 2 * var(--page-gutter));
   margin-inline: auto;
-  padding-inline: 1rem;
-}
-@media (min-width: 768px) {
-  .container-page { padding-inline: 2rem; }
-}
-@media (min-width: 1536px) {
-  .container-page { padding-inline: 3rem; }
-}
-/* Above 1920 px the cap grows in two steps. Measured on 2026-09-20 in the
-   production build: at 2560 px the shell sat at 1920 px with 315 px dead on
-   each side, at 3440 px with 755 px - 44 percent of the window unused, and not
-   a single grid changed its column count between the two. The cause was one
-   line, the fixed 120rem cap, because nothing in app/ or components/ uses a
-   `2xl:` prefix at all.
-
-   The shell is the flush line that header, content and footer share. Keeping
-   them on one line is what stopped the 640 px jump between routes back on
-   24 August 2026, so the cap moves for all of them together or not at all.
-   Content that does not benefit from the extra width keeps an inner cap of its
-   own instead of a second shell: `.legal-content` caps its text elements at
-   82rem, the hero caps both of its columns and centres the pair, and the
-   section intros use
-   `max-w-[NNch]`. Measured on 2026-09-20 across 1920/2560/3440: exactly one
-   text block on the home page exceeds 95 characters per line, and it reads the
-   same at all three widths. So the caps that exist already hold - resist
-   adding a general-purpose one until a measurement asks for it. */
-@media (min-width: 1920px) {
-  .container-page { max-width: 150rem; padding-inline: 4rem; }
-}
-@media (min-width: 2560px) {
-  .container-page { max-width: 180rem; }
+  padding-inline: max(var(--page-gutter), env(safe-area-inset-left, 0px)) max(var(--page-gutter), env(safe-area-inset-right, 0px));
 }
 
-/* Es gab bis zum 24.08.2026 zwei weitere Stufen: `container-wide` (160rem) für
-   Kartenraster und `container-app` (90rem) für Arbeitsflächen. Damit hatte die
-   Seite drei verschiedene Breiten plus eine randlose Kopfzeile, und je nach
-   Route sprang der Inhalt. Alles läuft jetzt über `container-page`. Wer wieder
-   eine eigene Stufe braucht, soll sie hier anlegen und begründen, statt sie in
-   eine Komponente zu schreiben. */
-
-/* Vergrößert die Trefferfläche eines Bedienelements auf 44 px, ohne seine
-   sichtbare Größe anzufassen.
-
-   Warum nicht einfach die Buttons größer machen: die Kopfzeile trägt bei 375 px
-   sechs Bedienelemente nebeneinander. Wächst jedes sichtbar auf 44 px, wird die
-   Leiste zu voll. Ein Pseudo-Element außerhalb des Layoutflusses löst das,
-   ohne irgendetwas zu verschieben.
-
-   Zur Einordnung: WCAG 2.2 AA (SC 2.5.8) verlangt 24 × 24 px, das erfüllten die
-   Elemente schon vorher. Die 44 px stammen aus Apples HIG und sind hier das
-   Ziel, weil der Shop am Telefon gekauft wird. Gemessen am 22.08.2026 lagen bei
-   375 px 23 Elemente darunter.
-
-   Der Abstand in der Kopfzeile ist `gap-1.5` (6 px). Bei 40 px sichtbarer
-   Breite ergibt das 46 px Raster, zwei 44er Flächen berühren sich also nicht
-   und es gibt keine mehrdeutigen Überlappungen. */
+/* Extends the hit area of a control to 44 px without changing its visible
+   size. WCAG 2.2 AA (SC 2.5.8) asks for 24 x 24 px; 44 px is the target
+   because the shop gets bought on phones, and the header carries six
+   controls side by side at 375 px, too many to grow each one. With the
+   header's 6 px gap two 44 px areas never overlap. */
 @utility tap-target {
   position: relative;
 }
@@ -463,63 +347,45 @@
   transform: translate(-50%, -50%);
 }
 
-/* Lesebreite. Bewusst in rem und nicht in ch: `ch` ist die Breite der Null,
-   und die misst in Inter 10 px, die mittlere Buchstabenbreite aber 7,8 px.
-   `65ch` ergibt damit 656 px und darin 84 Zeichen pro Zeile, nicht 65. 34rem
-   sind gemessen rund 70 Zeichen, also das obere Ende des bequemen Bereichs. */
-@utility container-prose {
-  max-width: 34rem;
-  margin-inline: auto;
-}
-
-/* Eyebrow-Label (kleine MSK-grüne Mono-Akzente über Section-Headlines) */
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
+/* Kicker: the small green label above a heading. Source Sans 3 at the label
+   size, uppercase, no leading dash: green monospace eyebrows with a dash are
+   on the exclusion list of the redesign. */
+.kicker {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
   font-weight: 600;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-primary);
 }
-.eyebrow::before {
-  content: '';
-  display: block;
-  width: 24px;
-  height: 1px;
-  background: var(--color-primary);
-}
 
-/* Hero-Background — radialer Akzent-Gradient (CSP-konform, keine inline-styles) */
-.hero-decor-gradient {
-  background: radial-gradient(
-    ellipse 60% 50% at 30% 20%,
-    color-mix(in oklab, var(--color-primary) 12%, transparent),
-    transparent 70%
-  );
+/* The anthracite band (hero, footer) and the MSK green band (closing band).
+   Both keep their colours in both themes. The focus ring changes with them:
+   the page's green ring measures about 2.3:1 on anthracite, below the 3:1 a
+   focus indicator needs. */
+.surface-band {
+  background-color: var(--color-band);
+  color: var(--color-band-foreground);
 }
+.surface-band .kicker { color: var(--color-band-accent); }
+.surface-band :focus-visible { outline-color: var(--color-band-accent); }
+.surface-brand {
+  background-color: var(--color-brand);
+  color: var(--color-brand-foreground);
+}
+.surface-brand :focus-visible { outline-color: var(--color-brand-foreground); }
 
-/* Pulsing dot (Live-Indicator) */
+/* Pulsing dot of a live indicator, the one animation that runs on its own. */
 .pulse-dot {
   animation: var(--animate-pulse-dot);
 }
 
-/* Skip-Link (WCAG 2.4.1, Level A).
-
-   Diese Regel stand hier lange **ohne einen einzigen Konsumenten**: das
-   Design-Audit vom 24.08.2026 meldete "kein Skip-Link", weil es in `app/` und
-   `components/` nach dem Markup gesucht hat und nicht im CSS. Die Darstellung
-   war also da, es fehlte das `<a>`. Seit dem 26.08.2026 rendert
-   `app/layout.tsx` es als erstes Kind des Body.
-
-   Versteckt wird per `transform`, nicht per `sr-only`: der Link soll
-   vorlesbar bleiben, er ist ja gerade fuer die da, die ihn brauchen.
-
-   `position: fixed`, damit er auch auf einer bereits gescrollten Seite oben
-   erscheint; mit `absolute` sass er am Dokumentanfang und blieb unsichtbar.
-   `z-index: 100` liegt ueber der klebenden Kopfzeile (`z-50`). */
+/* Skip link (WCAG 2.4.1), rendered by app/[lang]/layout.tsx as the first
+   child of the body. Hidden by `transform`, not `sr-only`, so it stays
+   readable; `position: fixed` so it appears on a scrolled page too, and
+   z-index 100 above the sticky header (z-50). */
 .skip-link {
   position: fixed;
   left: 1rem;
@@ -556,7 +422,7 @@
 }
 
 /* ============================================================================
-   Reduced Motion
+   Reduced motion
    ============================================================================ */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -568,24 +434,53 @@
 }
 
 /* ============================================================================
-   Tebex-Description Renderer (rendert HTML aus `dangerouslySetInnerHTML`)
+   More contrast and forced colours (plan 4.7)
+   ============================================================================
+   "More contrast" in the system settings: secondary text and lines go to
+   full strength. Unlayered, so it wins over the token values in @theme and
+   in the .dark scope alike. */
+@media (prefers-contrast: more) {
+  :root, .dark {
+    --color-muted-foreground: var(--color-foreground);
+    --color-border: var(--color-input);
+    --color-band-muted: var(--color-band-foreground);
+    --color-band-line: var(--color-band-foreground);
+  }
+}
+
+/* Windows contrast themes replace every colour and drop backgrounds. A
+   filled button would lose its outline then, so controls get a system
+   border, and focus uses the system highlight. */
+@media (forced-colors: active) {
+  button, [role="button"], select, input, textarea {
+    border: 1px solid ButtonText;
+  }
+  :focus-visible {
+    outline-color: Highlight;
+  }
+}
+
+/* ============================================================================
+   Tebex description renderer (HTML from `dangerouslySetInnerHTML`)
    ============================================================================ */
 @layer components {
+  /* Body size of the type scale, so the description is not the smallest
+     text of the product page. */
   .tebex-description {
-    font-size: 0.875rem;
+    font-size: var(--text-body);
     color: var(--color-muted-foreground);
-    line-height: 1.7;
+    line-height: var(--text-body--line-height);
   }
-  /* Zeilenlänge deckeln, seit der Seitencontainer bis 1920 px breit werden
-     kann. Bewusst nur die Text-Kinder: Tabellen und Bilder dürfen die volle
-     Spaltenbreite nutzen, Fließtext bei 170 Zeichen pro Zeile nicht. */
+  /* Caps the measure of the text children only: tables and images may use
+     the full column. 38rem holds Source Sans 3 at body size near 65
+     characters per line. */
   .tebex-description > p,
   .tebex-description > ul,
   .tebex-description > ol,
   .tebex-description > h1,
   .tebex-description > h2,
   .tebex-description > h3 {
-    max-width: 80ch;
+    max-width: 38rem;
   }
   .tebex-description p { margin-top: 0.75rem; margin-bottom: 0.75rem; }
   .tebex-description ul { list-style: disc; padding-left: 1.25rem; margin-top: 0.75rem; margin-bottom: 0.75rem; }
@@ -599,9 +494,9 @@
     margin-top: 1.5rem;
     margin-bottom: 0.5rem;
   }
-  .tebex-description h1 { font-size: 1.25rem; }
-  .tebex-description h2 { font-size: 1.125rem; }
-  .tebex-description h3 { font-size: 1rem; }
+  .tebex-description h1 { font-size: var(--text-h3); font-family: var(--font-display); }
+  .tebex-description h2 { font-size: var(--text-lead); font-family: var(--font-display); }
+  .tebex-description h3 { font-size: var(--text-body); }
   .tebex-description strong { color: var(--color-foreground); font-weight: 600; }
   .tebex-description em { font-style: italic; color: var(--color-muted-foreground); }
   .tebex-description a { color: var(--color-primary); }
@@ -611,7 +506,7 @@
     border: 1px solid var(--color-border);
     color: var(--color-primary);
     font-family: var(--font-mono);
-    font-size: 0.75rem;
+    font-size: 0.85em;
     padding: 0.125rem 0.375rem;
     border-radius: var(--radius-sm);
   }
@@ -650,35 +545,21 @@
 }
 
 /* ============================================================================
-   Legal-Content Renderer (Markdown-Rechtstexte)
+   Legal content renderer (Markdown legal texts)
    ============================================================================ */
 @layer components {
   .legal-content {
-    /* Vorher `muted-foreground`: das ganze Dokument stand in der Farbe für
-       Nebensachen. Auf diesen drei Seiten ist der Fließtext die Hauptsache,
-       und es ist der längste Text der Website. Kontrast 5,28:1 auf 19:1. */
+    /* Running text in the full text colour: on these pages it is the main
+       thing, and the longest text of the site. Larger and with more leading
+       than the rest of the site, the counterweight to the long line below. */
     color: var(--color-foreground);
-    /* Grösser und luftiger als der Rest der Seite, gemessen an musiker15.de
-       (18 px, Zeilenhöhe 1,75). Das ist die Gegenrechnung zur langen Zeile
-       darunter: eine breite Spalte trägt nur mit genug Schriftgrösse und
-       Durchschuss. */
     font-size: 1.125rem;
     line-height: 1.75;
   }
-  /* Zeilenlänge.
-
-     Stand bis zum 24.08.2026: 34rem, also 64 Zeichen. Das ist die klassische
-     Leseempfehlung und sah in einem 1920er Container trotzdem falsch aus, weil
-     ein 544 px schmales Band in einer 1900 px breiten Seite wie vergessen wirkt.
-
-     Referenz ist jetzt `musiker15.de/impressum`, ausgemessen bei demselben
-     Viewport von 1920: dort ist der Fliesstext **1312 px** breit und trägt
-     **136 Zeichen** pro Zeile, bei 18 px Schrift und Zeilenhöhe 1,75. Der
-     Deckel hier bildet genau das ab (82rem = 1312 px).
-
-     Der Deckel sitzt weiter an den Textelementen, nicht am Artikel, damit die
-     sieben Tabellen der Datenschutzerklärung die volle Spaltenbreite behalten
-     und nicht auch am Desktop scrollen müssen. */
+  /* Measure: 82rem, taken from musiker15.de/impressum at the same 1920 px
+     viewport (1312 px of text, 136 characters, 18 px, line height 1.75).
+     The cap sits on the text elements, not on the article, so the tables of
+     the privacy policy keep the full column and do not scroll on a desktop. */
   .legal-content > p,
   .legal-content > ul,
   .legal-content > ol,
@@ -689,10 +570,9 @@
   .legal-content > blockquote {
     max-width: 82rem;
   }
-  /* Hervorgehobener Hinweis. Genutzt für das Widerspruchsrecht nach Art. 21
-     DSGVO, das nach Auffassung der Aufsichtsbehörden nicht im Fließtext
-     untergehen darf. Farbe über `--color-primary`, damit es in beiden Themes
-     denselben geprüften Kontrast trägt wie jeder andere Akzent der Seite. */
+  /* Highlighted note, used for the right to object under Art. 21 GDPR, which
+     must not get lost in the running text. In --color-primary, so it carries
+     the same tested contrast as every other accent in both themes. */
   .legal-content blockquote {
     margin: 1.5rem 0;
     padding: 1rem 1.25rem;
@@ -776,143 +656,12 @@
 }
 
 /* ============================================================================
-   Legacy msk-* Utility-Klassen — Rückwärtskompatibilität
+   Image gallery: checkerboard behind cut-out images
    ----------------------------------------------------------------------------
-   Werden in nicht-migrierten Komponenten noch verwendet (Cart-Drawer,
-   Dashboard, Stats, …). Nach erfolgreichem Refactor schrittweise entfernen.
-   Mappen intern jetzt auf die neuen Tokens.
-   ============================================================================ */
-@layer components {
-  .msk-btn-primary {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    border-radius: var(--radius-md);
-    background-color: var(--color-primary);
-    color: var(--color-primary-foreground);
-    font-weight: 600;
-    font-size: 0.875rem;
-    padding: 0.625rem 1rem;
-    transition: filter 0.15s ease, transform 0.1s ease;
-  }
-  .msk-btn-primary:hover { filter: brightness(1.08); }
-  .msk-btn-primary:active { transform: scale(0.97); }
-  .msk-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-
-  .msk-btn-ghost {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--color-border);
-    color: var(--color-foreground);
-    background: transparent;
-    font-weight: 500;
-    font-size: 0.875rem;
-    padding: 0.625rem 1rem;
-    transition: background-color 0.15s ease;
-  }
-  .msk-btn-ghost:hover { background-color: var(--color-muted); }
-
-  .msk-btn-discord {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    border-radius: var(--radius-md);
-    background-color: var(--color-discord);
-    color: #ffffff;
-    font-weight: 600;
-    font-size: 0.875rem;
-    padding: 0.625rem 1rem;
-    transition: filter 0.15s ease;
-  }
-  .msk-btn-discord:hover { filter: brightness(1.08); }
-
-  .msk-card {
-    background-color: var(--color-card);
-    color: var(--color-card-foreground);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-xl);
-    overflow: hidden;
-    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-  }
-  .msk-card:hover {
-    border-color: color-mix(in oklab, var(--color-primary) 30%, var(--color-border));
-  }
-
-  .msk-input {
-    width: 100%;
-    background-color: var(--color-muted);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    color: var(--color-foreground);
-    font-size: 0.875rem;
-    padding: 0.625rem 0.75rem;
-    outline: none;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
-  }
-  .msk-input::placeholder { color: var(--color-muted-foreground); }
-  .msk-input:focus {
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary) 25%, transparent);
-  }
-
-  .msk-badge {
-    display: inline-block;
-    font-size: 0.625rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    padding: 0.125rem 0.5rem;
-    border-radius: var(--radius-sm);
-  }
-
-  .msk-label {
-    font-size: 0.6875rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    color: var(--color-primary);
-  }
-
-  .msk-section-title {
-    font-size: 1.25rem;
-    font-weight: 800;
-    color: var(--color-foreground);
-  }
-}
-
-/* ============================================================================
-   Legacy Token-Aliases (bg-bg, text-text, …)
-   ----------------------------------------------------------------------------
-   Tailwind v3 hatte die Tokens via theme.extend.colors registriert. Damit
-   bestehende Komponenten weiter rendern, mappen wir die alten Token-Namen
-   auf die neuen CSS-Variablen. Nach Migration aller Komponenten entfernen.
-   ============================================================================ */
-@theme {
-  --color-bg:        var(--color-background);
-  --color-surface:   var(--color-card);
-  --color-surface2:  var(--color-muted);
-  --color-borderlt:  var(--color-border);
-  --color-text:      var(--color-foreground);
-  --color-accenthov: var(--color-accent);
-  --color-dim:       var(--color-muted-foreground);
-}
-
-/* ============================================================================
-   Bildergalerie: Schachbrett hinter freigestellten Bildern
-   ----------------------------------------------------------------------------
-   Alle Bilder im CDN sind transparent. Ohne eine erkennbare Flaeche dahinter
-   sieht ein weisses Fahrzeug im hellen Theme aus wie ein Ladefehler und ein
-   schwarzes im dunklen genauso. Das Muster macht sichtbar, dass da nichts ist.
-
-   Bewusst sehr kontrastarm: es soll das Bild tragen, nicht mit ihm um
-   Aufmerksamkeit streiten. Die Kacheln sind aus den vorhandenen Tokens
-   gemischt, damit sie beiden Themes folgen, statt zwei feste Grautoene zu
-   setzen.
+   Every image on the CDN is transparent. Without a visible surface behind
+   it a white vehicle looks like a loading error in the light theme, and a
+   black one in the dark theme. Deliberately low in contrast, mixed from the
+   tokens so it follows both themes.
    ============================================================================ */
 .checker-bg {
   --checker: color-mix(in oklab, var(--color-muted-foreground) 9%, transparent);

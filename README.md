@@ -30,7 +30,8 @@ npm run dev                     # http://localhost:3000
 | Stack, project layout, database, configuration, security architecture, styling | [docs/development.md](docs/development.md) |
 | CI/CD, manual installation, environment variables, updating, troubleshooting | [docs/operations.md](docs/operations.md) |
 | Server-side deploy runbook (German) | [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) |
-| Design system | [DESIGN.md](DESIGN.md) |
+| How each area of the admin dashboard works | [docs/admin-dashboard.md](docs/admin-dashboard.md) |
+| Design system: tokens, components, accessibility and language rules | [DESIGN.md](DESIGN.md) |
 | Security policy and reporting | [SECURITY.md](SECURITY.md) |
 
 ## Help and contributing

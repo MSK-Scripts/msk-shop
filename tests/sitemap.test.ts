@@ -26,24 +26,32 @@ describe('buildSitemapEntries', () => {
   it('gibt statischen Seiten kein lastmod', async () => {
     const entries = await buildSitemapEntries()
 
-    for (const path of ['/', '/packages', '/resources', '/terms', '/terms/imprint']) {
+    for (const path of ['/en', '/de', '/en/fivem', '/en/stats', '/de/statistiken', '/en/legal/terms', '/de/rechtliches/impressum']) {
       expect(find(entries, `${BASE}${path}`)?.lastModified, path).toBeUndefined()
     }
   })
 
-  it('nimmt für Paketseiten das echte updated_at aus Tebex', async () => {
-    (getPackages as Mock).mockResolvedValue([pkg(5159927, '2026-07-28T12:21:09+00:00')])
+  it('takes the newest updated_at of the variants for a product page', async () => {
+    // Encrypted and Source of the handcuffs: one page, the newer date.
+    (getPackages as Mock).mockResolvedValue([
+      pkg(5159927, '2026-07-28T12:21:09+00:00'),
+      pkg(5301828, '2026-08-02T08:00:00+00:00'),
+    ])
 
-    const entry = find(await buildSitemapEntries(), `${BASE}/packages/5159927`)
-    expect(entry?.lastModified).toEqual(new Date('2026-07-28T12:21:09+00:00'))
+    const entries = await buildSitemapEntries()
+    expect(find(entries, `${BASE}/en/fivem/handcuffs`)?.lastModified).toEqual(new Date('2026-08-02T08:00:00+00:00'))
+    expect(find(entries, `${BASE}/de/fivem/handcuffs`)).toBeDefined()
+    // The package ids only redirect, they are no pages of their own.
+    expect(entries.filter(e => /\/fivem\/\d+$/.test(e.url))).toEqual([])
   })
 
   it('lässt lastmod weg, wenn Tebex keinen brauchbaren Zeitstempel liefert', async () => {
+    // Packages no product configures still get a page, under a derived slug.
     (getPackages as Mock).mockResolvedValue([pkg(1, null), pkg(2, 'nicht-datierbar')])
 
     const entries = await buildSitemapEntries()
-    expect(find(entries, `${BASE}/packages/1`)?.lastModified).toBeUndefined()
-    expect(find(entries, `${BASE}/packages/2`)?.lastModified).toBeUndefined()
+    expect(find(entries, `${BASE}/en/fivem/script-1`)?.lastModified).toBeUndefined()
+    expect(find(entries, `${BASE}/de/fivem/script-2`)?.lastModified).toBeUndefined()
   })
 
   it('setzt für Kategorien das jüngste updated_at ihrer Pakete', async () => {
@@ -60,27 +68,42 @@ describe('buildSitemapEntries', () => {
     ])
 
     const entries = await buildSitemapEntries()
-    expect(find(entries, `${BASE}/categories/2105296`)?.lastModified)
+    expect(find(entries, `${BASE}/en/fivem/categories/2105296`)?.lastModified)
       .toEqual(new Date('2026-07-28T12:22:45+00:00'))
     // Category without packages: better no date than a made-up one.
-    expect(find(entries, `${BASE}/categories/3392436`)?.lastModified).toBeUndefined()
+    expect(find(entries, `${BASE}/de/fivem/categories/3392436`)?.lastModified).toBeUndefined()
   })
 
   it('nennt für alle vier Bot-Landingpages en, de und x-default', async () => {
     const entries = await buildSitemapEntries()
 
-    for (const [path, en] of [
-      ['/ticketbot',    '/ticketbot'],
-      ['/de/ticketbot', '/ticketbot'],
-      ['/giveaway',     '/giveaway'],
-      ['/de/giveaway',  '/giveaway'],
+    for (const [path, rest] of [
+      ['/en/discord/ticket-bot',   '/discord/ticket-bot'],
+      ['/de/discord/ticket-bot',   '/discord/ticket-bot'],
+      ['/en/discord/giveaway-bot', '/discord/giveaway-bot'],
+      ['/de/discord/giveaway-bot', '/discord/giveaway-bot'],
     ] as const) {
       expect(find(entries, `${BASE}${path}`)?.alternates, path).toEqual({
-        'en':        `${BASE}${en}`,
-        'de':        `${BASE}/de${en}`,
-        'x-default': `${BASE}${en}`,
+        'en':        `${BASE}/en${rest}`,
+        'de':        `${BASE}/de${rest}`,
+        // The root picks the language and redirects.
+        'x-default': `${BASE}/`,
       })
     }
+  })
+
+  it('lists every page under its own address in both languages', async () => {
+    const entries = await buildSitemapEntries()
+
+    // The German entry carries the German words, not the English folder name.
+    expect(find(entries, `${BASE}/de/rechtliches/agb`)?.alternates).toEqual({
+      'en':        `${BASE}/en/legal/terms`,
+      'de':        `${BASE}/de/rechtliches/agb`,
+      'x-default': `${BASE}/`,
+    })
+    expect(find(entries, `${BASE}/de/legal/terms`)).toBeUndefined()
+    // No address without a language: those only redirect.
+    expect(entries.filter(e => !/^https:\/\/www\.msk-scripts\.de\/(en|de)(\/|$)/.test(e.url))).toEqual([])
   })
 
   it('bleibt gültig, wenn die Tebex-API ausfällt', async () => {
@@ -88,9 +111,12 @@ describe('buildSitemapEntries', () => {
     ;(getCategories as Mock).mockRejectedValue(new Error('upstream down'))
 
     const entries = await buildSitemapEntries()
-    expect(find(entries, `${BASE}/`)).toBeDefined()
-    expect(find(entries, `${BASE}/ticketbot`)).toBeDefined()
-    expect(entries.every(e => !e.url.includes('/packages/'))).toBe(true)
+    expect(find(entries, `${BASE}/en`)).toBeDefined()
+    expect(find(entries, `${BASE}/en/discord/ticket-bot`)).toBeDefined()
+    // The product pages come from Tebex and drop out; the free scripts page
+    // is a fixed page and stays.
+    const fivem = entries.map(e => e.url).filter(u => u.includes('/fivem/'))
+    expect(fivem.sort()).toEqual([`${BASE}/de/fivem/kostenlos`, `${BASE}/en/fivem/free`])
   })
 })
 

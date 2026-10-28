@@ -1,13 +1,10 @@
 import type { Metadata } from 'next'
 
-import { PACKAGE_DESCRIPTIONS, PACKAGE_SEO, SITE_CONFIG } from '@/lib/config'
-import { alternatePaths } from '@/lib/lang'
+import { X_DEFAULT_PATH, alternatePaths } from '@/lib/routes'
 import type { Lang } from '@/lib/i18n'
 import type { OpenGraph } from 'next/dist/lib/metadata/types/opengraph-types'
 
-import type { TebexPackage } from '@/types/tebex'
-
-/** Fallback image when a Tebex object does not bring its own image. */
+/** Fallback image for pages without an image of their own. */
 export const DEFAULT_OG_IMAGE = '/msk-scripts-server-banner.webp'
 
 /**
@@ -104,53 +101,6 @@ export function plainExcerpt(html: string | undefined | null, maxLength = 160): 
 }
 
 /**
- * Best available preview image of a Tebex package.
- *
- * Order: explicit `image`, then the medium marked as primary, then the
- * first medium at all, otherwise the site banner. Tebex delivers absolute
- * CDN URLs, which `metadataBase` passes through untouched.
- */
-export function packageImage(pkg: Pick<TebexPackage, 'image' | 'media'>): string {
-  if (pkg.image) return pkg.image
-
-  const media = pkg.media ?? []
-  const primary = media.find(m => m.primary && m.url)
-  if (primary) return primary.url
-
-  const first = media.find(m => m.url)
-  return first ? first.url : DEFAULT_OG_IMAGE
-}
-
-/**
- * Title and description of a package as a search result should show them.
- *
- * Order: the curated search snippet, then the visible card text, then the
- * Tebex excerpt, then the site tagline. The raw Tebex name contains the word
- * "FiveM" nowhere, and Encrypted/Source differ in it only by one word; both
- * are exactly what `PACKAGE_SEO` straightens out.
- *
- * Lives here because two places need the same answer, the metadata of the
- * package page and `/llms.txt`, and two copies of a fallback chain end up
- * with two different chains.
- */
-export function packageSnippet(
-  pkg: Pick<TebexPackage, 'id' | 'name' | 'description'>,
-  lang: Lang,
-): { title: string; description: string } {
-  const snippet = PACKAGE_SEO[pkg.id]?.[lang]
-  return {
-    title: snippet?.title ?? pkg.name,
-    // `||` and not `??`: an empty excerpt is as good as none, and `??` would
-    // have stopped at the empty string instead of reaching the tagline.
-    description:
-      snippet?.description
-      || PACKAGE_DESCRIPTIONS[pkg.id]
-      || plainExcerpt(pkg.description)
-      || SITE_CONFIG.tagline,
-  }
-}
-
-/**
  * Canonical and hreflang for a page that exists in both languages.
  *
  * The two belong together: the canonical points to the version you are
@@ -158,7 +108,8 @@ export function packageSnippet(
  * an hreflang pair makes Google treat one of the two versions as a duplicate,
  * and an hreflang without a return link is ignored.
  *
- * `path` is the language-less path, i.e. `/packages`, not `/de/packages`.
+ * `path` is the internal path (`/legal/terms`), not a public address
+ * (`/de/rechtliches/agb`): the route table turns it into both versions.
  */
 export function alternatesFor(lang: Lang, path: string): NonNullable<Metadata['alternates']> {
   const alt = alternatePaths(path)
@@ -167,7 +118,9 @@ export function alternatesFor(lang: Lang, path: string): NonNullable<Metadata['a
     languages: {
       en:          alt.en,
       de:          alt.de,
-      'x-default': alt.en,
+      // The root picks a language and redirects: the page for everyone
+      // whose browser asks for neither of the two.
+      'x-default': X_DEFAULT_PATH,
     },
   }
 }

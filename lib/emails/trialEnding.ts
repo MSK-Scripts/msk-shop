@@ -7,10 +7,12 @@
 //
 // Everything here is pure so it can be tested without SMTP or Stripe.
 
+import { publicPath } from '@/lib/routes';
+import type { BillingInterval } from '@/lib/tiers';
+
 export type MailLang = 'en' | 'de';
 
 const BASE_URL = 'https://www.msk-scripts.de';
-const DASHBOARD_URL = `${BASE_URL}/ticketbot/dashboard`;
 
 /**
  * Pick the mail language from the customer's Stripe locales. German only for an
@@ -45,8 +47,10 @@ export interface TrialEndingInput {
   guildLabel: string;
   /** When the trial expires. */
   trialEndsAt: Date;
-  /** Monthly price after the trial, already formatted (e.g. "3,99 €"). */
+  /** Price per billing period after the trial, already formatted (e.g. "4,99 €"). */
   price:      string;
+  /** How often that price is charged, from the Stripe price. */
+  interval:   BillingInterval;
 }
 
 export interface BuiltEmail {
@@ -61,8 +65,10 @@ export interface BuiltEmail {
  * imply that money will be taken automatically, because it will not.
  */
 export function buildTrialEndingEmail(input: TrialEndingInput): BuiltEmail {
-  const { lang, guildLabel, trialEndsAt, price } = input;
+  const { lang, guildLabel, trialEndsAt, price, interval } = input;
+  const yearly = interval === 'yearly';
   const date = formatTrialEnd(trialEndsAt, lang);
+  const dashboardUrl = `${BASE_URL}${publicPath(lang, '/dashboard/ticket-bot')}`;
 
   const copy = lang === 'de'
     ? {
@@ -75,7 +81,7 @@ export function buildTrialEndingEmail(input: TrialEndingInput): BuiltEmail {
           + 'und der Server fällt auf Basic zurück. Es wird nichts abgebucht.',
         keep:
           `Wenn du Premium behalten willst, hinterlege im Dashboard ein Zahlungsmittel. `
-          + `Danach läuft das Abo für ${price} pro Monat weiter, jederzeit kündbar.`,
+          + `Danach läuft das Abo für ${price} ${yearly ? 'pro Jahr' : 'pro Monat'} weiter, jederzeit kündbar.`,
         cta: 'Zum Dashboard',
         signoff: 'Viele Grüße\nMSK Scripts',
       }
@@ -89,7 +95,7 @@ export function buildTrialEndingEmail(input: TrialEndingInput): BuiltEmail {
           + 'and the server falls back to Basic. Nothing will be charged.',
         keep:
           `If you want to keep Premium, add a payment method in your dashboard. `
-          + `The subscription then continues at ${price} per month, cancel anytime.`,
+          + `The subscription then continues at ${price} ${yearly ? 'per year' : 'per month'}, cancel anytime.`,
         cta: 'Open dashboard',
         signoff: 'Best regards\nMSK Scripts',
       };
@@ -103,7 +109,7 @@ export function buildTrialEndingEmail(input: TrialEndingInput): BuiltEmail {
     '',
     copy.keep,
     '',
-    `${copy.cta}: ${DASHBOARD_URL}`,
+    `${copy.cta}: ${dashboardUrl}`,
     '',
     copy.signoff,
   ].join('\n');
@@ -117,7 +123,7 @@ export function buildTrialEndingEmail(input: TrialEndingInput): BuiltEmail {
     <p style="margin:0 0 16px;line-height:1.6;">${escapeHtml(copy.action)}</p>
     <p style="margin:0 0 24px;line-height:1.6;">${escapeHtml(copy.keep)}</p>
     <p style="margin:0 0 24px;">
-      <a href="${DASHBOARD_URL}" style="display:inline-block;background:#00E676;color:#0a0b0d;text-decoration:none;font-weight:bold;padding:12px 20px;border-radius:8px;">${escapeHtml(copy.cta)}</a>
+      <a href="${dashboardUrl}" style="display:inline-block;background:#00E676;color:#0a0b0d;text-decoration:none;font-weight:bold;padding:12px 20px;border-radius:8px;">${escapeHtml(copy.cta)}</a>
     </p>
     <p style="margin:0;color:#b0adb8;font-size:13px;white-space:pre-line;">${escapeHtml(copy.signoff)}</p>
   </div>

@@ -1,23 +1,17 @@
 import type { Lang } from '@/lib/i18n'
 import type { LabelledText } from '@/content/ticketbot-copy'
+import { publicPath } from '@/lib/routes'
 
 /**
- * Sichtbare Texte der Giveaway-Bot-Landingpage, je Sprache.
+ * Visible texts of the giveaway bot landing page, per language.
  *
- * Gleiche Aufteilung wie `content/ticketbot-copy.ts`: Texte hier, Icons in
- * `components/bots/GiveawayLanding.tsx`, Reihenfolge ist Vertrag zwischen
- * beidem. `tests/botLandingCopy.test.ts` prüft, dass EN und DE gleich lang
- * bleiben.
+ * Same split as `content/ticketbot-copy.ts`: texts here, layout in
+ * `components/bots/GiveawayLanding.tsx`. `tests/botLandingCopy.test.ts`
+ * checks that EN and DE keep the same lists.
  *
- * Die Slash-Befehle selbst (`/gcreate`, `/gsettings`, …) werden bewusst NICHT
- * übersetzt: Sie heißen im Bot in jeder Sprache gleich.
+ * The slash commands (`/gcreate`, `/gsettings`, ...) are deliberately not
+ * translated: they have the same name in every language of the bot.
  */
-
-export interface CommandRow {
-  cmd:  string
-  who:  string
-  text: string
-}
 
 export interface GiveawayCopy {
   altHref:  string
@@ -45,6 +39,10 @@ export interface GiveawayCopy {
   commandsEyebrow: string
   commandsHeading: string
   commandsSub:     string
+  /** Column heads of the commands table. */
+  commandColName:  string
+  commandColWho:   string
+  commandColText:  string
   /** Rollen-Label je Befehl, positionsgleich zu COMMAND_NAMES in der Komponente. */
   commandWho:      string[]
   commandText:     string[]
@@ -77,7 +75,7 @@ export interface GiveawayCopy {
 }
 
 const en: GiveawayCopy = {
-  altHref:  '/de/giveaway',
+  altHref:  publicPath('de', '/discord/giveaway-bot'),
   altLabel: 'Diese Seite auf Deutsch',
 
   badge: 'Discord Giveaway Bot',
@@ -131,6 +129,9 @@ const en: GiveawayCopy = {
   commandsEyebrow: 'Commands',
   commandsHeading: 'Slash commands for everything',
   commandsSub:     'Manager commands need Manage Server or your configured manager role.',
+  commandColName:  'Command',
+  commandColWho:   'Who can use it',
+  commandColText:  'What it does',
   commandWho: [
     'Manager', 'Manager', 'Manager', 'Manager', 'Manager', 'Manager', 'Manager', 'Manager',
     'Manager', 'Manage Server', 'Everyone', 'Everyone', 'Everyone', 'Everyone', 'Everyone',
@@ -195,7 +196,7 @@ const en: GiveawayCopy = {
 }
 
 const de: GiveawayCopy = {
-  altHref:  '/giveaway',
+  altHref:  publicPath('en', '/discord/giveaway-bot'),
   altLabel: 'This page in English',
 
   badge: 'Discord Giveaway Bot',
@@ -249,6 +250,9 @@ const de: GiveawayCopy = {
   commandsEyebrow: 'Befehle',
   commandsHeading: 'Slash-Befehle für alles',
   commandsSub:     'Manager-Befehle brauchen „Server verwalten“ oder deine eingestellte Manager-Rolle.',
+  commandColName:  'Befehl',
+  commandColWho:   'Wer darf ihn nutzen',
+  commandColText:  'Was er tut',
   commandWho: [
     'Manager', 'Manager', 'Manager', 'Manager', 'Manager', 'Manager', 'Manager', 'Manager',
     'Manager', 'Server verwalten', 'Alle', 'Alle', 'Alle', 'Alle', 'Alle',

@@ -1,6 +1,8 @@
 import { NextResponse }   from 'next/server';
 import { authorizeGuild } from '@/lib/dashboardAuth';
 import { getStripe }      from '@/lib/stripe';
+import { getPreferredLang } from '@/lib/serverLang'
+import { publicPath } from '@/lib/routes'
 
 // ── Stripe Customer Portal ───────────────────────────────────────────────────
 //
@@ -29,12 +31,14 @@ export async function POST(req: Request): Promise<NextResponse> {
   }
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://www.msk-scripts.de';
+  // Back to the page in the language the visitor came from.
+  const lang = await getPreferredLang();
 
   try {
     const stripe  = getStripe();
     const session = await stripe.billingPortal.sessions.create({
       customer:   customerId,
-      return_url: `${baseUrl}/ticketbot/dashboard`,
+      return_url: `${baseUrl}${publicPath(lang, '/dashboard/ticket-bot')}`,
     });
     return NextResponse.json({ url: session.url });
   } catch (err) {

@@ -1,6 +1,6 @@
 import { listCategories, listImages, MAX_PER_PAGE } from '@/lib/images'
 import { absoluteUrl } from '@/lib/siteUrl'
-import { alternatePaths } from '@/lib/lang'
+import { X_DEFAULT_PATH, alternatePaths } from '@/lib/routes'
 
 /**
  * Image sitemap.
@@ -51,7 +51,7 @@ export async function GET() {
 
       for (const image of result.items) {
         if (count >= MAX_URLS) break
-        const path = `/images/${image.category}/${image.name}`
+        const path = `/tools/images/${image.category}/${image.name}`
         const alt  = alternatePaths(path)
 
         lines.push(
@@ -59,7 +59,7 @@ export async function GET() {
           `    <loc>${escapeXml(absoluteUrl(alt.en))}</loc>`,
           `    <xhtml:link rel="alternate" hreflang="en" href="${escapeXml(absoluteUrl(alt.en))}" />`,
           `    <xhtml:link rel="alternate" hreflang="de" href="${escapeXml(absoluteUrl(alt.de))}" />`,
-          `    <xhtml:link rel="alternate" hreflang="x-default" href="${escapeXml(absoluteUrl(alt.en))}" />`,
+          `    <xhtml:link rel="alternate" hreflang="x-default" href="${escapeXml(absoluteUrl(X_DEFAULT_PATH))}" />`,
           '    <image:image>',
           `      <image:loc>${escapeXml(image.url)}</image:loc>`,
           `      <image:title>${escapeXml(image.label || image.name)}</image:title>`,

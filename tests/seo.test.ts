@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { PACKAGE_SEO, SITE_CONFIG } from '@/lib/config'
-import { DEFAULT_OG_IMAGE, openGraphFor, packageImage, packageSnippet, plainExcerpt } from '@/lib/seo'
+import { DEFAULT_OG_IMAGE, openGraphFor, plainExcerpt } from '@/lib/seo'
 
 describe('plainExcerpt', () => {
   it('gibt bei leerer Eingabe einen leeren String zurück', () => {
@@ -64,35 +63,6 @@ describe('plainExcerpt', () => {
   })
 })
 
-describe('packageImage', () => {
-  it('bevorzugt das explizite image-Feld', () => {
-    expect(packageImage({ image: 'https://cdn/a.png', media: [] })).toBe('https://cdn/a.png')
-  })
-
-  it('nimmt sonst das als primär markierte Medium', () => {
-    expect(packageImage({
-      image: undefined,
-      media: [
-        { type: 'image', name: 'b', url: 'https://cdn/b.png', primary: false },
-        { type: 'image', name: 'c', url: 'https://cdn/c.png', primary: true },
-      ],
-    })).toBe('https://cdn/c.png')
-  })
-
-  it('nimmt sonst das erste Medium', () => {
-    expect(packageImage({
-      image: undefined,
-      media: [{ type: 'image', name: 'b', url: 'https://cdn/b.png', primary: false }],
-    })).toBe('https://cdn/b.png')
-  })
-
-  it('fällt auf das Seiten-Banner zurück', () => {
-    expect(packageImage({ image: undefined, media: [] })).toBe(DEFAULT_OG_IMAGE)
-    // media can be missing according to the Tebex response
-    expect(packageImage({ image: undefined, media: undefined as never })).toBe(DEFAULT_OG_IMAGE)
-  })
-})
-
 describe('openGraphFor', () => {
   // Next.js merges metadata only shallowly: without passed-in defaults every
   // page that sets openGraph loses the og:image from the root layout.
@@ -117,28 +87,5 @@ describe('openGraphFor', () => {
 
     expect(og.title).toBe('Paket')
     expect(og.images).toEqual([{ url: 'https://cdn/x.png', alt: 'Paket' }])
-  })
-})
-
-describe('packageSnippet', () => {
-  it('prefers the curated search snippet in the requested language', () => {
-    const pkg = { id: 5732587, name: 'MSK Garage - Encrypted Version', description: '<p>Tebex text.</p>' }
-
-    expect(packageSnippet(pkg, 'en')).toEqual(PACKAGE_SEO[5732587].en)
-    expect(packageSnippet(pkg, 'de')).toEqual(PACKAGE_SEO[5732587].de)
-  })
-
-  it('falls back to the Tebex name and a plain-text excerpt', () => {
-    const pkg = { id: 1, name: 'Unknown Package', description: '<p>Some <b>text</b>.</p>' }
-
-    expect(packageSnippet(pkg, 'en')).toEqual({ title: 'Unknown Package', description: 'Some text.' })
-  })
-
-  // `??` stopped at the empty string an empty description produces, so the
-  // page went out with an empty meta description instead of the tagline.
-  it('reaches the tagline when the package has no description at all', () => {
-    const pkg = { id: 1, name: 'Unknown Package', description: '' }
-
-    expect(packageSnippet(pkg, 'en').description).toBe(SITE_CONFIG.tagline)
   })
 })

@@ -2,11 +2,11 @@
 
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
-import { ShoppingCart, Loader2, Download, Gift, X, LogIn } from 'lucide-react'
+import { ShoppingCart, CircleNotch as Loader2, DownloadSimple as Download, Gift, X, SignIn as LogIn } from '@/components/icons'
 import { useCart } from '@/lib/useCart'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
-import type { TebexPackage } from '@/types/tebex'
+import type { CartPackage } from '@/lib/buyOptions'
 import { packagesTranslations, type Lang } from '@/lib/i18n'
 
 /**
@@ -28,7 +28,7 @@ function withName(template: string, name: string) {
 const readStoredDiscordId = () =>
   typeof window !== 'undefined' && !!localStorage.getItem('discordId')
 
-export function AddToCartButton({ pkg, lang }: { pkg: TebexPackage; lang: Lang }) {
+export function AddToCartButton({ pkg, lang }: { pkg: CartPackage; lang: Lang }) {
   const t = packagesTranslations[lang]
   const { addPackage, giftPackage, isLoading, username } = useCart()
   const [hasDiscordId, setHasDiscordId] = useState(readStoredDiscordId)
@@ -118,13 +118,13 @@ export function AddToCartButton({ pkg, lang }: { pkg: TebexPackage; lang: Lang }
         </Button>
 
         {addFailed && (
-          <p role="alert" className="text-center text-xs text-[var(--color-danger)]">
+          <p role="alert" className="text-center text-small text-[var(--color-danger)]">
             {t.card_error}
           </p>
         )}
 
         {needsLogin && !isFree && (
-          <p className="text-center text-xs text-[var(--color-muted-foreground)]">
+          <p className="text-center text-small text-[var(--color-muted-foreground)]">
             {t.detail_login_hint}
           </p>
         )}

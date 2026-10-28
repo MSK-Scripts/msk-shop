@@ -1,6 +1,7 @@
 /**
  * Admin dashboard permission model. Pure types + logic, NO database access
- * (so it can be imported anywhere, including the client for label rendering).
+ * (so it can be imported anywhere, the client included). The labels people
+ * read live in `adminTranslations.permissions` (lib/i18n.ts) since Phase 10.
  *
  * The permissions cover three separate systems, not one:
  *
@@ -55,25 +56,6 @@ export const ADMIN_PERMISSIONS = [
 
 export type AdminPermission = (typeof ADMIN_PERMISSIONS)[number];
 
-/** Human-readable labels for the team-management UI. */
-export const PERMISSION_LABELS: Record<AdminPermission, { label: string; description: string }> = {
-  'payments.view':    { label: 'View payments',   description: 'See payments and player/purchase lookups' },
-  'payments.create':  { label: 'Give packages',   description: 'Create a manual payment, incl. free (price 0)' },
-  'payments.refund':  { label: 'Refund payments', description: 'Set a payment to refund / chargeback' },
-  'coupons.manage':   { label: 'Manage coupons',  description: 'Create and delete coupons' },
-  'giftcards.manage': { label: 'Manage gift cards', description: 'Create, top up and void gift cards' },
-  'bans.manage':      { label: 'Manage bans',     description: 'Create and list bans' },
-  'packages.edit':    { label: 'Edit packages',   description: 'Change package name, price and visibility' },
-  'api_key.view':     { label: 'View API keys',   description: 'See ticket bot API keys, guilds, tiers and custom domains' },
-  'api_key.change':   { label: 'Change API key tier', description: 'Change the tier of a ticket bot API key' },
-  'images.view':      { label: 'View images',    description: 'See the image CDN inventory and its health figures' },
-  'images.manage':    { label: 'Manage images',  description: 'Edit label and tags, publish or hide an image' },
-  'images.moderate':  { label: 'Moderate uploads', description: 'Approve or reject images awaiting review (community uploads)' },
-  'images.delete':    { label: 'Delete images',  description: 'Permanently remove an image and its files from the CDN' },
-  'news_popup.manage': { label: 'Manage news popup', description: 'Edit and switch the site-wide announcement popup' },
-  'team.manage':      { label: 'Manage team',     description: 'Add/remove team members and set permissions' },
-};
-
 /** Narrow an arbitrary string to a known AdminPermission. */
 export function isAdminPermission(value: unknown): value is AdminPermission {
   return typeof value === 'string' && (ADMIN_PERMISSIONS as readonly string[]).includes(value);
@@ -106,3 +88,21 @@ export function parseAdminPermissions(raw: unknown): AdminPermission[] {
   }
   return arr.filter(isAdminPermission);
 }
+
+/**
+ * Starting points for the team editor (plan 6.6, Stripe: roles with access
+ * levels). A template only sets the boxes in the form; the member gets
+ * exactly the permissions that are saved, as before. The labels are in
+ * `adminTranslations.team.templates`.
+ */
+export const ROLE_TEMPLATES = {
+  support:    ['payments.view', 'giftcards.manage', 'bans.manage'],
+  moderation: ['images.view', 'images.manage', 'images.moderate'],
+  shop: [
+    'payments.view', 'payments.create', 'payments.refund', 'coupons.manage', 'giftcards.manage',
+    'bans.manage', 'packages.edit', 'news_popup.manage',
+  ],
+  full: [...ADMIN_PERMISSIONS],
+} as const satisfies Record<string, readonly AdminPermission[]>
+
+export type RoleTemplate = keyof typeof ROLE_TEMPLATES

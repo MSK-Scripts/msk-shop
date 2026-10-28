@@ -39,17 +39,57 @@ export const PAGE_SEO: Record<string, Record<Lang, PageSeo>> = {
       absolute: true,
     },
   },
-  '/packages': {
+  '/fivem': {
     en: {
-      title:       'All Packages',
-      description: 'Browse all FiveM resources, tools and Discord bots from MSK Scripts.',
+      title:       'FiveM Scripts for ESX and QBCore',
+      description: 'Every paid MSK FiveM script, each as Encrypted or Source release, and the subscription for all of them. Prices include VAT.',
     },
     de: {
-      title:       'Alle FiveM Scripts und Pakete',
-      description: 'Alle FiveM-Ressourcen, Tools und Discord-Bots von MSK Scripts auf einen Blick.',
+      title:       'FiveM Scripts für ESX und QBCore',
+      description: 'Alle kostenpflichtigen MSK FiveM Scripts, jedes als Encrypted- oder Source-Fassung, dazu das Abo für alle. Preise inkl. MwSt.',
     },
   },
-  '/resources': {
+  '/fivem/free': {
+    en: {
+      title:       'Free FiveM Scripts',
+      description: 'Free, open-source FiveM scripts by MSK Scripts on GitHub, with documentation and live server counts. msk_core is the library the paid scripts build on.',
+    },
+    de: {
+      title:       'Kostenlose FiveM-Scripts',
+      description: 'Kostenlose FiveM-Scripts von MSK Scripts, quelloffen auf GitHub, mit Doku und Live-Serverzahlen. msk_core ist die Bibliothek der bezahlten Scripts.',
+    },
+  },
+  '/discord': {
+    en: {
+      title:       'Discord Bots: Ticket Bot and Giveaway Bot',
+      description: 'Two Discord bots by MSK Scripts: a self-hosted ticket bot with hosted transcripts and a free, restart-safe giveaway bot.',
+    },
+    de: {
+      title:       'Discord-Bots: Ticket Bot und Giveaway Bot',
+      description: 'Zwei Discord-Bots von MSK Scripts: ein Ticket-Bot zum Selbsthosten mit gehosteten Transkripten und ein kostenloser, neustartsicherer Giveaway-Bot.',
+    },
+  },
+  '/tools': {
+    en: {
+      title:       'Web Tools: Forms, Paste, Short Links, Images',
+      description: 'MSK Forms, MSK Paste, MSK Shortener and a gallery of transparent FiveM images. Open source, no trackers.',
+    },
+    de: {
+      title:       'Web-Tools: Formulare, Paste, Kurzlinks, Bilder',
+      description: 'MSK Forms, MSK Paste, MSK Shortener und eine Galerie mit transparenten FiveM-Bildern. Offener Quellcode, keine Tracker.',
+    },
+  },
+  '/about': {
+    en: {
+      title:       'About MSK Scripts',
+      description: 'Who is behind MSK Scripts: Moritz Kohm, known as Musiker15, self-employed developer in Germany since 2022. Measured figures, Discord and GitHub.',
+    },
+    de: {
+      title:       'Über MSK Scripts',
+      description: 'Wer hinter MSK Scripts steht: Moritz Kohm, bekannt als Musiker15, seit 2022 selbstständiger Entwickler in Deutschland. Gemessene Zahlen, Discord, GitHub.',
+    },
+  },
+  '/stats': {
     en: {
       title:       'Resource Statistics',
       description: 'Live adoption statistics of MSK Scripts FiveM resources across all servers, powered by fivestats.io.',
@@ -59,7 +99,7 @@ export const PAGE_SEO: Record<string, Record<Lang, PageSeo>> = {
       description: 'Wie viele FiveM-Server die Ressourcen von MSK Scripts einsetzen. Live-Zahlen von fivestats.io.',
     },
   },
-  '/ticketbot/stats': {
+  '/discord/ticket-bot/stats': {
     en: {
       title:       'Bot Statistics',
       description: 'Anonymous live statistics of the MSK Ticket Bot across all servers.',
@@ -69,7 +109,7 @@ export const PAGE_SEO: Record<string, Record<Lang, PageSeo>> = {
       description: 'Anonyme Live-Zahlen des MSK Ticket Bots über alle Server hinweg.',
     },
   },
-  '/giveaway/stats': {
+  '/discord/giveaway-bot/stats': {
     en: {
       title:       'Giveaway Bot Statistics',
       description: 'Anonymous live statistics of the MSK Giveaway Bot across all Discord servers.',
@@ -79,19 +119,19 @@ export const PAGE_SEO: Record<string, Record<Lang, PageSeo>> = {
       description: 'Anonyme Live-Zahlen des MSK Giveaway Bots über alle Discord-Server hinweg.',
     },
   },
-  '/terms': {
+  '/legal/terms': {
     en: { title: 'Terms & Conditions', description: 'Terms and conditions for buying and using MSK Scripts resources.' },
     de: { title: 'AGB',                description: 'Allgemeine Geschäftsbedingungen für den Kauf und die Nutzung der Ressourcen von MSK Scripts.' },
   },
-  '/terms/imprint': {
+  '/legal/imprint': {
     en: { title: 'Imprint',    description: 'Legal notice and contact details for MSK Scripts, Moritz Kohm.' },
     de: { title: 'Impressum',  description: 'Anbieterkennzeichnung und Kontaktdaten von MSK Scripts, Moritz Kohm.' },
   },
-  '/terms/privacy': {
+  '/legal/privacy': {
     en: { title: 'Privacy Policy',        description: 'How MSK Scripts handles personal data, in line with the GDPR.' },
     de: { title: 'Datenschutzerklärung',  description: 'Wie MSK Scripts mit personenbezogenen Daten umgeht, nach den Vorgaben der DSGVO.' },
   },
-  '/terms/widerruf': {
+  '/legal/withdrawal': {
     en: {
       title:       'Withdrawal Instructions',
       description: 'Your 14-day right of withdrawal for MSK Scripts subscriptions, including the model withdrawal form.',
@@ -101,7 +141,7 @@ export const PAGE_SEO: Record<string, Record<Lang, PageSeo>> = {
       description: 'Dein 14-tägiges Widerrufsrecht für Abonnements von MSK Scripts, inklusive Muster-Widerrufsformular.',
     },
   },
-  '/terms/avv': {
+  '/legal/dpa': {
     en: {
       title:       'Data Processing Agreement',
       description: 'The Art. 28 GDPR agreement for the transcript service, hosted bot management and MSK Forms.',
@@ -116,7 +156,7 @@ export const PAGE_SEO: Record<string, Record<Lang, PageSeo>> = {
   // § 312k BGB require a button that is permanently reachable without hurdles,
   // and removing a page from the index that someone will search for in an
   // emergency works against that purpose.
-  '/vertrag-widerrufen': {
+  '/withdraw-contract': {
     en: {
       title:       'Withdraw from contract',
       description: 'Withdraw from an MSK Scripts subscription online, without signing in. You receive an acknowledgement of receipt by email.',
@@ -126,7 +166,7 @@ export const PAGE_SEO: Record<string, Record<Lang, PageSeo>> = {
       description: 'Widerrufe ein Abonnement von MSK Scripts online und ohne Anmeldung. Die Eingangsbestätigung kommt per E-Mail.',
     },
   },
-  '/vertrag-kuendigen': {
+  '/cancel-contract': {
     en: {
       title:       'Cancel contracts here',
       description: 'Cancel an MSK Scripts subscription online, without signing in. You receive an acknowledgement of receipt by email.',
@@ -177,7 +217,7 @@ export const PAGE_SEO: Record<string, Record<Lang, PageSeo>> = {
   // The gallery is the only page here that targets search terms that have
   // nothing to do with the brand ("fivem vehicle images transparent").
   // That is why the title holds what people search for, not the section name.
-  '/images/upload': {
+  '/tools/images/upload': {
     en: {
       title:       'Submit an Image',
       description: 'Send us a transparent GTA V or FiveM asset image for the gallery. Reviewed by hand, credited to you, free for everyone to use.',
@@ -187,7 +227,7 @@ export const PAGE_SEO: Record<string, Record<Lang, PageSeo>> = {
       description: 'Schick uns ein freigestelltes GTA-V- oder FiveM-Asset für die Galerie. Wird von Hand geprüft und ist danach für alle kostenlos nutzbar.',
     },
   },
-  '/images': {
+  '/tools/images': {
     en: {
       title:       'FiveM & GTA V Image Gallery',
       description: 'Free transparent images of GTA V vehicles, weapons, items, props and peds for FiveM scripts. Served from our own CDN, ready to use by spawn name.',

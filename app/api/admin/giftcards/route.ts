@@ -1,14 +1,16 @@
 import { NextResponse } from 'next/server';
 import { adminRoute }   from '@/lib/adminApi';
 import { writeAudit }   from '@/lib/adminAudit';
+import { maskPersonalData } from '@/lib/adminMask';
 import { tebexPlugin, unwrapList, type TebexGiftCard } from '@/lib/tebexPlugin';
 
 // Session-/cookie-dependent → never cache.
 export const dynamic = 'force-dynamic';
 
 export const GET = adminRoute('giftcards.manage', async () => {
+  // A note may name a buyer by email; it leaves masked.
   const giftCards = unwrapList<TebexGiftCard>(await tebexPlugin.giftCards.list());
-  return NextResponse.json({ giftCards });
+  return NextResponse.json({ giftCards: maskPersonalData(giftCards) });
 });
 
 // Create a gift card with a starting balance.

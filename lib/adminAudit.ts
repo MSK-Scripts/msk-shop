@@ -8,6 +8,10 @@ import { query } from './db';
  * already happened by the time we log it. Failures are swallowed and logged to
  * the server console instead.
  *
+ * Resolves to whether the row was written. Write actions ignore it, for the
+ * reason above. The reveal of personal data reads it: there the entry comes
+ * first, and a value whose reveal could not be recorded is not sent.
+ *
  * @param discordUserId  the acting admin (from the authorized session)
  * @param action         short verb, e.g. "payment.create_free", "coupon.delete"
  * @param target         the affected id/ign (txn id, coupon id, username, …)
@@ -18,7 +22,7 @@ export async function writeAudit(
   action: string,
   target?: string | null,
   detail?: unknown,
-): Promise<void> {
+): Promise<boolean> {
   try {
     await query(
       `INSERT INTO msk_admin_audit (discord_user_id, action, target, detail)
@@ -30,7 +34,9 @@ export async function writeAudit(
         detail === undefined ? null : JSON.stringify(detail),
       ],
     );
+    return true;
   } catch (err) {
     console.error('[admin/audit] failed to write audit row:', err);
+    return false;
   }
 }

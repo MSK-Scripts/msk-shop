@@ -2,8 +2,6 @@
 
 Last updated: October 2026
 
-This is a translation for your convenience. The German version at www.msk-scripts.de/de/terms/privacy is authoritative.
-
 This privacy policy applies to www.msk-scripts.de and the subdomains docu., discord., paste. and s.msk-scripts.de as well as to the Discord bots operated by MSK Scripts. A separate privacy policy applies to **MSK Forms** (forms.msk-scripts.de); MSK Paste and MSK Shortener additionally carry short notices on their own pages.
 
 ## 1. Controller
@@ -18,7 +16,7 @@ A data protection officer is not legally required and has not been appointed.
 ## 2. Roles: who is responsible for what?
 
 - For the website, the shop integration, accounts, subscriptions and technical operation, **we** are the controller.
-- For the **content of ticket transcripts** and for the data processed by a Ticket Bot hosted by you or hosted by us on your behalf, the **operator of the respective Discord server** is the controller. We store and deliver this data on their behalf (processing on behalf of a controller, Art. 28 GDPR) – the corresponding agreement is available at https://www.msk-scripts.de/terms/avv.
+- For the **content of ticket transcripts** and for the data processed by a Ticket Bot hosted by you or hosted by us on your behalf, the **operator of the respective Discord server** is the controller. We store and deliver this data on their behalf (processing on behalf of a controller, Art. 28 GDPR) – the corresponding agreement is available at https://www.msk-scripts.de/en/legal/dpa.
 - For the **Giveaway Bot** we are the controller for the Discord IDs stored in our database; the server administrator is responsible for the lawfulness of their giveaways.
 - For **payments in the shop**, Tebex Limited is an independent controller; for **Stripe payments**, Stripe is an independent controller.
 
@@ -44,6 +42,7 @@ We only use technically necessary cookies and storage objects that are strictly 
 | `msk_upload_session` | Image gallery | sign-in for submitting images | 7 days |
 | `msk_admin_oauth_state` | Admin area | CSRF protection during the Discord login | 10 min. |
 | `msk_admin_session` | Admin area | sign-in to the internal admin area | 1 hour |
+| `msk_lang` | Shop | only when you change the language with the language switcher: remembers that choice, so that www.msk-scripts.de opens in it | 12 months |
 | `NEXT_LOCALE` | Paste, Shortener | language selection | 12 months |
 
 **localStorage (shop, not sent to our server):**
@@ -51,7 +50,7 @@ We only use technically necessary cookies and storage objects that are strictly 
 
 **sessionStorage (shop):** `discordReturnPath`, `wantDiscordAuth`, `pendingBasketIdent`, `pendingPackageId`, `pendingPackageType` – these remember the purchase in progress while you go through the CFX.re/Discord login; deleted when the tab is closed.
 
-Legal basis: Art. 6 (1) (b) GDPR (login, basket) and Art. 6 (1) (f) GDPR (language). The language of the main site is contained in the URL (`/de/`); no cookie is set for it.
+Legal basis: Art. 6 (1) (b) GDPR (login, basket) and Art. 6 (1) (f) GDPR (language). The language of the main site is contained in the URL (`/en/`, `/de/`); no cookie is set for it. `msk_lang` is only created when you change the language yourself with the language switcher.
 
 ## 5. Shop (Tebex, CFX.re, Discord)
 

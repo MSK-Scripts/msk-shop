@@ -1,0 +1,204 @@
+'use client'
+
+import { useState } from 'react'
+import { CircleNotch as Loader2 } from '@/components/icons'
+
+import { useLang } from '@/components/i18n/LangProvider'
+import { legalFormTranslations, layoutTranslations } from '@/lib/i18n'
+import { Button } from '@/components/ui/Button'
+import { LegalFormShell, Field, FormCard, INPUT_CLASS, TEXTAREA_CLASS } from '@/components/legal/LegalFormShell'
+
+// ── Cancellation button (§ 312k BGB) ────────────────────────────────────────
+//
+// The provision lists the details the confirmation page may and must ask
+// for: type of cancellation, name of the contract, name, contact details and
+// the date. Exactly these five are here, not one more.
+//
+// „Zum nächstmöglichen Zeitpunkt" (at the earliest possible date) is
+// preselected because it is the statutory default. Anyone who wants to
+// give a date can, but does not have to.
+
+interface Done { title: string; text: string }
+
+export function CancellationClient() {
+  const { lang } = useLang()
+  const t  = legalFormTranslations[lang]
+  const tl = layoutTranslations[lang]
+
+  const [kind,        setKind]        = useState<'ordinary' | 'extraordinary'>('ordinary')
+  const [name,        setName]        = useState('')
+  const [contractRef, setContractRef] = useState('')
+  const [email,       setEmail]       = useState('')
+  const [whenMode,    setWhenMode]    = useState<'asap' | 'date'>('asap')
+  const [whenDate,    setWhenDate]    = useState('')
+  const [reason,      setReason]      = useState('')
+  const [errors,      setErrors]      = useState<Record<string, string>>({})
+  const [sending,     setSending]     = useState(false)
+  const [done,        setDone]        = useState<Done | null>(null)
+
+  const messageFor = (code: string | undefined): string | undefined => {
+    if (!code) return undefined
+    return code === 'invalid' ? t.err_email : t.err_required
+  }
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setErrors({})
+    setSending(true)
+    try {
+      const res = await fetch('/api/legal/cancellation', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+          kind, name, contractRef, email, lang,
+          effectiveAt: whenMode === 'date' && whenDate ? whenDate : 'asap',
+          reason:      kind === 'extraordinary' ? reason : null,
+        }),
+      })
+
+      if (res.status === 429) { setErrors({ _: t.err_rate }); return }
+
+      let data: { errors?: Record<string, string>; timestamp?: string } | null = null
+      try { data = await res.json() } catch { /* no usable body */ }
+
+      if (!res.ok) {
+        if (data?.errors) setErrors(data.errors)
+        else setErrors({ _: t.err_generic })
+        return
+      }
+
+      setDone({
+        title: t.cancel_done_title,
+        text:  t.cancel_done_text
+          .replace('{timestamp}', data?.timestamp ?? '')
+          .replace('{email}', email),
+      })
+    } catch {
+      setErrors({ _: t.err_network })
+    } finally {
+      setSending(false)
+    }
+  }
+
+  // Native radios at 20 px in a 44 px row; the whole row is the label.
+  const radio = 'h-5 w-5 shrink-0 accent-[var(--color-primary)]'
+  const radioRow = 'flex min-h-11 cursor-pointer items-center gap-3'
+
+  return (
+    <LegalFormShell
+      breadcrumb={tl.legal_cancel}
+      title={t.cancel_title}
+      intro={t.cancel_intro}
+      done={done}
+      footnote={<p>{t.cancel_portal_hint}</p>}
+    >
+      <FormCard>
+      <form onSubmit={submit} noValidate className="grid gap-5">
+        {/* Type of cancellation: § 312k Abs. 2 Satz 2 Nr. 1 BGB */}
+        <fieldset className="m-0 grid gap-0.5 border-0 p-0">
+          <legend className="mb-1.5 font-semibold">
+            {t.cancel_kind}
+          </legend>
+          <label className={radioRow}>
+            <input
+              type="radio" name="kind" value="ordinary" className={radio}
+              checked={kind === 'ordinary'} onChange={() => setKind('ordinary')}
+            />
+            {t.cancel_kind_ordinary}
+          </label>
+          <label className={radioRow}>
+            <input
+              type="radio" name="kind" value="extraordinary" className={radio}
+              checked={kind === 'extraordinary'} onChange={() => setKind('extraordinary')}
+            />
+            {t.cancel_kind_extraordinary}
+          </label>
+        </fieldset>
+
+        <Field id="name" label={t.field_name} error={messageFor(errors.name)}>
+          <input
+            id="name" name="name" type="text" autoComplete="name" required
+            className={INPUT_CLASS}
+            value={name} onChange={e => setName(e.target.value)}
+            aria-invalid={errors.name ? true : undefined}
+            aria-describedby={errors.name ? 'name-error' : undefined}
+          />
+        </Field>
+
+        <Field
+          id="contractRef" label={t.field_contract}
+          hint={t.cancel_contract_hint} error={messageFor(errors.contractRef)}
+        >
+          <input
+            id="contractRef" name="contractRef" type="text" required
+            className={INPUT_CLASS}
+            value={contractRef} onChange={e => setContractRef(e.target.value)}
+            aria-invalid={errors.contractRef ? true : undefined}
+            aria-describedby={errors.contractRef ? 'contractRef-error' : 'contractRef-hint'}
+          />
+        </Field>
+
+        <Field id="email" label={t.field_email} error={messageFor(errors.email)}>
+          <input
+            id="email" name="email" type="email" autoComplete="email" required
+            className={INPUT_CLASS}
+            value={email} onChange={e => setEmail(e.target.value)}
+            aria-invalid={errors.email ? true : undefined}
+            aria-describedby={errors.email ? 'email-error' : undefined}
+          />
+        </Field>
+
+        {/* Cancellation date: § 312k Abs. 2 Satz 2 Nr. 3 BGB */}
+        <fieldset className="m-0 grid gap-0.5 border-0 p-0">
+          <legend className="mb-1.5 font-semibold">
+            {t.cancel_when}
+          </legend>
+          <label className={radioRow}>
+            <input
+              type="radio" name="when" value="asap" className={radio}
+              checked={whenMode === 'asap'} onChange={() => setWhenMode('asap')}
+            />
+            {t.cancel_when_asap}
+          </label>
+          <label className="flex min-h-11 cursor-pointer flex-wrap items-center gap-x-3 gap-y-2">
+            <span className="flex items-center gap-3">
+              <input
+                type="radio" name="when" value="date" className={radio}
+                checked={whenMode === 'date'} onChange={() => setWhenMode('date')}
+              />
+              {t.cancel_when_date}
+            </span>
+            <input
+              type="date" aria-label={t.cancel_when_date}
+              className={`${INPUT_CLASS} w-auto max-w-full`}
+              value={whenDate}
+              onChange={e => { setWhenDate(e.target.value); setWhenMode('date') }}
+            />
+          </label>
+        </fieldset>
+
+        {kind === 'extraordinary' && (
+          <Field id="reason" label={t.cancel_reason}>
+            <textarea
+              id="reason" name="reason" rows={4}
+              className={TEXTAREA_CLASS}
+              value={reason} onChange={e => setReason(e.target.value)}
+            />
+          </Field>
+        )}
+
+        {errors._ && (
+          <p role="alert" className="text-small font-semibold text-[var(--color-danger)]">{errors._}</p>
+        )}
+
+        {/* „Jetzt kündigen" is the wording of the confirmation button
+            prescribed by law (§ 312k Abs. 2 Satz 4 BGB). */}
+        <Button type="submit" disabled={sending} className="justify-self-start">
+          {sending && <Loader2 className="h-4 w-4 animate-spin" />}
+          {sending ? t.submitting : t.cancel_submit}
+        </Button>
+      </form>
+      </FormCard>
+    </LegalFormShell>
+  )
+}

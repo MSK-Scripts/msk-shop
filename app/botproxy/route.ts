@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import {
   verifyHandoff, signProxySession, verifyProxySession, proxySecret,
-  PROXY_COOKIE, PROXY_SECRET_HEADER, PROXY_USER_HEADER, PROXY_HOST, RETURN_URL,
+  PROXY_COOKIE, PROXY_SECRET_HEADER, PROXY_USER_HEADER, PROXY_HOST, returnUrl,
   PROXY_SESSION_MAX_AGE_S,
 } from '@/lib/botDashboardProxy'
 
@@ -20,7 +20,9 @@ const HOP_BY_HOP = new Set([
   'te', 'trailer', 'transfer-encoding', 'upgrade',
 ])
 
-const bounce = () => NextResponse.redirect(RETURN_URL, { status: 302 })
+// Back to the shop's ticket bot dashboard, in the visitor's language.
+const bounce = (req: NextRequest) =>
+  NextResponse.redirect(returnUrl(req.headers.get('accept-language')), { status: 302 })
 
 async function handle(req: NextRequest): Promise<NextResponse> {
   // This route only exists to serve the proxy host (proxy.ts rewrites to it).
@@ -58,13 +60,13 @@ async function handle(req: NextRequest): Promise<NextResponse> {
 
   // ── 2. Everything else requires a valid proxy session ───────────────────────
   const session = verifyProxySession(req.cookies.get(PROXY_COOKIE)?.value)
-  if (!session) return bounce()
+  if (!session) return bounce(req)
 
   // The bot's SPA sends the browser to /auth/login on a 401 and clears via
   // /auth/logout. In proxy mode there is no OAuth here, so short-circuit both to
   // a fresh handoff from msk-shop instead of forwarding them to the bot.
   if (path === '/auth/login' || path === '/auth/logout') {
-    const res = bounce()
+    const res = bounce(req)
     if (path === '/auth/logout') res.cookies.set(PROXY_COOKIE, '', { path: '/', maxAge: 0 })
     return res
   }

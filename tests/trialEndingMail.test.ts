@@ -5,7 +5,7 @@ import {
   pickMailLang,
   formatTrialEnd,
 } from '@/lib/emails/trialEnding'
-import { hasPaymentMethod, formatSubscriptionPrice } from '@/lib/stripe'
+import { hasPaymentMethod, formatSubscriptionPrice, billingIntervalFromSubscription } from '@/lib/stripe'
 import { mailConfigFromEnv } from '@/lib/mail'
 
 const END = new Date(Date.UTC(2026, 8, 12)) // 12 September 2026
@@ -34,7 +34,7 @@ describe('pickMailLang', () => {
 })
 
 describe('buildTrialEndingEmail', () => {
-  const base = { guildLabel: 'Testserver', trialEndsAt: END, price: '3,99 €' }
+  const base = { guildLabel: 'Testserver', trialEndsAt: END, price: '3,99 €', interval: 'monthly' } as const
 
   it('names the date in subject and body', () => {
     const de = buildTrialEndingEmail({ ...base, lang: 'de' })
@@ -51,8 +51,14 @@ describe('buildTrialEndingEmail', () => {
 
   it('links the dashboard in both the text and the html part', () => {
     const mail = buildTrialEndingEmail({ ...base, lang: 'en' })
-    expect(mail.text).toContain('https://www.msk-scripts.de/ticketbot/dashboard')
-    expect(mail.html).toContain('https://www.msk-scripts.de/ticketbot/dashboard')
+    expect(mail.text).toContain('https://www.msk-scripts.de/en/dashboard/ticket-bot')
+    expect(mail.html).toContain('https://www.msk-scripts.de/en/dashboard/ticket-bot')
+  })
+
+  it('links the dashboard in the language of the mail', () => {
+    const mail = buildTrialEndingEmail({ ...base, lang: 'de' })
+    expect(mail.text).toContain('https://www.msk-scripts.de/de/dashboard/ticket-bot')
+    expect(mail.html).toContain('https://www.msk-scripts.de/de/dashboard/ticket-bot')
   })
 
   it('escapes the guild name so a server called "<script>" cannot inject html', () => {
@@ -65,6 +71,17 @@ describe('buildTrialEndingEmail', () => {
     expect(mail.html).toContain('&lt;script&gt;')
     // The plain-text part keeps the raw name; there is nothing to inject there.
     expect(mail.text).toContain('<script>alert(1)</script>')
+  })
+
+  it('names the billing period the customer is on', () => {
+    // A yearly trial continues at the yearly price. "49,00 € pro Monat" would
+    // quote ten times what the customer pays.
+    const yearly = { ...base, price: '49,00 €', interval: 'yearly' } as const
+    expect(buildTrialEndingEmail({ ...yearly, lang: 'de' }).text).toContain('49,00 € pro Jahr weiter')
+    expect(buildTrialEndingEmail({ ...yearly, lang: 'en' }).text).toContain('49,00 € per year')
+    expect(buildTrialEndingEmail({ ...yearly, lang: 'de' }).text).not.toContain('pro Monat')
+    expect(buildTrialEndingEmail({ ...base, lang: 'de' }).text).toContain('3,99 € pro Monat weiter')
+    expect(buildTrialEndingEmail({ ...base, lang: 'en' }).text).not.toContain('per year')
   })
 
   it('quotes the price the customer would pay', () => {
@@ -103,6 +120,23 @@ describe('formatSubscriptionPrice', () => {
   it('returns an empty string when the price is unreadable', () => {
     const bare = { items: { data: [] } } as unknown as Stripe.Subscription
     expect(formatSubscriptionPrice(bare, 'de')).toBe('')
+  })
+})
+
+describe('billingIntervalFromSubscription', () => {
+  const withInterval = (interval: string) =>
+    ({ items: { data: [{ price: { unit_amount: 4900, currency: 'eur', recurring: { interval } } }] } }) as unknown as Stripe.Subscription
+
+  it('reads a yearly price as yearly', () => {
+    expect(billingIntervalFromSubscription(withInterval('year'))).toBe('yearly')
+  })
+
+  it('reads a monthly price as monthly', () => {
+    expect(billingIntervalFromSubscription(withInterval('month'))).toBe('monthly')
+  })
+
+  it('treats a price without recurring data as monthly', () => {
+    expect(billingIntervalFromSubscription(sub({}))).toBe('monthly')
   })
 })
 

@@ -11,16 +11,16 @@ export const SITE_CONFIG = {
   email: 'info@msk-scripts.de',
 }
 
-// ── Featured Package IDs ─────────────────────────────────────
-// Add the Tebex package IDs you want to show on the homepage.
-// Find the ID in your Tebex control panel URL when editing a package.
-// Example: https://creator.tebex.io/packages/1234567 → ID is 1234567
-
-export const FEATURED_PACKAGE_IDS: number[] = [
-  5301828,
-  6446947,
-  5732588,
-]
+/**
+ * Where the documentation of each bot starts. Checked against the sitemap of
+ * docu.msk-scripts.de on 28.10.2026; the site writes its paths with a
+ * trailing slash.
+ */
+export const BOT_DOCS = {
+  ticketbot: `${SITE_CONFIG.docs}/discord/discord_ticketbot/getting-started/`,
+  ticketbotDashboard: `${SITE_CONFIG.docs}/discord/discord_ticketbot/dashboard/`,
+  giveaway: `${SITE_CONFIG.docs}/discord/discord_giveaway/getting-started/`,
+} as const
 
 // ── Subscription packages ─────────────────────────────────────
 // The two all-access subscriptions from the Tebex "Subscriptions" category.
@@ -32,77 +32,28 @@ export const SUBSCRIPTION_PACKAGE_IDS: { encrypted: number; source: number } | n
   source:    7569121,
 }
 
-// ── Package Badges ────────────────────────────────────────────
-// Add one or more badges to packages by their Tebex package ID.
-// badge.label = Text shown on the badge (e.g. "ESX", "QBCore", "Standalone")
-// badge.variant = Color style: 'esx' | 'qb' | 'standalone' | 'js' | 'lua' | 'py' | 'discord' | 'fivem'
+// ── Products ─────────────────────────────────────────────────
+// What the shop says about a product, keyed by its slug (lib/products.ts).
+// Until Phase 4 of the redesign (28.10.2026) this lived per Tebex package in
+// four tables (badges, descriptions, search snippets, tags), each entry
+// twice: once for Encrypted, once for Source. One product is one page now,
+// so it is one entry.
 //
-// Color reference:
-//   esx        → orange (ESX logo color)
-//   qb         → purple
-//   standalone → green (accent)
-//   js         → yellow
-//   lua        → blue
-//   py         → sky blue
-//   discord    → indigo
-//   fivem      → orange
+// A product without an entry still works: the card falls back to an excerpt
+// of the Tebex text, the page title to the Tebex name.
 
-export type BadgeVariant = 'esx' | 'qb' | 'standalone' | 'js' | 'lua' | 'py' | 'discord' | 'fivem'
-export interface Badge { label: string; variant: BadgeVariant }
-
-export const PACKAGE_BADGES: Record<number, Badge[]> = {
-  5732587: [{ label: 'ESX', variant: 'esx' }, { label: 'Lua', variant: 'lua' }], // MSK Garage - E
-  5732588: [{ label: 'ESX', variant: 'esx' }, { label: 'Lua', variant: 'lua' }], // MSK Garage - S
-  5159927: [{ label: 'ESX', variant: 'esx' }, { label: 'QBCore', variant: 'qb' }, { label: 'Lua', variant: 'lua' }], // MSK Handcuffs - E
-  5301828: [{ label: 'ESX', variant: 'esx' }, { label: 'QBCore', variant: 'qb' }, { label: 'Lua', variant: 'lua' }], // MSK Handcuffs - S
-  6446936: [{ label: 'ESX', variant: 'esx' }, { label: 'QBCore', variant: 'qb' }, { label: 'Lua', variant: 'lua' }], // MSK VehicleKeys - E
-  6446947: [{ label: 'ESX', variant: 'esx' }, { label: 'QBCore', variant: 'qb' }, { label: 'Lua', variant: 'lua' }], // MSK VehicleKeys - S
-  7569109: [{ label: 'Subscription', variant: 'standalone' }, { label: 'Lua', variant: 'lua' }], // Subscription - Encrypted Version
-  7569121: [{ label: 'Subscription', variant: 'standalone' }, { label: 'Lua', variant: 'lua' }], // Subscription - Source Version
-}
-
-// ── Package Descriptions ─────────────────────────────────────
-// Optional custom description shown on package cards.
-// If empty ("") or not set, the Tebex description is used.
-// Keep it short: 1 to 2 sentences max.
-
-export const PACKAGE_DESCRIPTIONS: Record<number, string> = {
-  5732587: 'A complete, server-authoritative garage and impound system for ESX with a modern React UI and a security-first backend.', // MSK Garage - E
-  5732588: 'A complete, server-authoritative garage and impound system for ESX with a modern React UI and a security-first backend.', // MSK Garage - S
-  5159927: 'Realistic handcuffs with animations, props, drag, headbag, tape and ankle tracker.', // MSK Handcuffs - E
-  5301828: 'Realistic handcuffs with animations, props, drag, headbag, tape and ankle tracker.', // MSK Handcuffs - S
-  6446936: 'Unique vehicle key items with lock/unlock, key menu, job vehicles and much more.', // MSK VehicleKeys - E
-  6446947: 'Unique vehicle key items with lock/unlock, key menu, job vehicles and much more.', // MSK VehicleKeys - S
-  7569109: 'This subscription is intended purely as a trial model. The goal is to let you test all scripts thoroughly within one month before deciding on the final purchase of individual resources. It does not replace a permanent license purchase.', // Subscription - Encrypted Version
-  7569121: 'This subscription is intended purely as a trial model. The goal is to let you test all scripts thoroughly within one month before deciding on the final purchase of individual resources. It does not replace a permanent license purchase.', // Subscription - Source Version 
-}
-
-// ── Search snippets ──────────────────────────────────────────
-// Title and meta description of the package and category pages, i.e. what
-// shows up in the Google result list. Deliberately separate from
-// PACKAGE_DESCRIPTIONS: that is the visible card text on the page itself.
-//
-// Two reasons for curating them, both measured in Search Console on
-// 22.08.2026:
-//
-//   1. The shop collects impressions on generic queries such as
-//      "fivem handcuff script" (24) and "fivem job creator" (21), but the
-//      word "FiveM" appears in none of the Tebex package names. The raw name
-//      as <title> left out precisely the term people were searching for.
-//   2. Encrypted and Source are two pages per product with identical text.
-//      Google reports 6 pages as "Duplikat, vom Nutzer nicht als kanonisch
-//      festgelegt" (duplicate without user-selected canonical). Both versions
-//      should stay indexable, so title and description have to name the
-//      license difference.
-//
-// The wording of the difference comes from Tebex's own category texts, it is
-// not made up: Encrypted encrypts everything except config.lua,
-// translation.lua and server_discordlog.lua, Source leaves most of it open
-// and encrypts only the CORE functions.
-//
-// Without an entry the page falls back to the Tebex name and the Tebex text.
-// New packages and categories therefore have to be added here.
-
+/**
+ * Title and meta description of a page, i.e. what shows up in the Google
+ * result list. Deliberately separate from the summary: that is the visible
+ * text on the page itself.
+ *
+ * Why they are curated (measured in Search Console on 22.08.2026): the shop
+ * collects impressions on generic queries such as "fivem handcuff script",
+ * but the word "FiveM" appears in none of the Tebex package names. The raw
+ * name as <title> left out precisely the term people search for.
+ *
+ * No prices: they change with every sale, a snippet does not.
+ */
 export interface SearchSnippet {
   /** <title> without the " | MSK Scripts" suffix. Target: under 50 characters. */
   title:       string
@@ -121,86 +72,101 @@ export interface SearchSnippet {
  */
 export type SearchSnippets = Record<Lang, SearchSnippet>
 
-export const PACKAGE_SEO: Record<number, SearchSnippets> = {
-  5732587: { // MSK Garage - Encrypted
-    en: {
-      title:       'MSK Garage (Encrypted), FiveM Garage & Impound',
-      description: 'Server-authoritative FiveM garage and impound system for ESX with a React admin dashboard. Encrypted release, config and locale files stay open.',
+export interface ProductCopy {
+  /**
+   * One line of benefit, on the card and under the product name. A missing
+   * German line falls back to the English one, marked as English (plan 5.9).
+   */
+  summary: { en: string; de?: string }
+  seo: SearchSnippets
+  /** Frameworks the script runs on, shown as tags and offered as the catalogue filter. */
+  frameworks: string[]
+  /**
+   * From the "Requirements" section of the documentation, read on 28.10.2026
+   * (docu.msk-scripts.de/docs/<resource>/). Names only: the minimum versions
+   * live in the documentation, which the page links to, so they cannot drift
+   * apart here.
+   */
+  requires?: string[]
+  optional?: string[]
+}
+
+export const PRODUCT_COPY: Record<string, ProductCopy> = {
+  garage: {
+    summary: {
+      en: 'A complete, server-authoritative garage and impound system for ESX, QBCore and Qbox with a modern React UI and a security-first backend.',
+      de: 'Ein komplettes Garagen- und Abschlepphof-System für ESX, QBCore und Qbox: der Server prüft alles, die Oberfläche ist modernes React, das Backend auf Sicherheit gebaut.',
     },
-    de: {
-      title:       'MSK Garage (Encrypted), FiveM Garage & Impound',
-      description: 'Server-autoritatives FiveM Garage- und Impound-System für ESX mit React-Admin-Dashboard. Encrypted-Fassung, Config- und Sprachdateien bleiben offen.',
+    seo: {
+      en: {
+        title:       'MSK Garage, FiveM Garage & Impound',
+        description: 'Server-authoritative FiveM garage and impound system for ESX, QBCore and Qbox with a React admin dashboard. Available as Encrypted or Source release.',
+      },
+      de: {
+        title:       'MSK Garage, FiveM Garage & Impound',
+        description: 'Server-autoritatives FiveM Garage- und Impound-System für ESX, QBCore und Qbox mit React-Admin-Dashboard. Als Encrypted- oder Source-Fassung erhältlich.',
+      },
     },
+    frameworks: ['ESX', 'QBCore', 'Qbox'],
+    requires: ['msk_core 4.1.0+', 'ox_lib', 'oxmysql'],
+    optional: ['AdvancedParking', 'VehicleDeformation', 'MSK VehicleKeys', 'VehicleKeyChain', 'Jaksam Vehicle Keys'],
   },
-  5732588: { // MSK Garage - Source
-    en: {
-      title:       'MSK Garage (Source), FiveM Garage & Impound',
-      description: 'Server-authoritative FiveM garage and impound system for ESX with a React admin dashboard. Source release, only the core functions stay encrypted.',
+  handcuffs: {
+    summary: {
+      en: 'Realistic handcuffs with animations, props, drag, headbag, tape and ankle tracker.',
+      de: 'Realistische Handschellen mit Animationen, Props, Abführen, Kopfsack, Klebeband und Fußfessel.',
     },
-    de: {
-      title:       'MSK Garage (Source), FiveM Garage & Impound',
-      description: 'Server-autoritatives FiveM Garage- und Impound-System für ESX mit React-Admin-Dashboard. Source-Fassung, nur die Kernfunktionen bleiben verschlüsselt.',
+    seo: {
+      en: {
+        title:       'MSK Handcuffs, FiveM Handcuff Script',
+        description: 'Realistic FiveM handcuffs for ESX and QBCore: animations, props, drag, headbag, tape and ankle tracker. Available as Encrypted or Source release.',
+      },
+      de: {
+        title:       'MSK Handcuffs, FiveM Handcuff Script',
+        description: 'Realistische FiveM-Handschellen für ESX und QBCore: Animationen, Props, Abführen, Kopfsack, Klebeband und Fußfessel. Als Encrypted oder Source.',
+      },
     },
+    frameworks: ['ESX', 'QBCore'],
+    requires: ['msk_core 4.1.0+', 'oxmysql'],
+    optional: ['ox_target or qb-target', 'pma-voice or saltychat'],
   },
-  5159927: { // MSK Handcuffs - Encrypted
-    en: {
-      title:       'MSK Handcuffs (Encrypted), FiveM Handcuff Script',
-      description: 'Realistic FiveM handcuffs for ESX and QBCore: animations, props, drag, headbag, tape and ankle tracker. Encrypted release, config files stay open.',
+  vehiclekeys: {
+    summary: {
+      en: 'Unique vehicle key items with lock/unlock, key menu, job vehicles and much more.',
+      de: 'Fahrzeugschlüssel als eigene Items, mit Auf- und Zuschließen, Schlüsselmenü, Jobfahrzeugen und mehr.',
     },
-    de: {
-      title:       'MSK Handcuffs (Encrypted), FiveM Handcuff Script',
-      description: 'Realistische FiveM-Handschellen für ESX und QBCore: Animationen, Props, Ziehen, Kopfsack, Klebeband und Fußfessel. Encrypted, Config bleibt offen.',
+    seo: {
+      en: {
+        title:       'MSK VehicleKeys, FiveM Vehicle Keys',
+        description: 'FiveM vehicle keys for ESX and QBCore: unique key items, lock/unlock, key menu, job vehicles, admin dashboard. Encrypted or Source release.',
+      },
+      de: {
+        title:       'MSK VehicleKeys, FiveM Vehicle Keys',
+        description: 'FiveM Vehicle Keys für ESX und QBCore: Schlüssel als Item, Auf- und Zuschließen, Schlüsselmenü, Jobfahrzeuge, Admin-Dashboard. Encrypted oder Source.',
+      },
     },
+    frameworks: ['ESX', 'QBCore'],
+    requires: ['msk_core 4.1.0+', 'ox_lib', 'oxmysql'],
+    optional: ['ox_target', 'msk_enginetoggle'],
   },
-  5301828: { // MSK Handcuffs - Source
-    en: {
-      title:       'MSK Handcuffs (Source), FiveM Handcuff Script',
-      description: 'Realistic FiveM handcuffs for ESX and QBCore: animations, props, drag, headbag, tape and ankle tracker. Source release, only core code encrypted.',
+  'all-access': {
+    // Said positively first, what you get, then that it is a trial licence
+    // (plan 5.5). The facts are the ones of the Tebex text.
+    summary: {
+      en: 'Every MSK FiveM script for a month, cancel monthly. A trial licence: test them on your own server before you buy the ones you keep.',
+      de: 'Alle MSK FiveM Scripts für einen Monat, monatlich kündbar. Eine Testlizenz: probier sie auf deinem Server aus, bevor du die kaufst, die du behalten willst.',
     },
-    de: {
-      title:       'MSK Handcuffs (Source), FiveM Handcuff Script',
-      description: 'Realistische FiveM-Handschellen für ESX und QBCore: Animationen, Props, Ziehen, Kopfsack, Klebeband und Fußfessel. Source, nur der Kern verschlüsselt.',
+    seo: {
+      en: {
+        title:       'All MSK FiveM Scripts, Monthly',
+        description: 'Try every MSK FiveM script for a month before buying a single resource. Encrypted or Source release. A trial model, not a permanent license.',
+      },
+      de: {
+        title:       'Alle MSK FiveM Scripts im Monatsabo',
+        description: 'Einen Monat lang jedes MSK FiveM Script testen, bevor du dich für eine einzelne Ressource entscheidest. Encrypted oder Source, ein Testmodell.',
+      },
     },
-  },
-  6446936: { // MSK VehicleKeys - Encrypted
-    en: {
-      title:       'MSK VehicleKeys (Encrypted), FiveM Vehicle Keys',
-      description: 'FiveM vehicle keys for ESX and QBCore: unique key items, lock/unlock, key menu, job vehicles, admin dashboard. Encrypted release, config stays open.',
-    },
-    de: {
-      title:       'MSK VehicleKeys (Encrypted), FiveM Vehicle Keys',
-      description: 'FiveM Vehicle Keys für ESX und QBCore: Schlüssel als Item, Auf- und Zuschliessen, Schlüsselmenü, Jobfahrzeuge, Admin-Dashboard. Config bleibt offen.',
-    },
-  },
-  6446947: { // MSK VehicleKeys - Source
-    en: {
-      title:       'MSK VehicleKeys (Source), FiveM Vehicle Keys',
-      description: 'FiveM vehicle keys for ESX and QBCore: unique key items, lock/unlock, key menu, job vehicles, admin dashboard. Source release, only core encrypted.',
-    },
-    de: {
-      title:       'MSK VehicleKeys (Source), FiveM Vehicle Keys',
-      description: 'FiveM Vehicle Keys für ESX und QBCore: Schlüssel als Item, Auf- und Zuschliessen, Schlüsselmenü, Jobfahrzeuge, Admin-Dashboard. Nur der Kern verschlüsselt.',
-    },
-  },
-  7569109: { // Subscription - Encrypted
-    en: {
-      title:       'All MSK FiveM Scripts, Monthly (Encrypted)',
-      description: 'Try every MSK FiveM script for a month before buying a single resource. Encrypted release. A trial model, not a permanent license purchase.',
-    },
-    de: {
-      title:       'Alle MSK FiveM Scripts im Monatsabo (Encrypted)',
-      description: 'Einen Monat lang jedes MSK FiveM Script testen, bevor du dich für eine einzelne Ressource entscheidest. Encrypted-Fassung. Ein Testmodell, kein Lizenzkauf.',
-    },
-  },
-  7569121: { // Subscription - Source
-    en: {
-      title:       'All MSK FiveM Scripts, Monthly (Source)',
-      description: 'Try every MSK FiveM script for a month before buying a single resource. Source release. A trial model, not a permanent license purchase.',
-    },
-    de: {
-      title:       'Alle MSK FiveM Scripts im Monatsabo (Source)',
-      description: 'Einen Monat lang jedes MSK FiveM Script testen, bevor du dich für eine einzelne Ressource entscheidest. Source-Fassung. Ein Testmodell, kein Lizenzkauf.',
-    },
+    frameworks: [],
   },
 }
 
@@ -215,7 +181,7 @@ export const CATEGORY_SEO: Record<number, SearchSnippets> = {
     },
     de: {
       title:       'Verschlüsselte FiveM Scripts',
-      description: 'MSK FiveM Scripts in der Encrypted-Fassung: alles ist Escrow-geschützt ausser config.lua, translation.lua und server_discordlog.lua.',
+      description: 'MSK FiveM Scripts in der Encrypted-Fassung: alles ist Escrow-geschützt außer config.lua, translation.lua und server_discordlog.lua.',
     },
   },
   2228937: { // Source Version
@@ -225,7 +191,7 @@ export const CATEGORY_SEO: Record<number, SearchSnippets> = {
     },
     de: {
       title:       'FiveM Scripts mit Quellcode',
-      description: 'MSK FiveM Scripts in der Source-Fassung: der grösste Teil des Codes liegt offen, nur die Kernfunktionen bleiben verschlüsselt und damit kopiergeschützt.',
+      description: 'MSK FiveM Scripts in der Source-Fassung: der größte Teil des Codes liegt offen, nur die Kernfunktionen bleiben verschlüsselt und damit kopiergeschützt.',
     },
   },
   3392436: { // Subscriptions
@@ -269,22 +235,4 @@ export function resolveVariant(
   if (/\bsource\b/i.test(name))    return 'source'
   if (/\bencrypted\b/i.test(name)) return 'encrypted'
   return null
-}
-
-// ── Package Tags ──────────────────────────────────────────────
-// Optional small tags shown below the package name on cards.
-// Example: ['ESX', 'oxmysql', 'msk_core']
-
-export const PACKAGE_TAGS: Record<number, string[]> = {
-  5732587: ['oxmysql','msk_core', 'AdvancedParking', 'MSK VehicleKeys', 'Jaksam Vehicle Keys'], // MSK Garage - E
-  5732588: ['oxmysql','msk_core', 'AdvancedParking', 'MSK VehicleKeys', 'Jaksam Vehicle Keys'], // MSK Garage - S
-  5159927: ['msk_core', 'pma-voice', 'saltychat'], // MSK Handcuffs - E
-  5301828: ['msk_core', 'pma-voice', 'saltychat'], // MSK Handcuffs - S
-  6446936: ['oxmysql', 'msk_core', 'ox_inventory', 'msk_enginetoggle'], // MSK VehicleKeys - E
-  6446947: ['oxmysql', 'msk_core', 'ox_inventory', 'msk_enginetoggle'], // MSK VehicleKeys - S
-  // The two subscription packages deliberately have no entry. `Subscription` is
-  // not a dependency but the product type, and as a badge it already sits at the
-  // top of the image on the card (PACKAGE_BADGES). In this list it also ended up
-  // in the "Funktioniert mit" ("Works with") filter group, between saltychat and
-  // oxmysql, where it does not belong.
 }

@@ -1,0 +1,180 @@
+import type { Metadata, Viewport } from 'next'
+import { headers } from 'next/headers'
+import { notFound } from 'next/navigation'
+
+// Fonts are loaded 100% locally via @fontsource-variable.
+// No communication with fonts.googleapis.com, not even at build time.
+// Archivo with both axes (weight and width), Source Sans 3 with weight.
+import '@fontsource-variable/archivo/standard.css'
+import '@fontsource-variable/source-sans-3'
+
+import '../globals.css'
+
+import { ThemeProvider } from '@/components/theme/ThemeProvider'
+import { LangProvider } from '@/components/i18n/LangProvider'
+import { LANG_HEADER, NOT_FOUND_HEADER, PATH_HEADER, isLang, langFromHeader } from '@/lib/lang'
+import { layoutTranslations } from '@/lib/i18n'
+import { siteUrl } from '@/lib/siteUrl'
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: [
+    // Must match --color-background from app/globals.css, otherwise the
+    // browser bar on a phone shows a different tone than the page below it.
+    // (Until the redesign the dark value was the GitHub dark #161a20, which
+    // is on the exclusion list.)
+    { media: '(prefers-color-scheme: light)', color: '#f6f6f4' },
+    { media: '(prefers-color-scheme: dark)',  color: '#18191b' },
+  ],
+  colorScheme: 'light dark',
+}
+
+const siteMetadata: Metadata = {
+  metadataBase: new URL(siteUrl()),
+  title: {
+    // Pure emergency brake. Since 24.08.2026 every page sets its own
+    // title, including the five of the purchase path. Before, this held the
+    // bare brand name, which the SEO pass of 22.08. had removed from the
+    // home page because it says nothing; the pages without their own
+    // metadata inherited it and were all named the same live.
+    default: "FiveM Scripts, Tools & Discord Bots | MSK Scripts",
+    // Subpages only set their own name and get the suffix from
+    // here. Anyone who deliberately wants a completely custom title (landing pages)
+    // uses `title: { absolute: '…' }`.
+    template: "%s | MSK Scripts",
+  },
+  description:
+    "High quality FiveM resources, Tools & Discord bots for your server",
+  applicationName: "MSK Scripts",
+  authors: [
+    { name: "Musiker15", url: "https://www.musiker15.de" },
+    { name: "MSK Scripts", url: "https://www.msk-scripts.de" },
+  ],
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/logo.png", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/logo.png",
+  },
+  robots: { index: true, follow: true },
+  // Deliberately NO `alternates.canonical` and no `openGraph.url` here: both
+  // would be inherited by every subpage that sets nothing of its own, and there
+  // point to the home page. Canonicals are set per page.
+  openGraph: {
+    type: "website",
+    siteName: "MSK Scripts",
+    locale: "en_US",
+    alternateLocale: ["de_DE"],
+    title: "FiveM Scripts, Tools & Discord Bots | MSK Scripts",
+    description:
+      "High quality FiveM resources, Tools & Discord bots for your server",
+    images: [
+      {
+        url: "/msk-scripts-server-banner.webp",
+        width: 1920,
+        height: 1080,
+        alt: "MSK Scripts",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "FiveM Scripts, Tools & Discord Bots | MSK Scripts",
+    description:
+      "High quality FiveM resources, Tools & Discord bots for your server",
+    images: ["/msk-scripts-server-banner.webp"],
+  },
+};
+
+/**
+ * The site-wide metadata, and the title and robots of the 404 page.
+ *
+ * For an address the proxy marked as unknown the response already carries
+ * the status 404, and for such a response Next resolves the metadata of the
+ * layouts only: neither the catch-all page nor `not-found.tsx` gets a say.
+ * Without this the 404 page was called like the home page and carried
+ * `index, follow` next to Next's own `noindex`.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const hdrs = await headers()
+  if (hdrs.get(NOT_FOUND_HEADER) !== '1') return siteMetadata
+  const t = layoutTranslations[langFromHeader(hdrs.get(LANG_HEADER))]
+  return {
+    ...siteMetadata,
+    title:  { absolute: `${t.not_found_title} | MSK Scripts` },
+    robots: { index: false, follow: true },
+  }
+}
+
+export default async function RootLayout({
+  children, params,
+}: {
+  children: React.ReactNode
+  params: Promise<{ lang: string }>
+}) {
+  // The proxy only lets /en and /de through to this tree. Anything else that
+  // reaches the dynamic segment (a file name that is not in public/, say) is
+  // not a language and gets the 404.
+  const { lang } = await params
+  if (!isLang(lang)) notFound()
+
+  // headers() opts in to dynamic rendering: a precondition for Next.js
+  // injecting the nonce from proxy.ts into its internal hydration scripts.
+  // Without this call the root layout would stay static and the CSP would block
+  // all Next.js scripts.
+  const hdrs = await headers()
+  const nonce = hdrs.get('x-nonce') ?? undefined
+
+  // The internal path comes from proxy.ts. Server Components do not see the
+  // address otherwise, and the switcher needs the path to navigate to the
+  // counterpart URL.
+  const path = hdrs.get(PATH_HEADER) || '/'
+  const t = layoutTranslations[lang]
+
+  return (
+    // `data-scroll-behavior="smooth"` is not decoration but a requirement
+    // of Next: its router only switches off `scroll-behavior: smooth` during a
+    // route change if this attribute is set
+    // (disable-smooth-scroll.js checks `htmlElement.dataset.scrollBehavior`).
+    // Without it the browser animates Next's `scrollTop = 0` over half a
+    // second, and that looks as if the page scrolls by itself on a page
+    // change. Smooth scrolling is kept for anchor jumps.
+    <html lang={lang} data-scroll-behavior="smooth" suppressHydrationWarning>
+      <body className="flex min-h-screen flex-col bg-[var(--color-background)] text-[var(--color-foreground)] antialiased">
+        {/*
+          Skip link, WCAG 2.4.1 (Level A). Deliberately here and not in the header:
+          that sits behind a <Suspense> boundary (HeaderInner uses
+          useSearchParams), so it would at times be missing from the streamed markup,
+          and a skip link that only appears later is not one.
+          Server-rendered so that it works without JavaScript.
+
+          The styling lives entirely in `.skip-link` (app/globals.css) and
+          not in utility classes. The reason is given there.
+        */}
+        <a href="#main" className="skip-link">
+          {t.skip_to_content}
+        </a>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+          nonce={nonce}
+        >
+          {/*
+            Everything below is either the public site (`(site)/layout.tsx`:
+            header, footer, cart, news popup) or one of the three dashboards
+            with their own app shell (plan 6.3). Both render the `<main
+            id="main">` the skip link points to, so it exists exactly once.
+          */}
+          <LangProvider lang={lang} path={path}>
+            {children}
+          </LangProvider>
+        </ThemeProvider>
+      </body>
+    </html>
+  )
+}
