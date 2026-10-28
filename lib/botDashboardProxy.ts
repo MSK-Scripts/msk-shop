@@ -1,5 +1,8 @@
 import { createHmac, timingSafeEqual } from 'crypto'
 
+import { chooseRootLang, publicPath } from '@/lib/routes'
+import { absoluteUrl } from '@/lib/siteUrl'
+
 // =============================================================================
 // Bot-dashboard reverse proxy: signing + config helpers
 // =============================================================================
@@ -35,8 +38,19 @@ export const PROXY_USER_HEADER   = 'x-dashboard-user'
 /** The dedicated host the bot dashboard is proxied under. */
 export const PROXY_HOST = (process.env.BOT_DASHBOARD_HOST || 'bot-dashboard.msk-scripts.de').toLowerCase()
 
-/** Where to bounce a browser that arrives without a valid proxy session. */
-export const RETURN_URL = process.env.BOT_DASHBOARD_RETURN_URL || 'https://www.msk-scripts.de/en/dashboard/ticket-bot'
+/**
+ * Where to bounce a browser that arrives without a valid proxy session: the
+ * ticket bot dashboard of the shop, in the visitor's language. The language
+ * comes from Accept-Language, because the msk_lang cookie of the shop does not
+ * reach this subdomain; without a supported language it is English, as on `/`.
+ * The result is always the shop's own origin plus `/en` or `/de`, whatever the
+ * header says. Built from the route table, so a renamed path cannot leave a
+ * stale address behind; until 28.10.2026 this was the fixed env value
+ * BOT_DASHBOARD_RETURN_URL, which is no longer read.
+ */
+export function returnUrl(acceptLanguage: string | null): string {
+  return absoluteUrl(publicPath(chooseRootLang({ acceptLanguage }), '/dashboard/ticket-bot'))
+}
 
 const SNOWFLAKE_RE = /^\d{17,20}$/
 
