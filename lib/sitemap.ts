@@ -1,4 +1,6 @@
 import { getCategories, getPackages } from '@/lib/tebex'
+import { groupProducts } from '@/lib/products'
+import { productUpdatedAt } from '@/lib/productView'
 import { listCategories } from '@/lib/images'
 import { absoluteUrl } from '@/lib/siteUrl'
 import { X_DEFAULT_PATH, alternatePaths } from '@/lib/routes'
@@ -21,7 +23,7 @@ import { X_DEFAULT_PATH, alternatePaths } from '@/lib/routes'
  * URLs, so the value moved forward with every revalidation and said nothing
  * about the page. Now:
  *
- *   - package pages   → `updated_at` from the Tebex API, the real value
+ *   - product pages   → the most recent `updated_at` of their variants
  *   - category pages  → the most recent `updated_at` of their packages
  *   - everything static → **no** `lastmod` at all
  *
@@ -122,8 +124,9 @@ export async function buildSitemapEntries(): Promise<SitemapEntry[]> {
     }),
   ])
 
-  const packageEntries: SitemapEntry[] = packages.flatMap(pkg =>
-    bothLanguages(`/fivem/${pkg.id}`, parseTimestamp(pkg.updated_at)),
+  // One entry per product page; the old package ids answer 308 to it.
+  const packageEntries: SitemapEntry[] = groupProducts(packages).flatMap(product =>
+    bothLanguages(product.path, parseTimestamp(productUpdatedAt(product))),
   )
 
   // `getCategories()` queries with `includePackages=1`, so the packages are

@@ -7,6 +7,7 @@ import {
   langFromAcceptLanguage, legacyTarget, parsePublicPath, publicPath, resolveRequest, splitLangPrefix,
 } from '@/lib/routes'
 import { LANGS } from '@/lib/lang'
+import { indexProducts } from '@/lib/products'
 
 /** A concrete path for a pattern: every dynamic segment gets a sample value. */
 function sample(pattern: string): string {
@@ -25,7 +26,7 @@ function pagesOnDisk(): string[] {
 }
 
 /** Table entries whose pages come in later phases of the redesign. */
-const PLANNED = ['/fivem/free', '/fivem/all-access', '/discord', '/tools', '/about']
+const PLANNED = ['/fivem/free', '/discord', '/tools', '/about']
 
 describe('route table', () => {
   it('gives every internal path a public form in both languages', () => {
@@ -183,7 +184,7 @@ describe('splitLangPrefix and parsePublicPath', () => {
  */
 const OLD_ADDRESSES: Array<[string, string]> = [
   ['/packages',                  '/en/fivem'],
-  ['/packages/5732587',          '/en/fivem/5732587'],
+  ['/packages/5732587',          '/en/fivem/garage'],
   ['/categories/2105296',        '/en/fivem/categories/2105296'],
   ['/resources',                 '/en/stats'],
   ['/images',                    '/en/tools/images'],
@@ -214,14 +215,14 @@ const OLD_ADDRESSES: Array<[string, string]> = [
   ['/report',                    '/en/report'],
   ['/admin',                     '/en/admin'],
   // formerly in next.config.js
-  ['/package/5732587',           '/en/fivem/5732587'],
+  ['/package/5732587',           '/en/fivem/garage'],
   ['/category/2105296',          '/en/fivem/categories/2105296'],
   ['/verify',                    '/en/dashboard/ticket-bot/verify'],
   ['/dashboard',                 '/en/dashboard/ticket-bot'],
   ['/stats',                     '/en/discord/ticket-bot/stats'],
   // the German versions under the old scheme
   ['/de/packages',               '/de/fivem'],
-  ['/de/packages/5732587',       '/de/fivem/5732587'],
+  ['/de/packages/5732587',       '/de/fivem/garage'],
   ['/de/categories/2105296',     '/de/fivem/kategorien/2105296'],
   ['/de/resources',              '/de/statistiken'],
   ['/de/images',                 '/de/web-tools/bilder'],
@@ -292,6 +293,66 @@ describe('old addresses', () => {
       if (entry.exact) continue
       expect(internalPath('en', entry.from), entry.from).toBeNull()
     }
+  })
+})
+
+/**
+ * Product addresses (Phase 4): `/fivem/<slug>`, one page per product. Every
+ * Tebex package id of the configured products, under every old scheme,
+ * reaches its product in one hop, with the variant preselected when it was
+ * not the default one.
+ */
+const PRODUCT_IDS: Array<[number, string]> = [
+  [5732587, '/en/fivem/garage'],
+  [5732588, '/en/fivem/garage?variant=source'],
+  [5159927, '/en/fivem/handcuffs'],
+  [5301828, '/en/fivem/handcuffs?variant=source'],
+  [6446936, '/en/fivem/vehiclekeys'],
+  [6446947, '/en/fivem/vehiclekeys?variant=source'],
+  [7569109, '/en/fivem/all-access'],
+  [7569121, '/en/fivem/all-access?variant=source'],
+]
+
+describe('product addresses', () => {
+  it.each(PRODUCT_IDS)('sends package %i to %s from every old address', (id, to) => {
+    const de = to.replace('/en/', '/de/').replace('/fivem/all-access', '/fivem/alle-scripts')
+    for (const from of [`/packages/${id}`, `/package/${id}`, `/en/fivem/${id}`]) {
+      expect(resolveRequest(from), from).toEqual({ kind: 'redirect', status: 308, location: to })
+    }
+    for (const from of [`/de/packages/${id}`, `/de/fivem/${id}`]) {
+      expect(resolveRequest(from), from).toEqual({ kind: 'redirect', status: 308, location: de })
+    }
+  })
+
+  it('serves every product slug as it is, the target of each redirect included', () => {
+    for (const [, to] of PRODUCT_IDS) {
+      const path = to.split('?')[0]
+      expect(resolveRequest(path), path).toMatchObject({ kind: 'page', path: path.replace('/en', '') })
+      expect(resolveRequest(path)).not.toHaveProperty('unknown')
+    }
+    expect(resolveRequest('/de/fivem/garage')).toMatchObject({ kind: 'page', lang: 'de', path: '/fivem/garage' })
+    expect(resolveRequest('/de/fivem/alle-scripts')).toMatchObject({ kind: 'page', lang: 'de', path: '/fivem/all-access' })
+  })
+
+  it('marks an unknown slug or id as unknown, in the language of the address', () => {
+    expect(resolveRequest('/en/fivem/does-not-exist')).toMatchObject({ kind: 'page', lang: 'en', unknown: true })
+    expect(resolveRequest('/de/fivem/999999')).toMatchObject({ kind: 'page', lang: 'de', unknown: true })
+    // An old address of a package that does not exist: the 404 page at once.
+    expect(resolveRequest('/packages/999999')).toMatchObject({ kind: 'page', lang: 'en', unknown: true })
+    // Not a redirect to the lower-case form either: there is one address.
+    expect(resolveRequest('/en/fivem/Garage')).toMatchObject({ kind: 'page', unknown: true })
+  })
+
+  it('leaves the pages below /fivem alone', () => {
+    expect(resolveRequest('/en/fivem/free')).toMatchObject({ kind: 'page', path: '/fivem/free' })
+    expect(resolveRequest('/de/fivem/kategorien/2105296')).toMatchObject({ kind: 'page', path: '/fivem/categories/2105296' })
+  })
+
+  it('flags an unknown product as uncertain only while the configured products decide', () => {
+    // The proxy then asks again with the index built from Tebex.
+    expect(resolveRequest('/en/fivem/newscript')).toMatchObject({ unknown: true, uncertain: true })
+    const products = indexProducts([])
+    expect(resolveRequest('/en/fivem/newscript', { products })).not.toHaveProperty('uncertain')
   })
 })
 

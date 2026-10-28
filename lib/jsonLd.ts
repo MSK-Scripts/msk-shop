@@ -2,10 +2,8 @@ import { SITE_CONFIG } from '@/lib/config'
 import type { Lang } from '@/lib/i18n'
 import { DEFAULT_LANG } from '@/lib/lang'
 import { publicPath } from '@/lib/routes'
-import { resolveDisplayPrice } from '@/lib/price'
 import { absoluteUrl, siteUrl } from '@/lib/siteUrl'
-import { packageImage, plainExcerpt } from '@/lib/seo'
-import type { TebexPackage } from '@/types/tebex'
+import { DEFAULT_OG_IMAGE } from '@/lib/seo'
 
 /**
  * Structured data (JSON-LD, schema.org) for search engines.
@@ -217,11 +215,23 @@ export function faqPageJsonLd(entries: FaqEntry[]): JsonLdObject {
   }
 }
 
+/** What `productJsonLd` needs to know about a product page. */
+export interface ProductJsonLdInput {
+  name: string
+  /** Internal path of the product page (`/fivem/garage`). */
+  path: string
+  image: string | null
+  description?: string
+  /** One offer per variant, in the order of the page. */
+  offers: Array<{ name?: string; price: number; currency: string }>
+}
+
 /**
- * A Tebex package as Product + Offer.
+ * A product as Product + Offer, or Product + AggregateOffer when it is sold in
+ * two variants.
  *
- * **Price:** deliberately the catalog price from the unauthenticated Tebex API,
- * i.e. exactly the value a logged-out visitor (and therefore also
+ * **Price:** deliberately the catalogue price from the unauthenticated Tebex
+ * API, i.e. exactly the value a logged-out visitor (and therefore also
  * Googlebot) sees on the page. The user-specific sales depend on an
  * authenticated basket ident that a crawler never has. Taking them into
  * account here would produce markup that does not match the rendered page.
@@ -229,45 +239,55 @@ export function faqPageJsonLd(entries: FaqEntry[]): JsonLdObject {
  *
  * **Address:** the page the markup sits on. Until 01.10.2026 `url` and
  * `offers.url` always named the English page, so the German one pointed a
- * crawler away from itself, to an address its own canonical contradicts. Name
- * and description stay as Tebex delivers them: that is what both language
- * versions show.
+ * crawler away from itself, to an address its own canonical contradicts.
+ *
+ * **Variants:** since Phase 4 of the redesign Encrypted and Source are two
+ * offers on one page. An AggregateOffer names the price range and lists both,
+ * each with its own price, so the markup says what the buy box says.
  */
-export function productJsonLd(pkg: TebexPackage, description?: string, lang: Lang = DEFAULT_LANG): JsonLdObject {
-  const { price } = resolveDisplayPrice(pkg.base_price ?? 0, pkg.total_price ?? pkg.base_price ?? 0)
-  const url = absoluteUrl(publicPath(lang, `/fivem/${pkg.id}`))
+export function productJsonLd(input: ProductJsonLdInput, lang: Lang = DEFAULT_LANG): JsonLdObject {
+  const url = absoluteUrl(publicPath(lang, input.path))
+  const offer = (o: ProductJsonLdInput['offers'][number]): JsonLdObject => ({
+    '@type':       'Offer',
+    ...(o.name ? { name: o.name } : {}),
+    url,
+    price:         o.price.toFixed(2),
+    priceCurrency: o.currency || 'EUR',
+    availability:  `${SCHEMA}/InStock`,
+    // Digital product, delivered via Tebex.
+    itemCondition: `${SCHEMA}/NewCondition`,
+    seller: {
+      '@type': 'Organization',
+      name:    'MSK Scripts',
+    },
+  })
+
+  const prices = input.offers.map(o => o.price)
+  const offers: JsonLdObject = input.offers.length === 1
+    ? offer(input.offers[0])
+    : {
+        '@type':       'AggregateOffer',
+        lowPrice:      Math.min(...prices).toFixed(2),
+        highPrice:     Math.max(...prices).toFixed(2),
+        offerCount:    input.offers.length,
+        priceCurrency: input.offers[0]?.currency || 'EUR',
+        offers:        input.offers.map(offer),
+      }
 
   const product: JsonLdObject = {
     '@context': SCHEMA,
     '@type':    'Product',
-    name:       pkg.name,
+    name:       input.name,
     url,
-    image:      packageImage(pkg),
+    image:      input.image ?? DEFAULT_OG_IMAGE,
     brand: {
       '@type': 'Brand',
       name:    'MSK Scripts',
     },
-    offers: {
-      '@type':         'Offer',
-      url,
-      price:           price.toFixed(2),
-      priceCurrency:   pkg.currency || 'EUR',
-      availability:    `${SCHEMA}/InStock`,
-      // Digital product, delivered via Tebex.
-      itemCondition:   `${SCHEMA}/NewCondition`,
-      seller: {
-        '@type': 'Organization',
-        name:    'MSK Scripts',
-      },
-    },
+    offers,
   }
 
-  const text = description ?? plainExcerpt(pkg.description, 300)
-  if (text) product.description = text
-
-  if (pkg.category?.name) {
-    product.category = pkg.category.name
-  }
+  if (input.description) product.description = input.description
 
   return product
 }

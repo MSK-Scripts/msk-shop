@@ -1,14 +1,19 @@
 import { describe, expect, it } from 'vitest'
 
 import { botLandingEntries } from '@/lib/botSeo'
-import { PACKAGE_SEO } from '@/lib/config'
+import { PRODUCT_COPY } from '@/lib/config'
 import { renderLlmsTxt } from '@/lib/llms'
 import { PAGE_SEO } from '@/lib/pageSeo'
 import { siteUrl } from '@/lib/siteUrl'
 
+import type { TebexPackage } from '@/types/tebex'
+
+const pkg = (p: Partial<TebexPackage>) => ({ slug: null, media: [], type: 'single', ...p }) as unknown as TebexPackage
+
 const PACKAGES = [
-  { id: 5732587, name: 'MSK Garage - Encrypted Version', description: '<p>Garage.</p>' },
-  { id: 999,     name: 'Unlisted Package',               description: '<p>Plain <b>Tebex</b> text.</p>' },
+  pkg({ id: 5732587, name: 'MSK Garage - Encrypted Version', description: '<p>Garage.</p>', category: { id: 2105296, name: 'Encrypted Version' } }),
+  pkg({ id: 5732588, name: 'MSK Garage - Source Version', description: '<p>Garage.</p>', category: { id: 2228937, name: 'Source Version' } }),
+  pkg({ id: 999,     name: 'Unlisted Package',               description: '<p>Plain <b>Tebex</b> text.</p>' }),
 ]
 
 describe('renderLlmsTxt', () => {
@@ -22,15 +27,17 @@ describe('renderLlmsTxt', () => {
     expect(summary).toBe(`> ${PAGE_SEO['/'].en.description}`)
   })
 
-  it('lists a package under the curated search title, not the raw Tebex name', () => {
-    const curated = PACKAGE_SEO[5732587].en
+  it('lists a product once, under its address and the curated search title', () => {
+    const curated = PRODUCT_COPY.garage.seo.en
 
-    expect(text).toContain(`- [${curated.title}](${siteUrl()}/en/fivem/5732587): ${curated.description}`)
+    expect(text).toContain(`- [${curated.title}](${siteUrl()}/en/fivem/garage): ${curated.description}`)
     expect(text).not.toContain('MSK Garage - Encrypted Version')
+    expect(text).not.toContain('/en/fivem/5732587')
+    expect(text.split(`/en/fivem/garage)`).length - 1).toBe(1)
   })
 
-  it('falls back to the Tebex name and a plain-text excerpt for a package without a snippet', () => {
-    expect(text).toContain(`- [Unlisted Package](${siteUrl()}/en/fivem/999): Plain Tebex text.`)
+  it('falls back to the Tebex name and a plain-text excerpt for a product without copy', () => {
+    expect(text).toContain(`- [Unlisted Package](${siteUrl()}/en/fivem/unlisted-package): Plain Tebex text.`)
   })
 
   it('carries all three bot landing pages with the description their own page uses', () => {

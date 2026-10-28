@@ -1,30 +1,17 @@
 import { describe, expect, it } from 'vitest'
 
 import { breadcrumbJsonLd, organizationJsonLd, productJsonLd, softwareApplicationJsonLd, webSiteJsonLd } from '@/lib/jsonLd'
-import type { TebexPackage } from '@/types/tebex'
+import type { ProductJsonLdInput } from '@/lib/jsonLd'
 
-function makePackage(overrides: Partial<TebexPackage> = {}): TebexPackage {
+function makeProduct(overrides: Partial<ProductJsonLdInput> = {}): ProductJsonLdInput {
   return {
-    id:          5732587,
-    name:        'MSK Garage & Impound',
-    slug:        'msk-garage',
-    description: '<p>Ein <strong>Garagen</strong>-System.</p>',
-    image:       'https://cdn/garage.png',
-    media:       [],
-    type:        'single',
-    category:    { id: 2105296, name: 'Encrypted Version' },
-    base_price:  19.99,
-    sales_tax:   0,
-    total_price: 19.99,
-    currency:    'EUR',
-    discount:    0,
-    disable_quantity: false,
-    disable_gifting:  false,
-    created_at:  '2026-01-01',
-    updated_at:  '2026-01-01',
-    order:       1,
+    name:        'MSK Garage',
+    path:        '/fivem/garage',
+    image:       'https://cdn/garage-screenshot.png',
+    description: 'Ein Garagen-System.',
+    offers:      [{ price: 19.99, currency: 'EUR' }],
     ...overrides,
-  } as TebexPackage
+  }
 }
 
 describe('organizationJsonLd', () => {
@@ -61,47 +48,52 @@ describe('breadcrumbJsonLd', () => {
 
 describe('productJsonLd', () => {
   it('zeichnet Preis, Währung und Verfügbarkeit aus', () => {
-    const product = productJsonLd(makePackage())
+    const product = productJsonLd(makeProduct())
     const offer = product.offers as Record<string, unknown>
 
     expect(product['@type']).toBe('Product')
-    expect(product.name).toBe('MSK Garage & Impound')
+    expect(product.name).toBe('MSK Garage')
+    expect(product.image).toBe('https://cdn/garage-screenshot.png')
+    expect(offer['@type']).toBe('Offer')
     expect(offer.price).toBe('19.99')
     expect(offer.priceCurrency).toBe('EUR')
     expect(offer.availability).toBe('https://schema.org/InStock')
-    expect(String(offer.url)).toMatch(/\/en\/fivem\/5732587$/)
-  })
-
-  // The crawler never sees an authenticated basket, so never the sale.
-  // The markup must match what is rendered when logged out.
-  it('nutzt den Katalogpreis, nicht einen user-spezifischen Sale', () => {
-    const product = productJsonLd(makePackage({ base_price: 29.99, total_price: 29.99 }))
-    expect((product.offers as Record<string, unknown>).price).toBe('29.99')
+    expect(String(offer.url)).toMatch(/\/en\/fivem\/garage$/)
   })
 
   it('formatiert den Preis immer mit zwei Nachkommastellen', () => {
-    const product = productJsonLd(makePackage({ base_price: 20, total_price: 20 }))
+    const product = productJsonLd(makeProduct({ offers: [{ price: 20, currency: 'EUR' }] }))
     expect((product.offers as Record<string, unknown>).price).toBe('20.00')
   })
 
-  it('leitet die Beschreibung als Klartext aus dem Tebex-HTML ab', () => {
-    const product = productJsonLd(makePackage())
-    expect(product.description).toBe('Ein Garagen-System.')
+  // Encrypted and Source are two offers on one page since Phase 4: the markup
+  // names the range and both prices, as the buy box does.
+  it('names both variants of a product as an AggregateOffer', () => {
+    const product = productJsonLd(makeProduct({
+      offers: [
+        { name: 'Encrypted', price: 19.99, currency: 'EUR' },
+        { name: 'Source',    price: 39.99, currency: 'EUR' },
+      ],
+    }))
+    const aggregate = product.offers as Record<string, unknown>
+    const offers = aggregate.offers as Array<Record<string, unknown>>
+
+    expect(aggregate['@type']).toBe('AggregateOffer')
+    expect(aggregate.lowPrice).toBe('19.99')
+    expect(aggregate.highPrice).toBe('39.99')
+    expect(aggregate.offerCount).toBe(2)
+    expect(offers.map(o => [o.name, o.price])).toEqual([['Encrypted', '19.99'], ['Source', '39.99']])
   })
 
-  it('bevorzugt die kuratierte Beschreibung, wenn übergeben', () => {
-    const product = productJsonLd(makePackage(), 'Kurze kuratierte Beschreibung.')
-    expect(product.description).toBe('Kurze kuratierte Beschreibung.')
-  })
-
-  it('übernimmt die Kategorie', () => {
-    expect(productJsonLd(makePackage()).category).toBe('Encrypted Version')
+  it('übernimmt die Beschreibung und lässt sie ohne weg', () => {
+    expect(productJsonLd(makeProduct()).description).toBe('Ein Garagen-System.')
+    expect(productJsonLd(makeProduct({ description: undefined }))).not.toHaveProperty('description')
   })
 
   // The JSON block ends up in a <script> element. A `<` in the value must not
   // be able to break out of the block.
   it('bleibt nach dem Escaping ein gültiger, ausbruchsicherer Script-Inhalt', () => {
-    const product = productJsonLd(makePackage({ name: '</script><img src=x onerror=alert(1)>' }))
+    const product = productJsonLd(makeProduct({ name: '</script><img src=x onerror=alert(1)>' }))
     const serialized = JSON.stringify(product).replace(/</g, '\\u003c')
 
     expect(serialized).not.toContain('</script>')
@@ -189,16 +181,17 @@ describe('productJsonLd language', () => {
   // Until 01.10.2026 the German page named the English address in `url` and
   // `offers.url`, against its own canonical.
   it('names the address of the page it sits on', () => {
-    const en = productJsonLd(makePackage(), undefined, 'en')
-    const de = productJsonLd(makePackage(), undefined, 'de')
+    const en = productJsonLd(makeProduct(), 'en')
+    const de = productJsonLd(makeProduct({ path: '/fivem/all-access' }), 'de')
 
-    expect(String(en.url)).toMatch(/\/en\/fivem\/5732587$/)
-    expect(String(de.url)).toMatch(/\/de\/fivem\/5732587$/)
+    expect(String(en.url)).toMatch(/\/en\/fivem\/garage$/)
+    // The German address of the subscription has German words.
+    expect(String(de.url)).toMatch(/\/de\/fivem\/alle-scripts$/)
     expect((de.offers as Record<string, unknown>).url).toBe(de.url)
   })
 
   it('stays on the default language when none is given', () => {
-    expect(productJsonLd(makePackage()).url).toBe(productJsonLd(makePackage(), undefined, 'en').url)
+    expect(productJsonLd(makeProduct()).url).toBe(productJsonLd(makeProduct(), 'en').url)
   })
 })
 

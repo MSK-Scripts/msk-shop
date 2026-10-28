@@ -35,7 +35,7 @@ export const TOOL_URLS = {
  * is a 404 in the console on every page view. Remove an entry when its page
  * lands.
  */
-const PENDING_PAGES = new Set(['/discord', '/tools', '/about', '/fivem/free', '/fivem/all-access'])
+const PENDING_PAGES = new Set(['/discord', '/tools', '/about', '/fivem/free'])
 
 /** `prefetch` for a `LocaleLink` to `href`: off for pages that do not exist yet. */
 export function prefetchFor(href: string): false | undefined {

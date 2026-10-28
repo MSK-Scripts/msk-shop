@@ -1,7 +1,8 @@
 import { botLandingEntries } from '@/lib/botSeo'
 import { SITE_CONFIG } from '@/lib/config'
 import { pageSeo } from '@/lib/pageSeo'
-import { packageSnippet } from '@/lib/seo'
+import { groupProducts } from '@/lib/products'
+import { productSnippet } from '@/lib/productView'
 import { absoluteUrl } from '@/lib/siteUrl'
 import { publicPath } from '@/lib/routes'
 import type { TebexPackage } from '@/types/tebex'
@@ -11,16 +12,19 @@ import type { TebexPackage } from '@/types/tebex'
  * sells, which pages there are and what each one answers.
  *
  * Every title and every description comes from the place the page itself
- * takes it from: `PAGE_SEO` for the fixed pages, `packageSnippet` for the
- * packages, `botLandingEntries` for the bot landing pages. A second wording
+ * takes it from: `PAGE_SEO` for the fixed pages, `productSnippet` for the
+ * products, `botLandingEntries` for the bot landing pages. A second wording
  * kept here would drift from the first, and this file is exactly the one a
  * model quotes from.
  *
  * English only, the default language, with one pointer to `/de`. Listing both
  * would have doubled every line without telling a reader anything new.
  *
- * It names no prices. They change with every sale, and the package page with
+ * It names no prices. They change with every sale, and the product page with
  * its `Offer` markup is the place that keeps them current.
+ *
+ * One line per product, not per Tebex package: Encrypted and Source are two
+ * choices on one page since Phase 4 of the redesign.
  */
 
 const LANG = 'en' as const
@@ -44,7 +48,7 @@ function section(heading: string, lines: string[]): string[] {
  * decides what to do when Tebex does not answer, and a test can call this
  * without a network.
  */
-export function renderLlmsTxt(packages: Array<Pick<TebexPackage, 'id' | 'name' | 'description'>>): string {
+export function renderLlmsTxt(packages: TebexPackage[]): string {
   const home = pageSeo('/', LANG)
 
   const lines = [
@@ -56,9 +60,9 @@ export function renderLlmsTxt(packages: Array<Pick<TebexPackage, 'id' | 'name' |
     '',
     ...section('FiveM scripts', [
       page('/fivem'),
-      ...packages.map(pkg => {
-        const { title, description } = packageSnippet(pkg, LANG)
-        return entry(title, absoluteUrl(publicPath(LANG, `/fivem/${pkg.id}`)), description)
+      ...groupProducts(packages).map(product => {
+        const { title, description } = productSnippet(product, LANG)
+        return entry(title, absoluteUrl(publicPath(LANG, product.path)), description)
       }),
     ]),
     ...section(

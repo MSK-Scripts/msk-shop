@@ -1,5 +1,6 @@
 import type { Lang } from '@/lib/i18n'
 import { DEFAULT_LANG, LANGS, isLang } from '@/lib/lang'
+import { STATIC_PRODUCT_INDEX, productTarget, type ProductIndex } from '@/lib/products'
 
 /**
  * The route table: one place that knows what every page is called in every
@@ -41,7 +42,7 @@ export const ROUTES: readonly RouteDef[] = [
   route('/'),
 
   route('/fivem'),
-  route('/fivem/[id]'),
+  route('/fivem/[slug]'),
   route('/fivem/free',            '/fivem/kostenlos'),
   route('/fivem/all-access',      '/fivem/alle-scripts'),
   route('/fivem/categories/[id]', '/fivem/kategorien/[id]'),
@@ -176,7 +177,7 @@ function isDynamic(segment: string): boolean {
 /**
  * Pattern order: at the first segment where two patterns differ, a static
  * segment beats a dynamic one (as in Next's own routing, `/fivem/free` before
- * `/fivem/[id]`); if one pattern is the start of the other, the longer one
+ * `/fivem/[slug]`); if one pattern is the start of the other, the longer one
  * comes first.
  */
 function comparePatterns(a: string[], b: string[]): number {
@@ -356,7 +357,10 @@ export function langFromAcceptLanguage(header: string | null | undefined): Lang 
 export type Resolution =
   /** Hand to Next unchanged: exempt address or a static file. */
   | { kind: 'pass' }
-  /** `location` is a path; the proxy appends the query string. */
+  /**
+   * `location` is a path, possibly with a query of its own (`?variant=source`);
+   * the proxy appends the query string of the request.
+   */
   | { kind: 'redirect'; status: 307 | 308; location: string }
   /**
    * Render a page. `path` is the internal path (basis for canonical and
@@ -364,7 +368,44 @@ export type Resolution =
    * `unknown` marks an address the table does not know: the proxy answers it
    * with the 404 page of its language and the status 404 itself.
    */
-  | { kind: 'page'; lang: Lang; path: string; target: string; unknown?: true }
+  | { kind: 'page'; lang: Lang; path: string; target: string; unknown?: true; uncertain?: true }
+
+/**
+ * Context of a request. `products` is the product index to resolve
+ * `/fivem/<segment>` against; without it the configured products decide.
+ *
+ * `uncertain` on a resolution means: a product address was unknown to the
+ * configured products only. The proxy then asks again with the index built
+ * from Tebex (a script added there without a deploy), see proxy.ts.
+ */
+export interface RequestContext {
+  cookie?: string | null
+  acceptLanguage?: string | null
+  products?: ProductIndex
+}
+
+/** Pages of their own directly below `/fivem` (`/fivem/free`), never a product slug. */
+const FIVEM_PAGES = new Set(ROUTES.map(r => r.internal).filter(p => /^\/fivem\/[^/[]+$/.test(p)))
+
+type ProductResolution =
+  | { kind: 'none' }
+  | { kind: 'product'; path: string; query: string }
+  | { kind: 'unknown' }
+
+/**
+ * Product pages answer for a slug only. An old address with the Tebex id of a
+ * package (`/fivem/5732587`) leads to its product, and to the variant it was
+ * when that was not the default one. Anything else below the product route
+ * is unknown, and the proxy answers it with the 404 page of its language
+ * before a page renders: a `notFound()` thrown by the page would come back as
+ * Next's empty error shell without `lang`.
+ */
+function resolveProduct(internal: string, index: ProductIndex): ProductResolution {
+  const match = /^\/fivem\/([^/]+)$/.exec(internal)
+  if (!match || FIVEM_PAGES.has(internal)) return { kind: 'none' }
+  const target = productTarget(match[1], index)
+  return target ? { kind: 'product', ...target } : { kind: 'unknown' }
+}
 
 function targetOf(lang: Lang, internal: string): string {
   return internal === '/' ? `/${lang}` : `/${lang}${internal}`
@@ -383,16 +424,19 @@ function looksLikeFile(path: string): boolean {
  *   - `/` answers 307 to `/de` or `/en` (see `chooseRootLang`),
  *   - every page has exactly one address per language; any other known form
  *     (the other language's words, an old address) answers 308 to it,
+ *   - a product page answers for its slug only: an old package id answers
+ *     308 to its product, an unknown slug or id is an unknown address,
  *   - exempt addresses are never prefixed or redirected,
  *   - an unknown address is rendered by the 404 page of its language.
  */
-export function resolveRequest(
-  pathname: string,
-  ctx: { cookie?: string | null; acceptLanguage?: string | null } = {},
-): Resolution {
+export function resolveRequest(pathname: string, ctx: RequestContext = {}): Resolution {
   if (pathname === '/') {
     return { kind: 'redirect', status: 307, location: publicPath(chooseRootLang(ctx), '/') }
   }
+
+  const index = ctx.products ?? STATIC_PRODUCT_INDEX
+  // Only the configured products said "unknown"; Tebex may know better.
+  const uncertain = ctx.products ? {} : { uncertain: true as const }
 
   const prefixed = splitLangPrefix(pathname)
 
@@ -402,7 +446,16 @@ export function resolveRequest(
     // before `/en/stats` existed, and links to it are still out there.
     const internal = legacyTarget(pathname) ?? internalPath(DEFAULT_LANG, pathname)
     if (internal !== null) {
-      return { kind: 'redirect', status: 308, location: publicPath(DEFAULT_LANG, internal) }
+      const product = resolveProduct(internal, index)
+      if (product.kind === 'unknown') {
+        // `/packages/<id>` of a package that does not exist: the 404 page
+        // right away, rather than a redirect to one.
+        return { kind: 'page', lang: DEFAULT_LANG, path: internal, target: targetOf(DEFAULT_LANG, internal), unknown: true, ...uncertain }
+      }
+      const location = product.kind === 'product'
+        ? `${publicPath(DEFAULT_LANG, product.path)}${product.query}`
+        : publicPath(DEFAULT_LANG, internal)
+      return { kind: 'redirect', status: 308, location }
     }
     if (looksLikeFile(pathname)) return { kind: 'pass' }
     return { kind: 'page', lang: DEFAULT_LANG, path: pathname, target: targetOf(DEFAULT_LANG, pathname), unknown: true }
@@ -415,13 +468,22 @@ export function resolveRequest(
     return { kind: 'page', lang, path: rest, target: pathname, unknown: true }
   }
 
-  const internal = resolveInternal(lang, rest)
-  if (internal === null) {
+  const resolved = resolveInternal(lang, rest)
+  if (resolved === null) {
     return { kind: 'page', lang, path: rest, target: pathname, unknown: true }
   }
 
+  const product = resolveProduct(resolved, index)
+  if (product.kind === 'unknown') {
+    return { kind: 'page', lang, path: resolved, target: targetOf(lang, resolved), unknown: true, ...uncertain }
+  }
+  const internal = product.kind === 'product' ? product.path : resolved
+
   const canonical = publicPath(lang, internal)
-  if (canonical !== pathname) return { kind: 'redirect', status: 308, location: canonical }
+  if (canonical !== pathname) {
+    // A slug is never numeric, so an id address always lands here.
+    return { kind: 'redirect', status: 308, location: `${canonical}${product.kind === 'product' ? product.query : ''}` }
+  }
 
   return { kind: 'page', lang, path: internal, target: targetOf(lang, internal) }
 }

@@ -35,7 +35,7 @@ describe('loading.tsx and notFound()', () => {
   it('finds the pages that call notFound(), so the check below cannot pass on an empty list', () => {
     const pages = files.filter(isPage).filter(callsNotFound).map(file => relative(APP, file).split(sep).join('/'))
 
-    expect(pages).toContain('[lang]/fivem/[id]/page.tsx')
+    expect(pages).toContain('[lang]/fivem/[slug]/page.tsx')
     expect(pages).toContain('[lang]/fivem/categories/[id]/page.tsx')
   })
 

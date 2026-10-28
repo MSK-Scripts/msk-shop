@@ -31,19 +31,27 @@ describe('buildSitemapEntries', () => {
     }
   })
 
-  it('nimmt für Paketseiten das echte updated_at aus Tebex', async () => {
-    (getPackages as Mock).mockResolvedValue([pkg(5159927, '2026-07-28T12:21:09+00:00')])
+  it('takes the newest updated_at of the variants for a product page', async () => {
+    // Encrypted and Source of the handcuffs: one page, the newer date.
+    (getPackages as Mock).mockResolvedValue([
+      pkg(5159927, '2026-07-28T12:21:09+00:00'),
+      pkg(5301828, '2026-08-02T08:00:00+00:00'),
+    ])
 
-    const entry = find(await buildSitemapEntries(), `${BASE}/en/fivem/5159927`)
-    expect(entry?.lastModified).toEqual(new Date('2026-07-28T12:21:09+00:00'))
+    const entries = await buildSitemapEntries()
+    expect(find(entries, `${BASE}/en/fivem/handcuffs`)?.lastModified).toEqual(new Date('2026-08-02T08:00:00+00:00'))
+    expect(find(entries, `${BASE}/de/fivem/handcuffs`)).toBeDefined()
+    // The package ids only redirect, they are no pages of their own.
+    expect(entries.filter(e => /\/fivem\/\d+$/.test(e.url))).toEqual([])
   })
 
   it('lässt lastmod weg, wenn Tebex keinen brauchbaren Zeitstempel liefert', async () => {
+    // Packages no product configures still get a page, under a derived slug.
     (getPackages as Mock).mockResolvedValue([pkg(1, null), pkg(2, 'nicht-datierbar')])
 
     const entries = await buildSitemapEntries()
-    expect(find(entries, `${BASE}/en/fivem/1`)?.lastModified).toBeUndefined()
-    expect(find(entries, `${BASE}/de/fivem/2`)?.lastModified).toBeUndefined()
+    expect(find(entries, `${BASE}/en/fivem/script-1`)?.lastModified).toBeUndefined()
+    expect(find(entries, `${BASE}/de/fivem/script-2`)?.lastModified).toBeUndefined()
   })
 
   it('setzt für Kategorien das jüngste updated_at ihrer Pakete', async () => {

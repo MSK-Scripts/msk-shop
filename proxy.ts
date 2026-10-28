@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 import { DEFAULT_LANG, LANG_HEADER, NOT_FOUND_HEADER, PATH_HEADER } from '@/lib/lang'
+import { createLiveIndexLoader } from '@/lib/products'
 import { LANG_COOKIE, resolveRequest } from '@/lib/routes'
+import { getPackages } from '@/lib/tebex'
 
 // Diese Datei hieß bis Next 16 `middleware.ts`. Next 16 hat die Konvention in
 // `proxy.ts` umbenannt (die alte warnt beim Build und entfällt später), die
@@ -150,7 +152,23 @@ function sweep(now: number): void {
 // msk-shop's strict nonce CSP would break the bot's app.
 const BOT_DASHBOARD_HOST = (process.env.BOT_DASHBOARD_HOST || 'bot-dashboard.msk-scripts.de').toLowerCase()
 
-export function proxy(request: NextRequest) {
+// Product addresses the configured products do not know (lib/products.ts) are
+// checked once more against Tebex, so a script added there without a deploy
+// still has its page. Loaded at most once a minute, and only for such an
+// address: a configured product or an old id of one never waits for it.
+const liveProductIndex = createLiveIndexLoader(getPackages)
+
+/**
+ * The redirect target with the query string of the request. A target can
+ * bring a query of its own (`?variant=source` for an old Source package id);
+ * the request's parameters are added behind it.
+ */
+function redirectTarget(location: string, search: string): string {
+  if (!search) return location
+  return location.includes('?') ? `${location}&${search.slice(1)}` : `${location}${search}`
+}
+
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
   const now = Date.now()
 
@@ -186,10 +204,15 @@ export function proxy(request: NextRequest) {
   // there: `/` redirects by cookie and Accept-Language, every page has exactly
   // one address per language, and every other known form (an old address, the
   // English words under /de) gets a 308 to it.
-  const resolution = resolveRequest(pathname, {
+  const context = {
     cookie:         request.cookies.get(LANG_COOKIE)?.value,
     acceptLanguage: request.headers.get('accept-language'),
-  })
+  }
+  let resolution = resolveRequest(pathname, context)
+  if (resolution.kind === 'page' && resolution.uncertain) {
+    const products = await liveProductIndex()
+    if (products) resolution = resolveRequest(pathname, { ...context, products })
+  }
 
   // ── Rate-Limiting (pro IP, pro Routen-Präfix) ───────────────────────────────
   const ratePath = resolution.kind === 'page' ? resolution.path : pathname
@@ -291,7 +314,7 @@ export function proxy(request: NextRequest) {
   // deserves.
   let response: NextResponse
   if (resolution.kind === 'redirect') {
-    const target = new URL(`${resolution.location}${request.nextUrl.search}`, request.url)
+    const target = new URL(redirectTarget(resolution.location, request.nextUrl.search), request.url)
     response = NextResponse.redirect(target, resolution.status)
     // `/` answers differently depending on the cookie and the browser language.
     if (resolution.status === 307) response.headers.set('Vary', 'Cookie, Accept-Language')

@@ -148,3 +148,43 @@ export async function loadReleases(limit = 4): Promise<ReleaseEntry[]> {
     .sort((a, b) => Date.parse(b.date) - Date.parse(a.date))
     .slice(0, Math.max(0, limit))
 }
+
+/** One version in the release history of a product page. */
+export interface ProductRelease {
+  version: string
+  /** Only the newest version has one: the commit date of its VERSIONS file. */
+  date: string | null
+  summary: string
+}
+
+/**
+ * The newest `limit` versions of one resource, newest first, for the
+ * "Latest updates" list on its product page.
+ *
+ * The VERSIONS file has no dates. The commit that last touched it dates the
+ * newest version; the older ones stay without a date rather than get a
+ * guessed one.
+ *
+ * Never throws. An empty array means: nothing to show.
+ */
+export async function loadProductReleases(versionsFile: string | undefined, limit = 3): Promise<ProductRelease[]> {
+  if (!versionsFile) return []
+  try {
+    const [parsed, date] = await Promise.all([
+      fetchJson(`${RAW}/${versionsFile}`),
+      lastCommitDate(versionsFile),
+    ])
+    if (!Array.isArray(parsed)) return []
+    return parsed
+      .filter((e): e is VersionsFileEntry => !!e && typeof e === 'object' && typeof (e as VersionsFileEntry).version === 'string')
+      .slice(0, Math.max(0, limit))
+      .map((e, i) => ({
+        version: String(e.version).trim(),
+        date: i === 0 ? date : null,
+        summary: summarize(e.changelogs),
+      }))
+      .filter(r => r.version.length > 0)
+  } catch {
+    return []
+  }
+}

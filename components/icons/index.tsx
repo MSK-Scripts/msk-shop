@@ -14,6 +14,7 @@ import type { Icon, IconProps } from '@phosphor-icons/react'
 import {
   Archive as ArchiveBase,
   ArrowCounterClockwise as ArrowCounterClockwiseBase,
+  ArrowDown as ArrowDownBase,
   ArrowLeft as ArrowLeftBase,
   ArrowRight as ArrowRightBase,
   ArrowSquareOut as ArrowSquareOutBase,
@@ -139,6 +140,7 @@ function decorative(Base: Icon): Icon {
 
 export const Archive = decorative(ArchiveBase)
 export const ArrowCounterClockwise = decorative(ArrowCounterClockwiseBase)
+export const ArrowDown = decorative(ArrowDownBase)
 export const ArrowLeft = decorative(ArrowLeftBase)
 export const ArrowRight = decorative(ArrowRightBase)
 export const ArrowSquareOut = decorative(ArrowSquareOutBase)

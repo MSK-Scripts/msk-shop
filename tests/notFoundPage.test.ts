@@ -15,7 +15,17 @@ import { renderToStaticMarkup } from 'react-dom/server'
  * indexes), and the mark must only ever come from the proxy.
  */
 
-const state = vi.hoisted(() => ({ headers: new Headers() }))
+const state = vi.hoisted(() => ({
+  headers: new Headers(),
+  // What Tebex answers the proxy for an address the configured products do not know.
+  packages: [
+    { id: 12345, name: 'MSK Newscript | Encrypted', slug: 'newscript-e', type: 'single', media: [], category: { id: 2105296, name: 'Encrypted Version' } },
+  ] as unknown[],
+}))
+
+vi.mock('@/lib/tebex', () => ({
+  getPackages: async () => state.packages,
+}))
 
 vi.mock('next/headers', () => ({
   headers: async () => state.headers,
@@ -30,6 +40,7 @@ import { LANG_HEADER, NOT_FOUND_HEADER } from '@/lib/lang'
 import { resolveRequest } from '@/lib/routes'
 import { proxy } from '@/proxy'
 import UnknownPage from '@/app/[lang]/[...rest]/page'
+import ProductRoute from '@/app/[lang]/fivem/[slug]/page'
 import { generateMetadata as layoutMetadata } from '@/app/[lang]/layout'
 
 const request = (path: string, headers: Record<string, string> = {}) =>
@@ -46,7 +57,7 @@ describe('unknown addresses in the route table', () => {
     },
   )
 
-  it.each(['/en', '/de', '/en/fivem', '/en/fivem/123', '/de/rechtliches/agb', '/de/web-tools/bilder/weapons'])(
+  it.each(['/en', '/de', '/en/fivem', '/en/fivem/garage', '/de/fivem/alle-scripts', '/de/rechtliches/agb', '/de/web-tools/bilder/weapons'])(
     '%s is a known page',
     path => {
       const res = resolveRequest(path)
@@ -61,19 +72,74 @@ describe('proxy', () => {
     ['/en/does-not-exist', 'en'],
     ['/de/gibt-es-nicht', 'de'],
     ['/does-not-exist', 'en'],
-  ])('answers %s with 404 and marks it for the catch-all', (path, lang) => {
-    const res = proxy(request(path))
+  ])('answers %s with 404 and marks it for the catch-all', async (path, lang) => {
+    const res = await proxy(request(path))
     expect(res.status).toBe(404)
     expect(res.headers.get('x-middleware-rewrite')).toContain(`/${lang}/`)
     expect(forwarded(res, NOT_FOUND_HEADER)).toBe('1')
     expect(forwarded(res, LANG_HEADER)).toBe(lang)
   })
 
-  it('serves a known page with 200 and drops a mark the client sent itself', () => {
-    const res = proxy(request('/en/fivem', { [NOT_FOUND_HEADER]: '1' }))
+  it('serves a known page with 200 and drops a mark the client sent itself', async () => {
+    const res = await proxy(request('/en/fivem', { [NOT_FOUND_HEADER]: '1' }))
     expect(res.status).toBe(200)
     expect(forwarded(res, NOT_FOUND_HEADER)).toBeNull()
     expect(res.headers.get('x-middleware-override-headers') ?? '').not.toContain(NOT_FOUND_HEADER)
+  })
+})
+
+/**
+ * Product addresses. Before Phase 4 an unknown package id reached the page,
+ * which threw `notFound()`, and Next answered with its empty error shell
+ * without `lang`. Now the proxy decides before anything renders: a slug is a
+ * page, an old id redirects, anything else gets the 404 page of its language.
+ */
+describe('product addresses', () => {
+  it.each([
+    ['/en/fivem/does-not-exist', 'en'],
+    ['/de/fivem/gibt-es-nicht', 'de'],
+    ['/en/fivem/999999', 'en'],
+    ['/de/fivem/999999', 'de'],
+    ['/packages/999999', 'en'],
+  ])('answers the unknown product %s with 404 in %s', async (path, lang) => {
+    const res = await proxy(request(path))
+    expect(res.status).toBe(404)
+    expect(forwarded(res, NOT_FOUND_HEADER)).toBe('1')
+    expect(forwarded(res, LANG_HEADER)).toBe(lang)
+  })
+
+  it('serves a product slug with 200 in both languages', async () => {
+    for (const path of ['/en/fivem/garage', '/de/fivem/garage', '/en/fivem/all-access', '/de/fivem/alle-scripts']) {
+      const res = await proxy(request(path))
+      expect(res.status, path).toBe(200)
+      expect(forwarded(res, NOT_FOUND_HEADER), path).toBeNull()
+    }
+  })
+
+  it('sends an old package id to its product in one hop, with the variant and the query', async () => {
+    const res = await proxy(request('/packages/5732588?ref=forum'))
+    expect(res.status).toBe(308)
+    expect(res.headers.get('location')).toBe('https://www.msk-scripts.de/en/fivem/garage?variant=source&ref=forum')
+  })
+
+  it('asks Tebex about a slug the configured products do not know', async () => {
+    // A script added in Tebex without a deploy still has its page and its id address.
+    const page = await proxy(request('/de/fivem/newscript'))
+    expect(page.status).toBe(200)
+    expect(forwarded(page, NOT_FOUND_HEADER)).toBeNull()
+
+    const old = await proxy(request('/en/fivem/12345'))
+    expect(old.status).toBe(308)
+    expect(old.headers.get('location')).toBe('https://www.msk-scripts.de/en/fivem/newscript')
+  })
+
+  it('renders the 404 page of its language on the product route when the proxy marked it', async () => {
+    state.headers = new Headers({ [NOT_FOUND_HEADER]: '1', [LANG_HEADER]: 'de' })
+    const html = renderToStaticMarkup(await ProductRoute({
+      params: Promise.resolve({ slug: 'gibt-es-nicht' }),
+      searchParams: Promise.resolve({}),
+    }))
+    expect(html).toContain('Seite nicht gefunden')
   })
 })
 
