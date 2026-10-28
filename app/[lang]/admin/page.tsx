@@ -4,7 +4,9 @@ import { parseAdminSession, ADMIN_SESSION_COOKIE } from '@/lib/adminSession';
 import { loadAdminMember }                      from '@/lib/adminAuth';
 import { Button }                               from '@/components/ui/Button';
 import { Card }                                 from '@/components/ui/Card';
+import { adminCopy }                            from '@/lib/i18n';
 import AdminClient                              from './AdminClient';
+import { AdminShell }                           from './AdminShell';
 
 // Session-/cookie-dependent → never statically cache.
 export const dynamic = 'force-dynamic';
@@ -12,14 +14,6 @@ export const dynamic = 'force-dynamic';
 export const metadata = {
   title: 'Admin',
   robots: { index: false, follow: false },
-};
-
-const ERROR_MESSAGES: Record<string, string> = {
-  not_authorized:       'This Discord account is not on the admin team.',
-  invalid_state:        'Login session expired. Please try again.',
-  discord_token_failed: 'Discord login failed. Please try again.',
-  discord_user_failed:  'Could not read your Discord account. Please try again.',
-  seed_failed:          'Setup error while creating the owner account. Check the server logs.',
 };
 
 export default async function AdminPage({
@@ -43,19 +37,22 @@ export default async function AdminPage({
     return <AdminClient member={member} initialTab={tab} />;
   }
 
-  // Login gate
-  const message   = error ? ERROR_MESSAGES[error] ?? 'Login failed. Please try again.' : null;
+  // Login gate. The messages come from the table: `error` is only ever a key
+  // into it, never text that ends up on the page.
+  const c         = adminCopy(lang);
+  const message   = error ? c.login_errors[error] ?? c.login_error_fallback : null;
 
   return (
-    <div className="container-page flex min-h-[70vh] items-center justify-center py-10">
+    <AdminShell>
+    <div className="flex min-h-[60vh] items-center justify-center">
       <Card className="w-full max-w-md p-8 text-center">
-        <h1 className="text-xl font-bold tracking-tight">Admin Dashboard</h1>
+        <h1 className="font-display text-h3 font-bold tracking-tight">{c.login_title}</h1>
         <p className="mt-2 text-sm text-[var(--color-muted-foreground)]">
-          Sign in with the authorized Discord account to manage the store.
+          {c.login_intro}
         </p>
 
         {message && (
-          <p className="mt-4 rounded-md border border-[var(--color-danger)]/30 bg-[var(--color-danger)]/10 px-3 py-2 text-sm text-[var(--color-danger)]">
+          <p role="alert" className="mt-4 rounded-md border border-[var(--color-danger)]/30 bg-[var(--color-danger)]/10 px-3 py-2 text-sm text-[var(--color-danger)]">
             {message}
           </p>
         )}
@@ -69,10 +66,11 @@ export default async function AdminPage({
         */}
         <Button asChild variant="discord" size="lg" className="mt-6 w-full">
           <a href={lang === 'de' ? '/api/admin/auth?lang=de' : '/api/admin/auth'}>
-            Sign in with Discord
+            {c.login_button}
           </a>
         </Button>
       </Card>
     </div>
+    </AdminShell>
   );
 }

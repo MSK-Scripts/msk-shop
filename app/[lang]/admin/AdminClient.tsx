@@ -2,18 +2,21 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { SignOut as LogOut, Check, X } from '@/components/icons'
+import { Check, X } from '@/components/icons'
 import {
   ADMIN_PERMISSIONS,
   PERMISSION_LABELS,
   memberHasPermission,
   type AdminTeamMember,
 } from '@/lib/adminPerms'
-import { visibleTabs, resolveTab, tabHref } from '@/lib/adminTabs'
+import { visibleTabs, resolveTab, tabHref, type AdminTabId } from '@/lib/adminTabs'
 import { useLang } from '@/components/i18n/LangProvider'
-import { Button } from '@/components/ui/Button'
-import { Card } from '@/components/ui/Card'
+import { PageHeader } from '@/components/dashboard/PageHeader'
+import { SectionCard } from '@/components/dashboard/SectionCard'
+import { Badge } from '@/components/ui/Badge'
+import { adminCopy } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
+import { AdminShell } from './AdminShell'
 import PaymentsTab from './PaymentsTab'
 import LookupTab from './LookupTab'
 import CouponsTab from './CouponsTab'
@@ -39,7 +42,7 @@ export default function AdminClient({ member, initialTab }: { member: AdminTeamM
   // answers `/de/admin` just like `/admin`, and somebody browsing in German
   // should still be after switching tabs. `tabHref` deliberately keeps
   // returning the language-less path; the prefix is added here.
-  const { localize } = useLang()
+  const { lang, localize } = useLang()
 
   /**
    * Switch tabs and update the address bar along with it, so that F5 does not
@@ -67,75 +70,43 @@ export default function AdminClient({ member, initialTab }: { member: AdminTeamM
     router.refresh()
   }
 
+  const c = adminCopy(lang)
+  const activeTab = active as AdminTabId
+
   return (
-    <div className="container-page py-10 md:py-14">
+    <AdminShell member={member} active={active} onSelect={selectTab} onSignOut={handleLogout}>
+      <PageHeader
+        title={c.tabs[activeTab]}
+        badge={member.isOwner ? <Badge variant="primary">{c.owner}</Badge> : undefined}
+      />
+
+      {/* Panels */}
       <div>
-        {/* Header */}
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">Admin Dashboard</h1>
-            <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">
-              Signed in as {member.displayName ?? member.discordUserId}
-              {member.isOwner && (
-                <span className="ml-2 rounded-full border border-[var(--color-primary)]/30 bg-[var(--color-primary)]/10 px-2 py-0.5 text-xs font-semibold text-[var(--color-primary)]">
-                  Owner
-                </span>
-              )}
-            </p>
-          </div>
-          <Button variant="outline" size="sm" onClick={handleLogout}>
-            <LogOut className="h-4 w-4" /> Sign out
-          </Button>
-        </div>
-
-        {/* Tab bar */}
-        <div className="mt-8 flex gap-1 border-b border-[var(--color-border)]">
-          {tabs.map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => selectTab(tab.id)}
-              className={cn(
-                'border-b-2 px-4 py-2.5 text-sm font-medium transition-colors',
-                active === tab.id
-                  ? 'border-[var(--color-primary)] text-[var(--color-primary)]'
-                  : 'border-transparent text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]',
-              )}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Panels */}
-        <div className="mt-6">
-          {active === 'overview' && (
-            <Card className="p-6">
-              <h2 className="text-lg font-bold tracking-tight">Your permissions</h2>
-              <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">
-                {member.isOwner
-                  ? 'You are the owner and have every permission.'
-                  : 'These control which actions you can perform.'}
-              </p>
-              <ul className="mt-4 divide-y divide-[var(--color-border)]">
-                {ADMIN_PERMISSIONS.map(perm => {
-                  const granted = memberHasPermission(member, perm)
-                  return (
-                    <li key={perm} className="flex items-center gap-3 py-2.5">
-                      {granted ? (
-                        <Check className="h-4 w-4 shrink-0 text-[var(--color-primary)]" />
-                      ) : (
-                        <X className="h-4 w-4 shrink-0 text-[var(--color-muted-foreground)]" />
-                      )}
-                      <span className={cn('text-sm', !granted && 'text-[var(--color-muted-foreground)]')}>
-                        <span className="font-medium">{PERMISSION_LABELS[perm].label}</span>
-                        <span className="text-[var(--color-muted-foreground)]"> {PERMISSION_LABELS[perm].description}</span>
-                      </span>
-                    </li>
-                  )
-                })}
-              </ul>
-            </Card>
-          )}
+        {active === 'overview' && (
+          <SectionCard
+            title={c.overview_title}
+            description={member.isOwner ? c.overview_owner : c.overview_member}
+          >
+            <ul className="divide-y divide-[var(--color-border)]">
+              {ADMIN_PERMISSIONS.map(perm => {
+                const granted = memberHasPermission(member, perm)
+                return (
+                  <li key={perm} className="flex items-center gap-3 py-2.5">
+                    {granted ? (
+                      <Check className="h-4 w-4 shrink-0 text-[var(--color-primary)]" aria-label={c.granted} />
+                    ) : (
+                      <X className="h-4 w-4 shrink-0 text-[var(--color-muted-foreground)]" aria-label={c.not_granted} />
+                    )}
+                    <span className={cn('text-sm', !granted && 'text-[var(--color-muted-foreground)]')}>
+                      <span className="font-medium">{PERMISSION_LABELS[perm].label}</span>
+                      <span className="text-[var(--color-muted-foreground)]"> {PERMISSION_LABELS[perm].description}</span>
+                    </span>
+                  </li>
+                )
+              })}
+            </ul>
+          </SectionCard>
+        )}
 
           {active === 'payments' && (
             <PaymentsTab
@@ -162,8 +133,7 @@ export default function AdminClient({ member, initialTab }: { member: AdminTeamM
           {active === 'newspopup' && <NewsPopupTab />}
           {active === 'team'      && <TeamTab selfId={member.discordUserId} />}
           {active === 'audit'     && <AuditTab />}
-        </div>
       </div>
-    </div>
+    </AdminShell>
   )
 }

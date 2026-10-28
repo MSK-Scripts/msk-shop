@@ -11,10 +11,13 @@ vi.mock('next/navigation', async importOriginal => ({
 import { LangProvider } from '@/components/i18n/LangProvider'
 import { TicketBotShell } from '@/app/[lang]/dashboard/ticket-bot/TicketBotShell'
 import { GiveawayShell } from '@/app/[lang]/dashboard/giveaway-bot/GiveawayShell'
+import { AdminShell } from '@/app/[lang]/admin/AdminShell'
+import type { AdminPermission, AdminTeamMember } from '@/lib/adminPerms'
+import { ALL_TABS } from '@/lib/adminTabs'
 import type { Lang } from '@/lib/i18n'
 
 /**
- * The app shell of the bot dashboards, rendered on the server with fixture
+ * The app shell of the three dashboards, rendered on the server with fixture
  * data (Phase 7; the dashboards need Discord and the database, which a test
  * run does not have).
  *
@@ -123,5 +126,30 @@ describe('giveaway shell', () => {
     const markup = html('en', '/dashboard/giveaway-bot/verify', withContent(GiveawayShell, { session: null }))
     landmarks(markup)
     expect(sidebarLinks(markup, 'Dashboard')).toEqual([])
+  })
+})
+
+describe('admin shell', () => {
+  const member = (isOwner: boolean, ...permissions: AdminPermission[]): AdminTeamMember => ({
+    discordUserId: '2', displayName: 'Musiker15', isOwner, permissions, active: true,
+  })
+
+  it('offers a member the tabs of their permissions only', () => {
+    const markup = html('en', '/admin', withContent(AdminShell, { member: member(false, 'payments.view'), active: 'overview', onSignOut: () => {} }))
+    landmarks(markup)
+    expect(sidebarLinks(markup, 'Admin')).toEqual(['/en/admin', '/en/admin?tab=payments', '/en/admin?tab=lookup'])
+  })
+
+  it('offers the owner every tab, in the language of the address', () => {
+    const markup = html('de', '/admin', withContent(AdminShell, { member: member(true), active: 'overview', onSignOut: () => {} }))
+    const links = sidebarLinks(markup, 'Admin')
+    expect(links).toHaveLength(ALL_TABS.length)
+    expect(links.every(href => href.startsWith('/de/admin'))).toBe(true)
+  })
+
+  it('is the signed-out frame without navigation on the sign-in page', () => {
+    const markup = html('en', '/admin', withContent(AdminShell, {}))
+    landmarks(markup)
+    expect(sidebarLinks(markup, 'Admin')).toEqual([])
   })
 })

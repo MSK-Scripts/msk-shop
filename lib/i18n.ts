@@ -2832,3 +2832,77 @@ export const dashboardShellTranslations = {
   },
 } as const
 
+/**
+ * The admin dashboard. English only for now (decision E3), but keyed by
+ * language from the start: German is one more entry here, and `adminCopy`
+ * already falls back to English for a language without one. The contents of
+ * the single admin areas still carry their own English until Phase 10
+ * rebuilds them.
+ */
+const adminEn = {
+  product:        'Admin',
+  nav:            'Admin',
+  menu_open:      'Open menu',
+  menu_close:     'Close menu',
+  back_to_site:   'Back to the website',
+  sign_out:       'Sign out',
+  language:       'Language',
+  theme:          { group: 'Appearance', system: 'System', light: 'Light', dark: 'Dark' },
+  owner:          'Owner',
+  member:         'Team member',
+
+  groups: {
+    start:     '',
+    sales:     'Sales',
+    ticketbot: 'Ticket Bot',
+    cdn:       'Image CDN',
+    website:   'Website',
+    team:      'Administration',
+  },
+  tabs: {
+    overview:  'Overview',
+    payments:  'Payments',
+    lookup:    'Player lookup',
+    coupons:   'Coupons',
+    giftcards: 'Gift cards',
+    packages:  'Packages',
+    bans:      'Bans',
+    apikeys:   'API keys',
+    images:    'Images',
+    uploads:   'Uploads',
+    newspopup: 'News popup',
+    team:      'Team',
+    audit:     'Audit log',
+  },
+
+  overview_title:  'Your permissions',
+  overview_owner:  'You are the owner and have every permission.',
+  overview_member: 'These control which actions you can perform.',
+  granted:         'Granted',
+  not_granted:     'Not granted',
+
+  login_title:     'Admin dashboard',
+  login_intro:     'Sign in with the authorized Discord account to manage the store.',
+  login_button:    'Sign in with Discord',
+  login_errors: {
+    not_authorized:       'This Discord account is not on the admin team.',
+    invalid_state:        'Login session expired. Please try again.',
+    discord_token_failed: 'Discord login failed. Please try again.',
+    discord_user_failed:  'Could not read your Discord account. Please try again.',
+    seed_failed:          'Setup error while creating the owner account. Check the server logs.',
+  } as Record<string, string>,
+  login_error_fallback: 'Login failed. Please try again.',
+
+  error_title:     'Something went wrong',
+  error_body:      'An error occurred in the admin dashboard.',
+  error_retry:     'Try again',
+}
+
+export type AdminCopy = typeof adminEn
+
+export const adminTranslations: { en: AdminCopy } & Partial<Record<Lang, AdminCopy>> = { en: adminEn }
+
+/** Copy of the admin in `lang`, English where that language has none yet. */
+export function adminCopy(lang: Lang): AdminCopy {
+  return adminTranslations[lang] ?? adminTranslations.en
+}
