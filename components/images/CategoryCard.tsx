@@ -6,12 +6,12 @@ import type { ImageCategory } from '@/lib/images'
 import type { Lang } from '@/lib/i18n'
 
 /**
- * Kategoriekachel der Galerie-Uebersicht.
+ * Category tile of the gallery overview.
  *
- * Die Icons stehen hier als feste Zuordnung und werden NICHT dynamisch aus dem
- * DB-Wert aufgeloest (`icons[row.icon]` auf dem ganzen lucide-Paket). Ein
- * dynamischer Zugriff nimmt dem Bundler die Moeglichkeit, den Rest der
- * Bibliothek wegzulassen, und zieht dann alle Icons in das Bundle.
+ * The keys are the icon names stored in `msk_image_categories.icon` (still
+ * the names of the former icon set, so `Box` and `Sparkles`), mapped to the
+ * Phosphor icons by a fixed table. Not a dynamic lookup on the icon package:
+ * that would stop the bundler from leaving the unused icons out.
  */
 const ICONS: Record<string, IconComponent> = {
   Car, Package, Crosshair, Box, User, Sparkles,

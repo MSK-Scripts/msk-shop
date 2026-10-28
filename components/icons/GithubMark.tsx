@@ -1,15 +1,9 @@
 /**
- * GitHub-Marke als Inline-SVG.
+ * The GitHub mark as inline SVG, in its original shape.
  *
- * lucide-react hat mit 1.0 sämtliche Marken-Icons aus dem Set geworfen, das
- * bisher genutzte `Github` gibt es dort nicht mehr. Eine fremde Icon-Bibliothek
- * nur für ein einziges Logo wäre unverhältnismäßig, und ein externer Host
- * scheidet unter der Nonce-CSP ohnehin aus. Also derselbe Weg wie bei den
- * Zahlungsarten in `components/layout/PaymentMarks.tsx`: inline und lokal.
- *
- * Die Signatur ist absichtlich auf `className` beschränkt, weil alle fünf
- * Aufrufstellen genau das nutzen. Damit bleibt der Austausch ein reiner
- * Import-Wechsel, `fill="currentColor"` erbt die Textfarbe wie zuvor bei lucide.
+ * Local like the payment marks in `components/layout/PaymentMarks.tsx`: an
+ * external host is ruled out by the nonce CSP anyway. Decorative, and
+ * `fill="currentColor"` takes the text colour of its link.
  */
 
 export function GithubMark({ className }: { className?: string }) {
