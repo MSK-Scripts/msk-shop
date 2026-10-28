@@ -357,8 +357,11 @@ chips, pager, masked values); see [docs/admin-dashboard.md](docs/admin-dashboard
 - **Tables** have a caption and scroll in themselves; sort order is announced through
   `aria-sort`.
 - **Language:** `<html lang>` follows the page language.
-- **Not in the code yet:** `prefers-contrast: more` and a pass for `forced-colors` (only
-  `RadioCard` keeps its choice visible there).
+- **System settings:** `prefers-reduced-motion` stops transitions and animations;
+  `prefers-contrast: more` raises muted text and lines to full strength; under
+  `forced-colors` controls get a system border and focus the system highlight, and
+  `RadioCard` keeps its choice visible. All in `app/globals.css`, guarded by
+  `tests/a11yPreferences.test.ts`.
 
 ## Two languages
 

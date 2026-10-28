@@ -434,6 +434,33 @@
 }
 
 /* ============================================================================
+   More contrast and forced colours (plan 4.7)
+   ============================================================================
+   "More contrast" in the system settings: secondary text and lines go to
+   full strength. Unlayered, so it wins over the token values in @theme and
+   in the .dark scope alike. */
+@media (prefers-contrast: more) {
+  :root, .dark {
+    --color-muted-foreground: var(--color-foreground);
+    --color-border: var(--color-input);
+    --color-band-muted: var(--color-band-foreground);
+    --color-band-line: var(--color-band-foreground);
+  }
+}
+
+/* Windows contrast themes replace every colour and drop backgrounds. A
+   filled button would lose its outline then, so controls get a system
+   border, and focus uses the system highlight. */
+@media (forced-colors: active) {
+  button, [role="button"], select, input, textarea {
+    border: 1px solid ButtonText;
+  }
+  :focus-visible {
+    outline-color: Highlight;
+  }
+}
+
+/* ============================================================================
    Tebex description renderer (HTML from `dangerouslySetInnerHTML`)
    ============================================================================ */
 @layer components {
