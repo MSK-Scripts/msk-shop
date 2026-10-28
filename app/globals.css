@@ -110,6 +110,12 @@
   --color-brand:                   #27762e;
   --color-brand-foreground:        #ffffff;
   --color-brand-muted:             #eaf4e6;
+  /* The white button in the green band. Its label keeps the dark green in
+     both themes: --color-primary-hover turns light green in the dark theme
+     and would measure 1.9:1 on white there. 7.84:1 on white, 7.24:1 on the
+     hover fill (--color-brand-muted). */
+  --color-brand-button:            #ffffff;
+  --color-brand-button-foreground: #1d5e23;
   /* Fläche, nicht Text: als Textfarbe misst dieses Grün auf der Karte 2,54:1,
      und als kleiner Statuspunkt verfehlt es dort die 3:1 für Nicht-Text. Genau
      das stand bis zum 23.08.2026 im BotConfigEditor. Wer eine grüne Schrift
@@ -313,9 +319,10 @@
 
   html {
     scroll-behavior: smooth;
-    /* Die Kopfzeile klebt mit 65 px (h-16 plus Rahmen) und z-index 50. Ohne
-       diese Zeile kann ein Element, zu dem der Browser selbst scrollt, darunter
-       liegen — WCAG 2.2 SC 2.4.11 (Focus Not Obscured).
+    /* The header sticks at the top with z-index 50: --header-height plus its
+       4 px stripe and 1 px border. Without this line an element the browser
+       scrolls to on its own can end up below it, WCAG 2.2 SC 2.4.11 (Focus
+       Not Obscured).
 
        Im Audit vom 24.08.2026 wurde kein Verstoss beobachtet, der Nachweis war
        aber unvollstaendig: `element.focus()` scrollt anders als eine echte
@@ -325,7 +332,7 @@
        `:target` traegt weiter unten schon `scroll-margin-top: 5rem`. Das gilt
        nur fuer Ankersprünge; diese Zeile deckt zusaetzlich das Scrollen beim
        Fokuswechsel ab. */
-    scroll-padding-top: 4.5rem;
+    scroll-padding-top: calc(var(--header-height) + 1rem);
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
   }
@@ -419,6 +426,13 @@
    The page column and its gutter grow the same way, so header, content and
    footer still share one edge at every width. */
 :root {
+  /* Height of the sticky header bar, without its 4 px stripe. Fluid like the
+     rest of the page: 60 px on a phone, 80 px on UWQHD. */
+  --header-height: clamp(3.75rem, 3rem + 1vw, 5rem);
+  /* Vertical rhythm of the page sections and of the blocks inside them
+     (sample page of Phase 0). */
+  --space-section: clamp(3rem, 1.5rem + 3.5vw, 7.5rem);
+  --space-stack: clamp(1.25rem, 0.75rem + 1vw, 2.5rem);
   --page-gutter: clamp(1rem, 4vw, 7.5rem);
   --page-column: clamp(72rem, 84vw, 180rem);
   --grid-card: clamp(18rem, 16.25rem + 6.3vw, 30rem);
@@ -507,25 +521,37 @@
   margin-inline: auto;
 }
 
-/* Eyebrow-Label (kleine MSK-grüne Mono-Akzente über Section-Headlines) */
+/* Kicker: the small green label above a heading (plan 4.4, 4.7). Source Sans
+   3 at the label size, uppercase, no leading dash: green monospace eyebrows
+   with a dash are on the exclusion list (4.2). `.eyebrow` is the old name and
+   still used by pages that come in later phases, so it gets the same look. */
+.kicker,
 .eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
   font-weight: 600;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-primary);
 }
-.eyebrow::before {
-  content: '';
-  display: block;
-  width: 24px;
-  height: 1px;
-  background: var(--color-primary);
+
+/* The anthracite band (hero, footer) and the MSK green band (closing band).
+   Both keep their colours in both themes. The focus ring changes with them:
+   the page's green ring measures about 2.3:1 on anthracite, below the 3:1 a
+   focus indicator needs. */
+.surface-band {
+  background-color: var(--color-band);
+  color: var(--color-band-foreground);
 }
+.surface-band .kicker { color: var(--color-band-accent); }
+.surface-band :focus-visible { outline-color: var(--color-band-accent); }
+.surface-brand {
+  background-color: var(--color-brand);
+  color: var(--color-brand-foreground);
+}
+.surface-brand :focus-visible { outline-color: var(--color-brand-foreground); }
 
 /* Hero-Background — radialer Akzent-Gradient (CSP-konform, keine inline-styles) */
 .hero-decor-gradient {

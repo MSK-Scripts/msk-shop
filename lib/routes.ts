@@ -434,3 +434,25 @@ export function resolveRequest(
 export function isBotPath(internal: string): boolean {
   return ['/discord', '/dashboard'].some(p => internal === p || internal.startsWith(`${p}/`))
 }
+
+function isAtOrBelow(internal: string, prefixes: string[]): boolean {
+  return prefixes.some(p => internal === p || internal.startsWith(`${p}/`))
+}
+
+/**
+ * Pages of the FiveM shop, where something is bought through Tebex: home,
+ * catalogue, product pages, cart, checkout. Only these show the payment marks
+ * in the footer (plan 5.10).
+ */
+export function isShopPath(internal: string): boolean {
+  return internal === '/' || isAtOrBelow(internal, ['/fivem', '/cart', '/checkout'])
+}
+
+/**
+ * Pages behind a login or in the middle of a purchase: admin, bot
+ * dashboards, account, checkout, login. They are not public pages, so they
+ * do not get the green closing band that asks for questions before a purchase.
+ */
+export function isWorkspacePath(internal: string): boolean {
+  return isAtOrBelow(internal, ['/admin', '/dashboard', '/account', '/checkout', '/login'])
+}

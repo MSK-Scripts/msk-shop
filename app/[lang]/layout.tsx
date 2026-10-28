@@ -31,8 +31,10 @@ export const viewport: Viewport = {
   themeColor: [
     // Must match --color-background from app/globals.css, otherwise the
     // browser bar on a phone shows a different tone than the page below it.
-    { media: '(prefers-color-scheme: light)', color: '#f3f3f4' },
-    { media: '(prefers-color-scheme: dark)',  color: '#161a20' },
+    // (Until the redesign the dark value was the GitHub dark #161a20, which
+    // is on the exclusion list.)
+    { media: '(prefers-color-scheme: light)', color: '#f6f6f4' },
+    { media: '(prefers-color-scheme: dark)',  color: '#18191b' },
   ],
   colorScheme: 'light dark',
 }

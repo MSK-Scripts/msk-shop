@@ -93,6 +93,10 @@ describe.each([
     ['Label on green in the band',           t['band-accent-foreground'],  t['band-accent'],   4.5],
     ['Text in the green band',               t['brand-foreground'],        t.brand,            4.5],
     ['Muted text in the green band',         t['brand-muted'],             t.brand,            4.5],
+    // The white button of the closing band, at rest and on hover. Its label
+    // must stay dark green in the dark theme too.
+    ['Label on the white button in the green band', t['brand-button-foreground'], t['brand-button'], 4.5],
+    ['Label on the hovered button in the green band', t['brand-button-foreground'], t['brand-muted'], 4.5],
     ['Form control border on a card',        t.input,                      t.card,             3],
     ['Form control border on the ground',    t.input,                      t.background,       3],
     // The four colours of the breakdown charts on both statistics pages.

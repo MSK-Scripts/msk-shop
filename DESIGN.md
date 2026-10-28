@@ -253,11 +253,11 @@ pairing, plain lettering on the sign and stencilled type on the parts bin.
 consumes: identifiers, counts, key fragments, timestamps, file paths. It is never
 used to make prose look technical.
 
-**The Eyebrow Ration Rule.** The small green mono label above a heading
-(`.eyebrow`, with its 24 px rule) is an emphasis device, not a section frame. At
-most **one per three sections** on any page. It reached four of five sections on
-the landing page and stopped reading as emphasis; it reads as a template. When in
-doubt, drop it. The heading carries the section on its own.
+**The Kicker Rule.** Since the redesign (Phase 3, 28.10.2026) the small green
+label above a heading is the kicker (`.kicker`): Source Sans 3 at the label size,
+uppercase, no leading rule. Green monospace eyebrows with a dash are on the
+exclusion list of the redesign plan; `.eyebrow` is kept as an alias with the
+kicker's look until the pages that use it are redone.
 
 ## Layout
 
@@ -440,10 +440,10 @@ them.
   that injects a `<style>` element at runtime is blocked by the CSP, which rules
   out most off-the-shelf menus and scroll locks.
 
-### Section Label (`.eyebrow`)
-The signature small element: a 24 px rule, then a mono label in Workshop Green at
-0.6875 rem, 600 weight, 0.15em tracking, uppercase. Subject to the Eyebrow Ration
-Rule above.
+### Section Label (`.kicker`)
+Source Sans 3, `--text-label`, 600 weight, 0.08em tracking, uppercase, in
+`--color-primary` (on the anthracite band `--color-band-accent`). No rule in
+front of it. See the Kicker Rule above.
 
 ## Do's and Don'ts
 
