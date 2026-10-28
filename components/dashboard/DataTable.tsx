@@ -126,7 +126,7 @@ export function DataTable<Row>({
                     scope="col"
                     aria-sort={col.sortValue ? (active === 'asc' ? 'ascending' : active === 'desc' ? 'descending' : 'none') : undefined}
                     className={cn(
-                      'border-b border-[var(--color-border)] px-3 py-2 text-left align-bottom font-semibold text-[var(--color-foreground)]',
+                      'border-b border-[var(--color-border)] px-3 py-2 text-left align-middle font-semibold text-[var(--color-foreground)]',
                       col.numeric && 'text-right',
                       col.nowrap && 'whitespace-nowrap',
                     )}
