@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-import { DEFAULT_LANG, LANG_HEADER, PATH_HEADER } from '@/lib/lang'
+import { DEFAULT_LANG, LANG_HEADER, NOT_FOUND_HEADER, PATH_HEADER } from '@/lib/lang'
 import { LANG_COOKIE, resolveRequest } from '@/lib/routes'
 
 // Diese Datei hieß bis Next 16 `middleware.ts`. Next 16 hat die Konvention in
@@ -276,6 +276,8 @@ export function proxy(request: NextRequest) {
     requestHeaders.set('x-nonce', nonce)
     requestHeaders.set('Content-Security-Policy', csp)
   }
+  // Only this proxy decides that an address is unknown, never the client.
+  requestHeaders.delete(NOT_FOUND_HEADER)
 
   // The language is in the path: every page lives under /en/ or /de/. The
   // German address (`/de/rechtliches/agb`) is rewritten onto the folder
@@ -297,6 +299,20 @@ export function proxy(request: NextRequest) {
     requestHeaders.set(LANG_HEADER, DEFAULT_LANG)
     requestHeaders.set(PATH_HEADER, pathname)
     response = NextResponse.next({ request: { headers: requestHeaders } })
+  } else if (resolution.unknown) {
+    // An address the route table does not know. It is rendered by the
+    // catch-all `app/[lang]/[...rest]`, which shows the 404 page inside the
+    // shop layout when this header is set. The status comes from here: a
+    // thrown `notFound()` would give the right status too, but Next answers
+    // it with an empty error shell without `lang` and renders the page only
+    // in the browser (WCAG 3.1.1, and nothing for a crawler to read).
+    requestHeaders.set(LANG_HEADER, resolution.lang)
+    requestHeaders.set(PATH_HEADER, resolution.path)
+    requestHeaders.set(NOT_FOUND_HEADER, '1')
+    response = NextResponse.rewrite(
+      new URL(`${resolution.target}${request.nextUrl.search}`, request.url),
+      { request: { headers: requestHeaders }, status: 404 },
+    )
   } else {
     requestHeaders.set(LANG_HEADER, resolution.lang)
     requestHeaders.set(PATH_HEADER, resolution.path)

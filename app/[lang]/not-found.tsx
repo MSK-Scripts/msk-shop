@@ -1,23 +1,15 @@
-import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
-import { ArrowLeft } from '@/components/icons'
-import { Button } from '@/components/ui/Button'
+import { NotFoundContent } from '@/components/layout/NotFoundContent'
+import { getRequestLang } from '@/lib/serverLang'
 
-export default function NotFound() {
-  return (
-    <div className="container-page py-20 md:py-32">
-      <div className="mx-auto max-w-lg text-center">
-        <div className="mb-4 font-mono text-7xl font-bold tracking-tight text-[var(--color-primary)]">404</div>
-        <h1 className="mb-3 text-2xl font-bold tracking-tight">Page not found</h1>
-        <p className="mb-8 text-sm text-[var(--color-muted-foreground)]">
-          The page you&apos;re looking for doesn&apos;t exist.
-        </p>
-        <Button asChild>
-          <Link href="/">
-            <ArrowLeft className="h-4 w-4" />
-            Back to Shop
-          </Link>
-        </Button>
-      </div>
-    </div>
-  )
+/**
+ * Shown when a page calls `notFound()`, an unknown package id for example.
+ *
+ * Next answers such a call with an empty error shell and renders this page
+ * in the browser only. Unknown addresses do not come this way: the proxy
+ * marks them and the catch-all renders `NotFoundContent` on the server (see
+ * `app/[lang]/[...rest]/page.tsx`).
+ */
+export default async function NotFound() {
+  const { lang } = await getRequestLang()
+  return <NotFoundContent lang={lang} />
 }

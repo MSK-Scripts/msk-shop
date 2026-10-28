@@ -361,8 +361,10 @@ export type Resolution =
   /**
    * Render a page. `path` is the internal path (basis for canonical and
    * hreflang), `target` the address Next routes (`/de/legal/terms`).
+   * `unknown` marks an address the table does not know: the proxy answers it
+   * with the 404 page of its language and the status 404 itself.
    */
-  | { kind: 'page'; lang: Lang; path: string; target: string }
+  | { kind: 'page'; lang: Lang; path: string; target: string; unknown?: true }
 
 function targetOf(lang: Lang, internal: string): string {
   return internal === '/' ? `/${lang}` : `/${lang}${internal}`
@@ -403,19 +405,19 @@ export function resolveRequest(
       return { kind: 'redirect', status: 308, location: publicPath(DEFAULT_LANG, internal) }
     }
     if (looksLikeFile(pathname)) return { kind: 'pass' }
-    return { kind: 'page', lang: DEFAULT_LANG, path: pathname, target: targetOf(DEFAULT_LANG, pathname) }
+    return { kind: 'page', lang: DEFAULT_LANG, path: pathname, target: targetOf(DEFAULT_LANG, pathname), unknown: true }
   }
 
   const { lang, rest } = prefixed
 
   // `/de/api/...` is not a page, and not a reason to redirect either.
   if (isExemptPath(rest)) {
-    return { kind: 'page', lang, path: rest, target: pathname }
+    return { kind: 'page', lang, path: rest, target: pathname, unknown: true }
   }
 
   const internal = resolveInternal(lang, rest)
   if (internal === null) {
-    return { kind: 'page', lang, path: rest, target: pathname }
+    return { kind: 'page', lang, path: rest, target: pathname, unknown: true }
   }
 
   const canonical = publicPath(lang, internal)

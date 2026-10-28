@@ -17,7 +17,7 @@ import { SalePriceFetcher } from '@/components/SalePriceFetcher'
 import { NewsPopup } from '@/components/ui/NewsPopup'
 import { ThemeProvider } from '@/components/theme/ThemeProvider'
 import { LangProvider } from '@/components/i18n/LangProvider'
-import { PATH_HEADER, isLang } from '@/lib/lang'
+import { LANG_HEADER, NOT_FOUND_HEADER, PATH_HEADER, isLang, langFromHeader } from '@/lib/lang'
 import { loadNewsPopup } from '@/lib/siteSettings'
 import { layoutTranslations } from '@/lib/i18n'
 import { siteUrl } from '@/lib/siteUrl'
@@ -37,7 +37,7 @@ export const viewport: Viewport = {
   colorScheme: 'light dark',
 }
 
-export const metadata: Metadata = {
+const siteMetadata: Metadata = {
   metadataBase: new URL(siteUrl()),
   title: {
     // Pure emergency brake. Since 24.08.2026 every page sets its own
@@ -95,6 +95,26 @@ export const metadata: Metadata = {
     images: ["/msk-scripts-server-banner.webp"],
   },
 };
+
+/**
+ * The site-wide metadata, and the title and robots of the 404 page.
+ *
+ * For an address the proxy marked as unknown the response already carries
+ * the status 404, and for such a response Next resolves the metadata of the
+ * layouts only: neither the catch-all page nor `not-found.tsx` gets a say.
+ * Without this the 404 page was called like the home page and carried
+ * `index, follow` next to Next's own `noindex`.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const hdrs = await headers()
+  if (hdrs.get(NOT_FOUND_HEADER) !== '1') return siteMetadata
+  const t = layoutTranslations[langFromHeader(hdrs.get(LANG_HEADER))]
+  return {
+    ...siteMetadata,
+    title:  { absolute: `${t.not_found_title} | MSK Scripts` },
+    robots: { index: false, follow: true },
+  }
+}
 
 export default async function RootLayout({
   children, params,

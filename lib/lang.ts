@@ -16,6 +16,14 @@ import type { Lang } from './i18n';
 export const LANG_HEADER = 'x-lang';
 /** Internal path of the page (`/legal/terms`). Basis for canonical and hreflang. */
 export const PATH_HEADER = 'x-path';
+/**
+ * Set by the proxy on an address the route table does not know. The catch-all
+ * page then renders the 404 page itself instead of throwing `notFound()`: Next
+ * answers a thrown `notFound()` with an empty error shell (`<html
+ * id="__next_error__">`, no `lang`, no content) and only renders the page in
+ * the browser. The proxy also sets the status 404, so nothing is lost.
+ */
+export const NOT_FOUND_HEADER = 'x-msk-not-found';
 
 export const LANGS: readonly Lang[] = ['en', 'de'] as const;
 
