@@ -1,16 +1,16 @@
 # Graph Report - msk-shop-redesign  (2026-10-28)
 
 ## Corpus Check
-- 437 files · ~311,705 words
+- 451 files · ~317,688 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 2763 nodes · 7003 edges · 170 communities (135 shown, 25 thin omitted)
-- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 105 edges (avg confidence: 0.88)
+- 2808 nodes · 7279 edges · 182 communities (146 shown, 26 thin omitted)
+- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 110 edges (avg confidence: 0.88)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `ac572740`
+- Built from commit: `b8bb0603`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -19,38 +19,38 @@
 - products.ts
 - getClientIp
 - devDependencies
-- Card.tsx
+- AdminClient.tsx
 - dependencies
 - Design System: MSK Scripts Shop
 - fivestats.ts
 - compilerOptions
 - routes.ts
-- useLang
+- Footer.tsx
 - scripts/deploy.sh (Server Deploy Script)
 - imageUploads.ts
 - Tebex API Reference (5 HTTP APIs)
-- lib/tebex.ts
+- sitemap.ts
 - admin/page.tsx
 - giveaway-bot/DashboardClient.tsx
 - adminImages.ts
 - botproxy/route.ts
-- publicPath
+- jsonLd.ts
 - productView.ts
-- LegalContent.tsx
+- tools/page.tsx
 - [lang]/page.tsx
 - botProvision.ts
 - getRequestLang
 - adminPerms.ts
-- i18n.ts
-- ticketbot-copy.ts
+- Lang
+- TicketBotLanding.tsx
 - authorizeGuild
 - package.json
-- ImagesTab.tsx
-- [discordUserId]/route.ts
+- [slug]/page.tsx
+- [guildId]/route.ts
 - scripts
-- tiers.ts
-- Button.tsx
-- LangProvider.tsx
+- botPrices.test.ts
+- i18n.ts
+- footerLinks.test.ts
 - adminApi.ts
 - Privacy Policy (EN)
 - BotDashboardAddress
@@ -62,7 +62,7 @@
 - [id]/page.tsx
 - MSK Giveaway Bot Marketing Banner
 - cleanup.js
-- ProductBrowser.tsx
+- ProductCard.tsx
 - bot-provision.js
 - admin/coupons/route.ts
 - Stripe Subscription Billing
@@ -81,7 +81,7 @@
 - msk_core Marketing Banner
 - msk_enginetoggle Marketing Banner
 - msk_garage Marketing Banner
-- TranscriptsCard.tsx
+- publicPath
 - msk_givevehicle Marketing Banner
 - MSK.DOCS Official Documentation Banner
 - health/route.ts
@@ -93,14 +93,14 @@
 - MSK Giveaway Bot
 - MSK Scripts Shop (headless storefront)
 - MSK Shortener Hero Screenshot
-- [guildId]/route.ts
+- trialEnding.ts
 - Coverage Job
 - lib/auth.ts
 - deploy.sh
 - vhost-create.sh
-- ApiKeysTab.tsx
-- imagePipeline.ts
-- renderMarkdown
+- ProductBuyBox.tsx
+- lib/tebex.ts
+- serverLang.ts
 - proxy.ts
 - Cached Discord Online Member Count
 - eslint.config.mjs
@@ -113,11 +113,11 @@
 - tailwind.config.ts
 - contrast.test.ts
 - localeLinks.test.ts
-- ResourcesClient.tsx
+- routes.test.ts
 - tebex-stats.js
-- query
+- hostedBot.ts
 - [category]/page.tsx
-- dashboard/ticket-bot/page.tsx
+- dashboardAuth.ts
 - stripe/route.ts
 - MSKanban README/Banner Image
 - routeGuards.test.ts
@@ -134,10 +134,11 @@
 - image-ingest.js
 - giveawaySession.ts
 - MSK Ticket Bot Transcript Service
-- price.ts
+- data/route.ts
 - robots.ts
-- ThemeProvider.tsx
 - discord-verify/callback/route.ts
+- ThemeProvider.tsx
+- session.ts
 - Colors
 - images/upload/route.ts
 - DashboardDomainCard
@@ -145,11 +146,12 @@
 - Data Processing Agreement (AVV)
 - Vereinbarung zur Auftragsverarbeitung (AVV)
 - [lang]/layout.tsx
-- ticketbotStats.ts
+- tiers.ts
 - sendMail
 - peds.js
 - imageSyncCheck.ts
-- audit/route.ts
+- query
+- env/route.ts
 - image-pedshot-prepare.js
 - adminImageFiles.test.ts
 - CI Workflow (msk-shop)
@@ -169,36 +171,46 @@
 - msk-cron.sh
 - zustand
 - react-dom
+- giveaway/auth/callback/route.ts
+- ticket-bot/stats/StatsClient.tsx
 - bot-vhost-delete.sh
 - Pricing migration, 2026-09-19
+- giveawayStats.ts
 - ticket-bot/DashboardClient.tsx
+- StoreTab
+- getPreferredLang
 - softNotFound.test.ts
+- image-uploads/route.ts
+- url/route.ts
+- transcripts/route.ts
+- deactivate/route.ts
+- PaymentMarks.tsx
 - migrate-stats-ignored.js
 - 003-site-settings.sql
 
 ## God Nodes (most connected - your core abstractions)
-1. `query()` - 84 edges
-2. `getRequestLang()` - 84 edges
-3. `cn()` - 81 edges
-4. `Lang` - 64 edges
-5. `useLang()` - 60 edges
-6. `publicPath()` - 57 edges
-7. `Button` - 47 edges
-8. `pageSeo` - 44 edges
-9. `queryOne()` - 43 edges
-10. `Card` - 42 edges
+1. `getRequestLang()` - 96 edges
+2. `cn()` - 87 edges
+3. `query()` - 84 edges
+4. `Lang` - 71 edges
+5. `publicPath()` - 65 edges
+6. `useLang()` - 60 edges
+7. `Button` - 52 edges
+8. `pageSeo` - 52 edges
+9. `alternatesFor()` - 48 edges
+10. `LocaleLink()` - 44 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `npm ci --no-audit im Deploy` --semantically_similar_to--> `Production-Tree-Only Audit Gate`  [INFERRED] [semantically similar]
   docs/DEPLOYMENT.md → .github/workflows/ci.yml
-- `AccountPage()` --calls--> `getRequestLang()`  [EXTRACTED]
-  app/[lang]/account/page.tsx → lib/serverLang.ts
-- `StatCard()` --calls--> `cn()`  [EXTRACTED]
-  app/[lang]/discord/giveaway-bot/stats/StatsClient.tsx → lib/utils.ts
-- `StatCard()` --calls--> `cn()`  [EXTRACTED]
-  app/[lang]/discord/ticket-bot/stats/StatsClient.tsx → lib/utils.ts
-- `PATCH` --indirect_call--> `isAdminPermission()`  [INFERRED]
-  app/api/admin/team/[discordUserId]/route.ts → lib/adminPerms.ts
+- `DiscordPage()` --calls--> `getRequestLang()`  [EXTRACTED]
+  app/[lang]/discord/page.tsx → lib/serverLang.ts
+- `StatusBadge()` --calls--> `cn()`  [EXTRACTED]
+  app/[lang]/tools/images/upload/UploadClient.tsx → lib/utils.ts
+- `POST` --calls--> `writeAudit()`  [EXTRACTED]
+  app/api/admin/bans/route.ts → lib/adminAudit.ts
+- `DELETE` --calls--> `writeAudit()`  [EXTRACTED]
+  app/api/admin/coupons/[id]/route.ts → lib/adminAudit.ts
 
 ## Import Cycles
 - None detected.
@@ -215,27 +227,27 @@
 - **CI/CD Pipeline (CI gates Deploy)** — github_workflows_deploy, github_workflows_dependency_review [INFERRED 0.75]
 - **Contribution Governance Docs** — contributing, code_of_conduct, github_pull_request_template, github_issue_template_bug_report, github_issue_template_feature_request [INFERRED 0.75]
 
-## Communities (170 total, 25 thin omitted)
+## Communities (182 total, 26 thin omitted)
 
 ### Community 0 - "legalForms.ts"
-Cohesion: 0.09
-Nodes (53): dynamic, POST(), dynamic, POST(), badRequest(), clientIpOrNull(), deliverReceipts(), mailLangFrom() (+45 more)
+Cohesion: 0.10
+Nodes (49): dynamic, POST(), dynamic, POST(), badRequest(), clientIpOrNull(), deliverReceipts(), mailLangFrom() (+41 more)
 
 ### Community 1 - "products.ts"
-Cohesion: 0.07
-Nodes (43): Storefront, ProductBuyBox(), Props, BuyOption, optionFor(), CATEGORY_SEO, CATEGORY_VARIANT, FEATURED_PACKAGE_IDS (+35 more)
+Cohesion: 0.10
+Nodes (30): Catalog(), cheapestScript(), scripts(), SubscriptionCard(), baseName(), buildIndex(), byVariantOrder(), createLiveIndexLoader() (+22 more)
 
 ### Community 2 - "getClientIp"
-Cohesion: 0.18
-Nodes (19): getBasketCreateAuth(), getTebexAuth, TEBEX_BASE, TEBEX_HEADERS, GET(), DELETE(), POST(), POST() (+11 more)
+Cohesion: 0.17
+Nodes (21): getBasketCreateAuth(), getTebexAuth, TEBEX_BASE, TEBEX_HEADERS, GET(), DELETE(), POST(), POST() (+13 more)
 
 ### Community 3 - "devDependencies"
 Cohesion: 0.07
 Nodes (29): eslint, eslint-config-next, devDependencies, eslint, eslint-config-next, postcss, tailwindcss, @tailwindcss/postcss (+21 more)
 
-### Community 4 - "Card.tsx"
-Cohesion: 0.10
-Nodes (28): AuditEntry, AuditTab(), BanEntry, BansTab(), ErrorCard(), GiftCard, GiftCardsTab(), LookupPayment (+20 more)
+### Community 4 - "AdminClient.tsx"
+Cohesion: 0.05
+Nodes (75): ApiKeysTab(), formatRegistered(), maskKey(), originBadgeClass(), Tier, TIER_LABELS, TIER_ORDER, tierBadgeClass() (+67 more)
 
 ### Community 5 - "dependencies"
 Cohesion: 0.07
@@ -246,124 +258,124 @@ Cohesion: 0.10
 Nodes (21): Badges, Buttons, Cards, Components, Design System: MSK Scripts Shop, Do:, Do's and Don'ts, Don't: (+13 more)
 
 ### Community 7 - "fivestats.ts"
-Cohesion: 0.09
-Nodes (31): dynamic, GET(), ResourcesPage(), RESOURCE_STATS, RESOURCE_STATS_GAME, RESOURCE_STATS_HEADLINE, RESOURCE_STATS_PERIOD_HOURS, ResourceStatEntry (+23 more)
+Cohesion: 0.10
+Nodes (23): dynamic, GET(), dynamic, generateMetadata(), ResourcesPage(), Entry, ProofLine(), RESOURCE_STATS (+15 more)
 
 ### Community 8 - "compilerOptions"
 Cohesion: 0.07
 Nodes (27): dom, dom.iterable, esnext, .next/dev/types/**/*.ts, next-env.d.ts, .next/types/**/*.ts, node_modules, **/*.ts (+19 more)
 
 ### Community 9 - "routes.ts"
-Cohesion: 0.09
-Nodes (37): ProductIndex, productTarget, comparePatterns(), EXEMPT_EXACT, EXEMPT_PREFIXES, fill(), FIVEM_PAGES, internalPath() (+29 more)
+Cohesion: 0.13
+Nodes (22): ProductIndex, productTarget, comparePatterns(), EXEMPT_EXACT, EXEMPT_PREFIXES, fill(), FIVEM_PAGES, isDynamic() (+14 more)
 
-### Community 10 - "useLang"
-Cohesion: 0.14
-Nodes (27): CancellationClient(), ReportClient(), WithdrawalClient(), useLang(), LanguageDropdown(), LanguageLinks(), languages, rememberLanguage() (+19 more)
+### Community 10 - "Footer.tsx"
+Cohesion: 0.07
+Nodes (40): About(), Hero(), LanguageDropdown(), LanguageLinks(), languages, rememberLanguage(), GithubMark(), ArrowSquareOut (+32 more)
 
 ### Community 11 - "scripts/deploy.sh (Server Deploy Script)"
 Cohesion: 0.12
 Nodes (17): CI Job: Build, Dependabot Secret Fallback Placeholders, cleanup.js Cron auf /opt/msk-shop/scripts/, scripts/deploy.sh (Server Deploy Script), Deploy Workflow (workflow_run nach grünem CI), /opt/msk-shop/.env.local Build-Variablen, ForceCommand-gepinnter Action-Key, Benötigte GitHub-Secrets (DEPLOY_* + Build-Variablen) (+9 more)
 
 ### Community 12 - "imageUploads.ts"
-Cohesion: 0.10
-Nodes (33): GET, dynamic, failureResponse(), POST, dynamic, GET, STATUSES, categoryExists() (+25 more)
+Cohesion: 0.08
+Nodes (45): dynamic, GET, dynamic, failureResponse(), POST, categoryExists(), moveAdminImage(), ACCEPTED_INPUT_FORMATS (+37 more)
 
 ### Community 13 - "Tebex API Reference (5 HTTP APIs)"
 Cohesion: 0.15
 Nodes (17): Moritz Kohm (data controller / licensor), Stripe Payments Europe, Ltd. (subscriptions), Tebex Limited (payment MoR, UK), Imprint (EN), Impressum (DE), 8-permission admin model + is_owner, Admin Dashboard Implementation Plan, Admin route auth pattern (authorizeAdmin → rate limit → Plugin call → writeAudit) (+9 more)
 
-### Community 14 - "lib/tebex.ts"
-Cohesion: 0.06
-Nodes (44): dynamic, GET, dynamic, GET, CartPage(), CheckoutContent(), generateStaticParams(), GET() (+36 more)
+### Community 14 - "sitemap.ts"
+Cohesion: 0.14
+Nodes (19): dynamic, GET, dynamic, GET, generateStaticParams(), GET(), revalidate, productUpdatedAt() (+11 more)
 
 ### Community 15 - "admin/page.tsx"
 Cohesion: 0.16
-Nodes (15): dynamic, GET(), AdminPage(), dynamic, ERROR_MESSAGES, metadata, authorizeAdmin(), loadAdminMember() (+7 more)
+Nodes (14): dynamic, GET(), AdminPage(), dynamic, ERROR_MESSAGES, metadata, loadAdminMember(), ADMIN_SESSION_COOKIE (+6 more)
 
 ### Community 16 - "giveaway-bot/DashboardClient.tsx"
 Cohesion: 0.06
-Nodes (53): BonusRoleEditor(), Channel, clampBonus(), CouponFields(), couponPayload(), CreateForm(), Ctx, Dict (+45 more)
+Nodes (48): BonusRoleEditor(), Channel, clampBonus(), CouponFields(), couponPayload(), CreateForm(), Ctx, DashboardClient() (+40 more)
 
 ### Community 17 - "adminImages.ts"
-Cohesion: 0.12
-Nodes (29): DELETE, dynamic, moveFailure(), PATCH, ADMIN_IMAGE_FILTERS, AdminImage, AdminImageCategoryStat, AdminImageFilter (+21 more)
+Cohesion: 0.10
+Nodes (32): DELETE, dynamic, moveFailure(), PATCH, dynamic, GET, ADMIN_IMAGE_FILTERS, AdminImage (+24 more)
 
 ### Community 18 - "botproxy/route.ts"
 Cohesion: 0.10
 Nodes (33): dynamic, GET(), runtime, bounce(), DELETE, dynamic, GET, handle() (+25 more)
 
-### Community 19 - "publicPath"
-Cohesion: 0.09
-Nodes (30): dynamic, GiveawayDashboardPage(), metadata, formatBytes(), ImageDetailPage(), Params, revalidate, CopyUrlButton() (+22 more)
+### Community 19 - "jsonLd.ts"
+Cohesion: 0.13
+Nodes (23): GET(), revalidate, botLandingEntries(), PRODUCT_COPY, breadcrumbJsonLd(), Crumb, FaqEntry, JsonLdValue (+15 more)
 
 ### Community 20 - "productView.ts"
-Cohesion: 0.12
-Nodes (37): AllAccessPage(), generateMetadata(), revalidate, subscription(), CataloguePage(), generateMetadata(), generateStaticParams(), isMarkedUnknown() (+29 more)
+Cohesion: 0.21
+Nodes (22): ProductPage(), Props, buyOptions(), chooseVariant(), Product, formatDate(), isBilingual(), productCard() (+14 more)
 
-### Community 21 - "LegalContent.tsx"
-Cohesion: 0.48
-Nodes (4): Props, EN, legalNotice, LegalNoticeKind
+### Community 21 - "tools/page.tsx"
+Cohesion: 0.10
+Nodes (33): FreeScriptsPage(), serverCounts(), imageSrc(), Tool(), ToolsPage(), COMMAND_NAMES, GIVEAWAY_GITHUB_URL, GIVEAWAY_INVITE_URL (+25 more)
 
 ### Community 22 - "[lang]/page.tsx"
-Cohesion: 0.08
-Nodes (31): HomePage(), About(), Bots, Catalog(), cheapestScript(), scripts(), FIVEM_SCRIPT_IDS, FreeScripts() (+23 more)
+Cohesion: 0.15
+Nodes (15): AboutPage(), HomePage(), AboutFigure, aboutFigures(), countUrls(), loadDocPageCount(), NOTE: server module. No secret behind it, the sitemap is public -- but, loadHeadlineStat() (+7 more)
 
 ### Community 23 - "botProvision.ts"
-Cohesion: 0.09
-Nodes (50): dynamic, GET(), POST(), runtime, dynamic, POST(), runtime, dynamic (+42 more)
+Cohesion: 0.13
+Nodes (34): dynamic, POST(), runtime, botDir(), allocateBotPort(), archiveName(), archivePath(), BOT_REPO (+26 more)
 
 ### Community 24 - "getRequestLang"
 Cohesion: 0.10
-Nodes (38): generateMetadata(), generateMetadata(), generateMetadata(), generateMetadata(), generateMetadata(), dynamic, generateMetadata(), dynamic (+30 more)
+Nodes (28): generateMetadata(), AccountPage(), generateMetadata(), generateMetadata(), generateMetadata(), generateMetadata(), dynamic, generateMetadata() (+20 more)
 
 ### Community 25 - "adminPerms.ts"
-Cohesion: 0.16
-Nodes (19): dynamic, GET, POST, TeamRow, AdminClient(), Member, AdminAuthResult, AdminTeamRow (+11 more)
+Cohesion: 0.19
+Nodes (15): GET, AdminClient(), Member, AdminAuthResult, AdminTeamRow, AdminPermission, AdminTeamMember, memberHasPermission() (+7 more)
 
-### Community 26 - "i18n.ts"
+### Community 26 - "Lang"
 Cohesion: 0.14
-Nodes (20): LangContextValue, keepAsIs(), LocaleLink(), ArrowRight, PackagePrice(), PriceSource, Props, Props (+12 more)
+Nodes (17): LangContextValue, PackageGalleryProps, PackagePrice(), PriceSource, Props, Props, VariantComparison(), SalePriceFetcher() (+9 more)
 
-### Community 27 - "ticketbot-copy.ts"
-Cohesion: 0.14
-Nodes (15): CommandRow, de, en, GIVEAWAY_COPY, GiveawayCopy, de, en, LabelledText (+7 more)
+### Community 27 - "TicketBotLanding.tsx"
+Cohesion: 0.09
+Nodes (22): BotCrossLink(), HUB_HREFS, TIER_KEYS, Translate, Fact, FactList(), CommandRow, de (+14 more)
 
 ### Community 28 - "authorizeGuild"
-Cohesion: 0.12
-Nodes (24): ALLOWED_ACTIONS, authHosted(), botDir(), execAsync, GET(), POST(), authHosted(), GET() (+16 more)
+Cohesion: 0.18
+Nodes (16): ALLOWED_ACTIONS, authHosted(), botDir(), execAsync, GET(), POST(), authHosted(), GET() (+8 more)
 
 ### Community 29 - "package.json"
 Cohesion: 0.17
 Nodes (11): engines, node, license, name, overrides, eslint, js-yaml, postcss (+3 more)
 
-### Community 30 - "ImagesTab.tsx"
-Cohesion: 0.08
-Nodes (24): CatalogItem, Coupon, CouponPayload, CouponsTab(), CouponState, formatDate(), STATE_LABEL, AdminImage (+16 more)
+### Community 30 - "[slug]/page.tsx"
+Cohesion: 0.15
+Nodes (23): AllAccessPage(), generateMetadata(), revalidate, subscription(), generateMetadata(), generateStaticParams(), isMarkedUnknown(), productFor() (+15 more)
 
-### Community 31 - "[discordUserId]/route.ts"
-Cohesion: 0.12
-Nodes (20): GET, dynamic, GET, DELETE, dynamic, ownerFlag(), PATCH, adminImageStats() (+12 more)
+### Community 31 - "[guildId]/route.ts"
+Cohesion: 0.09
+Nodes (27): dynamic, ExistingRow, PATCH, VALID_TIERS, dynamic, GET, GuildRow, dynamic (+19 more)
 
 ### Community 32 - "scripts"
 Cohesion: 0.22
 Nodes (9): scripts, build, dev, lint, start, test, test:coverage, test:watch (+1 more)
 
-### Community 33 - "tiers.ts"
-Cohesion: 0.13
-Nodes (18): GuildRow, GuildRow, GuildRow, Guild, GuildPanel(), safeDomainHref(), mb(), TicketBotLanding() (+10 more)
+### Community 33 - "botPrices.test.ts"
+Cohesion: 0.19
+Nodes (15): OrderSummary(), BotsOverview(), prefetch(), TicketBotLanding(), mb(), TicketBotTiers(), LangProvider(), formatTierPrice() (+7 more)
 
-### Community 34 - "Button.tsx"
-Cohesion: 0.18
-Nodes (15): Done, Done, Done, CircleNotch, Field(), LegalFormShell(), Props, Button (+7 more)
-
-### Community 35 - "LangProvider.tsx"
+### Community 34 - "i18n.ts"
 Cohesion: 0.09
-Nodes (22): FALLBACK, LangContext, LangProvider(), Monitor, Moon, Receipt, Scales, Sun (+14 more)
+Nodes (37): CancellationClient(), Done, CartPage(), CheckoutContent(), Guild, VerifyClient(), Done, ReportClient() (+29 more)
+
+### Community 35 - "footerLinks.test.ts"
+Cohesion: 0.29
+Nodes (8): Footer(), footerColumns(), trustItems(), isAtOrBelow(), isShopPath(), isWorkspacePath(), EXPECTED, html()
 
 ### Community 36 - "adminApi.ts"
 Cohesion: 0.08
-Nodes (40): dynamic, GET, POST, DELETE, dynamic, POST, DELETE, dynamic (+32 more)
+Nodes (36): dynamic, GET, POST, DELETE, dynamic, POST, dynamic, GET (+28 more)
 
 ### Community 37 - "Privacy Policy (EN)"
 Cohesion: 0.22
@@ -382,16 +394,16 @@ Cohesion: 0.31
 Nodes (8): DRY_RUN, { execFile }, execFileAsync, isActiveStatus(), main(), mysql, { promisify }, resolveTierFromPrice()
 
 ### Community 42 - "newsPopup.ts"
-Cohesion: 0.23
-Nodes (12): dynamic, GET, PUT, isAllowedHref(), NEWS_POPUP_DEFAULT, NEWS_POPUP_LIMITS, NewsPopupButton, parseButton() (+4 more)
+Cohesion: 0.22
+Nodes (13): dynamic, GET, PUT, isAllowedHref(), NEWS_POPUP_DEFAULT, NEWS_POPUP_LIMITS, NewsPopupButton, NewsPopupSettings (+5 more)
 
 ### Community 43 - "Terms & Conditions (EN)"
 Cohesion: 0.25
 Nodes (8): CFX.re Account Requirement, Anwendbares Recht (Bundesrepublik Deutschland), Lizenzbedingungen (Einzelserver-Lizenz), Nutzungsbedingungen (DE), FiveM Asset Escrow System, Governing Law (Federal Republic of Germany), Single-Server License Terms, Terms & Conditions (EN)
 
 ### Community 44 - "[id]/page.tsx"
-Cohesion: 0.16
-Nodes (17): CategoryPage(), generateMetadata(), revalidate, breadcrumbJsonLd(), LANGS, convertPipeTables(), EMOJI, OPTIONS (+9 more)
+Cohesion: 0.13
+Nodes (19): CategoryPage(), revalidate, CATEGORY_SEO, CATEGORY_VARIANT, FEATURED_PACKAGE_IDS, ProductCopy, resolveVariant(), SearchSnippet (+11 more)
 
 ### Community 45 - "MSK Giveaway Bot Marketing Banner"
 Cohesion: 0.46
@@ -401,9 +413,9 @@ Nodes (8): MSK Giveaway Bot Marketing Banner, Dark Green Tech Banner Visual Styl
 Cohesion: 0.29
 Nodes (7): { execFile }, execFileAsync, main(), mysql, path, { promisify }, { rm, readdir, stat }
 
-### Community 47 - "ProductBrowser.tsx"
-Cohesion: 0.42
-Nodes (6): ProductBrowser(), countBy(), Facet, matchesFrameworks(), PRODUCTS, visible()
+### Community 47 - "ProductCard.tsx"
+Cohesion: 0.16
+Nodes (15): ProductBrowser(), Props, ProductCard(), Props, Badge, BadgeProps, BadgeVariant, variantClasses (+7 more)
 
 ### Community 48 - "bot-provision.js"
 Cohesion: 0.14
@@ -462,8 +474,8 @@ Cohesion: 0.40
 Nodes (6): Giveaway Bot: Detaillierte Verarbeitung, Data Collected by the Giveaway Bot, Giveaway Data Retention (Deleted on Bot Removal), Giveaway Dashboard Session Cookies, Anonymous Public Statistics Page, Giveaway Web Dashboard (Discord OAuth)
 
 ### Community 62 - "transcript/upload/route.ts"
-Cohesion: 0.20
-Nodes (18): AttachmentInput, checkRateLimit(), isValidGuild(), POST(), RateLimitRow, reencodeImage(), RequestBody, transcriptBasePath() (+10 more)
+Cohesion: 0.21
+Nodes (17): AttachmentInput, checkRateLimit(), isValidGuild(), POST(), RateLimitRow, reencodeImage(), RequestBody, transcriptBasePath() (+9 more)
 
 ### Community 63 - "msk_core Marketing Banner"
 Cohesion: 0.60
@@ -477,9 +489,9 @@ Nodes (6): msk_enginetoggle Marketing Banner, ESX Framework Support, Manual Engi
 Cohesion: 0.60
 Nodes (6): msk_garage Marketing Banner, ESX Framework Support, Full Garage Management, MSK Scripts Brand Identity (M logo, dark green), MSK.GARAGE (msk_garage), Vehicle System / Persistent Vehicle Storage
 
-### Community 66 - "TranscriptsCard.tsx"
-Cohesion: 0.14
-Nodes (15): CatalogPackage, PAGE_SIZES, Payment, TranscriptsCard, EMPTY_QUERY, formatBytes(), Query, safeUrl() (+7 more)
+### Community 66 - "publicPath"
+Cohesion: 0.16
+Nodes (17): generateMetadata(), dynamic, GiveawayDashboardPage(), metadata, DiscordPage(), generateMetadata(), generateMetadata(), generateMetadata() (+9 more)
 
 ### Community 67 - "msk_givevehicle Marketing Banner"
 Cohesion: 0.53
@@ -495,7 +507,7 @@ Nodes (4): dynamic, IncidentsResponse, SEVERITY, StatusResponse
 
 ### Community 70 - "images.ts"
 Cohesion: 0.09
-Nodes (34): dynamic, GET, GET(), OPTIONS, revalidate, GET(), OPTIONS, revalidate (+26 more)
+Nodes (38): GET(), OPTIONS, revalidate, GET(), OPTIONS, revalidate, GET(), OPTIONS (+30 more)
 
 ### Community 71 - "Push to Codeberg Job"
 Cohesion: 0.40
@@ -525,9 +537,9 @@ Nodes (17): Code of Conduct (Contributor Covenant), Contributing Guide, Datenban
 Cohesion: 0.67
 Nodes (4): Dark Theme with MSK Green Accent Headline, MSK Shortener Hero Screenshot, Long URL Input Form Card, MSK URL Shortener (privacy-friendly, no signup)
 
-### Community 78 - "[guildId]/route.ts"
-Cohesion: 0.21
-Nodes (12): dynamic, ExistingRow, PATCH, VALID_TIERS, dynamic, GuildRow, ApiKey, isKeyOrigin() (+4 more)
+### Community 78 - "trialEnding.ts"
+Cohesion: 0.18
+Nodes (13): Props, buildOrderConfirmation(), BuiltEmail, escapeHtml(), formatDate(), buildTrialEndingEmail(), BuiltEmail, escapeHtml() (+5 more)
 
 ### Community 79 - "Coverage Job"
 Cohesion: 0.67
@@ -537,21 +549,21 @@ Nodes (3): Code Coverage Workflow, Coverage Job, Same-Repo-Only Coverage Upload 
 Cohesion: 0.70
 Nodes (4): db(), env_value(), run_as_app_user(), deploy.sh script
 
-### Community 87 - "ApiKeysTab.tsx"
+### Community 87 - "ProductBuyBox.tsx"
 Cohesion: 0.17
-Nodes (14): ApiKeysTab(), formatRegistered(), maskKey(), originBadgeClass(), Tier, TIER_LABELS, TIER_ORDER, tierBadgeClass() (+6 more)
+Nodes (12): ArrowDown, AddToCartButton(), readStoredDiscordId(), withName(), ProductBuyBox(), Props, BuyOption, CartPackage (+4 more)
 
-### Community 88 - "imagePipeline.ts"
-Cohesion: 0.14
-Nodes (17): ACCEPTED_INPUT_FORMATS, cdnRootPath(), copyVariants(), deleteVariants(), normaliseName(), PIPELINE_RULES, variantFiles(), Variants (+9 more)
+### Community 88 - "lib/tebex.ts"
+Cohesion: 0.24
+Nodes (13): SignInReturn(), addGiftToBasket(), addToBasket(), applyCoupon(), createBasket(), getAllAuthUrls(), getBasket(), H (+5 more)
 
-### Community 90 - "renderMarkdown"
-Cohesion: 0.19
-Nodes (15): DpaPage(), ImprintPage(), PrivacyPage(), TermsPage(), WithdrawalPage(), ALLOWED_SLUGS, getLegalContent(), inline() (+7 more)
+### Community 90 - "serverLang.ts"
+Cohesion: 0.15
+Nodes (21): DpaPage(), ImprintPage(), PrivacyPage(), TermsPage(), generateMetadata(), WithdrawalPage(), LegalContent(), Props (+13 more)
 
 ### Community 91 - "proxy.ts"
-Cohesion: 0.17
-Nodes (15): LANG_COOKIE, BODY_LIMITS, BOT_DASHBOARD_HOST, Bucket, buckets, clientIp(), config, isRateLimited() (+7 more)
+Cohesion: 0.12
+Nodes (20): authorized(), POST(), ResultRow, WinnerIn, DEFAULT_LANG, LANG_COOKIE, BODY_LIMITS, BOT_DASHBOARD_HOST (+12 more)
 
 ### Community 101 - "contrast.test.ts"
 Cohesion: 0.29
@@ -561,41 +573,41 @@ Nodes (8): channels(), contrast(), CSS, dark, light, linear(), luminance(), mix(
 Cohesion: 0.50
 Nodes (4): ALLE, DARF_NEXT_LINK, dateien(), WURZELN
 
-### Community 103 - "ResourcesClient.tsx"
-Cohesion: 0.16
-Nodes (11): formatNum(), formatSigned(), ResourceCard(), ResourcesClient(), TrendBadge(), GithubMark(), ArrowUpRight, Hash (+3 more)
+### Community 103 - "routes.test.ts"
+Cohesion: 0.20
+Nodes (15): isLang(), chooseRootLang(), internalPath(), langFromAcceptLanguage(), LEGACY_ROUTES, legacyTarget(), parsePublicPath(), resolveInternal() (+7 more)
 
 ### Community 104 - "tebex-stats.js"
 Cohesion: 0.43
 Nodes (6): aggregate(), DRY_RUN, fetchAllPayments(), log(), main(), mysql
 
-### Community 105 - "query"
-Cohesion: 0.07
-Nodes (35): authorized(), POST(), authorized(), POST(), ResultRow, WinnerIn, dynamic, extractApiKey() (+27 more)
+### Community 105 - "hostedBot.ts"
+Cohesion: 0.25
+Nodes (7): execFileAsync, teardownCustomDomain(), ScopedGuildId, trustedGuildId(), TrustedGuildSource, execAsync, HostedRow
 
 ### Community 106 - "[category]/page.tsx"
-Cohesion: 0.17
-Nodes (13): Params, revalidate, Search, Copyright, BrandNotice(), OWN_WORK_CATEGORY, GallerySearch(), clear() (+5 more)
+Cohesion: 0.21
+Nodes (12): CategoryPage(), findCategory(), generateMetadata(), Params, revalidate, Search, GallerySearch(), clear() (+4 more)
 
-### Community 107 - "dashboard/ticket-bot/page.tsx"
-Cohesion: 0.18
-Nodes (17): DashboardClient(), DashboardGuild, DashboardPage(), dynamic, GuildRow, metadata, ACCESS_GRACE_DAYS, ACCESS_STALE_HOURS (+9 more)
+### Community 107 - "dashboardAuth.ts"
+Cohesion: 0.11
+Nodes (29): GuildRow, generateApiKey(), GuildRow, POST(), GuildRow, Guild, DashboardGuild, DashboardPage() (+21 more)
 
 ### Community 108 - "stripe/route.ts"
-Cohesion: 0.13
-Nodes (33): CustomerRow, POST(), POST(), applySubscription(), downgradeGuild(), GuildIdRow, GuildNameRow, handleTrialWillEnd() (+25 more)
+Cohesion: 0.25
+Nodes (20): applySubscription(), downgradeGuild(), GuildIdRow, GuildNameRow, handleTrialWillEnd(), POST(), resolveInvoiceSubscriptionId(), sendOrderConfirmation() (+12 more)
 
 ### Community 112 - "routeGuards.test.ts"
 Cohesion: 0.16
 Nodes (10): API_DIR, DB_MODULES, DB_ROUTES, GUARDS, key(), LIB_DIR, LIB_SOURCES, libImports() (+2 more)
 
 ### Community 113 - "index.tsx"
-Cohesion: 0.04
-Nodes (84): Guild, Breakdown(), BreakdownItem, formatNum(), StatCard(), StatsClient(), formatBytes(), formatNum() (+76 more)
+Cohesion: 0.03
+Nodes (86): dynamic, GiveawayResultPage(), metadata, parseWinners(), ResultRow, Winner, formatNum(), formatSigned() (+78 more)
 
 ### Community 114 - "domain/route.ts"
-Cohesion: 0.35
-Nodes (13): activate(), DELETE(), dynamic, execAsync, gate(), PATCH(), pointsHere(), POST() (+5 more)
+Cohesion: 0.23
+Nodes (18): activate(), DELETE(), dynamic, execAsync, gate(), PATCH(), pointsHere(), POST() (+10 more)
 
 ### Community 115 - "Operations"
 Cohesion: 0.22
@@ -610,16 +622,16 @@ Cohesion: 0.22
 Nodes (9): Configuration, Database, Design and styling, Development, Migrations, Products, Project Structure, Security (+1 more)
 
 ### Community 118 - "cn"
-Cohesion: 0.08
-Nodes (24): StatusBadge(), DashboardClient(), VerifyClient(), StepIndicator(), StatusBadge(), MagnifyingGlassPlus, PackageGallery(), PackageGalleryProps (+16 more)
+Cohesion: 0.09
+Nodes (24): StatusBadge(), Props, StepIndicator(), TIER_LABELS, VerifyClient(), Bots, ArrowsClockwise, SquaresFour (+16 more)
 
 ### Community 119 - "botSeo.ts"
-Cohesion: 0.11
-Nodes (28): generateMetadata(), GiveawayPage(), generateMetadata(), TicketBotComparePage(), generateMetadata(), TicketBotPage(), escapeXml(), GET() (+20 more)
+Cohesion: 0.14
+Nodes (20): generateMetadata(), GiveawayPage(), generateMetadata(), TicketBotPage(), GiveawayLanding(), JsonLd(), serialize(), appJsonLdFor() (+12 more)
 
 ### Community 121 - "TicketBotCompare.tsx"
-Cohesion: 0.23
-Nodes (10): TicketBotCompare(), BookOpen, Info, Translate, COMPARE_DATA_DATE, CompareRow, de, en (+2 more)
+Cohesion: 0.25
+Nodes (11): generateMetadata(), TicketBotComparePage(), TicketBotCompare(), COMPARE_DATA_DATE, CompareRow, de, en, FaqItem (+3 more)
 
 ### Community 123 - "dashboard-host/route.ts"
 Cohesion: 0.19
@@ -630,44 +642,48 @@ Cohesion: 0.19
 Nodes (16): buildVariants(), CATEGORY_RULES, crypto, fs, main(), mysql, normaliseName(), parseArgs() (+8 more)
 
 ### Community 125 - "giveawaySession.ts"
-Cohesion: 0.05
-Nodes (54): ACTION_PATH, OWNER_ACTIONS, POST(), GET(), ALLOWED, GET(), GwListItem, KIND_PATH (+46 more)
+Cohesion: 0.16
+Nodes (15): POST(), BotGuild, dynamic, GiveawayVerifyPage(), metadata, Envelope, getSecret(), GIVEAWAY_SESSION_COOKIE (+7 more)
 
 ### Community 126 - "MSK Ticket Bot Transcript Service"
 Cohesion: 0.29
 Nodes (8): Public Giveaway Results Page, In-Memory IP Rate Limiting, Transcript Service API Key, Limitation of Liability, Public Transcript URLs (UUID, unlisted), No Guaranteed Uptime / SLA, MSK Ticket Bot Transcript Service, Transcript Content and Responsibility
 
-### Community 127 - "price.ts"
-Cohesion: 0.43
-Nodes (4): DisplayPrice, resolveDisplayPrice(), SaleData, SalePricesStore
+### Community 127 - "data/route.ts"
+Cohesion: 0.20
+Nodes (13): ACTION_PATH, OWNER_ACTIONS, POST(), ALLOWED, GET(), GwListItem, KIND_PATH, OWNER_KINDS (+5 more)
 
 ### Community 128 - "robots.ts"
-Cohesion: 0.67
-Nodes (3): BLOCKED, robots(), isExemptPath()
+Cohesion: 0.50
+Nodes (4): BLOCKED, robots(), LANGS, isExemptPath()
+
+### Community 129 - "discord-verify/callback/route.ts"
+Cohesion: 0.20
+Nodes (11): GET(), isRecheckState(), RawGuild, ADMINISTRATOR, canManageGuild(), MANAGE_GUILD, affected(), reconcileGuildAccess() (+3 more)
 
 ### Community 130 - "ThemeProvider.tsx"
 Cohesion: 0.47
 Nodes (3): NextThemesProviderProps, Props, ThemeProvider()
 
-### Community 131 - "discord-verify/callback/route.ts"
-Cohesion: 0.10
-Nodes (28): dynamic, GET(), GET(), GET(), POST(), generateApiKey(), GuildRow, POST() (+20 more)
+### Community 131 - "session.ts"
+Cohesion: 0.16
+Nodes (15): dynamic, GET(), GET(), GuildRow, POST(), dynamic, metadata, VerifyPage() (+7 more)
 
 ### Community 132 - "Colors"
 Cohesion: 0.33
 Nodes (6): Colors, Functional, Named Rules, Neutral, Primary, Secondary
 
 ### Community 133 - "images/upload/route.ts"
-Cohesion: 0.14
-Nodes (16): GET(), dynamic, dynamic, GET(), POST(), MAX_UPLOAD_BYTES, recentUploadCount(), uploadCategories() (+8 more)
+Cohesion: 0.13
+Nodes (18): GET(), dynamic, dynamic, GET(), POST(), listUploadsBySubmitter(), MAX_UPLOAD_BYTES, recentUploadCount() (+10 more)
 
 ### Community 134 - "DashboardDomainCard"
 Cohesion: 0.67
 Nodes (3): DashboardDomainCard(), call(), say()
 
 ### Community 135 - "HostingSetup.tsx"
-Cohesion: 0.06
-Nodes (37): Figures, formatBytes(), QueueFilter, TABS, Upload, UploadsTab(), HostingSetup, BotArchive (+29 more)
+Cohesion: 0.07
+Nodes (29): HostingSetup, BotArchive, EnvValues, errorText(), HostingSetup(), Job, RemoveCard(), remove() (+21 more)
 
 ### Community 136 - "Data Processing Agreement (AVV)"
 Cohesion: 0.17
@@ -678,12 +694,12 @@ Cohesion: 0.17
 Nodes (11): 10. Haftung und Schlussbestimmungen, 1. Gegenstand und Dauer, 2. Art und Zweck der Verarbeitung, Datenkategorien, Betroffene, 3. Weisungen, 4. Pflichten von MSK Scripts, 5. Pflichten des Auftraggebers, 6. Technische und organisatorische Maßnahmen (Art. 32 DSGVO), 7. Unterauftragsverarbeiter (+3 more)
 
 ### Community 138 - "[lang]/layout.tsx"
-Cohesion: 0.17
-Nodes (14): generateMetadata(), RootLayout(), siteMetadata, viewport, UnknownPage(), isLang(), LANG_HEADER, langFromHeader() (+6 more)
+Cohesion: 0.19
+Nodes (11): generateMetadata(), RootLayout(), siteMetadata, viewport, UnknownPage(), LANG_HEADER, langFromHeader(), NOT_FOUND_HEADER (+3 more)
 
-### Community 139 - "ticketbotStats.ts"
-Cohesion: 0.18
-Nodes (12): dynamic, GET(), StatsPage(), AvgRow, CountRow, EMPTY_STATS, loadTicketbotStats(), MaxRow (+4 more)
+### Community 139 - "tiers.ts"
+Cohesion: 0.11
+Nodes (18): dynamic, GET(), StatsPage(), AvgRow, CountRow, EMPTY_STATS, loadTicketbotStats(), MaxRow (+10 more)
 
 ### Community 140 - "sendMail"
 Cohesion: 0.27
@@ -697,9 +713,13 @@ Nodes (10): ALTER, dump, fs, GESCHLECHT_AUS_TYP, GRUPPE, [quelle, ziel], raus, R
 Cohesion: 0.29
 Nodes (8): dynamic, GET, cdnRoot(), DERIVATIVES, listFiles(), runSyncCheck(), SyncCheckCategory, SyncCheckResult
 
-### Community 143 - "audit/route.ts"
-Cohesion: 0.50
-Nodes (3): AuditRow, dynamic, GET
+### Community 143 - "query"
+Cohesion: 0.13
+Nodes (23): AuditRow, dynamic, GET, DELETE, dynamic, PUT, DELETE, dynamic (+15 more)
+
+### Community 144 - "env/route.ts"
+Cohesion: 0.30
+Nodes (12): dynamic, GET(), POST(), runtime, botEnvPath(), parseEnv(), patchBotEnv(), quote() (+4 more)
 
 ### Community 145 - "image-pedshot-prepare.js"
 Cohesion: 0.36
@@ -745,37 +765,73 @@ Nodes (4): fs, main(), mysql, toTagList()
 Cohesion: 0.40
 Nodes (4): Die Quellen, Label-Generatoren, Warum sie hier liegen, Was der Import garantiert
 
+### Community 164 - "giveaway/auth/callback/route.ts"
+Cohesion: 0.27
+Nodes (9): GET(), fetchGuildMemberRoles(), fetchUserGuilds(), UserGuilds, resolveManagerGuilds(), SettingsRow, signGiveawayVerify(), fullPage() (+1 more)
+
+### Community 165 - "ticket-bot/stats/StatsClient.tsx"
+Cohesion: 0.27
+Nodes (12): StatsClient(), formatBytes(), StatsClient(), TIER_ITEMS, Breakdown(), BreakdownItem, Figure, FigureList() (+4 more)
+
 ### Community 168 - "Pricing migration, 2026-09-19"
 Cohesion: 0.20
 Nodes (9): 1. Before anything else: find guilds that would lose hosting, 2. Stripe: six prices, created 2026-09-19, 3. The three old prices are still active, 4. Server: `.env.local`, 5. Deploy and check, Pricing migration, 2026-09-19, Status, What changed in the code (+1 more)
 
+### Community 169 - "giveawayStats.ts"
+Cohesion: 0.22
+Nodes (11): dynamic, GET(), GiveawayStatsPage(), getGiveawayPool(), giveawayQuery(), giveawayQueryOne(), CountRow, EMPTY_GIVEAWAY_STATS (+3 more)
+
 ### Community 170 - "ticket-bot/DashboardClient.tsx"
 Cohesion: 0.06
-Nodes (41): AccountPage(), BotConfigEditor, DashboardDomainCard, GET_LABEL, PaidTier, Props, T, TabKey (+33 more)
+Nodes (39): BotConfigEditor, DashboardClient(), DashboardDomainCard, GET_LABEL, GuildPanel(), Props, safeDomainHref(), T (+31 more)
+
+### Community 171 - "StoreTab"
+Cohesion: 0.36
+Nodes (9): StoreTab(), act(), clear(), reveal(), saveSecret(), saveStore(), TemplatesTab(), act() (+1 more)
+
+### Community 172 - "getPreferredLang"
+Cohesion: 0.36
+Nodes (6): CustomerRow, POST(), POST(), getPreferredLang(), priceIdForTier(), TRIAL_DAYS
+
+### Community 174 - "image-uploads/route.ts"
+Cohesion: 0.40
+Nodes (5): dynamic, GET, STATUSES, listUploads(), UploadStatus
+
+### Community 175 - "url/route.ts"
+Cohesion: 0.40
+Nodes (5): dynamic, extractApiKey(), GET(), GuildRow, UrlRow
+
+### Community 176 - "transcripts/route.ts"
+Cohesion: 0.47
+Nodes (5): dynamic, GET(), parseDate(), parsePositiveInt(), TranscriptRow
+
+### Community 177 - "deactivate/route.ts"
+Cohesion: 0.50
+Nodes (4): dynamic, POST(), runtime, archiveHostedBot()
 
 ### Community 179 - "migrate-stats-ignored.js"
 Cohesion: 0.50
 Nodes (4): APPLY, main(), mysql, parseKeys()
 
 ## Knowledge Gaps
-- **747 isolated node(s):** `Tier`, `TIER_LABELS`, `TIER_ORDER`, `AuditEntry`, `BanEntry` (+742 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 914 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **25 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **760 isolated node(s):** `Tier`, `TIER_LABELS`, `TIER_ORDER`, `AuditEntry`, `BanEntry` (+755 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 928 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **26 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `query()` connect `query` to `legalForms.ts`, `getClientIp`, `discord-verify/callback/route.ts`, `ticketbotStats.ts`, `imageUploads.ts`, `imageSyncCheck.ts`, `admin/page.tsx`, `audit/route.ts`, `adminImages.ts`, `adminImageFiles.test.ts`, `botProvision.ts`, `adminPerms.ts`, `authorizeGuild`, `[discordUserId]/route.ts`, `adminApi.ts`, `newsPopup.ts`, `transcript/upload/route.ts`, `images.ts`, `[guildId]/route.ts`, `imagePipeline.ts`, `dashboard/ticket-bot/page.tsx`, `domain/route.ts`, `dashboard-host/route.ts`, `giveawaySession.ts`?**
-  _High betweenness centrality (0.059) - this node is a cross-community bridge._
-- **Why does `Lang` connect `i18n.ts` to `products.ts`, `Card.tsx`, `HostingSetup.tsx`, `routes.ts`, `useLang`, `[lang]/layout.tsx`, `giveaway-bot/DashboardClient.tsx`, `publicPath`, `productView.ts`, `LegalContent.tsx`, `[lang]/page.tsx`, `getRequestLang`, `ticketbot-copy.ts`, `LangProvider.tsx`, `ticket-bot/DashboardClient.tsx`, `ProductBrowser.tsx`, `TranscriptsCard.tsx`, `images.ts`, `ApiKeysTab.tsx`, `ResourcesClient.tsx`, `[category]/page.tsx`, `index.tsx`, `cn`, `botSeo.ts`, `TicketBotCompare.tsx`?**
+- **Why does `query()` connect `query` to `legalForms.ts`, `discord-verify/callback/route.ts`, `getClientIp`, `tiers.ts`, `imageUploads.ts`, `imageSyncCheck.ts`, `admin/page.tsx`, `adminImages.ts`, `adminImageFiles.test.ts`, `botProvision.ts`, `authorizeGuild`, `[guildId]/route.ts`, `newsPopup.ts`, `transcripts/route.ts`, `deactivate/route.ts`, `transcript/upload/route.ts`, `images.ts`, `proxy.ts`, `hostedBot.ts`, `dashboardAuth.ts`, `domain/route.ts`, `dashboard-host/route.ts`, `data/route.ts`?**
+  _High betweenness centrality (0.061) - this node is a cross-community bridge._
+- **Why does `publicPath()` connect `publicPath` to `robots.ts`, `discord-verify/callback/route.ts`, `getClientIp`, `images/upload/route.ts`, `routes.ts`, `admin/page.tsx`, `jsonLd.ts`, `productView.ts`, `tools/page.tsx`, `[lang]/page.tsx`, `TicketBotLanding.tsx`, `botPrices.test.ts`, `i18n.ts`, `giveaway/auth/callback/route.ts`, `getPreferredLang`, `[id]/page.tsx`, `images.ts`, `trialEnding.ts`, `proxy.ts`, `routes.test.ts`, `dashboardAuth.ts`, `index.tsx`, `TicketBotCompare.tsx`, `data/route.ts`?**
+  _High betweenness centrality (0.038) - this node is a cross-community bridge._
+- **Why does `queryOne()` connect `query` to `getClientIp`, `session.ts`, `tiers.ts`, `imageUploads.ts`, `admin/page.tsx`, `adminImages.ts`, `adminImageFiles.test.ts`, `[lang]/page.tsx`, `botProvision.ts`, `adminPerms.ts`, `[guildId]/route.ts`, `adminApi.ts`, `newsPopup.ts`, `getPreferredLang`, `url/route.ts`, `transcripts/route.ts`, `transcript/upload/route.ts`, `images.ts`, `proxy.ts`, `hostedBot.ts`, `dashboardAuth.ts`, `stripe/route.ts`, `index.tsx`, `domain/route.ts`?**
   _High betweenness centrality (0.032) - this node is a cross-community bridge._
-- **Why does `publicPath()` connect `publicPath` to `robots.ts`, `legalForms.ts`, `getClientIp`, `discord-verify/callback/route.ts`, `images/upload/route.ts`, `routes.ts`, `admin/page.tsx`, `productView.ts`, `[lang]/page.tsx`, `getRequestLang`, `ticketbot-copy.ts`, `LangProvider.tsx`, `[id]/page.tsx`, `query`, `dashboard/ticket-bot/page.tsx`, `stripe/route.ts`, `botSeo.ts`, `TicketBotCompare.tsx`, `giveawaySession.ts`?**
-  _High betweenness centrality (0.027) - this node is a cross-community bridge._
 - **What connects `Tier`, `TIER_LABELS`, `TIER_ORDER` to the rest of the system?**
-  _747 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _760 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `legalForms.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.0907103825136612 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.1012987012987013 - nodes in this community are weakly interconnected._
 - **Should `products.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.07184325108853411 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.1021021021021021 - nodes in this community are weakly interconnected._
 - **Should `devDependencies` be split into smaller, more focused modules?**
   _Cohesion score 0.06896551724137931 - nodes in this community are weakly interconnected._
