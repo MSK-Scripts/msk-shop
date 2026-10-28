@@ -66,21 +66,27 @@ app/                        Next.js App Router pages & API routes
 │   ├── verify/             Verify status / complete / check-guild / redirect-dashboard
 │   └── webhook/stripe/     Stripe webhook handler (signature-verified)
 ├── [lang]/                 Every page, once, under /en and /de (English folder names = /en paths)
-│   ├── layout.tsx          Root layout of the shop, sets <html lang>
-│   ├── [...rest]/          Catch-all: unknown addresses get the 404 inside the layout
-│   ├── account/            User account page
-│   ├── admin/              Admin dashboard (one *Tab.tsx per area, English UI in both languages)
-│   ├── cart/, checkout/    Cart page, post-payment redirect handler
-│   ├── fivem/              Package list, [id]/ detail pages, categories/[id]/
-│   ├── discord/            ticket-bot/ (landing, compare/, stats/), giveaway-bot/ (landing, stats/, g/[token]/)
-│   ├── dashboard/          ticket-bot/ and giveaway-bot/ dashboards, each with verify/
-│   ├── tools/images/       Gallery: overview, [category]/, [category]/[name]/, upload/
-│   ├── stats/              Resource statistics page (fivestats.io)
-│   ├── legal/              terms/, imprint/, privacy/, withdrawal/, dpa/
-│   ├── withdraw-contract/  Contract withdrawal form (§ 356a BGB)
-│   ├── cancel-contract/    Contract cancellation form (§ 312k BGB)
-│   ├── report/             DSA content report form
-│   └── login/              Login page
+│   ├── layout.tsx          Root layout: document, <html lang>, theme, language, skip link
+│   ├── (site)/             Route group of the public site; its layout.tsx holds header,
+│   │   │                   footer, cart drawer and news popup (no part of any address)
+│   │   ├── [...rest]/      Catch-all: unknown addresses get the 404 inside the site layout
+│   │   ├── account/        User account page
+│   │   ├── cart/, checkout/  Cart page, post-payment redirect handler
+│   │   ├── fivem/          Catalogue, [slug]/ product pages, categories/[id]/
+│   │   ├── discord/        ticket-bot/ (landing, compare/, stats/), giveaway-bot/ (landing, stats/, g/[token]/)
+│   │   ├── tools/images/   Gallery: overview, [category]/, [category]/[name]/, upload/
+│   │   ├── stats/          Resource statistics page (fivestats.io)
+│   │   ├── legal/          terms/, imprint/, privacy/, withdrawal/, dpa/
+│   │   ├── withdraw-contract/, cancel-contract/  Withdrawal (§ 356a BGB) and cancellation (§ 312k BGB)
+│   │   ├── report/         DSA content report form
+│   │   └── login/          Login page
+│   ├── dashboard/          The two bot dashboards in the shared app shell (components/dashboard/)
+│   │   ├── ticket-bot/     page.tsx sends on to the first server; [server]/ (overview), [server]/domains/,
+│   │   │                   [server]/transcripts/, [server]/hosting/; verify/. loadGuilds.ts loads the
+│   │   │                   session's servers, the address only picks among them
+│   │   └── giveaway-bot/   (panel)/ with overview, giveaways/, templates/, settings/, store/; verify/
+│   └── admin/              Admin dashboard in the app shell (one *Tab.tsx per area, `?tab=` per area,
+│                           English UI from `adminTranslations` in both languages)
 ├── auth/discord/           Tebex Discord return (own root layout, no language prefix)
 ├── botproxy/               Reverse proxy route for the hosted bot dashboard
 ├── llms.txt/               /llms.txt: map of the site for language models, built by lib/llms.ts
@@ -94,6 +100,9 @@ components/
 ├── icons/                  Local brand marks (GitHub and others)
 ├── images/                 Gallery cards, search, copy-URL button, brand notice
 ├── layout/                 Header (main nav, mobile menu, account menu), Footer, closing band, 404 page, payment marks
+├── dashboard/              App shell of the three dashboards (sidebar, drawer, server switcher) and its building
+│                           blocks: PageHeader, StatTile, StatusBadge, SectionCard, DataTable, EmptyState,
+│                           ConfirmDialog, FormField
 ├── legal/                  Legal-text renderer
 ├── packages/               PackagePrice, AddToCartButton, PackageGallery
 ├── products/               Product card, catalogue filter, product page with buy box (Encrypted/Source), comparison table
