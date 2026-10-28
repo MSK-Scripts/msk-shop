@@ -14,9 +14,10 @@ export function Section({
   id, kicker, title, intro, action, children, className,
 }: {
   id: string
-  kicker: string
+  kicker?: string
   title: string
-  intro?: string
+  /** A sentence or two; may carry inline markup such as `<code>`. */
+  intro?: ReactNode
   /** Links that lead deeper, below the intro. */
   action?: ReactNode
   children: ReactNode
@@ -26,7 +27,7 @@ export function Section({
     <section aria-labelledby={id} className={cn('border-t border-[var(--color-border)] py-[var(--space-section)]', className)}>
       <div className="container-page grid gap-[var(--space-stack)] min-[1600px]:grid-cols-[clamp(20rem,22vw,36rem)_minmax(0,1fr)] min-[1600px]:gap-x-[clamp(3rem,4vw,8rem)]">
         <div className="grid content-start gap-2.5 self-start min-[1600px]:sticky min-[1600px]:top-[calc(var(--header-height)+2rem)]">
-          <span className="kicker">{kicker}</span>
+          {kicker && <span className="kicker">{kicker}</span>}
           <h2 id={id} className="text-h2 font-bold tracking-[-0.015em]">{title}</h2>
           {intro && <p className="max-w-[34rem] text-[var(--color-muted-foreground)]">{intro}</p>}
           {action && <div className="flex flex-wrap gap-x-6">{action}</div>}
@@ -37,16 +38,24 @@ export function Section({
   )
 }
 
-/** The third level of the button hierarchy: a green text link with an arrow. */
+/**
+ * The third level of the button hierarchy: a green text link with an arrow.
+ * On the anthracite band (`tone="band"`) it takes the band green, the page
+ * green would measure about 2.3:1 there.
+ */
 export function TextLink({
-  href, children, prefetch, external,
+  href, children, prefetch, external, tone = 'page',
 }: {
   href: string
   children: ReactNode
   prefetch?: false
   external?: { newTab: string }
+  tone?: 'page' | 'band'
 }) {
-  const cls = 'group inline-flex min-h-11 items-center gap-1.5 font-semibold text-[var(--color-primary)] underline-offset-4 hover:text-[var(--color-primary-hover)] hover:underline'
+  const colour = tone === 'band'
+    ? 'text-[var(--color-band-accent)] hover:text-[var(--color-band-foreground)]'
+    : 'text-[var(--color-primary)] hover:text-[var(--color-primary-hover)]'
+  const cls = `group inline-flex min-h-11 items-center gap-1.5 font-semibold underline-offset-4 hover:underline ${colour}`
   const arrow = <ArrowRight className="h-4 w-4 transition-transform duration-150 group-hover:translate-x-[3px]" />
   if (external) {
     return (

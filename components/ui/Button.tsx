@@ -2,7 +2,7 @@ import { Slot } from '@radix-ui/react-slot'
 import { forwardRef, type ButtonHTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
 
-type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'link' | 'discord' | 'danger'
+type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'link' | 'discord' | 'danger' | 'band' | 'band-outline'
 type ButtonSize = 'sm' | 'md' | 'lg' | 'icon'
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -28,6 +28,13 @@ const variantClasses: Record<ButtonVariant, string> = {
     'bg-[var(--color-discord)] text-white hover:brightness-110',
   danger:
     'bg-[var(--color-danger)] text-[var(--color-danger-foreground)] hover:brightness-95',
+  // On the anthracite band (sample page of Phase 0). The page green measures
+  // about 2.3:1 there, so the band has its own green, and the outline its
+  // own light border; both pairs are in tests/contrast.test.ts.
+  band:
+    'bg-[var(--color-band-accent)] text-[var(--color-band-accent-foreground)] hover:bg-[var(--color-band-foreground)] hover:text-[var(--color-band)]',
+  'band-outline':
+    'border-[1.5px] border-[var(--color-band-muted)] bg-transparent text-[var(--color-band-foreground)] hover:border-[var(--color-band-foreground)]',
 }
 
 // Heights are minimums, so a long German label wraps instead of being cut.

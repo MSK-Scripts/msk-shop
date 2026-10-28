@@ -46,6 +46,10 @@ export interface GiveawayCopy {
   commandsEyebrow: string
   commandsHeading: string
   commandsSub:     string
+  /** Column heads of the commands table. */
+  commandColName:  string
+  commandColWho:   string
+  commandColText:  string
   /** Rollen-Label je Befehl, positionsgleich zu COMMAND_NAMES in der Komponente. */
   commandWho:      string[]
   commandText:     string[]
@@ -132,6 +136,9 @@ const en: GiveawayCopy = {
   commandsEyebrow: 'Commands',
   commandsHeading: 'Slash commands for everything',
   commandsSub:     'Manager commands need Manage Server or your configured manager role.',
+  commandColName:  'Command',
+  commandColWho:   'Who can use it',
+  commandColText:  'What it does',
   commandWho: [
     'Manager', 'Manager', 'Manager', 'Manager', 'Manager', 'Manager', 'Manager', 'Manager',
     'Manager', 'Manage Server', 'Everyone', 'Everyone', 'Everyone', 'Everyone', 'Everyone',
@@ -250,6 +257,9 @@ const de: GiveawayCopy = {
   commandsEyebrow: 'Befehle',
   commandsHeading: 'Slash-Befehle für alles',
   commandsSub:     'Manager-Befehle brauchen „Server verwalten“ oder deine eingestellte Manager-Rolle.',
+  commandColName:  'Befehl',
+  commandColWho:   'Wer darf ihn nutzen',
+  commandColText:  'Was er tut',
   commandWho: [
     'Manager', 'Manager', 'Manager', 'Manager', 'Manager', 'Manager', 'Manager', 'Manager',
     'Manager', 'Server verwalten', 'Alle', 'Alle', 'Alle', 'Alle', 'Alle',

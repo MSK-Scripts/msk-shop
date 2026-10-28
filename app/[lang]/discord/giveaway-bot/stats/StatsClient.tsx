@@ -1,117 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import {
-  HardDrives as Server,
-  Gift,
-  Sparkle as Sparkles,
-  Users,
-  Trophy,
-  ChartBar as BarChart3,
-  TrendUp as TrendingUp,
-  Stack as Layers,
-  Flame,
-} from '@/components/icons'
-import { giveawayStatsTranslations, type Lang } from '@/lib/i18n'
+import { giveawayStatsTranslations, homeTranslations, layoutTranslations, packagesTranslations } from '@/lib/i18n'
 import { useLang } from '@/components/i18n/LangProvider'
-import { Card } from '@/components/ui/Card'
-import { cn } from '@/lib/utils'
+import { Breakdown, FigureList, StatsHero, formatNum, type BreakdownItem } from '@/components/stats/StatsParts'
 import type { GiveawayStats } from '@/lib/giveawayStats'
-
-function formatNum(n: number, lang: Lang): string {
-  return new Intl.NumberFormat(lang === 'de' ? 'de-DE' : 'en-US').format(n)
-}
-
-function StatCard({
-  icon: Icon, label, value, sub, accent = false,
-}: {
-  icon: React.ElementType
-  label: string
-  value: string
-  sub?: string
-  accent?: boolean
-}) {
-  return (
-    <Card hoverLift className="flex flex-col gap-3 p-5">
-      <div className="flex items-center gap-2.5">
-        <div className={cn(
-          'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg',
-          accent
-            ? 'bg-[var(--color-primary)]/15 text-[var(--color-primary)]'
-            : 'bg-[var(--color-muted)] text-[var(--color-muted-foreground)]',
-        )}>
-          <Icon className="h-4 w-4" />
-        </div>
-        <span className="font-mono text-[0.6875rem] font-bold uppercase tracking-widest text-[var(--color-muted-foreground)]">
-          {label}
-        </span>
-      </div>
-      <p className="font-mono text-3xl font-bold leading-none tracking-tight">{value}</p>
-      {sub && <p className="text-xs text-[var(--color-muted-foreground)]">{sub}</p>}
-    </Card>
-  )
-}
-
-interface BreakdownItem {
-  key:   string
-  label: string
-  bg:    string
-  text:  string
-}
-
-function Breakdown({
-  items, data, total, label, lang,
-}: {
-  items: BreakdownItem[]
-  data:  Record<string, number>
-  total: number
-  label: string
-  lang:  Lang
-}) {
-  return (
-    <Card hoverLift className="p-5">
-      <div className="mb-4 flex items-center gap-2.5">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--color-muted)] text-[var(--color-muted-foreground)]">
-          <BarChart3 className="h-4 w-4" />
-        </div>
-        <h2 className="font-mono text-[0.6875rem] font-bold uppercase tracking-widest text-[var(--color-muted-foreground)]">
-          {label}
-        </h2>
-      </div>
-
-      {total > 0 ? (
-        <div className="mb-4 flex h-3 gap-px overflow-hidden rounded-full">
-          {items.map(({ key, bg }) => {
-            const pct = ((data[key] ?? 0) / total) * 100
-            return pct > 0 ? (
-              <div key={key} className={cn(bg, 'transition-all')} style={{ width: `${pct}%` }} />
-            ) : null
-          })}
-        </div>
-      ) : (
-        <div className="mb-4 h-3 rounded-full bg-[var(--color-muted)]" />
-      )}
-
-      {/* Four columns regardless of the count. Until 25.08.2026 the rule
-          depended on `items.length === 4` and fell back to three columns for
-          any other number. With the seventh language PT stood alone in a
-          third row, and the card was almost twice as tall as the one beside it. */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {items.map(({ key, label: itemLabel, text }) => (
-          <div key={key} className="flex flex-col gap-1 rounded-lg bg-[var(--color-muted)] px-3 py-2.5">
-            <span className={cn('font-mono text-[0.625rem] font-bold uppercase tracking-widest', text)}>
-              {itemLabel}
-            </span>
-            <span className="font-mono text-xl font-bold">{formatNum(data[key] ?? 0, lang)}</span>
-            <span className="text-[0.6875rem] text-[var(--color-muted-foreground)]">
-              {total > 0 ? `${(((data[key] ?? 0) / total) * 100).toFixed(1)}%` : '—'}
-            </span>
-          </div>
-        ))}
-      </div>
-    </Card>
-  )
-}
 
 export default function StatsClient({
   stats: initialStats,
@@ -138,14 +31,14 @@ export default function StatsClient({
   }, [])
 
   const cards = [
-    { icon: Server,     label: t.card_servers,     value: formatNum(stats.servers, lang),         sub: t.card_servers_sub,     accent: true  },
-    { icon: Gift,       label: t.card_giveaways,    value: formatNum(stats.giveaways, lang),       sub: t.card_giveaways_sub,    accent: false },
-    { icon: Sparkles,   label: t.card_active,       value: formatNum(stats.activeGiveaways, lang), sub: t.card_active_sub,       accent: true  },
-    { icon: Users,      label: t.card_entries,      value: formatNum(stats.entries, lang),         sub: t.card_entries_sub,      accent: false },
-    { icon: Trophy,     label: t.card_winners,      value: formatNum(stats.winners, lang),         sub: t.card_winners_sub,      accent: false },
-    { icon: TrendingUp, label: t.card_avg_entries,  value: formatNum(stats.avgEntries, lang),      sub: t.card_avg_entries_sub,  accent: false },
-    { icon: Flame,      label: t.card_max_entries,  value: formatNum(stats.maxEntries, lang),      sub: t.card_max_entries_sub,  accent: false },
-    { icon: Layers,     label: t.card_templates,    value: formatNum(stats.templates, lang),       sub: t.card_templates_sub,    accent: false },
+    { label: t.card_servers,     value: formatNum(stats.servers, lang),         sub: t.card_servers_sub },
+    { label: t.card_giveaways,    value: formatNum(stats.giveaways, lang),       sub: t.card_giveaways_sub },
+    { label: t.card_active,       value: formatNum(stats.activeGiveaways, lang), sub: t.card_active_sub },
+    { label: t.card_entries,      value: formatNum(stats.entries, lang),         sub: t.card_entries_sub },
+    { label: t.card_winners,      value: formatNum(stats.winners, lang),         sub: t.card_winners_sub },
+    { label: t.card_avg_entries,  value: formatNum(stats.avgEntries, lang),      sub: t.card_avg_entries_sub },
+    { label: t.card_max_entries,  value: formatNum(stats.maxEntries, lang),      sub: t.card_max_entries_sub },
+    { label: t.card_templates,    value: formatNum(stats.templates, lang),       sub: t.card_templates_sub },
   ]
 
   const langItems: BreakdownItem[] = [
@@ -167,62 +60,35 @@ export default function StatsClient({
   ]
   const statusTotal = statusItems.reduce((s, i) => s + (stats.status[i.key] ?? 0), 0)
 
+  const home = homeTranslations[lang]
+  const crumbs = [
+    { label: packagesTranslations[lang].breadcrumb_home, href: '/' },
+    { label: layoutTranslations[lang].nav_discord, href: '/discord' },
+    { label: 'Giveaway Bot', href: '/discord/giveaway-bot' },
+    { label: home.bot_stats },
+  ]
+
   return (
-    <div className="container-page py-10 md:py-14">
-      <div>
+    <>
+      <StatsHero
+        id="stats-title"
+        crumbs={crumbs}
+        live={stats.available}
+        labels={{ live: t.status_live, refresh: t.status_refresh, unavailable: t.status_unavailable, unreachable: t.status_db_unreachable }}
+        title={t.title}
+        subtitle={t.subtitle}
+      />
 
-        {/* Header */}
-        <div className="mb-10 flex items-start justify-between">
-          <div>
-            <div className="mb-3 flex items-center gap-2">
-              {stats.available ? (
-                <>
-                  <span className="eyebrow">{t.status_live}</span>
-                  <span className="inline-flex items-center gap-1.5 text-[0.6875rem] text-[var(--color-muted-foreground)]">
-                    <span className="pulse-dot inline-block h-1.5 w-1.5 rounded-full bg-[var(--color-primary)]" />
-                    {t.status_refresh}
-                  </span>
-                </>
-              ) : (
-                <>
-                  <span className="font-mono text-[0.6875rem] font-bold uppercase tracking-widest text-[var(--color-danger)]">
-                    {t.status_unavailable}
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 text-[0.6875rem] text-[var(--color-muted-foreground)]">
-                    <span className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--color-danger)]" />
-                    {t.status_db_unreachable}
-                  </span>
-                </>
-              )}
-            </div>
-            <h1 className="mb-2 text-3xl font-bold tracking-tight md:text-4xl">{t.title}</h1>
-            <p className="max-w-xl text-sm text-[var(--color-muted-foreground)] md:text-base">
-              {t.subtitle}
-            </p>
-          </div>
-        </div>
+      <div className="container-page grid gap-[var(--space-stack)] py-[var(--space-section)]">
+        <FigureList figures={cards} headingId="figures-heading" heading={t.region_figures} />
 
-        {/* Stat Cards. The heading is `sr-only`: visible, it would duplicate
-            the page title; until now the tree lacked any intermediate level
-            between the H1 and the 14 tiles. */}
-        <section aria-labelledby="figures-heading">
-          <h2 id="figures-heading" className="sr-only">{t.region_figures}</h2>
-          <div className="mb-4 grid grid-cols-[repeat(auto-fill,minmax(min(100%,var(--grid-card)),1fr))] gap-4">
-            {cards.map(c => <StatCard key={c.label} {...c} />)}
-          </div>
-        </section>
-
-        {/* Breakdowns */}
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div className="grid gap-x-[clamp(2rem,3vw,4rem)] gap-y-[var(--space-stack)] min-[1024px]:grid-cols-2">
           <Breakdown items={langItems}   data={stats.langs}  total={langTotal}   label={t.lang_distribution}   lang={lang} />
           <Breakdown items={statusItems} data={stats.status} total={statusTotal} label={t.status_distribution} lang={lang} />
         </div>
 
-        {/* Footer note */}
-        <p className="mt-8 text-center text-[0.6875rem] text-[var(--color-muted-foreground)]">
-          {t.footer_note}
-        </p>
+        <p className="max-w-[46rem] text-small text-[var(--color-muted-foreground)]">{t.footer_note}</p>
       </div>
-    </div>
+    </>
   )
 }

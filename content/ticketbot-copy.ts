@@ -10,10 +10,13 @@ import { publicPath } from '@/lib/routes'
  * `components/bots/TicketBotLanding.tsx` und werden positionsgleich zu den
  * Listen hier gehalten, genau wie bei `HOME_FEATURE_ICONS`.
  *
- * **Reihenfolge ist Vertrag.** `features`, `hubCards`, `verifySteps`,
- * `dashboardItems`, `hostedItems` und `tierCards` müssen in beiden Sprachen
- * gleich lang und gleich sortiert sein wie die Icon-Arrays in der Komponente.
- * `tests/botLandingCopy.test.ts` prüft das.
+ * **Reihenfolge ist Vertrag.** Every list must have the same length and order
+ * in both languages; `hubCards` also matches `HUB_HREFS` in the component, and
+ * `tierCards` the tier order there. `tests/botLandingCopy.test.ts` checks it.
+ *
+ * Since the redesign (Phase 5, 28.10.2026) the page has no FAQ (decision E4):
+ * what the answers said now stands where it belongs, in the requirements, under
+ * the price table and in the line that leads to the comparison page.
  */
 
 export interface LabelledText {
@@ -36,7 +39,6 @@ export interface TicketBotTierCard {
    * warns about.
    */
   priceOverride: string | null
-  priceSub: string
   badge:    string | null
   cta:      string
 }
@@ -95,28 +97,45 @@ export interface TicketBotCopy {
   tiersEyebrow:  string
   tiersHeading:  string
   tiersSubLead:  string
+  /** `{n}` is the trial length from lib/stripe.ts. */
   tiersSubTrial: string
   tiersSubTail:  string
   tierCards:     TicketBotTierCard[]
-  /** `{size}` bzw. `{days}` / `{n}` werden zur Laufzeit aus TIER_CONFIG ersetzt. */
-  tierFeatureHosting:      string
-  tierFeatureTranscript:   string
-  tierFeatureAttachments:  string
-  tierFeatureNoAttachments: string
-  tierFeatureDomain:       string
-  tierFeatureBranding:     string
-  tierFeatureStorage:      string
-  /** Used instead of `tierFeatureStorage` from two years up, where a day count stops being readable. */
-  tierFeatureStorageYears: string
-  tierFeatureUploads:      string
-  tierFeatureHosted:       string
-  /** `{price}` and `{n}` are filled from TIER_CONFIG at runtime. */
-  tierPriceYear: string
+  /** Caption and head of the first column of the price table. */
+  tierCaption:   string
+  tierPlan:      string
+  /** Row labels. Every value in the rows comes from TIER_CONFIG at runtime. */
+  tierRowMonth:       string
+  tierRowYear:        string
+  tierRowTrial:       string
+  tierRowHosting:     string
+  tierRowTranscript:  string
+  tierRowAttachments: string
+  tierRowStorage:     string
+  tierRowUploads:     string
+  tierRowDomain:      string
+  tierRowBranding:    string
+  tierRowHosted:      string
+  /** Header of the row with the buttons, for screen readers only. */
+  tierRowAction:      string
+  /** `{n}` placeholders: days, years, months saved by paying yearly. */
+  tierDays:       string
+  tierYears:      string
+  tierMonthsFree: string
+  tierNone:       string
+  tierYes:        string
+  tierNo:         string
   tierNote: LabelledText
+  /** What cancelling means, under the price table. */
+  cancelNote: string
 
-  faqEyebrow: string
-  faqHeading: string
-  faq:        LabelledText[]
+  /** "Already running one?": the honest line that leads to the comparison page. */
+  switchText: string
+  compareCta: string
+
+  /** Requirements and a link to the docs instead of an FAQ (decision E4). */
+  reqKicker:    string
+  requirements: LabelledText[]
 
   ctaHeading: string
   ctaText:    string
@@ -170,7 +189,7 @@ const en: TicketBotCopy = {
     {
       eyebrow: 'Manage',
       title:   'Dashboard',
-      text:    'Set up a custom domain for your transcripts and, on Premium, fully manage a hosted bot: start, stop, restart, one-click update and stream live logs.',
+      text:    'Set up a custom domain for your transcripts and, on Hosted and Business, fully manage a hosted bot: start, stop, restart, one-click update and stream live logs.',
       cta:     'Open Dashboard',
     },
     {
@@ -252,53 +271,53 @@ const en: TicketBotCopy = {
   tiersEyebrow:  'Transcript service',
   tiersHeading:  'Choose your tier',
   tiersSubLead:  'Host transcripts as public links. Premium tiers come with a',
-  tiersSubTrial: '14-day free trial',
-  tiersSubTail:  ', no credit card required. Cancel anytime. No VAT is added (§ 19 UStG), the price you see is the price you pay.',
+  tiersSubTrial: '{n}-day free trial',
+  tiersSubTail:  ', no credit card required. Cancel anytime.',
   tierCards: [
-    { name: 'Basic',    priceOverride: 'Free', priceSub: 'forever', badge: null,           cta: 'Get API Key' },
-    { name: 'Premium',  priceOverride: null,   priceSub: '/ month', badge: null,           cta: 'Start free trial' },
-    { name: 'Hosted',   priceOverride: null,   priceSub: '/ month', badge: 'Most popular', cta: 'Start free trial' },
-    { name: 'Business', priceOverride: null,   priceSub: '/ month', badge: null,           cta: 'Start free trial' },
+    { name: 'Basic',    priceOverride: 'Free', badge: null,           cta: 'Get API Key' },
+    { name: 'Premium',  priceOverride: null,   badge: null,           cta: 'Start free trial' },
+    { name: 'Hosted',   priceOverride: null,   badge: 'Most popular', cta: 'Start free trial' },
+    { name: 'Business', priceOverride: null,   badge: null,           cta: 'Start free trial' },
   ],
-  tierFeatureHosting:       'Transcript hosting & links',
-  tierFeatureTranscript:    'Up to {size} per transcript',
-  tierFeatureAttachments:   'Attachments up to {size} per ticket',
-  tierFeatureNoAttachments: 'File attachments',
-  tierFeatureDomain:        'Custom domain',
-  tierFeatureBranding:      'Remove the MSK branding',
-  tierFeatureStorage:       '{days} days storage',
-  tierFeatureStorageYears:  '{n} years storage',
-  tierFeatureUploads:       '{n} uploads / hour',
-  tierFeatureHosted:        'Hosted bot management',
-  tierPriceYear: 'or {price} / year, {n} months free',
+  tierCaption:        'Ticket Bot plans',
+  tierPlan:           'Plan',
+  tierRowMonth:       'Per month',
+  tierRowYear:        'Per year',
+  tierRowTrial:       'Free trial',
+  tierRowHosting:     'Transcript hosting & links',
+  tierRowTranscript:  'Size per transcript',
+  tierRowAttachments: 'Attachments per ticket',
+  tierRowStorage:     'Transcripts kept',
+  tierRowUploads:     'Uploads per hour',
+  tierRowDomain:      'Custom domain',
+  tierRowBranding:    'Remove the MSK branding',
+  tierRowHosted:      'Hosted bot management',
+  tierRowAction:      'Get started',
+  tierDays:       '{n} days',
+  tierYears:      '{n} years',
+  tierMonthsFree: '{n} months free',
+  tierNone:       'none',
+  tierYes:        'Yes',
+  tierNo:         'No',
   tierNote: {
     title: 'Plans are per guild',
     text:  'A subscription applies to a single Discord server. Each guild you manage has its own plan, upgrade them independently from each guild’s dashboard.',
   },
+  cancelNote:
+    'You can cancel any time in the billing portal. The bot keeps running, it is yours. '
+    + 'Transcripts already stored with us stay for another 30 days, which is enough time to save them.',
 
-  faqEyebrow: 'Before you ask',
-  faqHeading: 'The questions we get most',
-  faq: [
-    {
-      title: 'Is the bot free, or is that a trial balloon?',
-      text:  'The bot is AGPL-3.0 and stays free, including tickets, panels and transcript generation. What you pay for is the hosting around it: longer retention, attachments, your own domain, a managed process.',
-    },
-    {
-      title: 'What happens to my ticket data?',
-      text:  'The ticket database lives with you, in your SQLite or your own SQL server. Only the transcripts your bot actively uploads reach us, and you can delete them at any time. There is no telemetry, and the code is open to check.',
-    },
-    {
-      title: 'I already run a ticket bot. Is it worth switching?',
-      text:  'Only if one of two things bothers you: that your transcripts sit with someone else, or that the basics cost money. Otherwise stay where you are.',
-    },
-    {
-      title: 'Do I need a game server or FiveM?',
-      text:  'No. It is a plain Discord bot. It needs Node.js and a bot token, nothing else.',
-    },
-    {
-      title: 'What happens if I cancel?',
-      text:  'You can cancel any time in the billing portal. The bot keeps running, it is yours. Transcripts already stored with us stay for another 30 days, which is enough time to save them.',
-    },
+  switchText:
+    'Already running a ticket bot? Only switch if one of two things bothers you: that your '
+    + 'transcripts sit with someone else, or that the basics cost money. Otherwise stay where you are.',
+  compareCta: 'Compare ticket bots',
+
+  reqKicker: 'Requirements',
+  requirements: [
+    { title: 'Runs on',   text: 'Node.js and a Discord bot token. No game server, no FiveM.' },
+    { title: 'Database',  text: 'SQLite with zero setup, or your own MySQL, MariaDB or PostgreSQL.' },
+    { title: 'Licence',   text: 'AGPL-3.0. The bot stays free, including tickets, panels and transcript generation. What you pay for is the hosting around it.' },
+    { title: 'Your data', text: 'The ticket database lives with you. Only the transcripts your bot actively uploads reach us, and you can delete them at any time. No telemetry, the code is open to check.' },
   ],
 
   ctaHeading: 'Your first ticket runs in three minutes',
@@ -353,7 +372,7 @@ const de: TicketBotCopy = {
     {
       eyebrow: 'Verwalten',
       title:   'Dashboard',
-      text:    'Eigene Domain für deine Transkripte einrichten und mit Premium einen gehosteten Bot vollständig steuern: starten, stoppen, neu starten, per Klick aktualisieren und Live-Logs mitlesen.',
+      text:    'Eigene Domain für deine Transkripte einrichten und mit Hosted oder Business einen gehosteten Bot vollständig steuern: starten, stoppen, neu starten, per Klick aktualisieren und Live-Logs mitlesen.',
       cta:     'Dashboard öffnen',
     },
     {
@@ -435,53 +454,53 @@ const de: TicketBotCopy = {
   tiersEyebrow:  'Transkriptdienst',
   tiersHeading:  'Wähle deinen Tarif',
   tiersSubLead:  'Transkripte als öffentliche Links hosten. Die Premium-Tarife starten mit',
-  tiersSubTrial: '14 Tagen kostenlos',
-  tiersSubTail:  ', ohne Kreditkarte. Jederzeit kündbar. Als Kleinunternehmer nach § 19 UStG ohne Umsatzsteuer, der genannte Preis ist der bezahlte Preis.',
+  tiersSubTrial: '{n} Tagen kostenlos',
+  tiersSubTail:  ', ohne Kreditkarte. Jederzeit kündbar.',
   tierCards: [
-    { name: 'Basic',    priceOverride: 'Kostenlos', priceSub: 'dauerhaft', badge: null,              cta: 'API-Key holen' },
-    { name: 'Premium',  priceOverride: null,        priceSub: '/ Monat',   badge: null,              cta: 'Kostenlos testen' },
-    { name: 'Hosted',   priceOverride: null,        priceSub: '/ Monat',   badge: 'Am beliebtesten', cta: 'Kostenlos testen' },
-    { name: 'Business', priceOverride: null,        priceSub: '/ Monat',   badge: null,              cta: 'Kostenlos testen' },
+    { name: 'Basic',    priceOverride: 'Kostenlos', badge: null,              cta: 'API-Key holen' },
+    { name: 'Premium',  priceOverride: null,        badge: null,              cta: 'Kostenlos testen' },
+    { name: 'Hosted',   priceOverride: null,        badge: 'Am beliebtesten', cta: 'Kostenlos testen' },
+    { name: 'Business', priceOverride: null,        badge: null,              cta: 'Kostenlos testen' },
   ],
-  tierFeatureHosting:       'Transkript-Hosting & Links',
-  tierFeatureTranscript:    'Bis zu {size} pro Transkript',
-  tierFeatureAttachments:   'Anhänge bis {size} pro Ticket',
-  tierFeatureNoAttachments: 'Datei-Anhänge',
-  tierFeatureDomain:        'Eigene Domain',
-  tierFeatureBranding:      'MSK-Branding entfernen',
-  tierFeatureStorage:       '{days} Tage Speicherdauer',
-  tierFeatureStorageYears:  '{n} Jahre Speicherdauer',
-  tierFeatureUploads:       '{n} Uploads / Stunde',
-  tierFeatureHosted:        'Verwaltung des gehosteten Bots',
-  tierPriceYear: 'oder {price} / Jahr, {n} Monate geschenkt',
+  tierCaption:        'Tarife des Ticket Bots',
+  tierPlan:           'Tarif',
+  tierRowMonth:       'Pro Monat',
+  tierRowYear:        'Pro Jahr',
+  tierRowTrial:       'Kostenloser Test',
+  tierRowHosting:     'Transkript-Hosting & Links',
+  tierRowTranscript:  'Größe je Transkript',
+  tierRowAttachments: 'Anhänge je Ticket',
+  tierRowStorage:     'Transkripte gespeichert',
+  tierRowUploads:     'Uploads pro Stunde',
+  tierRowDomain:      'Eigene Domain',
+  tierRowBranding:    'MSK-Branding entfernen',
+  tierRowHosted:      'Verwaltung des gehosteten Bots',
+  tierRowAction:      'Loslegen',
+  tierDays:       '{n} Tage',
+  tierYears:      '{n} Jahre',
+  tierMonthsFree: '{n} Monate geschenkt',
+  tierNone:       'keiner',
+  tierYes:        'Ja',
+  tierNo:         'Nein',
   tierNote: {
     title: 'Tarife gelten pro Server',
     text:  'Ein Abo gilt für einen einzelnen Discord-Server. Jede Guild, die du verwaltest, hat ihren eigenen Tarif und wird unabhängig über das jeweilige Dashboard hochgestuft.',
   },
+  cancelNote:
+    'Du kannst jederzeit im Kundenportal kündigen. Der Bot läuft danach weiter, er ist ja deiner. '
+    + 'Deine bereits gespeicherten Transkripte behältst du noch 30 Tage, Zeit genug zum Sichern.',
 
-  faqEyebrow: 'Bevor du fragst',
-  faqHeading: 'Die häufigsten Fragen',
-  faq: [
-    {
-      title: 'Ist der Bot wirklich kostenlos oder ist das ein Testballon?',
-      text:  'Der Bot ist AGPL-3.0 und bleibt kostenlos, inklusive Tickets, Panels und Transkript-Erzeugung. Bezahlt wird nur unser Hosting drumherum: längere Aufbewahrung, Anhänge, eigene Domain, gemanagter Betrieb.',
-    },
-    {
-      title: 'Was passiert mit meinen Ticketdaten?',
-      text:  'Die Ticketdatenbank liegt bei dir, in deiner SQLite oder deiner eigenen SQL. Bei uns landen ausschließlich die Transkripte, die dein Bot aktiv hochlädt, und die kannst du jederzeit löschen. Telemetrie gibt es nicht, der Code ist offen und nachprüfbar.',
-    },
-    {
-      title: 'Ich habe schon einen Ticketbot. Lohnt der Wechsel?',
-      text:  'Nur wenn dich eins von zwei Dingen stört: dass deine Transkripte bei einem fremden Anbieter liegen, oder dass Basisfunktionen Geld kosten. Sonst bleib, wo du bist.',
-    },
-    {
-      title: 'Brauche ich einen Gameserver oder FiveM?',
-      text:  'Nein. Es ist ein reiner Discord-Bot, er braucht Node.js und ein Bot-Token, mehr nicht.',
-    },
-    {
-      title: 'Was ist, wenn ich kündige?',
-      text:  'Du kannst jederzeit im Kundenportal kündigen. Der Bot läuft danach weiter, er ist ja deiner. Deine bereits gespeicherten Transkripte behältst du noch 30 Tage, Zeit genug zum Sichern.',
-    },
+  switchText:
+    'Du hast schon einen Ticketbot? Wechsle nur, wenn dich eins von zwei Dingen stört: dass deine '
+    + 'Transkripte bei einem fremden Anbieter liegen, oder dass Basisfunktionen Geld kosten. Sonst bleib, wo du bist.',
+  compareCta: 'Ticket-Bots vergleichen',
+
+  reqKicker: 'Voraussetzungen',
+  requirements: [
+    { title: 'Läuft auf',   text: 'Node.js und ein Discord-Bot-Token. Kein Gameserver, kein FiveM.' },
+    { title: 'Datenbank',   text: 'SQLite ohne Einrichtung, oder deine eigene MySQL, MariaDB oder PostgreSQL.' },
+    { title: 'Lizenz',      text: 'AGPL-3.0. Der Bot bleibt kostenlos, inklusive Tickets, Panels und Transkript-Erzeugung. Bezahlt wird nur unser Hosting drumherum.' },
+    { title: 'Deine Daten', text: 'Die Ticketdatenbank liegt bei dir. Bei uns landen ausschließlich die Transkripte, die dein Bot aktiv hochlädt, und die kannst du jederzeit löschen. Keine Telemetrie, der Code ist offen und nachprüfbar.' },
   ],
 
   ctaHeading: 'In drei Minuten läuft dein erstes Ticket',

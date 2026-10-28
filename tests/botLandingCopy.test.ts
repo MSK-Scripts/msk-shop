@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 
+import { TIER_KEYS } from '@/components/bots/TicketBotTiers'
 import { GIVEAWAY_COPY } from '@/content/giveaway-copy'
 import { TICKETBOT_COPY } from '@/content/ticketbot-copy'
 import {
@@ -9,19 +10,21 @@ import {
 
 /**
  * The two bot landing pages render their texts from `content/*-copy.ts` and
- * their icons from position-matched arrays in `components/bots/*`. If one
- * of the two orders breaks, the page renders a wrong icon or none at all,
- * without TypeScript noticing: an index access on
- * `readonly [...]` tuples yields `undefined`, and `undefined` as a component only throws
- * at runtime.
+ * a few position-matched arrays from `components/bots/*` (link targets, the
+ * command names, the tier order). If one of the two orders breaks, a text
+ * lands next to the wrong link or none at all, without TypeScript noticing:
+ * an index access on `readonly [...]` tuples yields `undefined`.
  *
  * That is why this test checks two things:
  *   1. EN and DE have the same number of entries in every list.
- *   2. The icon arrays in the component are as long as the text lists.
+ *   2. The arrays in the component are as long as the text lists.
  *
  * Point 2 reads the component's source. That is deliberately crude: it catches
  * the common mistake (entry added in one of the two files, forgotten in the
  * other) and needs no JSX evaluation in the Node test run.
+ *
+ * Since Phase 5 of the redesign (28.10.2026) the icon arrays are gone with
+ * the rows of icon cards (exclusion list 4.2), and the FAQ with decision E4.
  */
 
 /** Counts the elements of a `const NAME = [ … ] as const` in the source. */
@@ -49,28 +52,23 @@ describe('ticket bot landing copy', () => {
     ['dashboardItems', 'dashboardItems'],
     ['hostedItems',    'hostedItems'],
     ['tierCards',      'tierCards'],
-    ['faq',            'faq'],
+    ['requirements',   'requirements'],
   ] as const)('EN and DE have the same number of %s', (_label, key) => {
     expect(de[key].length).toBe(en[key].length)
   })
 
-  it.each([
-    ['HUB_ICONS',       'hubCards'],
-    ['HUB_HREFS',       'hubCards'],
-    ['HUB_VARIANTS',    'hubCards'],
-    ['PROBLEM_ICONS',   'problems'],
-    ['FEATURE_ICONS',   'features'],
-    ['VERIFY_ICONS',    'verifySteps'],
-    ['DASHBOARD_ICONS', 'dashboardItems'],
-    ['HOSTED_ICONS',    'hostedItems'],
-  ] as const)('%s matches the length of %s', (arrayName, key) => {
-    expect(countArrayEntries(ticketSource, arrayName)).toBe(en[key].length)
+  it('HUB_HREFS matches the length of hubCards', () => {
+    expect(countArrayEntries(ticketSource, 'HUB_HREFS')).toBe(en.hubCards.length)
+  })
+
+  it('has one tier card per column of the price table', () => {
+    expect(TIER_KEYS.length).toBe(en.tierCards.length)
   })
 
   it('has no empty strings', () => {
     for (const copy of [en, de]) {
       for (const item of [...copy.features, ...copy.hubCards, ...copy.verifySteps,
-                          ...copy.problems, ...copy.faq]) {
+                          ...copy.problems, ...copy.requirements]) {
         expect(item.title.trim()).not.toBe('')
         expect(item.text.trim()).not.toBe('')
       }
@@ -129,15 +127,8 @@ describe('giveaway landing copy', () => {
     expect(de[key].length).toBe(en[key].length)
   })
 
-  it.each([
-    ['STEP_ICONS',     'steps'],
-    ['FEATURE_ICONS',  'features'],
-    ['COMMAND_NAMES',  'commandText'],
-    ['SETTINGS_ICONS', 'settings'],
-    ['COUPON_ICONS',   'coupons'],
-    ['TRUST_ICONS',    'trust'],
-  ] as const)('%s matches the length of %s', (arrayName, key) => {
-    expect(countArrayEntries(giveawaySource, arrayName)).toBe(en[key].length)
+  it('COMMAND_NAMES matches the length of commandText', () => {
+    expect(countArrayEntries(giveawaySource, 'COMMAND_NAMES')).toBe(en.commandText.length)
   })
 
   it('has a role label for every command', () => {

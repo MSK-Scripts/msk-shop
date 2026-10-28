@@ -11,6 +11,17 @@ export const SITE_CONFIG = {
   email: 'info@msk-scripts.de',
 }
 
+/**
+ * Where the documentation of each bot starts. Checked against the sitemap of
+ * docu.msk-scripts.de on 28.10.2026; the site writes its paths with a
+ * trailing slash.
+ */
+export const BOT_DOCS = {
+  ticketbot: `${SITE_CONFIG.docs}/discord/discord_ticketbot/getting-started/`,
+  ticketbotDashboard: `${SITE_CONFIG.docs}/discord/discord_ticketbot/dashboard/`,
+  giveaway: `${SITE_CONFIG.docs}/discord/discord_giveaway/getting-started/`,
+} as const
+
 // ── Featured Package IDs ─────────────────────────────────────
 // Add the Tebex package IDs you want to show on the homepage.
 // Find the ID in your Tebex control panel URL when editing a package.

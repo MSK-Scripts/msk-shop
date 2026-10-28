@@ -35,10 +35,10 @@ export function BotCrossLink({ lang, current }: { lang: Lang; current: 'ticketbo
   const Icon = toGiveaway ? Gift : Ticket
 
   return (
-    <p className="mt-6 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-sm text-[var(--color-muted-foreground)]">
+    <p className="flex flex-wrap items-center gap-x-2 text-small text-[var(--color-muted-foreground)]">
       <Icon className="h-4 w-4 text-[var(--color-primary)]" aria-hidden="true" />
       <span>{lead}</span>
-      <Link href={href} className="font-medium text-[var(--color-foreground)] underline-offset-4 hover:underline">
+      <Link href={href} className="inline-flex min-h-11 items-center font-semibold text-[var(--color-primary)] underline-offset-4 hover:text-[var(--color-primary-hover)] hover:underline">
         {label}
       </Link>
       <span>{blurb}</span>
