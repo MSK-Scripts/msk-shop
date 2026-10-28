@@ -1,12 +1,16 @@
 'use client'
 
+import { useId } from 'react'
+
 import { CircleNotch as Loader2, CreditCard } from '@/components/icons'
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 import { Button } from '@/components/ui/Button'
 import { dashboardTranslations, subscriptionTermsTranslations, type Lang } from '@/lib/i18n'
-import { formatTierPrice, yearlyMonthsFree, type BillingInterval, type Tier } from '@/lib/tiers'
+import { formatTierPrice, yearlyMonthsFree, type BillingInterval } from '@/lib/tiers'
+import { cn } from '@/lib/utils'
+import type { PaidTier } from './ticketBotApi'
 
-export type PaidTier = Exclude<Tier, 'basic'>
+export type { PaidTier } from './ticketBotApi'
 
 interface Props {
   lang: Lang
@@ -40,88 +44,97 @@ interface Props {
  * block and not a modal: a `position: fixed` overlay in a subtree with
  * `sticky` ends up beneath other elements, which on 18.08.2026 already once
  * put the gallery over the dialog.
+ *
+ * Phase 8 of the redesign: the billing interval is a pair of real radio
+ * buttons (plan 4.7, native controls), every control reaches 44 px, and the
+ * block reads at most 65 characters wide.
  */
 export function OrderSummary({
   lang, tier, guildLabel, interval, onIntervalChange, busy, submitting, onSubmit, onCancel,
 }: Props) {
   const t = dashboardTranslations[lang]
   const terms = subscriptionTermsTranslations[lang]
+  const headingId = useId()
+  const name = useId()
 
   return (
-    <div className="mb-6 rounded-lg border border-[var(--color-primary)]/30 bg-[color-mix(in_oklab,var(--color-primary)_6%,transparent)] p-4">
-      <h2 className="text-sm font-bold text-[var(--color-foreground)]">{t.sub_confirm_title}</h2>
-      <dl className="mt-3 space-y-1.5 text-sm">
-        <div className="flex flex-wrap gap-x-2">
-          <dt className="text-[var(--color-muted-foreground)]">{t.sub_confirm_service}:</dt>
-          <dd className="font-medium text-[var(--color-foreground)]">
+    <section
+      aria-labelledby={headingId}
+      className="grid max-w-[44rem] gap-4 rounded-lg border-[1.5px] border-[var(--color-primary)] bg-[var(--color-accent-soft)] p-[clamp(1rem,0.8rem+0.6vw,1.5rem)]"
+    >
+      <h3 id={headingId} className="font-display text-h3 font-[650]">{t.sub_confirm_title}</h3>
+
+      <dl className="grid gap-3">
+        <div className="grid gap-0.5">
+          <dt className="text-small text-[var(--color-muted-foreground)]">{t.sub_confirm_service}</dt>
+          <dd className="font-semibold">
             {t[`tier_${tier}` as 'tier_premium' | 'tier_premium_plus' | 'tier_business']}
             {' · '}{guildLabel}
           </dd>
         </div>
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-          <dt className="text-[var(--color-muted-foreground)]">{t.sub_interval}:</dt>
-          <dd className="flex items-center gap-1.5">
-            {(['monthly', 'yearly'] as const).map(option => (
-              <button
-                key={option}
-                type="button"
-                onClick={() => onIntervalChange(option)}
-                aria-pressed={interval === option}
-                disabled={busy}
-                className={
-                  interval === option
-                    ? 'rounded-md border border-[var(--color-primary)] bg-[var(--color-primary)]/10 px-2.5 py-1 text-xs font-semibold text-[var(--color-primary)]'
-                    : 'rounded-md border border-[var(--color-border)] px-2.5 py-1 text-xs font-medium text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]'
-                }
-              >
-                {option === 'monthly' ? t.sub_interval_monthly : t.sub_interval_yearly}
-              </button>
-            ))}
-            <span className="text-xs text-[var(--color-primary)]">
-              {t.sub_interval_save.replace('{n}', String(yearlyMonthsFree(tier)))}
-            </span>
+        <div className="grid gap-0.5">
+          <dt className="text-small text-[var(--color-muted-foreground)]">{t.sub_interval}</dt>
+          <dd>
+            <fieldset className="flex flex-wrap items-center gap-x-5 gap-y-1">
+              <legend className="sr-only">{t.sub_interval}</legend>
+              {(['monthly', 'yearly'] as const).map(option => (
+                <label key={option} className={cn('inline-flex min-h-11 cursor-pointer items-center gap-2', busy && 'cursor-not-allowed opacity-60')}>
+                  <input
+                    type="radio"
+                    name={name}
+                    value={option}
+                    checked={interval === option}
+                    onChange={() => onIntervalChange(option)}
+                    disabled={busy}
+                    className="h-5 w-5 accent-[var(--color-primary)]"
+                  />
+                  <span className="font-semibold">{option === 'monthly' ? t.sub_interval_monthly : t.sub_interval_yearly}</span>
+                </label>
+              ))}
+              <span className="text-small font-semibold text-[var(--color-primary)]">
+                {t.sub_interval_save.replace('{n}', String(yearlyMonthsFree(tier)))}
+              </span>
+            </fieldset>
           </dd>
         </div>
-        <div className="flex flex-wrap gap-x-2">
-          <dt className="text-[var(--color-muted-foreground)]">{t.sub_confirm_price}:</dt>
-          <dd className="font-medium text-[var(--color-foreground)]">
+        <div className="grid gap-0.5">
+          <dt className="text-small text-[var(--color-muted-foreground)]">{t.sub_confirm_price}</dt>
+          <dd className="font-semibold tabular-nums">
             {(interval === 'yearly' ? t.sub_confirm_price_value_year : t.sub_confirm_price_value)
               .replace('{price}', formatTierPrice(tier, lang, interval))}
           </dd>
         </div>
-        <div className="flex flex-wrap gap-x-2">
-          <dt className="text-[var(--color-muted-foreground)]">{t.sub_confirm_term}:</dt>
-          <dd className="font-medium text-[var(--color-foreground)]">
-            {interval === 'yearly' ? t.sub_confirm_term_value_year : t.sub_confirm_term_value}
-          </dd>
+        <div className="grid gap-0.5">
+          <dt className="text-small text-[var(--color-muted-foreground)]">{t.sub_confirm_term}</dt>
+          <dd>{interval === 'yearly' ? t.sub_confirm_term_value_year : t.sub_confirm_term_value}</dd>
         </div>
       </dl>
-      <p className="mt-3 text-xs leading-relaxed text-[var(--color-muted-foreground)]">
-        {terms.contract_partner} {terms.vat_exempt} {terms.final_price}
-      </p>
-      <p className="mt-2 text-xs leading-relaxed text-[var(--color-muted-foreground)]">
-        {t.sub_confirm_legal_pre}{' '}
-        <Link href="/legal/terms" className="text-[var(--color-primary)] hover:underline">{t.sub_confirm_terms}</Link>
-        {' '}{t.sub_confirm_legal_and}{' '}
-        <Link href="/legal/withdrawal" className="text-[var(--color-primary)] hover:underline">{t.sub_confirm_withdrawal}</Link>
-        {t.sub_confirm_legal_post}
-      </p>
-      <p className="mt-2 text-xs leading-relaxed text-[var(--color-muted-foreground)]">
-        {terms.contract_languages}
-      </p>
-      <div className="mt-4 flex flex-wrap gap-2">
+
+      <div className="grid max-w-[65ch] gap-2 text-small text-[var(--color-muted-foreground)]">
+        <p>{terms.contract_partner} {terms.vat_exempt} {terms.final_price}</p>
+        <p>
+          {t.sub_confirm_legal_pre}{' '}
+          <Link href="/legal/terms" className="text-[var(--color-primary)] underline underline-offset-2">{t.sub_confirm_terms}</Link>
+          {' '}{t.sub_confirm_legal_and}{' '}
+          <Link href="/legal/withdrawal" className="text-[var(--color-primary)] underline underline-offset-2">{t.sub_confirm_withdrawal}</Link>
+          {t.sub_confirm_legal_post}
+        </p>
+        <p>{terms.contract_languages}</p>
+      </div>
+
+      <div className="flex flex-wrap gap-3">
         {/* The wording is prescribed by law (§ 312j Abs. 3 BGB) and
             must not be shortened to "Abonnieren" or "Weiter". */}
-        <Button size="sm" onClick={onSubmit} disabled={busy}>
+        <Button onClick={onSubmit} disabled={busy} aria-busy={submitting || undefined}>
           {submitting
-            ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            : <CreditCard className="h-3.5 w-3.5" />}
+            ? <Loader2 className="h-4 w-4 animate-spin" />
+            : <CreditCard className="h-4 w-4" />}
           {t.sub_confirm_submit}
         </Button>
-        <Button size="sm" variant="ghost" onClick={onCancel} disabled={busy}>
+        <Button variant="outline" onClick={onCancel} disabled={busy}>
           {t.sub_confirm_cancel}
         </Button>
       </div>
-    </div>
+    </section>
   )
 }
