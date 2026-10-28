@@ -2,12 +2,12 @@
 
 import { useState } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { CircleNotch as Loader2 } from '@/components/icons'
+import { CircleNotch as Loader2, WarningCircle } from '@/components/icons'
 
 import { useLang } from '@/components/i18n/LangProvider'
 import { legalFormTranslations, layoutTranslations } from '@/lib/i18n'
 import { Button } from '@/components/ui/Button'
-import { LegalFormShell, Field, INPUT_CLASS } from '@/components/legal/LegalFormShell'
+import { LegalFormShell, Field, FormCard, INPUT_CLASS, TEXTAREA_CLASS } from '@/components/legal/LegalFormShell'
 
 // ── Notice procedure under Art. 16 DSA──────────────────────────────────────
 //
@@ -89,7 +89,8 @@ export function ReportClient() {
       intro={t.report_intro}
       done={done}
     >
-      <form onSubmit={submit} noValidate>
+      <FormCard>
+      <form onSubmit={submit} noValidate className="grid gap-5">
         <Field
           id="contentUrl" label={t.report_url}
           hint={t.report_url_hint} error={messageFor('contentUrl')}
@@ -98,6 +99,7 @@ export function ReportClient() {
             id="contentUrl" name="contentUrl" type="url" required
             className={INPUT_CLASS}
             value={contentUrl} onChange={e => setContentUrl(e.target.value)}
+            aria-invalid={errors.contentUrl ? true : undefined}
             aria-describedby={errors.contentUrl ? 'contentUrl-error' : 'contentUrl-hint'}
           />
         </Field>
@@ -108,8 +110,9 @@ export function ReportClient() {
         >
           <textarea
             id="reason" name="reason" rows={5} required
-            className={INPUT_CLASS}
+            className={TEXTAREA_CLASS}
             value={reason} onChange={e => setReason(e.target.value)}
+            aria-invalid={errors.reason ? true : undefined}
             aria-describedby={errors.reason ? 'reason-error' : 'reason-hint'}
           />
         </Field>
@@ -119,6 +122,7 @@ export function ReportClient() {
             id="name" name="name" type="text" autoComplete="name" required
             className={INPUT_CLASS}
             value={name} onChange={e => setName(e.target.value)}
+            aria-invalid={errors.name ? true : undefined}
             aria-describedby={errors.name ? 'name-error' : undefined}
           />
         </Field>
@@ -128,6 +132,7 @@ export function ReportClient() {
             id="email" name="email" type="email" autoComplete="email" required
             className={INPUT_CLASS}
             value={email} onChange={e => setEmail(e.target.value)}
+            aria-invalid={errors.email ? true : undefined}
             aria-describedby={errors.email ? 'email-error' : undefined}
           />
         </Field>
@@ -135,32 +140,35 @@ export function ReportClient() {
         {/* Art. 16 Abs. 2 lit. d DSA. Without this statement the notice is
             not a notice within the meaning of the regulation, so it is
             mandatory and is additionally checked in the route. */}
-        <div className="mb-5">
-          <label className="flex min-h-11 items-start gap-2.5 text-sm text-[var(--color-muted-foreground)]">
+        <div className="grid gap-1.5">
+          <label className="flex min-h-11 cursor-pointer items-start gap-3 py-2">
             <input
               type="checkbox" required
-              className="mt-1 h-4 w-4 shrink-0 accent-[var(--color-primary)]"
+              className="mt-0.5 h-5 w-5 shrink-0 accent-[var(--color-primary)]"
               checked={declared} onChange={e => setDeclared(e.target.checked)}
+              aria-invalid={errors.declaredTrue ? true : undefined}
               aria-describedby={errors.declaredTrue ? 'declared-error' : undefined}
             />
             <span>{t.report_declaration}</span>
           </label>
           {errors.declaredTrue && (
-            <p id="declared-error" role="alert" className="mt-1.5 text-xs text-[var(--color-danger)]">
+            <p id="declared-error" role="alert" className="flex items-start gap-1.5 text-small font-semibold text-[var(--color-danger)]">
+              <WarningCircle className="mt-[0.2em] h-4 w-4 shrink-0" />
               {messageFor('declaredTrue')}
             </p>
           )}
         </div>
 
         {errors._ && (
-          <p role="alert" className="mb-4 text-sm text-[var(--color-danger)]">{errors._}</p>
+          <p role="alert" className="text-small font-semibold text-[var(--color-danger)]">{errors._}</p>
         )}
 
-        <Button type="submit" disabled={sending}>
+        <Button type="submit" disabled={sending} className="justify-self-start">
           {sending && <Loader2 className="h-4 w-4 animate-spin" />}
           {sending ? t.submitting : t.report_submit}
         </Button>
       </form>
+      </FormCard>
     </LegalFormShell>
   )
 }

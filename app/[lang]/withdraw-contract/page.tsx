@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { alternatesFor } from '@/lib/seo'
 import { pageSeo } from '@/lib/pageSeo'
 import { getRequestLang } from '@/lib/serverLang'
+import { parseContractChoice } from '@/lib/withdrawalChoice'
 import { WithdrawalClient } from './WithdrawalClient'
 
 // Deliberately **no** `robots: noindex`. The button must be findable without
@@ -18,6 +19,13 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-export default function WithdrawalPage() {
-  return <WithdrawalClient />
+// `?contract=subscription` (order confirmation, account page) preselects the
+// contract, so a subscriber reaches the form without the extra question.
+export default async function WithdrawalPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}) {
+  const { contract } = await searchParams
+  return <WithdrawalClient initialChoice={parseContractChoice(contract)} />
 }

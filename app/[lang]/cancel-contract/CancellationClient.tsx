@@ -6,7 +6,7 @@ import { CircleNotch as Loader2 } from '@/components/icons'
 import { useLang } from '@/components/i18n/LangProvider'
 import { legalFormTranslations, layoutTranslations } from '@/lib/i18n'
 import { Button } from '@/components/ui/Button'
-import { LegalFormShell, Field, INPUT_CLASS } from '@/components/legal/LegalFormShell'
+import { LegalFormShell, Field, FormCard, INPUT_CLASS, TEXTAREA_CLASS } from '@/components/legal/LegalFormShell'
 
 // ── Cancellation button (§ 312k BGB) ────────────────────────────────────────
 //
@@ -80,7 +80,9 @@ export function CancellationClient() {
     }
   }
 
-  const radio = 'mr-2 accent-[var(--color-primary)]'
+  // Native radios at 20 px in a 44 px row; the whole row is the label.
+  const radio = 'h-5 w-5 shrink-0 accent-[var(--color-primary)]'
+  const radioRow = 'flex min-h-11 cursor-pointer items-center gap-3'
 
   return (
     <LegalFormShell
@@ -90,20 +92,21 @@ export function CancellationClient() {
       done={done}
       footnote={<p>{t.cancel_portal_hint}</p>}
     >
-      <form onSubmit={submit} noValidate>
+      <FormCard>
+      <form onSubmit={submit} noValidate className="grid gap-5">
         {/* Type of cancellation: § 312k Abs. 2 Satz 2 Nr. 1 BGB */}
-        <fieldset className="mb-5">
-          <legend className="mb-1.5 text-sm font-medium text-[var(--color-foreground)]">
+        <fieldset className="m-0 grid gap-0.5 border-0 p-0">
+          <legend className="mb-1.5 font-semibold">
             {t.cancel_kind}
           </legend>
-          <label className="mb-1 flex min-h-11 items-center text-sm text-[var(--color-muted-foreground)]">
+          <label className={radioRow}>
             <input
               type="radio" name="kind" value="ordinary" className={radio}
               checked={kind === 'ordinary'} onChange={() => setKind('ordinary')}
             />
             {t.cancel_kind_ordinary}
           </label>
-          <label className="flex min-h-11 items-center text-sm text-[var(--color-muted-foreground)]">
+          <label className={radioRow}>
             <input
               type="radio" name="kind" value="extraordinary" className={radio}
               checked={kind === 'extraordinary'} onChange={() => setKind('extraordinary')}
@@ -117,6 +120,7 @@ export function CancellationClient() {
             id="name" name="name" type="text" autoComplete="name" required
             className={INPUT_CLASS}
             value={name} onChange={e => setName(e.target.value)}
+            aria-invalid={errors.name ? true : undefined}
             aria-describedby={errors.name ? 'name-error' : undefined}
           />
         </Field>
@@ -129,6 +133,7 @@ export function CancellationClient() {
             id="contractRef" name="contractRef" type="text" required
             className={INPUT_CLASS}
             value={contractRef} onChange={e => setContractRef(e.target.value)}
+            aria-invalid={errors.contractRef ? true : undefined}
             aria-describedby={errors.contractRef ? 'contractRef-error' : 'contractRef-hint'}
           />
         </Field>
@@ -138,24 +143,25 @@ export function CancellationClient() {
             id="email" name="email" type="email" autoComplete="email" required
             className={INPUT_CLASS}
             value={email} onChange={e => setEmail(e.target.value)}
+            aria-invalid={errors.email ? true : undefined}
             aria-describedby={errors.email ? 'email-error' : undefined}
           />
         </Field>
 
         {/* Cancellation date: § 312k Abs. 2 Satz 2 Nr. 3 BGB */}
-        <fieldset className="mb-5">
-          <legend className="mb-1.5 text-sm font-medium text-[var(--color-foreground)]">
+        <fieldset className="m-0 grid gap-0.5 border-0 p-0">
+          <legend className="mb-1.5 font-semibold">
             {t.cancel_when}
           </legend>
-          <label className="mb-1 flex min-h-11 items-center text-sm text-[var(--color-muted-foreground)]">
+          <label className={radioRow}>
             <input
               type="radio" name="when" value="asap" className={radio}
               checked={whenMode === 'asap'} onChange={() => setWhenMode('asap')}
             />
             {t.cancel_when_asap}
           </label>
-          <label className="flex min-h-11 flex-wrap items-center gap-2 text-sm text-[var(--color-muted-foreground)]">
-            <span className="flex items-center">
+          <label className="flex min-h-11 cursor-pointer flex-wrap items-center gap-x-3 gap-y-2">
+            <span className="flex items-center gap-3">
               <input
                 type="radio" name="when" value="date" className={radio}
                 checked={whenMode === 'date'} onChange={() => setWhenMode('date')}
@@ -164,7 +170,7 @@ export function CancellationClient() {
             </span>
             <input
               type="date" aria-label={t.cancel_when_date}
-              className={`${INPUT_CLASS} w-auto`}
+              className={`${INPUT_CLASS} w-auto max-w-full`}
               value={whenDate}
               onChange={e => { setWhenDate(e.target.value); setWhenMode('date') }}
             />
@@ -175,23 +181,24 @@ export function CancellationClient() {
           <Field id="reason" label={t.cancel_reason}>
             <textarea
               id="reason" name="reason" rows={4}
-              className={INPUT_CLASS}
+              className={TEXTAREA_CLASS}
               value={reason} onChange={e => setReason(e.target.value)}
             />
           </Field>
         )}
 
         {errors._ && (
-          <p role="alert" className="mb-4 text-sm text-[var(--color-danger)]">{errors._}</p>
+          <p role="alert" className="text-small font-semibold text-[var(--color-danger)]">{errors._}</p>
         )}
 
         {/* „Jetzt kündigen" is the wording of the confirmation button
             prescribed by law (§ 312k Abs. 2 Satz 4 BGB). */}
-        <Button type="submit" disabled={sending}>
+        <Button type="submit" disabled={sending} className="justify-self-start">
           {sending && <Loader2 className="h-4 w-4 animate-spin" />}
           {sending ? t.submitting : t.cancel_submit}
         </Button>
       </form>
+      </FormCard>
     </LegalFormShell>
   )
 }

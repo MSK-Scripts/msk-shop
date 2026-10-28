@@ -2573,10 +2573,15 @@ export const legalFormTranslations = {
 
     // Withdrawal
     revoke_title:      'Withdraw from contract',
+    // The page first asks which contract (draft 2.5, choices in legalCopy).
     revoke_intro:
-      'Use this form to withdraw from a paid subscription (Ticket Bot Premium, Hosted or Business). '
-      + 'You do not need to give a reason and you do not need to sign in. '
-      + 'This form does not apply to purchases in the shop, those are handled by Tebex.',
+      'First choose which contract it is about. You can withdraw from a subscription with MSK Scripts '
+      + 'right here, without giving a reason and without signing in.',
+    revoke_form_title: 'Withdraw from a subscription',
+    revoke_form_intro:
+      'For paid subscriptions where MSK Scripts is your contract partner: Ticket Bot Premium, Hosted and Business, '
+      + 'MSK Forms Pro and Enterprise.',
+    revoke_shop_title: 'Withdraw from a shop purchase',
     revoke_contract_hint:
       'For example your Discord server ID or the Stripe invoice number.',
     revoke_email_hint:
@@ -2642,9 +2647,13 @@ export const legalFormTranslations = {
 
     revoke_title:      'Vertrag widerrufen',
     revoke_intro:
-      'Mit diesem Formular widerrufst du ein kostenpflichtiges Abonnement (Ticket Bot Premium, Hosted oder Business). '
-      + 'Du musst keinen Grund angeben und dich nicht anmelden. '
-      + 'Für Käufe im Shop gilt dieses Formular nicht, die wickelt Tebex ab.',
+      'Wähle zuerst, um welchen Vertrag es geht. Ein Abo bei MSK Scripts widerrufst du direkt hier, '
+      + 'ohne Grund und ohne Anmeldung.',
+    revoke_form_title: 'Abo widerrufen',
+    revoke_form_intro:
+      'Für kostenpflichtige Abos, bei denen MSK Scripts dein Vertragspartner ist: Ticket Bot Premium, Hosted und Business '
+      + 'sowie MSK Forms Pro und Enterprise.',
+    revoke_shop_title: 'Kauf im Shop widerrufen',
     revoke_contract_hint:
       'Zum Beispiel deine Discord-Server-ID oder die Stripe-Rechnungsnummer.',
     revoke_email_hint:

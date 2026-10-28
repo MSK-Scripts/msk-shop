@@ -70,7 +70,9 @@ export function buildOrderConfirmation(input: OrderConfirmationInput): BuiltEmai
   const links = {
     terms:      url('/legal/terms'),
     withdrawal: url('/legal/withdrawal'),
-    revoke:     url('/withdraw-contract'),
+    // A subscriber lands on the form right away, without the question
+    // which contract it is (lib/withdrawalChoice.ts).
+    revoke:     url('/withdraw-contract?contract=subscription'),
     cancel:     url('/cancel-contract'),
     dashboard:  url('/dashboard/ticket-bot'),
   };

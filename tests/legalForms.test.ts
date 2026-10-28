@@ -198,6 +198,15 @@ describe('Bestellbestaetigung (§ 312f BGB)', () => {
     expect(mail.text).not.toContain('/de/')
   })
 
+  it('sends a subscriber straight to the withdrawal form, past the question which contract', () => {
+    // The withdrawal page first asks whether it is a subscription or a shop
+    // purchase (draft 2.5). The confirmation of a subscription preselects it.
+    expect(buildOrderConfirmation({ lang: 'de', ...base }).text)
+      .toContain('https://www.msk-scripts.de/de/vertrag-widerrufen?contract=subscription')
+    expect(buildOrderConfirmation({ lang: 'en', ...base }).text)
+      .toContain('https://www.msk-scripts.de/en/withdraw-contract?contract=subscription')
+  })
+
   it('states the VAT exemption under § 19 UStG in both languages', () => {
     // § 34a UStDV requires a note on the exemption. Since 2025 § 19 UStG is
     // an exemption, so "no VAT shown" no longer describes it correctly.
