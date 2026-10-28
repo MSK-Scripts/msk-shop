@@ -8,6 +8,7 @@
 // Everything here is pure so it can be tested without SMTP or Stripe.
 
 import { publicPath } from '@/lib/routes';
+import type { BillingInterval } from '@/lib/tiers';
 
 export type MailLang = 'en' | 'de';
 
@@ -46,8 +47,10 @@ export interface TrialEndingInput {
   guildLabel: string;
   /** When the trial expires. */
   trialEndsAt: Date;
-  /** Monthly price after the trial, already formatted (e.g. "3,99 €"). */
+  /** Price per billing period after the trial, already formatted (e.g. "4,99 €"). */
   price:      string;
+  /** How often that price is charged, from the Stripe price. */
+  interval:   BillingInterval;
 }
 
 export interface BuiltEmail {
@@ -62,7 +65,8 @@ export interface BuiltEmail {
  * imply that money will be taken automatically, because it will not.
  */
 export function buildTrialEndingEmail(input: TrialEndingInput): BuiltEmail {
-  const { lang, guildLabel, trialEndsAt, price } = input;
+  const { lang, guildLabel, trialEndsAt, price, interval } = input;
+  const yearly = interval === 'yearly';
   const date = formatTrialEnd(trialEndsAt, lang);
   const dashboardUrl = `${BASE_URL}${publicPath(lang, '/dashboard/ticket-bot')}`;
 
@@ -77,7 +81,7 @@ export function buildTrialEndingEmail(input: TrialEndingInput): BuiltEmail {
           + 'und der Server fällt auf Basic zurück. Es wird nichts abgebucht.',
         keep:
           `Wenn du Premium behalten willst, hinterlege im Dashboard ein Zahlungsmittel. `
-          + `Danach läuft das Abo für ${price} pro Monat weiter, jederzeit kündbar.`,
+          + `Danach läuft das Abo für ${price} ${yearly ? 'pro Jahr' : 'pro Monat'} weiter, jederzeit kündbar.`,
         cta: 'Zum Dashboard',
         signoff: 'Viele Grüße\nMSK Scripts',
       }
@@ -91,7 +95,7 @@ export function buildTrialEndingEmail(input: TrialEndingInput): BuiltEmail {
           + 'and the server falls back to Basic. Nothing will be charged.',
         keep:
           `If you want to keep Premium, add a payment method in your dashboard. `
-          + `The subscription then continues at ${price} per month, cancel anytime.`,
+          + `The subscription then continues at ${price} ${yearly ? 'per year' : 'per month'}, cancel anytime.`,
         cta: 'Open dashboard',
         signoff: 'Best regards\nMSK Scripts',
       };

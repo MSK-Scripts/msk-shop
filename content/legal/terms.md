@@ -69,7 +69,7 @@ Prices are final prices. Our services are VAT-exempt under the small business sc
 
 ## § 6 Subscriptions: term, cancellation, withdrawal
 
-(1) Subscriptions run monthly and renew by one month at a time unless cancelled. Billing is handled by Stripe in advance at the start of each billing period.
+(1) Depending on the billing period chosen, subscriptions run for one month or twelve months and renew by the same period unless cancelled. Billing is handled by Stripe in advance at the start of each billing period.
 
 (2) **Cancellation** is possible at any time with effect from the end of the current billing period: via the **"Cancel contracts here"** button in the site footer (§ 312k BGB, no login required), via "Manage subscription" in the dashboard (Stripe customer portal), or by email to info@msk-scripts.de. We confirm the cancellation by email without delay. After cancellation the tier falls back to Basic; existing transcripts remain available until their individual expiry, custom domains and bot hosting are deactivated (§ 7 (5)).
 

@@ -172,7 +172,7 @@ describe('Eingangsbestaetigungen', () => {
 
 describe('Bestellbestaetigung (§ 312f BGB)', () => {
   const base = {
-    tierLabel: 'Premium+', guildLabel: 'Atlas Roleplay', price: '6,99 €', inTrial: false,
+    tierLabel: 'Premium+', guildLabel: 'Atlas Roleplay', price: '6,99 €', interval: 'monthly', inTrial: false,
   } as const
 
   it('nennt Leistung, Preis, Laufzeit und verlinkt AGB und Widerruf', () => {
@@ -206,6 +206,43 @@ describe('Bestellbestaetigung (§ 312f BGB)', () => {
     expect(de.text).toContain('Steuerfreie Leistung, Kleinunternehmer nach § 19 UStG')
     expect(en.text).toContain('VAT-exempt supply, small business under § 19 UStG')
     expect(de.text).not.toContain('ausgewiesen')
+  })
+
+  // § 312f BGB: the mail confirms the contract content, and price and term are
+  // part of it. Until 28.10.2026 it only knew monthly plans, so a yearly
+  // subscriber read "49,00 € pro Monat" and "verlängert sich monatlich".
+  describe('price period and term follow the billing interval', () => {
+    const yearly = { ...base, tierLabel: 'Premium', price: '49,00 €', interval: 'yearly' } as const
+
+    it('states a monthly plan as per month, one month, renewing monthly', () => {
+      const de = buildOrderConfirmation({ ...base, lang: 'de' }).text
+      const en = buildOrderConfirmation({ ...base, lang: 'en' }).text
+      expect(de).toContain('Preis: 6,99 € pro Monat')
+      expect(de).toContain('Laufzeit: ein Monat, verlängert sich monatlich')
+      expect(en).toContain('Price: 6,99 € per month')
+      expect(en).toContain('Term: one month, renews monthly')
+      for (const text of [de, en]) {
+        expect(text).not.toMatch(/pro Jahr|jährlich|zwölf|per year|yearly|twelve/)
+      }
+    })
+
+    it('states a yearly plan as per year, twelve months, renewing yearly', () => {
+      const de = buildOrderConfirmation({ ...yearly, lang: 'de' }).text
+      const en = buildOrderConfirmation({ ...yearly, lang: 'en' }).text
+      expect(de).toContain('Preis: 49,00 € pro Jahr')
+      expect(de).toContain('Laufzeit: zwölf Monate, verlängert sich jährlich')
+      expect(en).toContain('Price: 49,00 € per year')
+      expect(en).toContain('Term: twelve months, renews yearly')
+      for (const text of [de, en]) {
+        expect(text).not.toMatch(/pro Monat|monatlich|ein Monat|per month|monthly|one month/)
+      }
+    })
+
+    it('carries the same lines into the HTML part', () => {
+      const html = buildOrderConfirmation({ ...yearly, lang: 'de' }).html
+      expect(html).toContain('<li>Preis: 49,00 € pro Jahr</li>')
+      expect(html).toContain('<li>Laufzeit: zwölf Monate, verlängert sich jährlich</li>')
+    })
   })
 
   it('weist die Testphase samt Ende aus', () => {

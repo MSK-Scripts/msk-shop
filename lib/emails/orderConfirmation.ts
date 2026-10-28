@@ -12,6 +12,7 @@
 
 import type { MailLang } from './trialEnding';
 import { publicPath } from '@/lib/routes';
+import type { BillingInterval } from '@/lib/tiers';
 
 const BASE_URL = 'https://www.msk-scripts.de';
 
@@ -31,8 +32,15 @@ export interface OrderConfirmationInput {
   tierLabel:  string;
   /** Server name, or the id if the name is unknown. External input. */
   guildLabel: string;
-  /** Monthly price, already formatted ("3,99 €" or "€3.99"). */
+  /** Price per billing period, already formatted ("4,99 €" or "€49.00"). */
   price:      string;
+  /**
+   * How often the price is charged, from the Stripe price
+   * (`price.recurring.interval`). Required, so no caller can fall back to
+   * "per month" for a yearly plan, which is what this mail did until
+   * 28.10.2026.
+   */
+  interval:   BillingInterval;
   /** True while the free trial is running. */
   inTrial:    boolean;
   /** End of the trial, if one is running. */
@@ -52,8 +60,9 @@ function formatDate(date: Date, lang: MailLang): string {
 }
 
 export function buildOrderConfirmation(input: OrderConfirmationInput): BuiltEmail {
-  const { lang, tierLabel, guildLabel, price, inTrial, trialEndsAt } = input;
+  const { lang, tierLabel, guildLabel, price, interval, inTrial, trialEndsAt } = input;
   const de = lang === 'de';
+  const yearly = interval === 'yearly';
 
   // The route table writes the address in the mail's language, so a German
   // customer lands on /de/rechtliches/agb and not on the English text.
@@ -79,11 +88,14 @@ export function buildOrderConfirmation(input: OrderConfirmationInput): BuiltEmai
   const rows = [
     de ? `Leistung: Ticket-Bot-Transcript-Service ${tierLabel}` : `Service: Ticket Bot transcript service ${tierLabel}`,
     de ? `Discord-Server: ${guildLabel}`                        : `Discord server: ${guildLabel}`,
-    de ? `Preis: ${price} pro Monat` : `Price: ${price} per month`,
+    de ? `Preis: ${price} ${yearly ? 'pro Jahr' : 'pro Monat'}`
+       : `Price: ${price} ${yearly ? 'per year' : 'per month'}`,
     de ? 'Steuerfreie Leistung, Kleinunternehmer nach § 19 UStG'
        : 'VAT-exempt supply, small business under § 19 UStG',
-    de ? 'Laufzeit: ein Monat, verlängert sich monatlich'
-       : 'Term: one month, renews monthly',
+    // Term as in § 6 (1) of the terms: one month or twelve months, renewing
+    // by the same period. Same wording as the order summary in the dashboard.
+    de ? `Laufzeit: ${yearly ? 'zwölf Monate, verlängert sich jährlich' : 'ein Monat, verlängert sich monatlich'}`
+       : `Term: ${yearly ? 'twelve months, renews yearly' : 'one month, renews monthly'}`,
     ...(trialLine ? [trialLine] : []),
   ];
 

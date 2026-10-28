@@ -128,6 +128,22 @@ export function hasPaymentMethod(
 }
 
 /**
+ * How often a subscription is billed, read off its price.
+ *
+ * The amount alone does not say it: 49,00 € is a yearly Premium plan, and a
+ * mail that only had the amount printed "49,00 € pro Monat" and "verlängert
+ * sich monatlich" for it until 28.10.2026. The order confirmation is the
+ * contract confirmation under § 312f BGB, so price period and term have to
+ * come from the subscription the customer actually holds.
+ *
+ * The shop only sells monthly and yearly prices (`priceIdForTier`), so every
+ * interval other than `year` reads as monthly.
+ */
+export function billingIntervalFromSubscription(sub: Stripe.Subscription): BillingInterval {
+  return sub.items.data[0]?.price?.recurring?.interval === 'year' ? 'yearly' : 'monthly';
+}
+
+/**
  * The recurring price of a subscription, formatted for a human ("3,99 €" in
  * German, "€3.99" in English). Read off the subscription rather than from a
  * constant so the mail can never quote a price the customer is not on.
