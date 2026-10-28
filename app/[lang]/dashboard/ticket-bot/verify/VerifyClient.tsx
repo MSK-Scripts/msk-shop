@@ -277,7 +277,7 @@ export default function VerifyClient({ session, step: _step, errorCode }: Props)
         {/* Header */}
         <div className="mb-8 flex items-start justify-between">
           <div>
-            <span className="eyebrow">{t.verify_label}</span>
+            <span className="kicker">{t.verify_label}</span>
             <h1 className="mt-2 text-3xl font-bold tracking-tight md:text-4xl">{t.verify_title}</h1>
             <p className="mt-2 text-sm text-[var(--color-muted-foreground)]">{t.verify_subtitle}</p>
           </div>

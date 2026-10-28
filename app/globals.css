@@ -1,27 +1,17 @@
 @import "tailwindcss";
 
-/* Dark-Mode via class-Variant — wird vom ThemeProvider (next-themes) gesetzt */
+/* Dark mode as a class variant, set by the ThemeProvider (next-themes). */
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ============================================================================
-   MSK Shop — Design-Tokens (Tailwind v4 CSS-First Config)
+   MSK Shop design tokens (Tailwind v4, CSS-first)
    ============================================================================
    Light tokens are the default; the .dark scope (see @layer base) overrides
-   them. Since the redesign (Phase 0, 27.10.2026): neutral anthracite for
-   ground and bands, MSK green as the visible brand colour. Values and the
-   places green belongs to are in the redesign plan, section 4.4, in the vault.
+   them. Neutral anthracite for ground and bands, MSK green as the visible
+   brand colour. DESIGN.md describes every token, its role and the fixed
+   places of green; tests/contrast.test.ts recomputes the pairs.
    ============================================================================ */
 @theme {
-  /* Breakpoints above Tailwind's built-in 2xl (96rem / 1536 px). Declared here
-     so they work as `3xl:` / `4xl:` variants in markup, not only as raw media
-     queries. Measured on 2026-09-20: below 1920 px the page already fills the
-     viewport edge to edge, so nothing here can affect a phone or a laptop.
-     That is the point - every rule above 1920 px is unreachable further down,
-     which makes "mobile stays untouched" a property of the tooling rather than
-     a claim that has to be re-tested. */
-  --breakpoint-3xl: 120rem;
-  --breakpoint-4xl: 160rem;
-
   /* Type, loaded locally through @fontsource-variable. Archivo for headings
      and product names (with its width axis), Source Sans 3 for everything
      else, and no web font for code: the system monospace is enough there. */
@@ -49,17 +39,11 @@
   --text-label: clamp(0.8125rem, 0.75rem + 0.08vw, 0.9375rem);
   --text-label--line-height: 1.4;
 
-  /* Farben — Light-Mode (Default)
-     Die Werte hier sind auf WCAG AA gerechnet, nicht nach Augenmaß gewählt.
-     `tests/contrast.test.ts` liest sie aus dieser Datei und rechnet jedes Paar
-     nach, eine Änderung ohne Gegenrechnung fällt dort auf.
-
-     Die Neutralen liegen seit dem 23.08.2026 eine Stufe tiefer: der Grund war
-     reines Weiß und damit heller als jede Fläche darauf, es gab also nichts,
-     wovon sich eine Karte hätte abheben können. Jetzt trägt die Seite einen
-     Ton (L 0,964), die Karte sitzt mit L 0,985 darüber. Verschoben wurde
-     ausschließlich die Helligkeit, Farbton und Buntheit der Zink-Achse
-     bleiben, damit der Charakter des Themes derselbe ist. */
+  /* Colours, light theme (default). Computed for WCAG AA, not chosen by eye:
+     tests/contrast.test.ts reads them from this file and recomputes every
+     pair, so a value changed without recomputing fails there. The ground
+     carries a tone (L 0.964) so that the white card has something to stand
+     out from. */
   --color-background:         #f6f6f4;
   --color-foreground:         #1c1d1f;
   --color-muted:              #ededea;
@@ -73,18 +57,12 @@
   --color-card:               #ffffff;
   --color-card-foreground:    #1c1d1f;
 
-  /* Brand: MSK-Grün — beide Werte sind echte Pixelfarben aus `public/logo.png`
-
-     Das Logo ist ein Verlauf, kein Flächenlogo, und Farbton wie Buntheit
-     hängen darin an der Helligkeit: bei L 0,31 misst es H 150,1° / C 0,076,
-     bei L 0,69 dann H 136,4° / C 0,179. Ein Grün „aus dem Logo" ist deshalb
-     nicht ein Wert, sondern eine Rampe. Jedes Grün hier bekommt die
-     Helligkeit, die seine Rolle für AA braucht, und dazu Farbton und Buntheit,
-     die das Logo bei genau dieser Helligkeit trägt. Anschließend wird auf die
-     nächstgelegene tatsächlich im Logo vorkommende Pixelfarbe geschnappt.
-
-     --color-primary  #27762e  kommt 1693-mal im Logo vor
-     --color-accent   #60b02f  kommt 1361-mal vor, das hellste gesättigte Grün
+  /* MSK green. `public/logo.png` is a gradient in which hue and chroma
+     follow the lightness (H 150.1 / C 0.076 at L 0.31, H 136.4 / C 0.179 at
+     L 0.69), so a green from the logo is a ramp, not one value: each green
+     takes the lightness its role needs for AA, the hue and chroma the logo
+     carries there, and is snapped to a pixel colour the logo contains.
+     #27762e occurs 1693 times in it.
 
      primary carries both roles: fill with a white label (5.65:1) and green
      text (5.22:1 on the ground, 4.81:1 on --color-muted, 5.65:1 on a card). */
@@ -95,6 +73,10 @@
      table heads, framework tags. Text 14.57:1, muted text 5.71:1, green
      text 4.88:1 on it. */
   --color-accent-soft:        #e8f1e4;
+  /* Grey fill of the secondary button, beside a primary one where both are
+     a real choice (the two variants on the resource statistics). */
+  --color-secondary:          #ededea;
+  --color-secondary-foreground: #1c1d1f;
 
   /* Anthracite band (hero, dark sections) and the MSK green band before the
      footer. Both keep their colours in the dark theme, so they are defined
@@ -116,96 +98,40 @@
      hover fill (--color-brand-muted). */
   --color-brand-button:            #ffffff;
   --color-brand-button-foreground: #1d5e23;
-  /* Fläche, nicht Text: als Textfarbe misst dieses Grün auf der Karte 2,54:1,
-     und als kleiner Statuspunkt verfehlt es dort die 3:1 für Nicht-Text. Genau
-     das stand bis zum 23.08.2026 im BotConfigEditor. Wer eine grüne Schrift
-     oder einen grünen Punkt braucht, nimmt --color-primary.
-     Damit hat --color-accent derzeit keinen Konsumenten mehr; das Token bleibt,
-     weil DESIGN.md die zweite Grünstufe führt, gerendert wird es nicht. */
-  --color-accent:             #60b02f;
-  --color-accent-foreground:  #0a0a0a;
-  --color-secondary:          #ededea;
-  --color-secondary-foreground: #1c1d1f;
 
-  /* Funktional — jeweils so tief, dass weißer Text auf der Füllung AA erreicht.
-     Zwei mussten mit --color-muted nachziehen: auf der tieferen Kachel fiel
-     warning auf 4,35:1 und primary auf 4,14:1. */
-  /* --color-success ist deckungsgleich mit --color-primary, und das ist kein Versehen: die Rampe
-     des Logos hat bei einer Helligkeit genau ein Grün, und beide Rollen
-     brauchen dieselbe. Der Vorgänger #157f3b lag mit H 149,6° zwar auf der
-     Logo-Achse, aber an einer Helligkeit, an der das Logo 144,6° trägt.
-     Sichtbar ändert das nichts, `--color-success` wird derzeit nirgends
-     gerendert. Bekommt es je eine Aufgabe, braucht es eine eigene Stufe. */
+  /* Status colours of the dashboards, used as text, sign and border on the
+     ground, a card or the tile, never as a fill under text. danger is also
+     the fill of the destructive button, so it keeps a label colour.
+     success is the same value as primary on purpose: the logo ramp has one
+     green at that lightness, and both roles need it. */
   --color-success:            #27762e;
-  --color-success-foreground: #ffffff;
   --color-warning:            #8f4e08;   /* 5.49:1 on the tile, 6.44:1 on a card */
-  --color-warning-foreground: #ffffff;
   --color-danger:             #b3261e;   /* 5.57:1 on the tile, 6.54:1 on a card */
   --color-danger-foreground:  #ffffff;
   --color-info:               #0b5d94;   /* 5.95:1 on the tile, 6.98:1 on a card */
-  --color-info-foreground:    #ffffff;
-  /* Zwei Tokens, weil die Marke zwei Rollen trägt: als Fläche muss sie dunkel
-     genug für weiße Beschriftung sein, als Textfarbe hell genug für den dunklen
-     Grund. Ein einziger Wert kann beides nicht erfüllen. */
-  --color-discord:            #5865F2;   /* Fläche, Weiß darauf 4,61:1 */
-  --color-discord-text:       #525dea;   /* Text, im Dark-Mode überschrieben */
+  /* Discord blurple, the fill of Discord actions with a white label (4.61:1)
+     and the colour of the Discord mark beside them. */
+  --color-discord:            #5865F2;
 
-  /* Ökosystem-Badges (ESX, QBCore, Lua, …)
-     DESIGN.md lässt diese Fremdfarben ausdrücklich zu, weil ein Käufer nach
-     ihnen scannt. Genau deshalb müssen sie lesbar sein, und im Light-Theme
-     waren sie es nicht: die rohen Tailwind-Paletten lagen zwischen 1,46:1
-     (js) und 3,20:1 (sale) auf der getönten Badgefläche.
-
-     Sie standen als Tailwind-Klassen in `components/ui/Badge.tsx` und waren
-     damit für `tests/contrast.test.ts` unsichtbar, der ausschließlich
-     `--color-*` aus dieser Datei liest. Die Regel galt also nur auf dem Papier.
-
-     Die Werte sind gerechnet, nicht geschätzt: Farbton und Buntheit bleiben,
-     nur die Helligkeit wandert so weit, bis der Text auf seiner eigenen
-     12-%-Fläche 4,6:1 erreicht, also mit
-     etwas Abstand zur AA-Grenze von 4,5. Die Marke bleibt erkennbar, ESX ist weiterhin
-     orange. */
-  /* Vierte Farbe der Aufteilungsdiagramme auf den beiden Statistikseiten.
-     Die ersten drei Stufen sind `primary`, `warning` und `info`, die es
-     ohnehin gibt. Nur fuer diese eine fehlte eine, und rohe
-     Tailwind-Klassen taugten nicht: `rose-400` misst im hellen Theme
-     2,45:1 als Text auf der Kachel. */
+  /* Extra colours of the breakdown charts on the two statistics pages, after
+     primary, warning and info. Hue and chroma chosen, then the lightness
+     moved until the label reaches 4.6:1 on the tile it sits on. */
   --color-chart-rose:     #be123c;
-
-  /* Stufen fuenf bis sieben, dazugekommen mit Ungarisch, Polnisch und
-     Portugiesisch in der Sprachaufteilung der Giveaway-Statistik. Gleiches
-     Verfahren wie bei `chart-rose`: Farbton und Buntheit gewaehlt, dann die
-     Helligkeit gewandert, bis der Text auf seiner eigenen Kachel 4,6:1
-     erreicht. */
   --color-chart-violet:   #932cdd;
   --color-chart-teal:     #09716e;
   --color-chart-fuchsia:  #af1dab;
 
-  /* Tier-Badge Hosted (DB-Wert premium_plus) im Ticketbot-Dashboard. Stand bis zum 24.08.2026 als
-     hartverdrahtetes #9d65fe in der Komponente und war damit die einzige Farbe
-     der Anwendung, die `tests/contrast.test.ts` nicht sehen konnte: der Test
-     liest nur `--color-*` aus dieser Datei. Gemessen lag sie als Text auf ihrer
-     eigenen 10-%-Fläche bei 3,15:1 (hell) und 3,78:1 (dunkel), also in beiden
-     Themes unter AA, direkt neben `premium`, das über --color-primary läuft und
-     besteht. Farbton und Buntheit sind unverändert, nur die Helligkeit ist bis
-     4,6:1 gewandert. */
-  --color-tier-plus:      #8044dc;
-
-  /* Tier-Badge Business. Bernstein, damit es sich von premium (gruen) und
-     premium_plus (violett) auf einen Blick unterscheidet. Wie tier-plus gegen
-     die eigene 10-%-Flaeche gemessen: 4,87:1 hell, 5,77:1 dunkel. */
+  /* The Business tier in the ticket bot statistics. Amber, so it reads apart
+     from premium (green) and hosted (warning) at a glance. */
   --color-tier-business:  #7d6200;
 
-  /* Live-Log-Konsole des gehosteten Bots. Die Fläche ist in **beiden** Themes
-     dunkel, wie bei einem Terminal, und die Zeilenfarben sind gegen genau diese
-     Fläche gewählt. Sie ist der einzige verbliebene Ort für #0d1117, seit der
-     dunkle Grund eine Stufe höher liegt — die Konsole hebt sich damit jetzt
-     auch im Dark-Mode vom Grund ab, statt mit ihm zu verschmelzen. Vorher stand die Konsole auf `--color-background`, im
-     hellen Theme also auf Weiß, und dort misst die normale Zeile 1,48:1: das
-     gesamte Log war unlesbar. Auf der dunklen Fläche liegen alle sieben
-     zwischen 6,8:1 und 12,8:1. */
-  /* Anthracite rather than the former GitHub dark #0d1117, which the redesign
-     rules out. Dark enough that the log colours below keep their contrast. */
+  /* Sale price beside the struck-through regular price. */
+  --color-sale:           #c90000;
+
+  /* Live log console of the hosted bot. The surface is dark in both themes,
+     like a terminal, and the line colours are chosen against exactly this
+     surface: all six lie between 6.8:1 and 12.8:1. Anthracite rather than
+     the GitHub dark #0d1117, which the redesign rules out. */
   --color-console:        #141517;
   --color-log-text:       #d4d4d8;
   --color-log-dim:        #a1a1aa;
@@ -214,30 +140,18 @@
   --color-log-ok:         #7ada44;
   --color-log-info:       #38bdf8;
 
-  --color-badge-esx:      #a84b00;
-  --color-badge-qb:       #8845c2;
-  --color-badge-lua:      #0f66be;
-  --color-badge-js:       #8d5d00;
-  --color-badge-ts:       #246aa9;
-  --color-badge-py:       #006ba9;
-  --color-badge-discord:  #5559cd;
-  --color-badge-fivem:    #b04200;
-  --color-badge-sale:     #c90000;
-
   /* Radii: 6 px for controls (rounded-md), 10 px for cards (rounded-lg). */
   --radius-sm: 0.25rem;
   --radius-md: 0.375rem;
   --radius-lg: 0.625rem;
   --radius-xl: 1rem;
 
-  /* Schatten */
+  /* Shadows: a seam at rest, a lift on hover. */
   --shadow-card:       0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-card-hover: 0 8px 24px -8px rgb(0 0 0 / 0.12);
 
-  /* Animationen */
+  /* Animations */
   --animate-fade-in:    fadeIn 0.2s ease-out;
-  --animate-slide-up:   slideUp 0.3s ease-out;
-  --animate-slide-down: slideDown 0.3s ease-out;
   --animate-pulse-dot:  pulseDot 2s ease-in-out infinite;
 }
 
@@ -266,48 +180,24 @@
     --color-primary-foreground: #0e150e;
     --color-primary-hover:      #86cc58;
     --color-accent-soft:        #1d2a1f;
-    /* Heller als das Logo selbst wird (L 0,833 gegen dessen Maximum 0,688),
-       deshalb keine Pixelfarbe, sondern dessen hellster Farbton mit
-       fortgeschriebener Buntheit. Nur Fläche, dunkles Label darauf: 11,11:1. */
-    --color-accent:             #82e649;
-    --color-accent-foreground:  #18191b;
     --color-secondary:          #2a2b2e;
     --color-secondary-foreground: #ececea;
 
-    /* Im Dark-Mode sind die Funktionsfarben hell. Ihre Beschriftung muss
-       deshalb dunkel sein, sonst erben sie das weiße Label aus dem Light-Block
-       und landen bei 2,1 bis 2,8:1. */
+    /* The status colours are light here. The destructive button therefore
+       needs a dark label, or it would inherit the white one and land near
+       2.5:1. */
     --color-danger:             #f28b80;
     --color-danger-foreground:  #18191b;
     --color-success:            #6dbb3d;
-    --color-success-foreground: #18191b;
     --color-info:               #72b6e6;
-    --color-info-foreground:    #18191b;
-    /* Muss hier stehen, sonst erbt Dark das für Weiß abgedunkelte Light-Orange
-       und wird auf dem dunklen Grund unlesbar. */
     --color-warning:            #e2a457;
-    --color-warning-foreground: #18191b;
-    /* 5,49:1 auf dem aufgehellten Grund. Die Flächenfarbe bleibt unverändert. */
-    --color-discord-text:       #7d86f5;
 
-    /* Auf dem dunklen Grund tragen die Markenfarben selbst. Einzige Ausnahme
-       ist `sale`: #fb2c36 kam dort auf 4,13:1 und musste aufgehellt werden. */
     --color-chart-rose:     #fb7185;
     --color-chart-violet:   #b56ee7;
     --color-chart-teal:     #0d9c97;
     --color-chart-fuchsia:  #e24bdd;
-    --color-tier-plus:      #b27cff;
     --color-tier-business:  #d9a400;
-
-    --color-badge-esx:      #F7941D;
-    --color-badge-qb:       #c07eff;
-    --color-badge-lua:      #54a2ff;
-    --color-badge-js:       #fac800;
-    --color-badge-ts:       #5ca0e4;
-    --color-badge-py:       #00bcfe;
-    --color-badge-discord:  #8691ff;
-    --color-badge-fivem:    #ff8b1a;
-    --color-badge-sale:     #ff6663;
+    --color-sale:           #ff6663;
 
     --shadow-card:       0 1px 2px 0 rgb(0 0 0 / 0.4);
     --shadow-card-hover: 0 12px 32px -8px rgb(0 0 0 / 0.6);
@@ -320,18 +210,9 @@
   html {
     scroll-behavior: smooth;
     /* The header sticks at the top with z-index 50: --header-height plus its
-       4 px stripe and 1 px border. Without this line an element the browser
-       scrolls to on its own can end up below it, WCAG 2.2 SC 2.4.11 (Focus
-       Not Obscured).
-
-       Im Audit vom 24.08.2026 wurde kein Verstoss beobachtet, der Nachweis war
-       aber unvollstaendig: `element.focus()` scrollt anders als eine echte
-       Tabulatorfolge. Das hier ist die Absicherung, nicht die Behebung eines
-       bekannten Fehlers.
-
-       `:target` traegt weiter unten schon `scroll-margin-top: 5rem`. Das gilt
-       nur fuer Ankersprünge; diese Zeile deckt zusaetzlich das Scrollen beim
-       Fokuswechsel ab. */
+       4 px stripe and 1 px border. Without this an element the browser
+       scrolls to on focus can end up below it (WCAG 2.2 SC 2.4.11, Focus Not
+       Obscured). `:target` below covers jumps to an anchor. */
     scroll-padding-top: calc(var(--header-height) + 1rem);
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
@@ -384,53 +265,31 @@
   from { opacity: 0; }
   to   { opacity: 1; }
 }
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
 @keyframes pulseDot {
   0%, 100% { opacity: 1; transform: scale(1); }
   50%      { opacity: 0.5; transform: scale(0.85); }
 }
 
 /* ----------------------------------------------------------------------------
-   Card grid minimums
+   Layout tokens
    ----------------------------------------------------------------------------
-   Every card grid on the site is `repeat(auto-fill|auto-fit, minmax(min(100%,
-   X), 1fr))`. That is already fluid, but the minimum was a constant, and a
-   constant minimum means a wider window buys more columns rather than bigger
-   cards. Measured on 2026-09-20 on /packages: 4 columns of 362 px at 1920,
-   7 columns of 335 px at 3440. The cards got *smaller* the more room there was.
+   Column, gutter, card minimum and rhythm grow with the window through
+   clamp() instead of stepping at breakpoints. Page column and gutter grow
+   together, so header, content and footer share one edge at every width;
+   from 1440 px about 16 percent of the window stays unused.
 
-   Staggering the minimum turns the extra width into card size first and column
-   count second.
-
-   Two rules the numbers have to satisfy, both verified by measurement rather
-   than reasoning - the first draft broke the second one:
-
-   1. No card is ever narrower than it is at 1920 px.
-   2. No step ever costs a column. A first attempt used 380px at 1920 and
-      /packages dropped from 4 columns to 3 right at the breakpoint, so a wider
-      window showed *fewer* products. 340px keeps the 4 columns and grows them
-      from 362 px to 380 px, which is what was wanted.
-
-   `--grid-card-wide` exists because the resources page starts wider (its
-   cards carry a sparkline beside the figures).
-
-   Since the redesign (Phase 0, 27.10.2026) the minimum grows continuously
-   instead of in steps: 351 px at 1440, 381 at 1920, 421 at 2560, 477 at 3440.
-   The page column and its gutter grow the same way, so header, content and
-   footer still share one edge at every width. */
+   Every card grid is `repeat(auto-fill|auto-fit, minmax(min(100%,
+   var(--grid-card)), 1fr))`. The minimum grows too (351 px at 1440, 381 at
+   1920, 421 at 2560, 477 at 3440), so a wider window buys bigger cards first
+   and more columns second, instead of more and smaller cards. The rule the
+   numbers answer to: no card is narrower than at 1920 px, and no width ever
+   costs a column. `--grid-card-wide` is for cards that carry a sparkline
+   beside their figures (resource statistics). */
 :root {
-  /* Height of the sticky header bar, without its 4 px stripe. Fluid like the
-     rest of the page: 60 px on a phone, 80 px on UWQHD. */
+  /* Height of the sticky header bar, without its 4 px stripe. 60 px on a
+     phone, 80 px on UWQHD. */
   --header-height: clamp(3.75rem, 3rem + 1vw, 5rem);
-  /* Vertical rhythm of the page sections and of the blocks inside them
-     (sample page of Phase 0). */
+  /* Vertical rhythm of the page sections and of the blocks inside them. */
   --space-section: clamp(3rem, 1.5rem + 3.5vw, 7.5rem);
   --space-stack: clamp(1.25rem, 0.75rem + 1vw, 2.5rem);
   --page-gutter: clamp(1rem, 4vw, 7.5rem);
@@ -438,11 +297,11 @@
   --grid-card: clamp(18rem, 16.25rem + 6.3vw, 30rem);
   --grid-card-wide: clamp(20.5rem, 18.75rem + 6.3vw, 32.5rem);
 
-  /* App shell of the three dashboards (plan 6.3, components/dashboard).
-     Denser than the public pages: a smaller top bar and gutter, because the
-     content is tables and forms rather than sections. The sidebar grows a
-     little with the window; the content column stops at 130rem, so a row of
-     a table stays readable on UWQHD. */
+  /* App shell of the three dashboards (components/dashboard). Denser than
+     the public pages: a smaller top bar and gutter, because the content is
+     tables and forms rather than sections. The sidebar grows a little with
+     the window; the content column stops at 130rem, so a row of a table
+     stays readable on UWQHD. */
   --app-topbar: clamp(3.5rem, 3.1rem + 0.6vw, 4.25rem);
   --app-sidebar: clamp(16.5rem, 14rem + 3vw, 21rem);
   --app-gutter: clamp(1rem, 0.6rem + 1.6vw, 3rem);
@@ -452,64 +311,29 @@
 }
 
 /* ============================================================================
-   Utilities — Container, Eyebrow, Hero-Decor
+   Utilities
    ============================================================================ */
-/* Standard-Shell. Der Deckel lag bis 02.08.2026 bei 80rem (1280 px), womit
-   selbst ein 4K-Monitor zwei Drittel schwarzen Rand zeigte. Jetzt 120rem
-   (1920 px).
-
-   Warum das gefahrlos ist: Seiten mit schmalem Inhalt (Login, Konto, Checkout,
-   404, Rechtstexte) setzen ihren eigenen Deckel per `mx-auto max-w-*` **innen**
-   und ändern sich dadurch überhaupt nicht. Breiter wird nur, was vorher schon
-   die volle Containerbreite gefüllt hat: Raster, Tabellen, Dashboards.
-
-   Seit dem 24.08.2026 ist das die **einzige** Shell der Seite. Kopfzeile,
-   Inhalt und Fusszeile sitzen dadurch auf jeder Route auf derselben Kante. */
+/* The one page shell of the public site. Header, content and footer all sit
+   in it, so they share one edge on every route. Content that does not gain
+   from the width keeps an inner cap of its own (`max-w-*` inside, the
+   measure caps of `.legal-content` and `.tebex-description`) instead of a
+   second shell; a new width step belongs here, with its reason, not in a
+   component. */
 @utility container-page {
-  /* `width: 100%` ist nicht kosmetisch, sondern trägt die ganze Regel: als Kind
-     eines Flex-Containers lässt `margin-inline: auto` das Element sonst auf
-     seine Inhaltsbreite schrumpfen und zentriert diese. Genau das passierte im
-     Hero der Startseite (`flex flex-col`): die Sektion stand 17 px eingerückt,
-     die Kennzahlenzeile darunter 700 px, und beide damit auf einer anderen
-     Kante als Kopf- und Fusszeile. */
+  /* `width: 100%` carries the rule: as the child of a flex container,
+     `margin-inline: auto` would otherwise shrink the element to its content
+     width and centre that, off the edge of header and footer. */
   width: 100%;
   max-width: calc(var(--page-column) + 2 * var(--page-gutter));
   margin-inline: auto;
   padding-inline: max(var(--page-gutter), env(safe-area-inset-left, 0px)) max(var(--page-gutter), env(safe-area-inset-right, 0px));
 }
-/* The shell is the flush line that header, content and footer share, so it
-   grows for all of them together. Until 27.10.2026 it grew in steps at 768,
-   1536, 1920 and 2560 px; now column and gutter follow the window without
-   steps (see :root above). About 16 percent of the window stays unused from
-   1440 px up, as measured for WQHD and UWQHD on 2026-09-20.
 
-   Content that does not benefit from the extra width keeps an inner cap of its
-   own instead of a second shell: `.legal-content` caps its text elements, the
-   hero caps both of its columns, the section intros use `max-w-[NNch]`. */
-
-/* Es gab bis zum 24.08.2026 zwei weitere Stufen: `container-wide` (160rem) für
-   Kartenraster und `container-app` (90rem) für Arbeitsflächen. Damit hatte die
-   Seite drei verschiedene Breiten plus eine randlose Kopfzeile, und je nach
-   Route sprang der Inhalt. Alles läuft jetzt über `container-page`. Wer wieder
-   eine eigene Stufe braucht, soll sie hier anlegen und begründen, statt sie in
-   eine Komponente zu schreiben. */
-
-/* Vergrößert die Trefferfläche eines Bedienelements auf 44 px, ohne seine
-   sichtbare Größe anzufassen.
-
-   Warum nicht einfach die Buttons größer machen: die Kopfzeile trägt bei 375 px
-   sechs Bedienelemente nebeneinander. Wächst jedes sichtbar auf 44 px, wird die
-   Leiste zu voll. Ein Pseudo-Element außerhalb des Layoutflusses löst das,
-   ohne irgendetwas zu verschieben.
-
-   Zur Einordnung: WCAG 2.2 AA (SC 2.5.8) verlangt 24 × 24 px, das erfüllten die
-   Elemente schon vorher. Die 44 px stammen aus Apples HIG und sind hier das
-   Ziel, weil der Shop am Telefon gekauft wird. Gemessen am 22.08.2026 lagen bei
-   375 px 23 Elemente darunter.
-
-   Der Abstand in der Kopfzeile ist `gap-1.5` (6 px). Bei 40 px sichtbarer
-   Breite ergibt das 46 px Raster, zwei 44er Flächen berühren sich also nicht
-   und es gibt keine mehrdeutigen Überlappungen. */
+/* Extends the hit area of a control to 44 px without changing its visible
+   size. WCAG 2.2 AA (SC 2.5.8) asks for 24 x 24 px; 44 px is the target
+   because the shop gets bought on phones, and the header carries six
+   controls side by side at 375 px, too many to grow each one. With the
+   header's 6 px gap two 44 px areas never overlap. */
 @utility tap-target {
   position: relative;
 }
@@ -523,22 +347,10 @@
   transform: translate(-50%, -50%);
 }
 
-/* Reading width. In rem rather than ch on purpose: `ch` is the width of the
-   zero, which is wider than the average letter. Measured with Inter (the font
-   until 27.10.2026), `65ch` gave 84 characters per line instead of 65, and
-   34rem about 70. Source Sans 3 is a little narrower, so 34rem now holds
-   slightly more; re-measure when a page relies on the exact count. */
-@utility container-prose {
-  max-width: 34rem;
-  margin-inline: auto;
-}
-
-/* Kicker: the small green label above a heading (plan 4.4, 4.7). Source Sans
-   3 at the label size, uppercase, no leading dash: green monospace eyebrows
-   with a dash are on the exclusion list (4.2). `.eyebrow` is the old name and
-   still used by pages that come in later phases, so it gets the same look. */
-.kicker,
-.eyebrow {
+/* Kicker: the small green label above a heading. Source Sans 3 at the label
+   size, uppercase, no leading dash: green monospace eyebrows with a dash are
+   on the exclusion list of the redesign. */
+.kicker {
   display: inline-block;
   font-family: var(--font-sans);
   font-size: var(--text-label);
@@ -565,34 +377,15 @@
 }
 .surface-brand :focus-visible { outline-color: var(--color-brand-foreground); }
 
-/* Hero-Background — radialer Akzent-Gradient (CSP-konform, keine inline-styles) */
-.hero-decor-gradient {
-  background: radial-gradient(
-    ellipse 60% 50% at 30% 20%,
-    color-mix(in oklab, var(--color-primary) 12%, transparent),
-    transparent 70%
-  );
-}
-
-/* Pulsing dot (Live-Indicator) */
+/* Pulsing dot of a live indicator, the one animation that runs on its own. */
 .pulse-dot {
   animation: var(--animate-pulse-dot);
 }
 
-/* Skip-Link (WCAG 2.4.1, Level A).
-
-   Diese Regel stand hier lange **ohne einen einzigen Konsumenten**: das
-   Design-Audit vom 24.08.2026 meldete "kein Skip-Link", weil es in `app/` und
-   `components/` nach dem Markup gesucht hat und nicht im CSS. Die Darstellung
-   war also da, es fehlte das `<a>`. Seit dem 26.08.2026 rendert
-   `app/layout.tsx` es als erstes Kind des Body.
-
-   Versteckt wird per `transform`, nicht per `sr-only`: der Link soll
-   vorlesbar bleiben, er ist ja gerade fuer die da, die ihn brauchen.
-
-   `position: fixed`, damit er auch auf einer bereits gescrollten Seite oben
-   erscheint; mit `absolute` sass er am Dokumentanfang und blieb unsichtbar.
-   `z-index: 100` liegt ueber der klebenden Kopfzeile (`z-50`). */
+/* Skip link (WCAG 2.4.1), rendered by app/[lang]/layout.tsx as the first
+   child of the body. Hidden by `transform`, not `sr-only`, so it stays
+   readable; `position: fixed` so it appears on a scrolled page too, and
+   z-index 100 above the sticky header (z-50). */
 .skip-link {
   position: fixed;
   left: 1rem;
@@ -629,7 +422,7 @@
 }
 
 /* ============================================================================
-   Reduced Motion
+   Reduced motion
    ============================================================================ */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -641,20 +434,19 @@
 }
 
 /* ============================================================================
-   Tebex-Description Renderer (rendert HTML aus `dangerouslySetInnerHTML`)
+   Tebex description renderer (HTML from `dangerouslySetInnerHTML`)
    ============================================================================ */
 @layer components {
-  /* Body size of the type scale since Phase 4: at 14 px the description was
-     the smallest text of the product page, below its own captions. */
+  /* Body size of the type scale, so the description is not the smallest
+     text of the product page. */
   .tebex-description {
     font-size: var(--text-body);
     color: var(--color-muted-foreground);
     line-height: var(--text-body--line-height);
   }
-  /* Zeilenlänge deckeln, seit der Seitencontainer bis 1920 px breit werden
-     kann. Bewusst nur die Text-Kinder: Tabellen und Bilder dürfen die volle
-     Spaltenbreite nutzen, Fließtext bei 170 Zeichen pro Zeile nicht. 38rem
-     hält Source Sans 3 in Fließtextgröße bei rund 65 Zeichen (Plan 4.7). */
+  /* Caps the measure of the text children only: tables and images may use
+     the full column. 38rem holds Source Sans 3 at body size near 65
+     characters per line. */
   .tebex-description > p,
   .tebex-description > ul,
   .tebex-description > ol,
@@ -726,35 +518,21 @@
 }
 
 /* ============================================================================
-   Legal-Content Renderer (Markdown-Rechtstexte)
+   Legal content renderer (Markdown legal texts)
    ============================================================================ */
 @layer components {
   .legal-content {
-    /* Vorher `muted-foreground`: das ganze Dokument stand in der Farbe für
-       Nebensachen. Auf diesen drei Seiten ist der Fließtext die Hauptsache,
-       und es ist der längste Text der Website. Kontrast 5,28:1 auf 19:1. */
+    /* Running text in the full text colour: on these pages it is the main
+       thing, and the longest text of the site. Larger and with more leading
+       than the rest of the site, the counterweight to the long line below. */
     color: var(--color-foreground);
-    /* Grösser und luftiger als der Rest der Seite, gemessen an musiker15.de
-       (18 px, Zeilenhöhe 1,75). Das ist die Gegenrechnung zur langen Zeile
-       darunter: eine breite Spalte trägt nur mit genug Schriftgrösse und
-       Durchschuss. */
     font-size: 1.125rem;
     line-height: 1.75;
   }
-  /* Zeilenlänge.
-
-     Stand bis zum 24.08.2026: 34rem, also 64 Zeichen. Das ist die klassische
-     Leseempfehlung und sah in einem 1920er Container trotzdem falsch aus, weil
-     ein 544 px schmales Band in einer 1900 px breiten Seite wie vergessen wirkt.
-
-     Referenz ist jetzt `musiker15.de/impressum`, ausgemessen bei demselben
-     Viewport von 1920: dort ist der Fliesstext **1312 px** breit und trägt
-     **136 Zeichen** pro Zeile, bei 18 px Schrift und Zeilenhöhe 1,75. Der
-     Deckel hier bildet genau das ab (82rem = 1312 px).
-
-     Der Deckel sitzt weiter an den Textelementen, nicht am Artikel, damit die
-     sieben Tabellen der Datenschutzerklärung die volle Spaltenbreite behalten
-     und nicht auch am Desktop scrollen müssen. */
+  /* Measure: 82rem, taken from musiker15.de/impressum at the same 1920 px
+     viewport (1312 px of text, 136 characters, 18 px, line height 1.75).
+     The cap sits on the text elements, not on the article, so the tables of
+     the privacy policy keep the full column and do not scroll on a desktop. */
   .legal-content > p,
   .legal-content > ul,
   .legal-content > ol,
@@ -765,10 +543,9 @@
   .legal-content > blockquote {
     max-width: 82rem;
   }
-  /* Hervorgehobener Hinweis. Genutzt für das Widerspruchsrecht nach Art. 21
-     DSGVO, das nach Auffassung der Aufsichtsbehörden nicht im Fließtext
-     untergehen darf. Farbe über `--color-primary`, damit es in beiden Themes
-     denselben geprüften Kontrast trägt wie jeder andere Akzent der Seite. */
+  /* Highlighted note, used for the right to object under Art. 21 GDPR, which
+     must not get lost in the running text. In --color-primary, so it carries
+     the same tested contrast as every other accent in both themes. */
   .legal-content blockquote {
     margin: 1.5rem 0;
     padding: 1rem 1.25rem;
@@ -852,16 +629,12 @@
 }
 
 /* ============================================================================
-   Bildergalerie: Schachbrett hinter freigestellten Bildern
+   Image gallery: checkerboard behind cut-out images
    ----------------------------------------------------------------------------
-   Alle Bilder im CDN sind transparent. Ohne eine erkennbare Flaeche dahinter
-   sieht ein weisses Fahrzeug im hellen Theme aus wie ein Ladefehler und ein
-   schwarzes im dunklen genauso. Das Muster macht sichtbar, dass da nichts ist.
-
-   Bewusst sehr kontrastarm: es soll das Bild tragen, nicht mit ihm um
-   Aufmerksamkeit streiten. Die Kacheln sind aus den vorhandenen Tokens
-   gemischt, damit sie beiden Themes folgen, statt zwei feste Grautoene zu
-   setzen.
+   Every image on the CDN is transparent. Without a visible surface behind
+   it a white vehicle looks like a loading error in the light theme, and a
+   black one in the dark theme. Deliberately low in contrast, mixed from the
+   tokens so it follows both themes.
    ============================================================================ */
 .checker-bg {
   --checker: color-mix(in oklab, var(--color-muted-foreground) 9%, transparent);

@@ -142,7 +142,7 @@ export function ProductPage({ product, lang, requestedVariant, releases }: Props
                   {frameworks.length > 0 && (
                     <ul className="flex flex-wrap gap-1.5" aria-label={t.facet_framework}>
                       {frameworks.map(f => (
-                        <li key={f}><Badge variant="tag" className="text-label normal-case tracking-normal">{f}</Badge></li>
+                        <li key={f}><Badge className="text-label normal-case tracking-normal">{f}</Badge></li>
                       ))}
                     </ul>
                   )}

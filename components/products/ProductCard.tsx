@@ -79,7 +79,7 @@ export function ProductCard({ card, lang, headingLevel = 3 }: Props) {
           <ul className="flex flex-wrap gap-1.5" aria-label={t.facet_framework}>
             {card.frameworks.map(f => (
               <li key={f}>
-                <Badge variant="tag" className="text-label normal-case tracking-normal">{f}</Badge>
+                <Badge className="text-label normal-case tracking-normal">{f}</Badge>
               </li>
             ))}
           </ul>

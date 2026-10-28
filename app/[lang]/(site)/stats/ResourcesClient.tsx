@@ -223,7 +223,7 @@ export default function ResourcesClient({ stats: initialStats }: { stats: Resour
           <div className="mb-3 flex items-center gap-2">
             {stats.available ? (
               <>
-                <span className="eyebrow">{t.status_live}</span>
+                <span className="kicker">{t.status_live}</span>
                 <span className="inline-flex items-center gap-1.5 text-[0.6875rem] text-[var(--color-muted-foreground)]">
                   <span className="pulse-dot inline-block h-1.5 w-1.5 rounded-full bg-[var(--color-primary)]" />
                   {t.status_refresh}

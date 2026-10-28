@@ -5,6 +5,11 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
   hoverLift?: boolean
 }
 
+/**
+ * A surface for something that is clicked or that holds a task of its own
+ * (a form, a buy box). Groups of facts are built from spacing and hairlines
+ * instead, see components/page/FactList. The padding is set by the caller.
+ */
 export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
   { className, hoverLift = false, ...props },
   ref,
@@ -22,51 +27,4 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
       {...props}
     />
   )
-})
-
-export const CardHeader = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(function CardHeader(
-  { className, ...props },
-  ref,
-) {
-  return <div ref={ref} className={cn('flex flex-col space-y-1.5 p-6', className)} {...props} />
-})
-
-export const CardTitle = forwardRef<HTMLHeadingElement, HTMLAttributes<HTMLHeadingElement>>(function CardTitle(
-  { className, ...props },
-  ref,
-) {
-  return (
-    <h3
-      ref={ref}
-      className={cn('text-lg font-bold leading-tight tracking-tight', className)}
-      {...props}
-    />
-  )
-})
-
-export const CardDescription = forwardRef<HTMLParagraphElement, HTMLAttributes<HTMLParagraphElement>>(function CardDescription(
-  { className, ...props },
-  ref,
-) {
-  return (
-    <p
-      ref={ref}
-      className={cn('text-sm text-[var(--color-muted-foreground)] leading-relaxed', className)}
-      {...props}
-    />
-  )
-})
-
-export const CardContent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(function CardContent(
-  { className, ...props },
-  ref,
-) {
-  return <div ref={ref} className={cn('p-6 pt-0', className)} {...props} />
-})
-
-export const CardFooter = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(function CardFooter(
-  { className, ...props },
-  ref,
-) {
-  return <div ref={ref} className={cn('flex items-center p-6 pt-0', className)} {...props} />
 })

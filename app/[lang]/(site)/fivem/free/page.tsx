@@ -102,7 +102,7 @@ export default async function FreeScriptsPage() {
                   {pkg.badges.length > 0 && (
                     <ul className="flex flex-wrap gap-1.5">
                       {pkg.badges.map(b => (
-                        <li key={b.label}><Badge variant="tag" className="text-label normal-case tracking-normal">{b.label}</Badge></li>
+                        <li key={b.label}><Badge className="text-label normal-case tracking-normal">{b.label}</Badge></li>
                       ))}
                     </ul>
                   )}

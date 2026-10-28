@@ -53,7 +53,7 @@ export function FreeScripts({ lang }: { lang: Lang }) {
             {pkg.badges.length > 0 && (
               <ul className="flex flex-wrap gap-1.5">
                 {pkg.badges.map(b => (
-                  <li key={b.label}><Badge variant="tag">{b.label}</Badge></li>
+                  <li key={b.label}><Badge>{b.label}</Badge></li>
                 ))}
               </ul>
             )}

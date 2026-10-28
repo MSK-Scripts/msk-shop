@@ -54,7 +54,7 @@ export function PackagePrice({ variants, lang, perMonth, className, amountClassN
         {perMonth && !cheapest.isFree ? <span className="font-sans text-small font-normal"> {t.card_per_month}</span> : null}
       </span>
       {cheapest.hasDiscount && (
-        <span className="text-label font-semibold text-[var(--color-badge-sale)]">
+        <span className="text-label font-semibold text-[var(--color-sale)]">
           {t.card_sale} −{cheapest.discountPct}%
         </span>
       )}

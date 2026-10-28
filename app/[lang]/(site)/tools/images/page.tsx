@@ -50,7 +50,7 @@ export default async function ImagesPage() {
   return (
     <div className="container-page py-10 md:py-14">
       <header className="mb-10 max-w-3xl">
-        <span className="eyebrow">{t.eyebrow}</span>
+        <span className="kicker">{t.eyebrow}</span>
         <h1 className="mb-3 mt-2 text-3xl font-bold tracking-tight md:text-4xl">{t.title}</h1>
         <p className="text-base leading-relaxed text-[var(--color-muted-foreground)]">
           {t.subtitle}
