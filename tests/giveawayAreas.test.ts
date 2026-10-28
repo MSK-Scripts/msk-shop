@@ -529,7 +529,7 @@ describe('an older bot without the new routes', () => {
     const shell = (guild: GiveawayData['guild']) => renderToStaticMarkup(
       createElement(LangProvider, { lang: 'en', path: '/dashboard/giveaway-bot' } as ComponentProps<typeof LangProvider>,
         createElement(GiveawayDataContext.Provider, { value: data({ guild }) },
-          createElement(GiveawayShell, { session: { guildId: '111111111111111111', owner: true }, children: 'content' }))),
+          createElement(GiveawayShell, { session: { guildId: '111111111111111111', owner: true } } as ComponentProps<typeof GiveawayShell>, 'content'))),
     )
     expect(shell(null)).toContain('Server 111111111111111111')
     const named = shell({ id: '111111111111111111', name: 'MSK Community', iconUrl: 'https://cdn.discordapp.com/icons/1/a.png?size=128', memberCount: 5 })
