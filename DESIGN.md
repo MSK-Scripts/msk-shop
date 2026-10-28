@@ -300,7 +300,7 @@ Base components live in `components/ui`, page heads in `components/page`, the da
 | Component | Use it for |
 |---|---|
 | `AppShell` | The frame of all three dashboards: top bar with the green stripe, labelled sidebar groups, drawer below 1024 px, bottom tab bar for the bot dashboards. Renders the one `<main id="main">`. |
-| `ServerSwitcher` | Choosing among the servers the session may manage, at the top of the sidebar. |
+| `ServerSwitcher` | Choosing among the servers the session may manage, at the top of the sidebar. The server's icon from Discord's CDN where the bot reports one, its initials otherwise. |
 | `PageHeader` | Title, at most one primary action, a status, breadcrumbs below the sidebar level. |
 | `SectionCard` | A labelled section of a page with its own actions. |
 | `StatTile`, `StatGrid` | One figure per tile, a trend only with arrow, colour and words. |
@@ -311,11 +311,17 @@ Base components live in `components/ui`, page heads in `components/page`, the da
 | `EmptyState` | Never a blank list: first use, no results, error or unavailable, each with one next step. |
 | `FormField`, `FormSection` | Label, hint, field and error wired together; groups with the explanation beside the fields where there is room. |
 | `SaveBar` | Save and Discard while a settings page holds changes. |
-| `ConfirmDialog` | Asking before serious consequences only; buttons name the consequence, irreversible ones ask to type the name. |
+| `ConfirmDialog` | Asking before serious consequences only; buttons name the consequence, irreversible ones ask to type the name. A `notice` holds what stays behind, such as coupon codes that remain valid. |
 | `CopyField` | A value to copy that stays selectable text. |
 
 The admin adds a few helpers of its own in `app/[lang]/admin/adminUi.tsx` (area header, filter
 chips, pager, masked values); see [docs/admin-dashboard.md](docs/admin-dashboard.md).
+
+**Charts** are hand-written SVG (the resource chart on `/stats`, the activity of the giveaway
+dashboard): a chart library would inject styles at runtime, which the nonce CSP blocks. One
+scale per chart; two measures of different size become small charts on one time axis, never
+a second y-axis. The SVG is `aria-hidden`; a sentence says what it shows and a table behind a
+native `<details>` holds every value.
 
 ## Icons
 

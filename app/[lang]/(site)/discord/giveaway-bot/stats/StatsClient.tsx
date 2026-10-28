@@ -52,8 +52,11 @@ export default function StatsClient({
   ]
   const langTotal = langItems.reduce((s, i) => s + (stats.langs[i.key] ?? 0), 0)
 
+  // In the order a giveaway goes through them. Scheduled ones have their own
+  // entry: they are neither running nor over.
   const statusItems: BreakdownItem[] = [
-    { key: 'ACTIVE',    label: t.status_active,    bg: 'bg-[var(--color-primary)]',          text: 'text-[var(--color-primary)]' },
+    { key: 'SCHEDULED', label: t.status_scheduled, bg: 'bg-[var(--color-info)]',             text: 'text-[var(--color-info)]' },
+    { key: 'ACTIVE',   label: t.status_active,    bg: 'bg-[var(--color-primary)]',          text: 'text-[var(--color-primary)]' },
     { key: 'PAUSED',    label: t.status_paused,    bg: 'bg-[var(--color-warning)]',          text: 'text-[var(--color-warning)]' },
     { key: 'ENDED',     label: t.status_ended,     bg: 'bg-[var(--color-muted-foreground)]', text: 'text-[var(--color-muted-foreground)]' },
     { key: 'CANCELLED', label: t.status_cancelled, bg: 'bg-[var(--color-danger)]',           text: 'text-[var(--color-danger)]' },

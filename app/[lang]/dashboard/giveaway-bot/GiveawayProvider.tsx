@@ -10,8 +10,12 @@ import { ArrowsClockwise } from '@/components/icons'
 import { Button } from '@/components/ui/Button'
 import { giveawayDashboardTranslations, type Lang } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
-import { fetchData, loadDashboard, type DataKind } from './giveawayApi'
-import type { Channel, Giveaway, Role, Settings, TebexPackage, TebexStatus, Template } from './giveawayModel'
+import { fetchData, loadDashboard, loadExtras, type DataKind } from './giveawayApi'
+import {
+  listKnowsSchedule,
+  type Channel, type Giveaway, type GuildHistory, type GuildInfo, type Role, type Settings, type TebexPackage,
+  type TebexStatus, type Template,
+} from './giveawayModel'
 
 export type GiveawayCopy = typeof giveawayDashboardTranslations['en'] | typeof giveawayDashboardTranslations['de']
 
@@ -41,6 +45,25 @@ export interface GiveawayData {
   tebex:           TebexStatus | null
   setTebex:        (s: TebexStatus) => void
   packages:        TebexPackage[]
+  /**
+   * Name and icon of the server. Null from a bot before the scheduling
+   * release, which has no `/guild`: the shell then shows the id as before.
+   */
+  guild:           GuildInfo | null
+  /** Activity per day; null without `/history`, and the overview has no chart. */
+  history:         GuildHistory | null
+  setHistory:      (h: GuildHistory) => void
+  /**
+   * Whether the bot answers the preview: unknown until the first answer,
+   * missing after a 404 (older bot). The form asks once and remembers.
+   */
+  preview:         'unknown' | 'available' | 'missing'
+  setPreview:      (p: 'available' | 'missing') => void
+  /**
+   * Whether the bot can schedule, from what it answered: `startAt` on the
+   * giveaways of the list, or a preview answer. Never from a version number.
+   */
+  canSchedule:     boolean
   /** When the lists were read: relative times ("in 3 hours") count from here. */
   loadedAt:        number
   loadAll:         () => Promise<void>
@@ -86,13 +109,16 @@ export function GiveawayProvider({ owner, children }: { owner: boolean; children
   const [channels, setChannels] = useState<Channel[]>([])
   const [tebex, setTebex] = useState<TebexStatus | null>(null)
   const [packages, setPackages] = useState<TebexPackage[]>([])
+  const [guild, setGuild] = useState<GuildInfo | null>(null)
+  const [history, setHistory] = useState<GuildHistory | null>(null)
+  const [preview, setPreview] = useState<'unknown' | 'available' | 'missing'>('unknown')
   const [loadedAt, setLoadedAt] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [flash, setFlash] = useState<Flash | null>(null)
 
-  const get = useCallback(async (kind: DataKind) => {
-    const { status, data } = await fetchData(kind)
+  const get = useCallback(async (kind: DataKind, params?: Record<string, string>) => {
+    const { status, data } = await fetchData(kind, params)
     if (status === 401) { router.push(verifyHref); return null }
     return data as Record<string, unknown> | null
   }, [router, verifyHref])
@@ -111,7 +137,14 @@ export function GiveawayProvider({ owner, children }: { owner: boolean; children
   // extra render pass (`loading` and `error` already start out correct).
   const runLoadAll = useCallback(async () => {
     try {
-      const b = await loadDashboard(get, owner)
+      // The extras of a newer bot load beside the rest and never fail it:
+      // without them the dashboard is what it was before.
+      const [b, extras] = await Promise.all([
+        loadDashboard(get, owner),
+        loadExtras(get).catch(() => ({ guild: null, history: null })),
+      ])
+      setGuild(extras.guild)
+      setHistory(extras.history)
       if (b.giveaways) setGiveaways(b.giveaways as Giveaway[])
       if (b.templates) setTemplates(b.templates as Template[])
       if (b.settings) setSettings(b.settings as Settings)
@@ -141,7 +174,9 @@ export function GiveawayProvider({ owner, children }: { owner: boolean; children
 
   const value: GiveawayData = {
     owner, loading, error, giveaways, templates, settings, setSettings,
-    roles, channels, tebex, setTebex, packages, loadedAt, loadAll, reloadGiveaways, reloadTemplates,
+    roles, channels, tebex, setTebex, packages, guild, history, setHistory, preview, setPreview,
+    canSchedule: listKnowsSchedule(giveaways) || preview === 'available',
+    loadedAt, loadAll, reloadGiveaways, reloadTemplates,
     flash, setFlash,
   }
 

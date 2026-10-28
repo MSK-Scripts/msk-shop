@@ -1,6 +1,6 @@
 'use client'
 
-import type { ReactNode } from 'react'
+import { useContext, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 
 import { AppShell, type ShellNavGroup } from '@/components/dashboard/AppShell'
@@ -9,6 +9,7 @@ import { useLang } from '@/components/i18n/LangProvider'
 import { GearSix, Gift, Layout, SquaresFour, Storefront, type IconComponent } from '@/components/icons'
 import { dashboardShellTranslations } from '@/lib/i18n'
 import { giveawayHref, giveawaySectionOf, giveawaySections, type GiveawaySection } from '@/lib/dashboardNav'
+import { GiveawayDataContext } from './GiveawayProvider'
 
 const ICONS: Record<GiveawaySection, IconComponent> = {
   overview:  SquaresFour,
@@ -24,6 +25,10 @@ const ICONS: Record<GiveawaySection, IconComponent> = {
  * A giveaway session is bound to exactly one server, so the switcher shows
  * that one and offers the way back to the server choice; it lists nothing
  * the session does not already carry. `session` is null on the sign-in page.
+ *
+ * Name and icon come from the bot (`/guild`) once the dashboard has loaded,
+ * and only for the session's server. Until then, and with a bot that has no
+ * `/guild`, the switcher shows the id as it always did.
  */
 export function GiveawayShell({ session, children }: {
   session: { guildId: string; owner: boolean } | null
@@ -32,6 +37,9 @@ export function GiveawayShell({ session, children }: {
   const { lang, path, localize } = useLang()
   const s = dashboardShellTranslations[lang]
   const router = useRouter()
+  // Outside the provider (the sign-in page) there is no data, and no server.
+  const data = useContext(GiveawayDataContext)
+  const guild = session && data?.guild?.id === session.guildId ? data.guild : null
 
   const labels: Record<GiveawaySection, string> = {
     overview:  s.nav_overview,
@@ -73,7 +81,8 @@ export function GiveawayShell({ session, children }: {
         <ServerSwitcher
           servers={[{
             id: session.guildId,
-            name: s.gw_server_name.replace('{id}', session.guildId),
+            name: guild?.name ?? s.gw_server_name.replace('{id}', session.guildId),
+            iconUrl: guild?.iconUrl ?? null,
             detail: session.owner ? s.gw_owner : undefined,
             href: giveawayHref('overview'),
           }]}

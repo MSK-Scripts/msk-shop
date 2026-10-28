@@ -1,6 +1,6 @@
 import { NextResponse }   from 'next/server';
 import { timingSafeEqual } from 'crypto';
-import { query }           from '@/lib/db';
+import { deleteResultPages, GUILD_ID } from '@/lib/giveawayResults';
 
 // Deletes all public result pages of a guild, called by the bot when it is
 // removed from a server (data deletion). Auth as in /publish.
@@ -28,10 +28,10 @@ export async function POST(req: Request) {
   } catch {
     return NextResponse.json({ error: 'invalid_json' }, { status: 400 });
   }
-  if (!/^\d{17,20}$/.test(guildId)) {
+  if (!GUILD_ID.test(guildId)) {
     return NextResponse.json({ error: 'invalid_guild' }, { status: 400 });
   }
 
-  await query('DELETE FROM giveaway_results WHERE guild_id = ?', [guildId]);
+  await deleteResultPages(guildId);
   return NextResponse.json({ success: true });
 }

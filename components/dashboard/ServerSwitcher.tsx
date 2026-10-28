@@ -13,6 +13,11 @@ export interface SwitcherServer {
   name: string | null
   /** Second line, the plan of the server for instance. */
   detail?: string
+  /**
+   * The server's icon on Discord's CDN. Without one the initials stand in.
+   * Decorative: the name is written right beside it.
+   */
+  iconUrl?: string | null
   /** Internal path of this server in the dashboard. */
   href: string
 }
@@ -30,7 +35,15 @@ export interface ServerSwitcherCopy {
   missing: string
 }
 
-function Initials({ name }: { name: string }) {
+function ServerMark({ name, iconUrl }: { name: string; iconUrl?: string | null }) {
+  if (iconUrl) {
+    return (
+      // A 36 px icon from Discord's CDN, which the CSP allows (proxy.ts);
+      // next/image would only proxy it through the shop.
+      // eslint-disable-next-line @next/next/no-img-element
+      <img src={iconUrl} alt="" width={36} height={36} loading="lazy" className="h-9 w-9 shrink-0 rounded-md object-cover" />
+    )
+  }
   return (
     <span
       aria-hidden
@@ -87,7 +100,7 @@ export function ServerSwitcher({ servers, currentId, addHref, copy }: {
           'transition-colors duration-150 hover:border-[var(--color-foreground)]',
         )}
       >
-        <Initials name={currentName} />
+        <ServerMark name={currentName} iconUrl={current?.iconUrl} />
         <span className="grid min-w-0 flex-1">
           <span className="sr-only">{copy.switchLabel}: </span>
           <span className="truncate font-semibold">{currentName}</span>
@@ -112,7 +125,7 @@ export function ServerSwitcher({ servers, currentId, addHref, copy }: {
                     'aria-[current=page]:font-semibold',
                   )}
                 >
-                  <Initials name={server.name || server.id} />
+                  <ServerMark name={server.name || server.id} iconUrl={server.iconUrl} />
                   <span className="grid min-w-0 flex-1">
                     <span className="truncate">{server.name || server.id}</span>
                     {server.detail && <span className="truncate text-small text-[var(--color-muted-foreground)]">{server.detail}</span>}
