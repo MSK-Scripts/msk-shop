@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
-import { formatBytes, formatDate, formatNumber, formatRetention, isoDate, toDate } from '@/lib/format'
+import {
+  formatBytes, formatDate, formatDateTime, formatNumber, formatPercent, formatRelative, formatRetention, isoDate, toDate,
+} from '@/lib/format'
 
 /**
  * One format per language for dates, sizes and periods (plan 5.9, 6.3).
@@ -74,5 +76,37 @@ describe('formatNumber', () => {
   it('groups thousands the way the language does', () => {
     expect(formatNumber(1234, 'de')).toBe('1.234')
     expect(formatNumber(1234, 'en')).toBe('1,234')
+  })
+})
+
+describe('formatDateTime', () => {
+  // 18:58 UTC is 19:58 in Berlin on 28 October 2026 (winter time since the 25th).
+  it('adds the time of day in the zone and the form of the language', () => {
+    expect(formatDateTime('2026-10-28T18:58:00.000Z', 'de')).toBe('28.10.2026, 19:58')
+    expect(formatDateTime('2026-10-28T18:58:00.000Z', 'en')).toMatch(/^Oct 28, 2026, 7:58\sPM$/)
+  })
+
+  it('gives null for a missing or broken value', () => {
+    expect(formatDateTime(null, 'de')).toBeNull()
+    expect(formatDateTime('soon', 'en')).toBeNull()
+  })
+})
+
+describe('formatRelative', () => {
+  const now = Date.parse('2026-10-28T12:00:00.000Z')
+
+  it('counts from the given moment in the largest whole unit', () => {
+    expect(formatRelative('2026-10-28T17:00:00.000Z', 'en', now)).toBe('in 5 hours')
+    expect(formatRelative('2026-10-28T17:00:00.000Z', 'de', now)).toBe('in 5 Stunden')
+    expect(formatRelative('2026-10-28T12:30:00.000Z', 'de', now)).toBe('in 30 Minuten')
+    expect(formatRelative('2026-10-26T12:00:00.000Z', 'de', now)).toBe('vorgestern')
+    expect(formatRelative('2026-11-04T12:00:00.000Z', 'en', now)).toBe('in 7 days')
+  })
+})
+
+describe('formatPercent', () => {
+  it('writes a whole percentage with the sign the language uses', () => {
+    expect(formatPercent(20, 'de')).toMatch(/^20\s%$/)
+    expect(formatPercent(20, 'en')).toBe('20%')
   })
 })

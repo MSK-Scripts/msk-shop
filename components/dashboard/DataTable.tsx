@@ -60,7 +60,9 @@ export function sortRows<Row>(rows: readonly Row[], columns: readonly DataColumn
  *   screen reader the order. The sign shows it to everyone else.
  * - The table scrolls in its own container, never the page (WCAG 1.4.10);
  *   the container is focusable so a keyboard can scroll it, and the header
- *   row stays in view while the rows scroll.
+ *   row stays in view while the rows scroll. It is positioned, so text
+ *   that is only there for screen readers (absolutely placed) stays inside
+ *   it instead of widening the page.
  * - No rows: one row with the empty state across all columns, so the
  *   headers still say what would be there.
  *
@@ -109,7 +111,7 @@ export function DataTable<Row>({
         role="region"
         aria-labelledby={captionId}
         tabIndex={0}
-        className="max-h-[min(75dvh,56rem)] overflow-auto rounded-lg border border-[var(--color-border)] bg-[var(--color-card)]"
+        className="relative max-h-[min(75dvh,56rem)] overflow-auto rounded-lg border border-[var(--color-border)] bg-[var(--color-card)]"
       >
         <table className="w-full border-collapse text-small">
           <caption id={captionId} className={cn('px-4 py-3 text-left font-semibold', captionHidden && 'sr-only')}>

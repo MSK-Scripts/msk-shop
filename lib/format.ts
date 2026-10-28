@@ -70,3 +70,39 @@ export function formatRetention(days: number, lang: Lang): string {
     style: 'unit', unit: years !== null ? 'year' : 'day', unitDisplay: 'long',
   }).format(years ?? days)
 }
+
+/**
+ * A moment with its time, `28.10.2026, 19:58` or `Oct 28, 2026, 7:58 PM`:
+ * for things that end at a minute, such as a giveaway. Same zone as
+ * `formatDate`.
+ */
+export function formatDateTime(value: string | number | Date | null | undefined, lang: Lang): string | null {
+  const date = toDate(value)
+  if (!date) return null
+  const options: Intl.DateTimeFormatOptions = lang === 'de'
+    ? { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }
+    : { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }
+  return new Intl.DateTimeFormat(LOCALE[lang], { ...options, timeZone: DISPLAY_TIME_ZONE }).format(date)
+}
+
+/**
+ * How far a moment is from `now`, `in 5 hours` or `vor 2 Tagen`, in the
+ * largest unit that is at least one (plan 6.3: relative time, the exact date
+ * beside it). `now` is passed in, so a render stays pure and a test exact.
+ */
+export function formatRelative(value: string | number | Date | null | undefined, lang: Lang, now: number): string | null {
+  const date = toDate(value)
+  if (!date) return null
+  const seconds = (date.getTime() - now) / 1000
+  const abs = Math.abs(seconds)
+  const [amount, unit]: [number, Intl.RelativeTimeFormatUnit] =
+    abs < 3600 ? [Math.round(seconds / 60), 'minute']
+      : abs < 86400 ? [Math.round(seconds / 3600), 'hour']
+      : [Math.round(seconds / 86400), 'day']
+  return new Intl.RelativeTimeFormat(LOCALE[lang], { numeric: 'auto' }).format(amount, unit)
+}
+
+/** A whole percentage, `20 %` in German and `20%` in English. */
+export function formatPercent(value: number, lang: Lang): string {
+  return new Intl.NumberFormat(LOCALE[lang], { style: 'percent', maximumFractionDigits: 0 }).format(value / 100)
+}

@@ -46,6 +46,7 @@ import {
   Cube as CubeBase,
   Database as DatabaseBase,
   DiceFive as DiceFiveBase,
+  DotsThree as DotsThreeBase,
   DownloadSimple as DownloadSimpleBase,
   Envelope as EnvelopeBase,
   Eye as EyeBase,
@@ -174,6 +175,7 @@ export const Crosshair = decorative(CrosshairBase)
 export const Cube = decorative(CubeBase)
 export const Database = decorative(DatabaseBase)
 export const DiceFive = decorative(DiceFiveBase)
+export const DotsThree = decorative(DotsThreeBase)
 export const DownloadSimple = decorative(DownloadSimpleBase)
 export const Envelope = decorative(EnvelopeBase)
 export const Eye = decorative(EyeBase)
