@@ -7,7 +7,7 @@ import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 import { useLang } from '@/components/i18n/LangProvider'
 import { LanguageLinks } from '@/components/i18n/LanguageDropdown'
 import { ThemeSwitch, type ThemeSwitchLabels } from '@/components/theme/ThemeSwitch'
-import { ArrowLeft, List, SignOut, X, type IconComponent } from '@/components/icons'
+import { ArrowLeft, List, Lock, SignOut, X, type IconComponent } from '@/components/icons'
 import { cn } from '@/lib/utils'
 
 /**
@@ -39,6 +39,13 @@ export interface ShellNavItem {
   icon: IconComponent
   /** Also in the bar at the bottom of a phone. At most four per dashboard. */
   mobile?: boolean
+  /**
+   * Why the area is closed to this person, "Needs Manage coupons". The entry
+   * stays in the list as text with a lock and the reason below it, and is no
+   * link (plan 6.6, Ticket Tool: locked areas stay visible and name what they
+   * need, in words and not only on hover).
+   */
+  locked?: string
 }
 
 export interface ShellNavGroup {
@@ -127,21 +134,31 @@ function NavList({
             </h2>
           )}
           <ul className="grid gap-0.5">
-            {group.items.map(({ id, href, label: itemLabel, icon: Icon }) => (
+            {group.items.map(({ id, href, label: itemLabel, icon: Icon, locked }) => (
               <li key={id}>
-                <Link
-                  href={href}
-                  prefetch={false}
-                  aria-current={current === id ? 'page' : undefined}
-                  onClick={event => {
-                    onNavigate?.(id, event)
-                    onAfterNavigate?.()
-                  }}
-                  className={navItemClass}
-                >
-                  <Icon className="h-5 w-5 shrink-0" />
-                  <span className="min-w-0 truncate">{itemLabel}</span>
-                </Link>
+                {locked ? (
+                  <div className="flex min-h-11 items-start gap-3 rounded-md px-3 py-2 text-[var(--color-muted-foreground)]">
+                    <Lock className="mt-0.5 h-5 w-5 shrink-0" />
+                    <span className="grid min-w-0 gap-0.5">
+                      <span className="truncate">{itemLabel}</span>
+                      <span className="text-small leading-snug">{locked}</span>
+                    </span>
+                  </div>
+                ) : (
+                  <Link
+                    href={href}
+                    prefetch={false}
+                    aria-current={current === id ? 'page' : undefined}
+                    onClick={event => {
+                      onNavigate?.(id, event)
+                      onAfterNavigate?.()
+                    }}
+                    className={navItemClass}
+                  >
+                    <Icon className="h-5 w-5 shrink-0" />
+                    <span className="min-w-0 truncate">{itemLabel}</span>
+                  </Link>
+                )}
               </li>
             ))}
           </ul>
@@ -275,7 +292,7 @@ export function AppShell({
 }: AppShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const current = useCurrentId(nav, currentId)
-  const mobileItems = (nav ?? []).flatMap(g => g.items).filter(i => i.mobile).slice(0, 4)
+  const mobileItems = (nav ?? []).flatMap(g => g.items).filter(i => i.mobile && !i.locked).slice(0, 4)
   const signedIn = Boolean(nav)
 
   return (

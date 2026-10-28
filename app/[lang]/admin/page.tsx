@@ -34,7 +34,9 @@ export default async function AdminPage({
   const { error, tab } = await searchParams;
 
   if (member) {
-    return <AdminClient member={member} initialTab={tab} />;
+    // Keyed by the tab: a link from one area to another (an overview tile)
+    // is a navigation with a new `?tab=`, and the client resolves it once.
+    return <AdminClient key={tab ?? ''} member={member} initialTab={tab} />;
   }
 
   // Login gate. The messages come from the table: `error` is only ever a key

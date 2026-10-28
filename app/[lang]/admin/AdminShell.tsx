@@ -8,9 +8,9 @@ import {
   CreditCard, Gift, ImageSquare, Key, ListChecks, MagnifyingGlass, Megaphone, Package,
   Prohibit, ShieldCheck, SquaresFour, Tag, UploadSimple, Users, type IconComponent,
 } from '@/components/icons'
-import type { AdminTeamMember } from '@/lib/adminPerms'
-import { adminNavSections, tabHref, visibleTabs, type AdminTabId } from '@/lib/adminTabs'
-import { adminCopy } from '@/lib/i18n'
+import type { AdminPermission, AdminTeamMember } from '@/lib/adminPerms'
+import { adminNavEntries, tabHref, visibleTabs, type AdminTabId } from '@/lib/adminTabs'
+import { adminCopy, adminLang, fillCopy, type AdminCopy, type Lang } from '@/lib/i18n'
 
 const ICONS: Record<AdminTabId, IconComponent> = {
   overview:  SquaresFour,
@@ -28,13 +28,20 @@ const ICONS: Record<AdminTabId, IconComponent> = {
   audit:     ListChecks,
 }
 
+/** "Manage coupons", or "View images, Manage images, or Moderate uploads" when any one opens it. */
+export function permissionList(perms: readonly AdminPermission[], c: AdminCopy, lang: Lang): string {
+  return new Intl.ListFormat(lang === 'de' ? 'de-DE' : 'en-US', { type: 'disjunction' }).format(perms.map(p => c.permissions[p].label))
+}
+
 /**
  * The admin inside the shared app shell. English only (decision E3), every
  * string from `adminCopy`, so the language of the address (`/de/admin`)
  * changes nothing but the links.
  *
- * The sidebar offers exactly the tabs `visibleTabs` gives the member, in the
- * groups of plan 6.6. Without `member` it is the sign-in frame.
+ * The sidebar lists every area in the groups of plan 6.6. The ones the
+ * member may open are links; the others stay in the list with a lock and the
+ * permission they need, in words (Phase 10). Without `member` it is the
+ * sign-in frame.
  */
 export function AdminShell({ member, active, onSelect, onSignOut, children }: {
   member?: AdminTeamMember
@@ -47,17 +54,19 @@ export function AdminShell({ member, active, onSelect, onSignOut, children }: {
 }) {
   const { lang } = useLang()
   const c = adminCopy(lang)
+  const listLang = adminLang(lang)
 
   const tabs = member ? visibleTabs(member) : []
   const nav: ShellNavGroup[] | undefined = member
-    ? adminNavSections(member).map(section => ({
+    ? adminNavEntries(member).map(section => ({
         id: section.group,
         label: c.groups[section.group] || undefined,
-        items: section.tabs.map(tab => ({
+        items: section.entries.map(({ tab, lockedBy }) => ({
           id: tab.id,
           label: c.tabs[tab.id],
           icon: ICONS[tab.id],
           href: tabHref(tabs, tab.id),
+          locked: lockedBy ? fillCopy(c.locked_needs, { permissions: permissionList(lockedBy, c, listLang) }) : undefined,
         })),
       }))
     : undefined

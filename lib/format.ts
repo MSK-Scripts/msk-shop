@@ -106,3 +106,15 @@ export function formatRelative(value: string | number | Date | null | undefined,
 export function formatPercent(value: number, lang: Lang): string {
   return new Intl.NumberFormat(LOCALE[lang], { style: 'percent', maximumFractionDigits: 0 }).format(value / 100)
 }
+
+/**
+ * An amount of money, `24,99 €` or `€24.99`. Without a known currency the
+ * plain number with two decimals, never a wrong sign.
+ */
+export function formatMoney(amount: number, currency: string | null | undefined, lang: Lang): string {
+  const value = Number.isFinite(amount) ? amount : 0
+  if (currency && /^[A-Z]{3}$/.test(currency)) {
+    return new Intl.NumberFormat(LOCALE[lang], { style: 'currency', currency }).format(value)
+  }
+  return new Intl.NumberFormat(LOCALE[lang], { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value)
+}

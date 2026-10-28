@@ -2,138 +2,113 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Check, X } from '@/components/icons'
-import {
-  ADMIN_PERMISSIONS,
-  PERMISSION_LABELS,
-  memberHasPermission,
-  type AdminTeamMember,
-} from '@/lib/adminPerms'
-import { visibleTabs, resolveTab, tabHref, type AdminTabId } from '@/lib/adminTabs'
+
+import { EmptyState } from '@/components/dashboard/EmptyState'
+import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 import { useLang } from '@/components/i18n/LangProvider'
-import { PageHeader } from '@/components/dashboard/PageHeader'
-import { SectionCard } from '@/components/dashboard/SectionCard'
-import { Badge } from '@/components/ui/Badge'
-import { adminCopy } from '@/lib/i18n'
-import { cn } from '@/lib/utils'
-import { AdminShell } from './AdminShell'
-import PaymentsTab from './PaymentsTab'
-import LookupTab from './LookupTab'
-import CouponsTab from './CouponsTab'
-import GiftCardsTab from './GiftCardsTab'
-import BansTab from './BansTab'
-import PackagesTab from './PackagesTab'
-import ApiKeysTab from './ApiKeysTab'
-import ImagesTab from './ImagesTab'
-import UploadsTab from './UploadsTab'
-import NewsPopupTab from './NewsPopupTab'
-import TeamTab from './TeamTab'
-import AuditTab from './AuditTab'
+import { Button } from '@/components/ui/Button'
+import { memberHasPermission, type AdminPermission, type AdminTeamMember } from '@/lib/adminPerms'
+import { ALL_TABS, requiredPermissions, resolveArea, tabHref, visibleTabs, type AdminTabId } from '@/lib/adminTabs'
+import { fillCopy } from '@/lib/i18n'
+import { signOut } from './adminRequests'
+import { AdminShell, permissionList } from './AdminShell'
+import { AreaHeader, useAdminCopy } from './adminUi'
+import ApiKeysArea from './ApiKeysArea'
+import AuditArea from './AuditArea'
+import BansArea from './BansArea'
+import CouponsArea from './CouponsArea'
+import GiftCardsArea from './GiftCardsArea'
+import ImagesArea from './ImagesArea'
+import LookupArea from './LookupArea'
+import NewsPopupArea from './NewsPopupArea'
+import OverviewArea from './OverviewArea'
+import PackagesArea from './PackagesArea'
+import PaymentsArea from './PaymentsArea'
+import TeamArea from './TeamArea'
+import UploadsArea from './UploadsArea'
+
+/**
+ * The page of an area the member may not open (plan 6.6): the area's name,
+ * the permission it needs, and the way back. No area component is mounted,
+ * so nothing is requested; the routes would refuse anyway.
+ */
+export function LockedArea({ id }: { id: AdminTabId }) {
+  const { c, lang } = useAdminCopy()
+  const tab = ALL_TABS.find(t => t.id === id)
+  return (
+    <>
+      <AreaHeader area={id} />
+      <EmptyState
+        kind="unavailable"
+        headingLevel="h2"
+        title={c.locked_title}
+        action={<Button asChild variant="outline"><Link href="/admin" prefetch={false}>{c.locked_action}</Link></Button>}
+      >
+        {fillCopy(c.locked_body, { permissions: permissionList(tab ? requiredPermissions(tab) : [], c, lang) })}
+      </EmptyState>
+    </>
+  )
+}
+
+/** The content of one area for the member, with the permissions it acts on. */
+export function AdminArea({ id, member }: { id: AdminTabId; member: AdminTeamMember }) {
+  const can = (p: AdminPermission) => memberHasPermission(member, p)
+  switch (id) {
+    case 'overview':  return <OverviewArea member={member} />
+    case 'payments':  return <PaymentsArea canCreate={can('payments.create')} canRefund={can('payments.refund')} />
+    case 'lookup':    return <LookupArea />
+    case 'coupons':   return <CouponsArea />
+    case 'giftcards': return <GiftCardsArea />
+    case 'packages':  return <PackagesArea />
+    case 'bans':      return <BansArea />
+    case 'apikeys':   return <ApiKeysArea canChange={can('api_key.change')} />
+    case 'images':    return <ImagesArea canManage={can('images.manage')} canModerate={can('images.moderate')} canDelete={can('images.delete')} />
+    case 'uploads':   return <UploadsArea canModerate={can('images.moderate')} />
+    case 'newspopup': return <NewsPopupArea />
+    case 'team':      return <TeamArea selfId={member.discordUserId} />
+    case 'audit':     return <AuditArea />
+  }
+}
 
 export default function AdminClient({ member, initialTab }: { member: AdminTeamMember; initialTab?: string }) {
   const tabs = visibleTabs(member)
 
   // The server has already read `?tab=` and passes it in as a prop, so there
-  // is nothing to fetch from `window` here and no difference
-  // between server render and hydration.
-  const [active, setActive] = useState(() => resolveTab(tabs, initialTab))
+  // is nothing to fetch from `window` here and no difference between server
+  // render and hydration. A known area the member may not open stays the
+  // area and says why (plan 6.6); anything unknown falls back to Overview.
+  const [area, setArea] = useState(() => resolveArea(member, initialTab))
   const router = useRouter()
   // The dashboard itself is single-language, its ADDRESS is not: the proxy
-  // answers `/de/admin` just like `/admin`, and somebody browsing in German
-  // should still be after switching tabs. `tabHref` deliberately keeps
-  // returning the language-less path; the prefix is added here.
-  const { lang, localize } = useLang()
+  // answers `/de/admin` just like `/admin`. `tabHref` keeps returning the
+  // language-less path; the prefix is added here.
+  const { localize } = useLang()
 
   /**
-   * Switch tabs and update the address bar along with it, so that F5 does not
-   * fall back to "Overview".
+   * Switch areas and update the address bar along with it, so that F5 does
+   * not fall back to "Overview".
    *
    * `history.replaceState` instead of `router.replace`: the page is
    * `force-dynamic`, so a real navigation would trigger the session check and
-   * database query and rebuild every tab, just to change a
-   * string in the address bar. And `replace` instead of `push`,
-   * because otherwise ten tab switches leave ten entries in the history and
-   * the back button no longer leads out of the dashboard.
+   * the database query just to change a string in the address bar. And
+   * `replace` instead of `push`, so the back button still leads out.
    */
   const selectTab = (id: string) => {
-    setActive(id)
+    setArea(resolveArea(member, id))
     window.history.replaceState(null, '', localize(tabHref(tabs, id)))
   }
 
   const handleLogout = async () => {
-    try {
-      await fetch('/api/admin/logout', { method: 'POST' })
-    } catch { /* leave even on network error */ }
+    await signOut()
     // refresh() after push(): the page decides server-side from the cookie
     // whether it shows the panel or the login, and the cookie has just gone.
     router.push(localize('/admin'))
     router.refresh()
   }
 
-  const c = adminCopy(lang)
-  const activeTab = active as AdminTabId
-
   return (
-    <AdminShell member={member} active={active} onSelect={selectTab} onSignOut={handleLogout}>
-      <PageHeader
-        title={c.tabs[activeTab]}
-        badge={member.isOwner ? <Badge variant="primary">{c.owner}</Badge> : undefined}
-      />
-
-      {/* Panels */}
-      <div>
-        {active === 'overview' && (
-          <SectionCard
-            title={c.overview_title}
-            description={member.isOwner ? c.overview_owner : c.overview_member}
-          >
-            <ul className="divide-y divide-[var(--color-border)]">
-              {ADMIN_PERMISSIONS.map(perm => {
-                const granted = memberHasPermission(member, perm)
-                return (
-                  <li key={perm} className="flex items-center gap-3 py-2.5">
-                    {granted ? (
-                      <Check className="h-4 w-4 shrink-0 text-[var(--color-primary)]" aria-label={c.granted} />
-                    ) : (
-                      <X className="h-4 w-4 shrink-0 text-[var(--color-muted-foreground)]" aria-label={c.not_granted} />
-                    )}
-                    <span className={cn('text-sm', !granted && 'text-[var(--color-muted-foreground)]')}>
-                      <span className="font-medium">{PERMISSION_LABELS[perm].label}</span>
-                      <span className="text-[var(--color-muted-foreground)]"> {PERMISSION_LABELS[perm].description}</span>
-                    </span>
-                  </li>
-                )
-              })}
-            </ul>
-          </SectionCard>
-        )}
-
-          {active === 'payments' && (
-            <PaymentsTab
-              canCreate={memberHasPermission(member, 'payments.create')}
-              canRefund={memberHasPermission(member, 'payments.refund')}
-            />
-          )}
-          {active === 'lookup'    && <LookupTab />}
-          {active === 'coupons'   && <CouponsTab />}
-          {active === 'giftcards' && <GiftCardsTab />}
-          {active === 'bans'      && <BansTab />}
-          {active === 'packages'  && <PackagesTab />}
-          {active === 'apikeys'   && <ApiKeysTab canChange={memberHasPermission(member, 'api_key.change')} />}
-          {active === 'images'    && (
-            <ImagesTab
-              canManage={memberHasPermission(member, 'images.manage')}
-              canModerate={memberHasPermission(member, 'images.moderate')}
-              canDelete={memberHasPermission(member, 'images.delete')}
-            />
-          )}
-          {active === 'uploads'   && (
-            <UploadsTab canModerate={memberHasPermission(member, 'images.moderate')} />
-          )}
-          {active === 'newspopup' && <NewsPopupTab />}
-          {active === 'team'      && <TeamTab selfId={member.discordUserId} />}
-          {active === 'audit'     && <AuditTab />}
-      </div>
+    <AdminShell member={member} active={area.id} onSelect={selectTab} onSignOut={handleLogout}>
+      {area.locked ? <LockedArea id={area.id} /> : <AdminArea key={area.id} id={area.id} member={member} />}
     </AdminShell>
   )
 }
