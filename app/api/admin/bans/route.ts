@@ -1,14 +1,17 @@
 import { NextResponse } from 'next/server';
 import { adminRoute }   from '@/lib/adminApi';
 import { writeAudit }   from '@/lib/adminAudit';
+import { maskPersonalData } from '@/lib/adminMask';
 import { tebexPlugin, unwrapList } from '@/lib/tebexPlugin';
 
 // Session-/cookie-dependent → never cache.
 export const dynamic = 'force-dynamic';
 
+// IP and email of a ban leave masked, and so does any address in a reason
+// (lib/adminMask.ts). The full IP or email is a reveal per row.
 export const GET = adminRoute('bans.manage', async () => {
   const bans = unwrapList(await tebexPlugin.bans.list());
-  return NextResponse.json({ bans });
+  return NextResponse.json({ bans: maskPersonalData(bans) }, { headers: { 'Cache-Control': 'no-store' } });
 });
 
 // Ban a player by username/UUID (and optionally an IP).
