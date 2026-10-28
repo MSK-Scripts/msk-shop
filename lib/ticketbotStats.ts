@@ -3,7 +3,7 @@ import { TIER_CONFIG }     from '@/lib/tiers'
 
 /**
  * The public ticket bot figures, loaded once and shared by the two places that
- * show them: `app/ticketbot/stats/page.tsx` (first render) and
+ * show them: `app/[lang]/(site)/discord/ticket-bot/stats/page.tsx` (first render) and
  * `app/api/stats/route.ts` (the 60 s poll behind it).
  *
  * Both used to carry their own copy of these sixteen queries, byte for byte.

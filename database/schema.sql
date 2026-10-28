@@ -363,7 +363,7 @@ CREATE TABLE IF NOT EXISTS msk_image_categories (
     name_de        VARCHAR(64)  NOT NULL,
     description_en VARCHAR(255) NULL,
     description_de VARCHAR(255) NULL,
-    icon           VARCHAR(32)  NULL,                   -- lucide-react Icon-Name
+    icon           VARCHAR(32)  NULL,                   -- icon key, mapped to a Phosphor icon in components/images/CategoryCard.tsx
     sort_order     SMALLINT     NOT NULL DEFAULT 0,
     is_public      TINYINT(1)   NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

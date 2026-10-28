@@ -6,7 +6,7 @@ Stack, project layout, database, configuration, security architecture and stylin
 
 | | |
 |---|---|
-| Framework | Next.js 16.3 (App Router, Turbopack build) |
+| Framework | Next.js 16.4 (App Router, Turbopack build) |
 | Language | TypeScript 6.0 (strict mode) |
 | UI | React 19.3 |
 | Styling | Tailwind CSS 4 (CSS-first, `@theme` tokens in `app/globals.css`) |

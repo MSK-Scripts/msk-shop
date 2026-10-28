@@ -1,6 +1,6 @@
 /**
  * How a ticket bot API key came about, and whether it counts towards the
- * public figures on /ticketbot/stats.
+ * public figures on /en/discord/ticket-bot/stats.
  *
  * Pure types and logic, no database access, so the admin UI can import it for
  * labels and the API routes for validation.

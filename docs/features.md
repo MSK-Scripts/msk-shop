@@ -23,7 +23,7 @@ The shop side:
 
 The Ticket Bot platform:
 
-- Public statistics page (`/en/discord/ticket-bot/stats`), with an allowlist via `STATS_IGNORED_API_KEYS`
+- Public statistics page (`/en/discord/ticket-bot/stats`); whether a key counts is set per key in the admin (`lib/keyClassification.ts`)
 - Verify flow over Discord OAuth: API key issuance and account-scoped ownership
 - Ownership follows Discord: a guild whose owner lost Administrator or Manage Server gets a 14-day grace period, then disappears from their dashboard and can be claimed by the new admin team
 - Transcript hosting with attachment support, backed by MariaDB. Uploads are hardened with an extension allowlist, `<uuid>.<ext>` filenames and `sharp` image re-encoding
