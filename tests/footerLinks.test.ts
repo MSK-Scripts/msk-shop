@@ -25,10 +25,14 @@ const html = (lang: Lang, path = '/') =>
     createElement(LangProvider, { lang, path } as ComponentProps<typeof LangProvider>, createElement(Footer)),
   )
 
-/** href of the first link whose text is exactly `label`. */
+/**
+ * href of the first link whose text is exactly `label`. The text is the
+ * link's content split at its tags, which only reads it; nothing is
+ * sanitised or rendered from it.
+ */
 function hrefOf(markup: string, label: string): string | null {
   for (const m of markup.matchAll(/<a\b[^>]*href="([^"]*)"[^>]*>(.*?)<\/a>/g)) {
-    if (m[2].replace(/<[^>]+>/g, '').trim() === label) return m[1]
+    if (m[2].split(/<[^>]*>/).join('').trim() === label) return m[1]
   }
   return null
 }
