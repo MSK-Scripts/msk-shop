@@ -1,3 +1,5 @@
+> **Historical document**, kept as written: it predates the redesign of 27 and 28 October 2026 (PR #61), so addresses, components and screens in it may differ from the code. The current guide is [admin-dashboard.md](admin-dashboard.md).
+
 # Admin Dashboard — Implementation Plan
 
 > Self-hosted Tebex admin dashboard on the shop website. Discord login + own

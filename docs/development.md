@@ -11,17 +11,16 @@ Stack, project layout, database, configuration, security architecture and stylin
 | UI | React 19.3 |
 | Styling | Tailwind CSS 4 (CSS-first, `@theme` tokens in `app/globals.css`) |
 | Theming | Light + Dark via `next-themes` |
-| Fonts | Inter + JetBrains Mono, self-hosted through `@fontsource-variable` |
+| Fonts | Archivo (headings) and Source Sans 3 (text), self-hosted through `@fontsource-variable`; the system monospace for code |
 | State | Zustand 5 (persisted to localStorage) |
 | Data fetching | SWR 2 |
 | Database | MariaDB / MySQL (via mysql2), versioned migrations in `database/migrations/` |
 | Payments | Tebex Headless API (shop) and Stripe (Ticket Bot subscriptions) |
 | Mail | nodemailer over SMTP (order confirmations, trial reminders, legal receipts) |
-| Icons | `lucide-react` (brand marks are local inline SVG, see `components/icons/`) |
+| Icons | Phosphor (`@phosphor-icons/react`), imported only through `components/icons/`; brand marks are local inline SVG |
 | Image processing | `sharp`, re-encodes uploaded transcript attachments and gallery submissions |
-| Cookies (client) | `js-cookie` |
 | Auth | CFX.re (FiveM) and Discord OAuth via Tebex for purchases, separate Discord OAuth apps for the dashboards and `/admin` |
-| Tests | Vitest 5 with `@vitest/coverage-v8` (725 tests under `tests/`) |
+| Tests | Vitest 5 with `@vitest/coverage-v8` (1388 tests in 85 files under `tests/`) |
 | Linting | ESLint 10 flat config with `eslint-config-next` 16, run through the ESLint CLI |
 | Runtime | Node.js 24 (local, CI and production) |
 | Server | Debian, Apache2 reverse proxy, systemd |
@@ -72,9 +71,10 @@ app/                        Next.js App Router pages & API routes
 │   │   ├── [...rest]/      Catch-all: unknown addresses get the 404 inside the site layout
 │   │   ├── account/        User account page
 │   │   ├── cart/, checkout/  Cart page, post-payment redirect handler
-│   │   ├── fivem/          Catalogue, [slug]/ product pages, categories/[id]/
-│   │   ├── discord/        ticket-bot/ (landing, compare/, stats/), giveaway-bot/ (landing, stats/, g/[token]/)
-│   │   ├── tools/images/   Gallery: overview, [category]/, [category]/[name]/, upload/
+│   │   ├── fivem/          Catalogue, [slug]/ product pages, free/, all-access/, categories/[id]/
+│   │   ├── discord/        Bots overview, ticket-bot/ (landing, compare/, stats/), giveaway-bot/ (landing, stats/, g/[token]/)
+│   │   ├── tools/          Web tools page; images/ is the gallery: overview, [category]/, [category]/[name]/, upload/
+│   │   ├── about/          About MSK
 │   │   ├── stats/          Resource statistics page (fivestats.io)
 │   │   ├── legal/          terms/, imprint/, privacy/, withdrawal/, dpa/
 │   │   ├── withdraw-contract/, cancel-contract/  Withdrawal (§ 356a BGB) and cancellation (§ 312k BGB)
@@ -83,36 +83,39 @@ app/                        Next.js App Router pages & API routes
 │   ├── dashboard/          The two bot dashboards in the shared app shell (components/dashboard/)
 │   │   ├── ticket-bot/     page.tsx sends on to the first server; [server]/ (overview), [server]/domains/,
 │   │   │                   [server]/transcripts/, [server]/hosting/; verify/. loadGuilds.ts loads the
-│   │   │                   session's servers, the address only picks among them
+│   │   │                   session's servers, the address only picks among them. BotControl.tsx and
+│   │   │                   LiveLogs.tsx are the hosted bot's control panel and live log console
 │   │   └── giveaway-bot/   (panel)/ with overview, giveaways/, templates/, settings/, store/; verify/
-│   └── admin/              Admin dashboard in the app shell (one *Tab.tsx per area, `?tab=` per area,
-│                           English UI from `adminTranslations` in both languages)
+│   └── admin/              Admin dashboard in the app shell (one *Area.tsx per area, `?tab=` picks the
+│                           area, English UI from `adminTranslations` in both languages)
 ├── auth/discord/           Tebex Discord return (own root layout, no language prefix)
 ├── botproxy/               Reverse proxy route for the hosted bot dashboard
 ├── llms.txt/               /llms.txt: map of the site for language models, built by lib/llms.ts
 └── sitemap.xml/            Sitemap route (+ sitemap.xsl/, sitemap-images.xml/)
 
 components/
-├── bots/                   Ticket Bot and Giveaway Bot landing pages, comparison table
-├── cart/                   Slide-in cart drawer
+├── account/                Shop sign-in (CFX.re through Tebex)
+├── bots/                   Bots overview, Ticket Bot and Giveaway Bot landing pages, tiers, comparison table
+├── cart/                   Cart drawer and the parts it shares with the cart page (lines, summary, coupon field)
 ├── home/                   Homepage sections (Hero, ProofLine, Catalog, Bots, WebTools, FreeScripts, About)
+│                           and Section/TextLink, the section frame other pages use too
 ├── i18n/                   LangProvider, LanguageDropdown, LocaleLink (internal path -> address of the page language)
-├── icons/                  Local brand marks (GitHub and others)
+├── icons/                  The icon module (Phosphor, decorative by default) and the GitHub mark
 ├── images/                 Gallery cards, search, copy-URL button, brand notice
-├── layout/                 Header (main nav, mobile menu, account menu), Footer, closing band, 404 page, payment marks
+├── layout/                 Header (main nav, mobile menu, account menu), Footer with closing band, 404 page, payment marks
 ├── dashboard/              App shell of the three dashboards (sidebar, drawer, server switcher) and its building
-│                           blocks: PageHeader, StatTile, StatusBadge, SectionCard, DataTable, EmptyState,
-│                           ConfirmDialog, FormField
-├── legal/                  Legal-text renderer
+│                           blocks: PageHeader, SectionCard, StatTile, StatusBadge, Notice, DataTable, RowMenu,
+│                           EmptyState, FormField, SaveBar, ConfirmDialog, CopyField
+├── legal/                  Legal-text renderer, the frame of the three legal forms, report link
 ├── packages/               PackagePrice, AddToCartButton, PackageGallery
+├── page/                   Page heads: PageHero (anthracite band), PageHead (task pages), FactList
 ├── products/               Product card, catalogue filter, product page with buy box (Encrypted/Source), comparison table
+├── stats/                  Parts of the two public statistics pages
 ├── theme/                  ThemeProvider + ThemeSwitch (system, light, dark)
-├── ui/                     Button, Card, Badge, Container, Input, Skeleton, NewsPopup
-└── BotConfigEditor.tsx     Hosted-bot panel: bot control and live log console. The name
-                            is historic, the config editor moved into the bot itself
+└── ui/                     Button, Card, Badge, Input, Select, RadioCard, Dialog, Skeleton, NewsPopup
 
 content/
-├── custom-packages.ts      Non-Tebex packages (Discord bots, GitHub, etc.)
+├── custom-packages.ts      What Tebex does not sell: the free FiveM scripts on GitHub and the web tools
 ├── resource-stats.ts       Resource list for the /stats page
 ├── ticketbot-copy.ts, giveaway-copy.ts, ticketbot-compare-copy.ts   Landing page texts (EN + DE)
 └── legal/                  Editable Markdown legal texts, one file per language
@@ -140,7 +143,7 @@ lib/                        Server and shared logic, grouped by area:
 ├── routes.ts               Route table: public address per language, old addresses, proxy decision
 ├── seo.ts, pageSeo.ts, botSeo.ts, jsonLd.ts, sitemap.ts, llms.ts   Metadata, structured data, /llms.txt
 ├── rateLimit.ts, sanitize.ts, db.ts   Rate limiting, HTML sanitizing, database pool
-└── config.ts               Shop configuration (featured packages, badges, news popup)
+└── config.ts               Shop configuration (site metadata, subscription packages, product copy, category SEO)
 
 store/                      Zustand stores (cart, sale prices)
 types/                      TypeScript types for the Tebex API
@@ -160,9 +163,11 @@ scripts/                    Deployed with the repo to /opt/msk-shop/scripts (kep
 └── repair-transcript-images.js                One-off repair for expired Discord image links
 
 docs/
+├── features.md, development.md, operations.md   What the shop does, this page, running it
+├── admin-dashboard.md      How each area of /admin works
 ├── DEPLOYMENT.md           Server setup + deploy runbook (German)
 ├── TEBEX_API_REFERENCE.md  Tebex HTTP API reference
-└── ADMIN_DASHBOARD_PLAN.md Original plan for /admin
+└── ADMIN_DASHBOARD_PLAN.md, PRICING_MIGRATION.md   Historical: the original /admin plan, the tier change runbook
 
 proxy.ts                    Next.js proxy (called middleware.ts before Next 16): generates a
                             per-request nonce and sets every security header
@@ -222,16 +227,6 @@ export const PRODUCT_COPY: Record<string, ProductCopy> = {
   },
 }
 
-// News popup, shown on every full page load
-export const NEWS_POPUP = {
-  enabled: true,
-  title: 'Discord Ticket Bot',
-  text: 'Get your API Key now and create a ticket system for your community!',
-  button: { label: 'Get API Key', href: '/dashboard/ticket-bot/verify' },
-  secondButton: { label: 'Dashboard', href: '/dashboard/ticket-bot' },
-  coupon: null, // or e.g. 'NEWSHOP20', renders a copyable coupon field
-}
-
 // Site metadata
 export const SITE_CONFIG = {
   name: 'MSK Scripts Shop',
@@ -244,7 +239,8 @@ export const SITE_CONFIG = {
 
 A few more things worth knowing:
 
-- **Custom packages** (the non-Tebex ones) live in **`content/custom-packages.ts`**.
+- **Custom packages** (the free scripts and web tools, not sold through Tebex) live in **`content/custom-packages.ts`**.
+- **The news popup** is edited in the admin (News popup area) and stored in the database, no deploy needed; its shape is checked in `lib/newsPopup.ts`.
 - **Resource statistics** are configured in **`content/resource-stats.ts`**: each entry maps a `resource_name` (the exact FiveM folder name) to a free resource (linked to GitHub) or a paid one (linked to its two Tebex variants).
 - **Legal pages** are plain Markdown in **`content/legal/*.md`**, one file per language.
 - **SEO titles and descriptions** for pages, products and categories live in `lib/pageSeo.ts` and `lib/config.ts`, in both languages.
@@ -287,13 +283,16 @@ The short version, the full write-up is in [SECURITY.md](../SECURITY.md):
 
 ## Design and styling
 
-Everything is Tailwind CSS v4 (CSS-first). The design tokens are `@theme` variables (`--color-*`) in **`app/globals.css`**, and `tailwind.config.ts` only holds the content paths. The `.dark` scope (set by `next-themes`) overrides the tokens. MSK green (`--color-primary`) is the brand accent, `#27762e` in light mode and `#60b02f` in dark mode, both sampled from the logo. The design system is documented in [DESIGN.md](../DESIGN.md).
+Everything is Tailwind CSS v4 (CSS-first). The design tokens are `@theme` variables (`--color-*`) in **`app/globals.css`**, and `tailwind.config.ts` only holds the content paths. The `.dark` scope (set by `next-themes`) overrides the tokens. Ground and bands are neutral anthracite, MSK green (`--color-primary`) is the brand accent, `#27762e` in light mode and `#6dbb3d` in dark mode, taken from the logo's gradient. `tests/contrast.test.ts` recomputes every colour pair against WCAG AA and fails for a token without a pair. The design system, with tokens, components and rules, is documented in [DESIGN.md](../DESIGN.md).
 
 Fonts are Source Sans 3 (`--font-sans`) for text and Archivo (`--font-display`) for headings, fully self-hosted through `@fontsource-variable` (imported in `app/[lang]/layout.tsx`, no `next/font/google`, so nothing gets fetched from Google). Code uses the system `ui-monospace` (`--font-mono`), without a web font of its own.
 
 The old `msk-*` utility classes (`msk-btn-primary`, `msk-card` and friends) and the legacy token aliases (`bg-surface`, `text-dim` and so on) are gone since Phase 8 of the redesign, when the last component that used them (the hosted bot's control panel, then `BotConfigEditor`) was rebuilt. Use the `--color-*` tokens and the building blocks in `components/ui` and `components/dashboard`.
 
-A couple of theme-specific styles also live in `globals.css`:
+A few classes also live in `globals.css`:
 
+- `container-page`, the one page shell, and `tap-target`, which extends a control's hit area to 44 px.
+- `.kicker`, the green label above a heading, and `.surface-band` / `.surface-brand` for the anthracite and the green band.
 - `.tebex-description` makes the Tebex HTML (`dangerouslySetInnerHTML`) readable.
 - `.legal-content` renders the Markdown legal pages (h1 to h3, lists, tables, code).
+- `.checker-bg` puts a checkerboard behind the transparent gallery images.

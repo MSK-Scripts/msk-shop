@@ -1,3 +1,5 @@
+> **Historical document**, the runbook of the tier change on 19 September 2026, kept as written: it predates the redesign of 27 and 28 October 2026 (PR #61), so addresses and screens in it may differ from the code.
+
 # Pricing migration, 2026-09-19
 
 The ticket bot tier ladder changed. This file is the runbook for the parts that

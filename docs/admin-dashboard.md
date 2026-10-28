@@ -139,7 +139,7 @@ compares the CDN directory with the database on request; the size comparison sta
 
 ## Uploads
 
-Images submitted through `/images/upload`. A pending file waits in quarantine outside any web
+Images submitted through `/en/tools/images/upload` (`/de/web-tools/bilder/hochladen`). A pending file waits in quarantine outside any web
 root and was re-encoded by `sharp` on arrival, so the preview is our own PNG. Approving is the one
 action that puts a file into the public CDN; the category the submitter picked is a suggestion.
 Rejecting needs a reason, deletes the quarantine file and asks first.

@@ -10,16 +10,16 @@ The shop side:
 - FiveM (CFX.re) login through Tebex, plus Discord OAuth so roles get assigned after a purchase
 - Gift packages with an optional recipient Discord ID
 - Coupon codes (apply and remove)
-- Catalog filters, per-package badges, tags and custom descriptions
-- A "custom packages" section for things that don't live on Tebex (Discord bots, GitHub repos and so on)
-- Measured shop figures on the homepage (hidden rather than shown stale when the nightly snapshot is too old); the release feed read from the public `MSK-Scripts/VERSIONS` repository (`lib/releases.ts`) moves to the product pages in Phase 4 of the redesign
+- One product per script with Encrypted and Source as a choice on its page, a framework filter in the catalogue, framework tags and a summary per product
+- The free FiveM scripts on GitHub (`/en/fivem/free`) and the web tools (`/en/tools`), kept in `content/custom-packages.ts` because Tebex does not sell them
+- Measured shop figures on the homepage (hidden rather than shown stale when the nightly snapshot is too old); the release feed read from the public `MSK-Scripts/VERSIONS` repository (`lib/releases.ts`) on the product pages
 - Header with the three product lines (FiveM scripts, Discord bots, web tools) and their pages, an account entry that keeps the shop login (CFX.re) and the bot logins (Discord) apart, and a theme switch (system, light, dark) in the account menu and the footer; no search until the catalogue reaches about 20 products
 - An unknown address gets a server-rendered 404 page in its language with the status 404, set by the proxy
 - Live resource statistics page (`/en/stats`, `/de/statistiken`) powered by fivestats.io: server counts, ranking and a 7-day trend chart for every MSK resource
 - Every page under `/en/` and `/de/` with translated German paths from one route table (`lib/routes.ts`); `/` redirects by remembered choice, then browser language; old addresses answer 308; canonical and hreflang on every public page and a generated sitemap
 - Legal pages in English and German, written in plain Markdown so they can be edited without touching code
-- The legally required forms that work without an account: contract withdrawal (`/vertrag-widerrufen`), contract cancellation (`/vertrag-kuendigen`) and a DSA content report (`/report`), each with an email receipt
-- Configurable news popup, with an optional copyable coupon code
+- The legally required forms that work without an account: contract withdrawal (`/en/withdraw-contract`, `/de/vertrag-widerrufen`), contract cancellation (`/en/cancel-contract`, `/de/vertrag-kuendigen`) and a DSA content report (`/en/report`, `/de/inhalt-melden`), each with an email receipt
+- News popup with an optional copyable coupon code, switched and edited in the admin without a deploy
 
 The Ticket Bot platform:
 
