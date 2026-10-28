@@ -18,7 +18,7 @@ import { CircleNotch } from '@/components/icons'
  */
 export function ConfirmDialog({
   open, onClose, onConfirm, title, description, confirmLabel, cancelLabel,
-  tone = 'danger', busy = false, typeToConfirm, error,
+  tone = 'danger', busy = false, typeToConfirm, notice, error,
 }: {
   open: boolean
   onClose: () => void
@@ -37,6 +37,11 @@ export function ConfirmDialog({
   /** The action is running; the button shows it and both stay disabled. */
   busy?: boolean
   typeToConfirm?: { expected: string; label: ReactNode }
+  /**
+   * A consequence that needs more than the description's one sentence, a
+   * warning about what stays behind for instance. Shown above the field.
+   */
+  notice?: ReactNode
   /** Why the action failed. The dialog stays open, so the person can retry or cancel. */
   error?: ReactNode
 }) {
@@ -55,8 +60,9 @@ export function ConfirmDialog({
       onClose={close}
       title={title}
       description={description}
-      body={(typeToConfirm || error) && (
+      body={(typeToConfirm || notice || error) && (
         <div className="grid gap-3">
+          {notice}
           {typeToConfirm && (
             <div className="grid gap-1.5">
               <label htmlFor={fieldId} className="text-small font-semibold">{typeToConfirm.label}</label>

@@ -6,10 +6,10 @@ import { DataTable, type DataColumn } from '@/components/dashboard/DataTable'
 import { EmptyState } from '@/components/dashboard/EmptyState'
 import { StatusBadge, type StatusTone } from '@/components/dashboard/StatusBadge'
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
-import { CheckCircle, Pause, Play, Plus, Prohibit, Ticket, type IconComponent } from '@/components/icons'
+import { CalendarBlank, CheckCircle, Pause, Play, Plus, Prohibit, Ticket, type IconComponent } from '@/components/icons'
 import { Button } from '@/components/ui/Button'
 import { GIVEAWAY_NEW_HREF, giveawayDetailHref } from '@/lib/dashboardNav'
-import { formatDateTime, formatNumber, formatPercent, isoDate } from '@/lib/format'
+import { formatDateTime, formatNumber, formatPercent, formatRelative, isoDate } from '@/lib/format'
 import { giveawayDashboardTranslations, type Lang } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
 import { GiveawayActions } from './GiveawayActions'
@@ -17,7 +17,11 @@ import { endOf, matchesFilter, winnerCount, type Giveaway, type GiveawayStatus, 
 import { useGiveawayCopy, useGiveawayData } from './GiveawayProvider'
 import { FirstClickTag } from './formParts'
 
-const STATUS: Record<GiveawayStatus, { tone: StatusTone; icon: IconComponent; key: 'status_active' | 'status_paused' | 'status_ended' | 'status_cancelled' }> = {
+type StatusKey = 'status_scheduled' | 'status_active' | 'status_paused' | 'status_ended' | 'status_cancelled'
+
+const STATUS: Record<GiveawayStatus, { tone: StatusTone; icon: IconComponent; key: StatusKey }> = {
+  // Not posted yet: informative, like an ended one, told apart by word and sign.
+  SCHEDULED: { tone: 'info',    icon: CalendarBlank, key: 'status_scheduled' },
   ACTIVE:    { tone: 'success', icon: Play,        key: 'status_active' },
   PAUSED:    { tone: 'warning', icon: Pause,       key: 'status_paused' },
   ENDED:     { tone: 'info',    icon: CheckCircle, key: 'status_ended' },
@@ -30,8 +34,11 @@ export function GiveawayStatusBadge({ status, lang }: { status: GiveawayStatus; 
   return <StatusBadge tone={s.tone} icon={s.icon}>{giveawayDashboardTranslations[lang][s.key]}</StatusBadge>
 }
 
-/** The columns of the giveaway table, in the language of the page. */
-export function giveawayColumns(lang: Lang): DataColumn<Giveaway>[] {
+/**
+ * The columns of the giveaway table, in the language of the page. `now` is
+ * when the list was read; a scheduled giveaway says from there when it starts.
+ */
+export function giveawayColumns(lang: Lang, now: number = Date.now()): DataColumn<Giveaway>[] {
   const t = giveawayDashboardTranslations[lang]
   return [
     {
@@ -46,6 +53,14 @@ export function giveawayColumns(lang: Lang): DataColumn<Giveaway>[] {
           </Link>
           <div className="flex flex-wrap items-center gap-2 text-small text-[var(--color-muted-foreground)]">
             <span className="font-mono">{g.id}</span>
+            {g.status === 'SCHEDULED' && g.startAt && (
+              <span className="inline-flex items-center gap-1">
+                <CalendarBlank className="h-4 w-4" />
+                {t.tag_starts.replace('{when}', formatRelative(g.startAt, lang, now) ?? '')}
+                <span className="sr-only">, </span>
+                <time dateTime={isoDate(g.startAt)} className="tabular-nums">({formatDateTime(g.startAt, lang)})</time>
+              </span>
+            )}
             {g.winnerMode === 'FIRST_CLICK' && <FirstClickTag />}
             {g.couponPercent != null && (
               <span className="inline-flex items-center gap-1">
@@ -103,7 +118,7 @@ export function giveawayColumns(lang: Lang): DataColumn<Giveaway>[] {
   ]
 }
 
-const FILTERS: StatusFilter[] = ['all', 'running', 'paused', 'ended']
+const FILTERS: StatusFilter[] = ['all', 'scheduled', 'running', 'paused', 'ended']
 
 /**
  * The giveaways of the server (plan 6.5): a table with a status filter,
@@ -115,10 +130,15 @@ export function GiveawaysArea() {
   const { t, lang } = useGiveawayCopy()
   const d = useGiveawayData()
   const [filter, setFilter] = useState<StatusFilter>('all')
-  const columns = useMemo(() => giveawayColumns(lang), [lang])
+  const columns = useMemo(() => giveawayColumns(lang, d.loadedAt), [lang, d.loadedAt])
   const rows = useMemo(() => d.giveaways.filter(g => matchesFilter(g, filter)), [d.giveaways, filter])
   const count = (f: StatusFilter) => d.giveaways.filter(g => matchesFilter(g, f)).length
-  const label: Record<StatusFilter, string> = { all: t.filter_all, running: t.filter_running, paused: t.filter_paused, ended: t.filter_ended }
+  const label: Record<StatusFilter, string> = {
+    all: t.filter_all, scheduled: t.filter_scheduled, running: t.filter_running, paused: t.filter_paused, ended: t.filter_ended,
+  }
+  // The tab for scheduled giveaways only where the bot can schedule; an older
+  // bot never has one, and an empty tab there would promise what it cannot do.
+  const filters = FILTERS.filter(f => f !== 'scheduled' || d.canSchedule)
 
   const empty = d.giveaways.length === 0 ? (
     <EmptyState
@@ -143,7 +163,7 @@ export function GiveawaysArea() {
       <fieldset className="min-w-0">
         <legend className="sr-only">{t.filter_label}</legend>
         <div className="flex flex-wrap gap-2">
-          {FILTERS.map(f => (
+          {filters.map(f => (
             <label
               key={f}
               className={cn(

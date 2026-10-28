@@ -1,5 +1,5 @@
-import type { Settings } from './giveawayModel'
-import { settingsBody } from './giveawayModel'
+import type { GuildHistory, GuildInfo, HistoryRange, Settings } from './giveawayModel'
+import { asGuild, asHistory, settingsBody } from './giveawayModel'
 
 /**
  * Every request the giveaway dashboard sends, in one place.
@@ -16,7 +16,9 @@ import { settingsBody } from './giveawayModel'
  * the store calls are allowed is the bot's decision against guild.ownerId.
  */
 
-export type DataKind = 'giveaways' | 'settings' | 'roles' | 'channels' | 'templates' | 'tebex' | 'tebexPackages'
+export type DataKind =
+  | 'giveaways' | 'giveaway' | 'settings' | 'roles' | 'channels' | 'templates' | 'tebex' | 'tebexPackages'
+  | 'guild' | 'history'
 
 /** What a write answers: the status and the parsed body, `{}` when there was none. */
 export interface ActionResult<T = Record<string, unknown>> {
@@ -27,16 +29,21 @@ export interface ActionResult<T = Record<string, unknown>> {
 
 const JSON_HEADERS = { 'Content-Type': 'application/json' }
 
-/** One read. Null when the session is gone (401); the caller sends the visitor to sign in. */
-export async function fetchData(kind: DataKind): Promise<{ status: number; data: unknown }> {
-  const res = await fetch(`/api/giveaway/data?kind=${kind}`, { cache: 'no-store' })
+/**
+ * One read, with the status, so the caller can tell a missing route (an older
+ * bot answers 404) from data. `params` go into the query string after the
+ * kind; the route passes on only the ones it knows (`id`, `days`).
+ */
+export async function fetchData(kind: DataKind, params?: Record<string, string>): Promise<{ status: number; data: unknown }> {
+  const query = params ? Object.entries(params).map(([k, v]) => `&${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('') : ''
+  const res = await fetch(`/api/giveaway/data?kind=${kind}${query}`, { cache: 'no-store' })
   const data = await res.json().catch(() => null)
   return { status: res.status, data }
 }
 
-async function post<T>(body: Record<string, unknown>): Promise<ActionResult<T>> {
+async function post<T>(body: Record<string, unknown>, signal?: AbortSignal): Promise<ActionResult<T>> {
   const res = await fetch('/api/giveaway/action', {
-    method: 'POST', headers: JSON_HEADERS, body: JSON.stringify(body),
+    method: 'POST', headers: JSON_HEADERS, body: JSON.stringify(body), ...(signal ? { signal } : {}),
   })
   // A 500 is Next's HTML page and a 429 from proxy.ts is plain text; neither
   // parses, and neither should surface as "Unexpected end of JSON input".
@@ -63,6 +70,46 @@ export function changeGiveaway(action: Lifecycle, id: string) {
 
 export function extendGiveaway(id: string, duration: string) {
   return post({ action: 'extend', id, duration })
+}
+
+/**
+ * Delete a giveaway that has ended, was cancelled or is still scheduled. The
+ * route deletes its public result page once the bot confirmed. Answers the
+ * coupon codes that were handed out and stay valid.
+ */
+export function deleteGiveaway(id: string) {
+  return post<{ couponsIssued: number; message: string; resultPage: 'deleted' | 'failed' }>({ action: 'delete', id })
+}
+
+/** What the message of this create body would look like. Writes nothing; `signal` cancels it on new input. */
+export function previewGiveaway(body: Record<string, unknown>, signal?: AbortSignal) {
+  return post<PreviewAnswer>({ action: 'preview', ...body }, signal)
+}
+
+/** The answer of `preview`: Discord's own embed and button JSON, with Discord markup in the texts. */
+export interface PreviewAnswer {
+  embed: PreviewEmbed
+  components: Array<{ components?: PreviewButton[] }>
+  lang: string
+  status: 'ACTIVE' | 'SCHEDULED'
+  startAt: string | null
+  endAt: string
+}
+
+export interface PreviewEmbed {
+  title?: string
+  description?: string
+  color?: number
+  fields?: Array<{ name: string; value: string; inline?: boolean }>
+  footer?: { text?: string }
+  timestamp?: string
+}
+
+export interface PreviewButton {
+  label?: string
+  style?: number
+  emoji?: { name?: string | null; id?: string | null }
+  disabled?: boolean
 }
 
 /** All winners again, or the one given. */
@@ -111,6 +158,36 @@ export function clearTebexSecret() {
 
 export function saveTebexStore(publicToken: string, storeUrl: string) {
   return post({ action: 'tebexStore', publicToken: publicToken.trim(), storeUrl: storeUrl.trim() })
+}
+
+// ── Reads of the scheduling release ──────────────────────────────────────────
+
+/**
+ * One giveaway as the bot has it now, with winner names looked up and the
+ * coupon codes handed out. Null when it is gone or the bot did not answer.
+ */
+export async function fetchGiveaway(id: string): Promise<{ status: number; giveaway: Record<string, unknown> | null }> {
+  const { status, data } = await fetchData('giveaway', { id })
+  const g = (data as { giveaway?: unknown } | null)?.giveaway
+  return { status, giveaway: status === 200 && g && typeof g === 'object' ? g as Record<string, unknown> : null }
+}
+
+/** Activity per day. Null from an older bot (404) and on any failure: the overview then has no chart. */
+export async function fetchHistory(days: HistoryRange): Promise<{ status: number; history: GuildHistory | null }> {
+  const { status, data } = await fetchData('history', { days: String(days) })
+  return { status, history: status === 200 ? asHistory(data) : null }
+}
+
+/**
+ * What only a bot of the scheduling release knows: the server's name and
+ * icon, and the activity of the last 30 days. Each on its own, so one that
+ * fails takes nothing else with it; null means the dashboard goes without.
+ */
+export async function loadExtras(
+  get: (kind: DataKind, params?: Record<string, string>) => Promise<Record<string, unknown> | null>,
+): Promise<{ guild: GuildInfo | null; history: GuildHistory | null }> {
+  const [g, h] = await Promise.all([get('guild'), get('history', { days: '30' })])
+  return { guild: asGuild(g?.guild), history: asHistory(h) }
 }
 
 // ── Loading the dashboard ────────────────────────────────────────────────────

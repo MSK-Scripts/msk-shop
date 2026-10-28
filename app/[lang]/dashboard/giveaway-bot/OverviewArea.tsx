@@ -11,8 +11,9 @@ import { Plus } from '@/components/icons'
 import { Button } from '@/components/ui/Button'
 import { GIVEAWAY_NEW_HREF, giveawayDetailHref, giveawayHref } from '@/lib/dashboardNav'
 import { formatDateTime, formatNumber, formatRelative, isoDate } from '@/lib/format'
-import { isOpen, type Giveaway, type TebexStatus } from './giveawayModel'
+import { isEditable, type Giveaway, type TebexStatus } from './giveawayModel'
 import { useGiveawayCopy, useGiveawayData, type GiveawayCopy } from './GiveawayProvider'
+import { HistoryCard } from './HistoryChart'
 
 /** A finished giveaway counts as recent for this long, for "ended without a winner". */
 const RECENT_MS = 7 * 24 * 60 * 60 * 1000
@@ -30,7 +31,7 @@ export function attentionItems(
   if (owner && tebex && !tebex.encryptionReady) {
     items.push({ id: 'encryption', tone: 'danger', text: t.store_no_key, href: giveawayHref('store'), action: t.to_store })
   }
-  if (owner && tebex && !tebex.configured && giveaways.some(g => isOpen(g) && g.couponPercent != null)) {
+  if (owner && tebex && !tebex.configured && giveaways.some(g => isEditable(g) && g.couponPercent != null)) {
     items.push({ id: 'coupon', tone: 'warning', text: t.att_coupon_no_store, href: giveawayHref('store'), action: t.to_store })
   }
   for (const g of giveaways) {
@@ -52,8 +53,9 @@ export function attentionItems(
  * entered, when the next one ends, and below that what needs a look and the
  * running giveaways with their time left and entries.
  *
- * Everything comes from the lists the dashboard loads anyway; nothing is
- * fetched for it. The bot keeps no history, so there is no chart over time.
+ * Everything comes from what the dashboard loads anyway. A bot of the
+ * scheduling release adds the scheduled giveaways and the activity per day;
+ * with an older one both are left out and the page is what it was.
  */
 export function OverviewArea() {
   const { t, lang } = useGiveawayCopy()
@@ -61,6 +63,10 @@ export function OverviewArea() {
   const now = d.loadedAt
 
   const running = d.giveaways.filter(g => g.status === 'ACTIVE')
+  const scheduled = d.giveaways
+    .filter(g => g.status === 'SCHEDULED' && g.startAt)
+    .sort((a, b) => Date.parse(a.startAt!) - Date.parse(b.startAt!))
+  const nextStart = scheduled[0]
   const paused = d.giveaways.filter(g => g.status === 'PAUSED')
   const ended = d.giveaways.filter(g => g.status === 'ENDED' || g.status === 'CANCELLED')
   const cancelled = ended.filter(g => g.status === 'CANCELLED').length
@@ -72,13 +78,28 @@ export function OverviewArea() {
 
   return (
     <div className="grid gap-[var(--app-gutter-y)]">
-      <StatGrid>
+      {/* Five tiles with scheduling: three and two on a laptop, one row on a wide screen. */}
+      <StatGrid className={d.canSchedule ? '@5xl:grid-cols-3 @7xl:grid-cols-5' : undefined}>
         <StatTile
           label={t.ov_running}
           value={formatNumber(running.length, lang)}
           hint={paused.length > 0 ? t.ov_running_paused.replace('{n}', formatNumber(paused.length, lang)) : undefined}
           href={giveawayHref('giveaways')}
         />
+        {d.canSchedule && (
+          <StatTile
+            label={t.ov_scheduled}
+            value={formatNumber(scheduled.length, lang)}
+            hint={nextStart ? (
+              <>
+                {t.ov_scheduled_next.replace('{when}', formatRelative(nextStart.startAt, lang, now) ?? '')}
+                {' · '}
+                <time dateTime={isoDate(nextStart.startAt)} className="tabular-nums">{formatDateTime(nextStart.startAt, lang)}</time>
+              </>
+            ) : t.ov_scheduled_none}
+            href={nextStart ? giveawayDetailHref(nextStart.id) : giveawayHref('giveaways')}
+          />
+        )}
         <StatTile label={t.ov_entries} value={formatNumber(entries, lang)} hint={t.ov_entries_hint} />
         <StatTile
           label={t.ov_next_end}
@@ -137,6 +158,8 @@ export function OverviewArea() {
           </ul>
         )}
       </SectionCard>
+
+      {d.history && <HistoryCard />}
     </div>
   )
 }

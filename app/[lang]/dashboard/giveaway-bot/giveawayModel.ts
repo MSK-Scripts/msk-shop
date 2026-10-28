@@ -21,16 +21,36 @@ export type PrizeMode = 'ALL' | 'INDIVIDUAL'
  * one says WHO wins, the other WHAT the winners get.
  */
 export type WinnerMode = 'RANDOM' | 'FIRST_CLICK'
-export type GiveawayStatus = 'ACTIVE' | 'PAUSED' | 'ENDED' | 'CANCELLED'
+/**
+ * SCHEDULED: created with a start time, not posted yet. Only a bot of the
+ * scheduling release (discord_giveawaybot#20) answers with it.
+ */
+export type GiveawayStatus = 'SCHEDULED' | 'ACTIVE' | 'PAUSED' | 'ENDED' | 'CANCELLED'
 
-export interface GiveawayWinner { userId: string; prizeIndex: number | null }
+/**
+ * A winner. Name and avatar are what the bot stored when the winner was
+ * drawn; winners from before that, and every winner from an older bot, have
+ * none, and the dashboard shows the id instead.
+ */
+export interface GiveawayWinner {
+  userId: string; prizeIndex: number | null
+  displayName?: string | null; avatarUrl?: string | null; rerolled?: boolean
+}
 
 export interface Giveaway {
   id: string; channelId: string; title: string; description: string;
   prizes: string[]; prizeMode: PrizeMode; winnerMode: WinnerMode;
   winnersCount: number; status: GiveawayStatus;
+  /**
+   * Planned start of a scheduled giveaway, the real one of a giveaway that
+   * was scheduled, null for one posted right away. Missing altogether from
+   * an older bot, which is how the dashboard tells it cannot schedule.
+   */
+  startAt?: string | null;
   endAt: string | null; createdAt: string | null; endedAt: string | null;
   entryCount: number; winnerIds?: string[]; winners?: GiveawayWinner[]; resultUrl?: string;
+  /** Coupon codes handed out and not revoked; only in the answer for one giveaway (`/giveaway`). */
+  couponsIssued?: number;
   couponPercent: number | null; couponPackages: number[]; couponValidDays: number | null;
   /** Package selection per prize slot, indexed the same as `prizes`. */
   couponPackagesPerPrize?: number[][];
@@ -86,20 +106,49 @@ export const BUTTON_STYLES = ['PRIMARY', 'SECONDARY', 'SUCCESS', 'DANGER'] as co
 // ── Status ───────────────────────────────────────────────────────────────────
 
 /** The filter of the list: ended takes the cancelled ones as well. */
-export type StatusFilter = 'all' | 'running' | 'paused' | 'ended'
+export type StatusFilter = 'all' | 'scheduled' | 'running' | 'paused' | 'ended'
 
 export function matchesFilter(g: Giveaway, filter: StatusFilter): boolean {
   switch (filter) {
-    case 'all':     return true
-    case 'running': return g.status === 'ACTIVE'
-    case 'paused':  return g.status === 'PAUSED'
-    case 'ended':   return g.status === 'ENDED' || g.status === 'CANCELLED'
+    case 'all':       return true
+    case 'scheduled': return g.status === 'SCHEDULED'
+    case 'running':   return g.status === 'ACTIVE'
+    case 'paused':    return g.status === 'PAUSED'
+    case 'ended':     return g.status === 'ENDED' || g.status === 'CANCELLED'
   }
 }
 
-/** Still open for entries or about to be again: these can be edited. */
+/** Posted and open for entries, or about to be again after a pause. */
 export function isOpen(g: Giveaway): boolean {
   return g.status === 'ACTIVE' || g.status === 'PAUSED'
+}
+
+/**
+ * What the edit form is offered for: an open giveaway, and a scheduled one,
+ * which has no message yet and can still change in everything but its channel.
+ */
+export function isEditable(g: Giveaway): boolean {
+  return isOpen(g) || g.status === 'SCHEDULED'
+}
+
+/**
+ * What the bot deletes (DELETABLE_STATUSES in its controlServer.js). A
+ * running or paused giveaway has to be ended or cancelled first.
+ */
+export const DELETABLE: readonly GiveawayStatus[] = ['ENDED', 'CANCELLED', 'SCHEDULED']
+
+export function canDelete(g: Giveaway): boolean {
+  return DELETABLE.includes(g.status)
+}
+
+/**
+ * Whether the bot can schedule, read from its answers and not from a version
+ * number: a bot of the scheduling release puts `startAt` on every giveaway,
+ * null or not; an older one leaves the key out. With no giveaway at all the
+ * list says nothing, and the preview answer decides (GiveawayForm).
+ */
+export function listKnowsSchedule(giveaways: Giveaway[]): boolean {
+  return giveaways.some(g => Object.prototype.hasOwnProperty.call(g, 'startAt'))
 }
 
 /**
@@ -113,9 +162,69 @@ export function winnerCount(g: Giveaway): number | null {
 
 /** The instant the list shows in its "End" column, or null where there is none. */
 export function endOf(g: Giveaway): string | null {
-  if (g.status === 'ACTIVE') return g.endAt
+  if (g.status === 'ACTIVE' || g.status === 'SCHEDULED') return g.endAt
   if (g.status === 'PAUSED') return null
   return g.endedAt ?? g.endAt
+}
+
+// ── Winners ──────────────────────────────────────────────────────────────────
+
+/**
+ * An image address the dashboard shows: Discord's CDN only, over https. The
+ * page's CSP allows that one host for images (proxy.ts); anything else the
+ * bot might hand over is dropped and the initials or the id stand in.
+ */
+export function discordImage(url: string | null | undefined): string | null {
+  if (!url) return null
+  try {
+    const u = new URL(url)
+    return u.protocol === 'https:' && u.hostname === 'cdn.discordapp.com' ? u.toString() : null
+  } catch {
+    return null
+  }
+}
+
+/** A winner as a person reads it: the stored name, else the id as before. */
+export function winnerLabel(w: Pick<GiveawayWinner, 'userId' | 'displayName'>): string {
+  const name = w.displayName?.trim()
+  return name ? name : `@${w.userId}`
+}
+
+// ── Guild and history (bot of the scheduling release) ───────────────────────
+
+export interface GuildInfo { id: string; name: string | null; iconUrl: string | null; memberCount: number | null }
+
+export interface HistoryDay { date: string; created: number; ended: number; entries: number }
+
+export interface GuildHistory { days: number; history: HistoryDay[] }
+
+/** The ranges the overview offers; the data route passes on nothing else. */
+export const HISTORY_RANGES = [30, 90] as const
+export type HistoryRange = typeof HISTORY_RANGES[number]
+
+/** A guild answer the dashboard can use, or null: an older bot has no `/guild` and answers 404. */
+export function asGuild(value: unknown): GuildInfo | null {
+  const g = value as Partial<GuildInfo> | null | undefined
+  if (!g || typeof g.id !== 'string') return null
+  return {
+    id: g.id,
+    name: typeof g.name === 'string' && g.name.trim() ? g.name : null,
+    iconUrl: discordImage(g.iconUrl),
+    memberCount: typeof g.memberCount === 'number' ? g.memberCount : null,
+  }
+}
+
+const DAY = /^\d{4}-\d{2}-\d{2}$/
+
+/** A history answer the dashboard can use, or null (older bot, or anything malformed). */
+export function asHistory(value: unknown): GuildHistory | null {
+  const h = value as { days?: unknown; history?: unknown } | null | undefined
+  if (!h || typeof h.days !== 'number' || !Array.isArray(h.history)) return null
+  const count = (n: unknown) => (typeof n === 'number' && Number.isFinite(n) && n >= 0 ? Math.round(n) : 0)
+  const days = h.history
+    .filter((r): r is HistoryDay => !!r && typeof (r as HistoryDay).date === 'string' && DAY.test((r as HistoryDay).date))
+    .map(r => ({ date: r.date, created: count(r.created), ended: count(r.ended), entries: count(r.entries) }))
+  return { days: h.days, history: days }
 }
 
 // ── Prizes ───────────────────────────────────────────────────────────────────
@@ -251,10 +360,67 @@ export function durationValid(input: DurationInput): boolean {
   return seconds >= 60 && seconds <= MAX_DURATION_SECONDS
 }
 
+// ── Start time ───────────────────────────────────────────────────────────────
+
+/**
+ * The value of a native `datetime-local` field. It carries no zone: the
+ * person means the time on their own clock, so it is read in the browser's
+ * zone and sent with that zone's offset, which the bot requires
+ * (src/utils/schedule.js, ISO 8601 with offset).
+ */
+const LOCAL_INPUT = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::\d{2}(?:\.\d{1,3})?)?$/
+const pad = (n: number) => String(n).padStart(2, '0')
+
+/** `2026-11-01T19:00` to `2026-11-01T19:00:00+01:00` in the browser's zone; null for an impossible date. */
+export function localInputToIso(value: string): string | null {
+  const m = LOCAL_INPUT.exec(value.trim())
+  if (!m) return null
+  const [y, mo, d, h, mi] = m.slice(1, 6).map(Number)
+  const date = new Date(y, mo - 1, d, h, mi, 0, 0)
+  // 31 November rolls over into December; the bot refuses such a date as
+  // well, so it is refused here before it reaches the bot.
+  if (date.getFullYear() !== y || date.getMonth() !== mo - 1 || date.getDate() !== d) return null
+  // A time inside the hour skipped when clocks go forward is moved on by the
+  // browser; the fields below are that moved time, and the offset is its own.
+  const offset = -date.getTimezoneOffset()
+  const sign = offset >= 0 ? '+' : '-'
+  const abs = Math.abs(offset)
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:00`
+    + `${sign}${pad(Math.floor(abs / 60))}:${pad(abs % 60)}`
+}
+
+/** An instant as the value of a `datetime-local` field, in the browser's zone. Empty when there is none. */
+export function isoToLocalInput(value: string | null | undefined): string {
+  const date = value ? new Date(value) : null
+  if (!date || Number.isNaN(date.getTime())) return ''
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
+}
+
+/** What is wrong with a start time by the bot's rules, or null. Empty is fine: it means "post now". */
+export function startProblem(value: string, now: number): 'invalid' | 'past' | 'far' | null {
+  if (!value.trim()) return null
+  const iso = localInputToIso(value)
+  if (!iso) return 'invalid'
+  const at = Date.parse(iso)
+  if (at <= now) return 'past'
+  if (at - now > MAX_DURATION_SECONDS * 1000) return 'far'
+  return null
+}
+
+/** The duration a scheduled giveaway was stored with: its end minus its start. */
+function scheduledDuration(g: Giveaway): DurationInput {
+  const start = Date.parse(g.startAt ?? '')
+  const end = Date.parse(g.endAt ?? '')
+  if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) return { amount: '1', unit: 'd' }
+  return durationInput(`${Math.round((end - start) / 1000)}s`)
+}
+
 // ── Forms ────────────────────────────────────────────────────────────────────
 
 /** Everything the create and edit form holds. */
 export interface GiveawayDraft {
+  /** `datetime-local` value of the start; empty posts right away. */
+  startAt: string
   channelId: string
   title: string
   description: string
@@ -285,7 +451,7 @@ export interface GiveawayDraft {
  */
 export function newDraft(settings: Settings | null): GiveawayDraft {
   return {
-    channelId: '', title: '', description: '', prizes: '',
+    startAt: '', channelId: '', title: '', description: '', prizes: '',
     prizeMode: 'ALL', winnerMode: 'RANDOM', winnersCount: '1',
     duration: { amount: '1', unit: 'd' },
     couponPercent: '', couponValidDays: '', couponPackages: [], couponPackagesPerPrize: [],
@@ -321,12 +487,15 @@ export function applyTemplate(draft: GiveawayDraft, tpl: Template, settings: Set
 }
 
 /**
- * The form of a running giveaway. A condition the giveaway inherits (null)
- * shows the server setting, which is what applies right now; empty would
- * simply be wrong.
+ * The form of a running or scheduled giveaway. A condition the giveaway
+ * inherits (null) shows the server setting, which is what applies right now;
+ * empty would simply be wrong. A scheduled one also brings its start and its
+ * duration, the two things only it can still change.
  */
 export function draftOf(g: Giveaway, settings: Settings | null): GiveawayDraft {
+  const scheduled = g.status === 'SCHEDULED'
   return {
+    startAt: scheduled ? isoToLocalInput(g.startAt) : '',
     channelId: g.channelId,
     title: g.title,
     description: g.description,
@@ -334,7 +503,7 @@ export function draftOf(g: Giveaway, settings: Settings | null): GiveawayDraft {
     prizeMode: g.prizeMode ?? 'ALL',
     winnerMode: g.winnerMode ?? 'RANDOM',
     winnersCount: String(g.winnersCount),
-    duration: { amount: '1', unit: 'd' },
+    duration: scheduled ? scheduledDuration(g) : { amount: '1', unit: 'd' },
     couponPercent: g.couponPercent == null ? '' : String(g.couponPercent),
     couponValidDays: g.couponValidDays == null ? '' : String(g.couponValidDays),
     couponPackages: g.couponPackages ?? [],
@@ -357,27 +526,67 @@ function couponAndConditions(d: GiveawayDraft) {
   }
 }
 
-/** The body of `create`, without the action name. Title and text trimmed, as before. */
+/**
+ * The body of `create`, without the action name. Title and text trimmed, as
+ * before. A start goes along only when one is set: without it the bot posts
+ * right away, as it always did, and an older bot gets the body it knows.
+ */
 export function createBody(d: GiveawayDraft) {
+  const startAt = d.startAt.trim() ? localInputToIso(d.startAt) : null
   return {
     channelId: d.channelId, title: d.title.trim(), description: d.description.trim(), duration: durationText(d.duration),
     winnerMode: d.winnerMode,
     ...prizePayload(d.prizes, d.prizeMode, Number(d.winnersCount)),
     ...couponAndConditions(d),
+    ...(startAt ? { startAt } : {}),
   }
 }
 
-/** The body of `edit`, without action and id. Title and text go as typed, as before. */
-export function editBody(d: GiveawayDraft) {
-  return {
+/**
+ * The body of `edit`, without action and id. Title and text go as typed, as
+ * before.
+ *
+ * `scheduledFrom` is the form a scheduled giveaway started with. Start and
+ * duration go along only when they differ from it: the bot refuses both once
+ * the giveaway has started, and a title fixed a minute before the start
+ * should not fail over a start nobody touched.
+ */
+export function editBody(d: GiveawayDraft, scheduledFrom?: GiveawayDraft) {
+  const body = {
     title: d.title, description: d.description, winnerMode: d.winnerMode,
     ...prizePayload(d.prizes, d.prizeMode, Number(d.winnersCount)),
     ...couponAndConditions(d),
   }
+  if (!scheduledFrom) return body
+  const schedule: { startAt?: string; duration?: string } = {}
+  const startAt = d.startAt !== scheduledFrom.startAt ? localInputToIso(d.startAt) : null
+  if (startAt) schedule.startAt = startAt
+  if (durationText(d.duration) !== durationText(scheduledFrom.duration)) schedule.duration = durationText(d.duration)
+  return { ...body, ...schedule }
+}
+
+/**
+ * The body of `preview`: what a create with this form would post.
+ *
+ * An empty channel is left out (the preview needs none, an empty one it
+ * refuses), and so is a start the bot would refuse, so the message still
+ * shows while that field is being fixed. For a giveaway that is already
+ * posted the end stays where it is: the time left is sent as its duration.
+ */
+export function previewBody(d: GiveawayDraft, g: Pick<Giveaway, 'status' | 'endAt'> | undefined, now: number): Record<string, unknown> {
+  const { channelId, startAt, ...rest } = createBody(d) as ReturnType<typeof createBody> & { startAt?: string }
+  const body: Record<string, unknown> = { ...rest }
+  if (channelId) body.channelId = channelId
+  if (startAt && startProblem(d.startAt, now) === null && (!g || g.status === 'SCHEDULED')) body.startAt = startAt
+  if (g && g.status !== 'SCHEDULED') {
+    const left = Math.round(((Date.parse(g.endAt ?? '') || now) - now) / 1000)
+    body.duration = `${Math.max(60, left)}s`
+  }
+  return body
 }
 
 export type DraftField =
-  | 'channel' | 'title' | 'description' | 'prizes' | 'winners' | 'duration' | 'drawMode'
+  | 'channel' | 'title' | 'description' | 'prizes' | 'winners' | 'duration' | 'drawMode' | 'startAt'
   | 'couponPercent' | 'couponValidDays' | 'couponPackages' | 'manualCode' | 'name' | 'form'
 
 const WHOLE = /^\d+$/
@@ -391,15 +600,26 @@ function inRange(value: string, min: number, max: number): boolean {
  * What is wrong with a giveaway form, field by field. Empty when it may go out.
  * The same rules the bot applies, so a mistake shows at its field before the
  * request instead of as a code afterwards.
+ *
+ * `scheduledFrom` marks the edit of a scheduled giveaway (see editBody): its
+ * duration counts again, its start is needed, and checked only when changed.
  */
-export function validateDraft(d: GiveawayDraft, mode: 'create' | 'edit' | 'template'): Partial<Record<DraftField, true>> {
+export function validateDraft(
+  d: GiveawayDraft, mode: 'create' | 'edit' | 'template',
+  { now = Date.now(), scheduledFrom }: { now?: number; scheduledFrom?: GiveawayDraft } = {},
+): Partial<Record<DraftField, true>> {
   const errors: Partial<Record<DraftField, true>> = {}
   if (mode === 'create' && !d.channelId) errors.channel = true
   if (!d.title.trim()) errors.title = true
   if (!d.description.trim()) errors.description = true
   const individual = d.prizeMode === 'INDIVIDUAL' && splitPrizes(d.prizes).length > 0
   if (!individual && !inRange(d.winnersCount, 1, 100)) errors.winners = true
-  if (mode !== 'edit' && !durationValid(d.duration)) errors.duration = true
+  if ((mode !== 'edit' || scheduledFrom) && !durationValid(d.duration)) errors.duration = true
+  if (mode === 'create' && startProblem(d.startAt, now)) errors.startAt = true
+  if (mode === 'edit' && scheduledFrom) {
+    if (!d.startAt.trim()) errors.startAt = true
+    else if (d.startAt !== scheduledFrom.startAt && startProblem(d.startAt, now)) errors.startAt = true
+  }
   if (mode !== 'template') {
     if (d.couponPercent.trim() !== '' && !inRange(d.couponPercent, 1, 100)) errors.couponPercent = true
     if (d.couponValidDays.trim() !== '' && !inRange(d.couponValidDays, 1, 3650)) errors.couponValidDays = true
@@ -413,6 +633,9 @@ export function fieldOfError(code: string | undefined): DraftField {
     case 'invalid_channel':     return 'channel'
     case 'missing_fields':      return 'title'
     case 'invalid_duration':    return 'duration'
+    case 'invalid_start':
+    case 'start_in_past':
+    case 'start_too_far':       return 'startAt'
     case 'invalid_winners':
     case 'winners_locked':      return 'winners'
     case 'too_many_prizes':     return 'prizes'

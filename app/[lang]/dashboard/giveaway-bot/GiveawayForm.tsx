@@ -7,14 +7,18 @@ import { FormField, FormSection } from '@/components/dashboard/FormField'
 import { Notice } from '@/components/dashboard/Notice'
 import { useLang } from '@/components/i18n/LangProvider'
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
-import { ArrowCounterClockwise, CircleNotch, FloppyDisk, Play } from '@/components/icons'
+import { ArrowCounterClockwise, CalendarBlank, CircleNotch, FloppyDisk, Play } from '@/components/icons'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { giveawayDetailHref, giveawayHref } from '@/lib/dashboardNav'
+import { formatDateTime } from '@/lib/format'
+import { cn } from '@/lib/utils'
+import { PreviewPanel, useGiveawayPreview } from './EmbedPreview'
 import { createGiveaway, editGiveaway } from './giveawayApi'
 import {
-  applyTemplate, createBody, draftOf, editBody, fieldOfError, newDraft, splitPrizes, validateDraft,
+  applyTemplate, createBody, draftOf, editBody, fieldOfError, isoToLocalInput, newDraft, splitPrizes,
+  startProblem, validateDraft, MAX_DURATION_SECONDS,
   type DraftField, type Giveaway, type GiveawayDraft, type Role,
 } from './giveawayModel'
 import { useGiveawayCopy, useGiveawayData, type GiveawayCopy } from './GiveawayProvider'
@@ -33,6 +37,7 @@ export function draftErrorText(t: GiveawayCopy, field: DraftField): string {
     case 'description':     return t.e_description
     case 'winners':         return t.e_winners
     case 'duration':        return t.e_duration
+    case 'startAt':         return t.e_start_invalid
     case 'couponPercent':   return t.e_percent
     case 'couponValidDays': return t.e_valid_days
     case 'name':            return t.tpl_err_name
@@ -95,12 +100,36 @@ export function ConditionFields({ roles, draft, update }: {
   )
 }
 
+/** The words for a start the form refuses, by what is wrong with it. */
+function startErrorText(t: GiveawayCopy, value: string, now: number, required: boolean): string {
+  if (!value.trim()) return required ? t.e_start_needed : t.e_start_invalid
+  switch (startProblem(value, now)) {
+    case 'past': return t.e_start_past
+    case 'far':  return t.e_start_far
+    default:     return t.e_start_invalid
+  }
+}
+
+/** The browser's time zone, named in the hint of the start field. */
+function browserZone(): string {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
+  } catch {
+    return 'UTC'
+  }
+}
+
 /**
- * Create a giveaway, or change a running one (plan 6.5): one form in
- * sections, errors at their field, and nothing sent while one is open.
+ * Create a giveaway, or change a running or scheduled one (plan 6.5): one
+ * form in sections, errors at their field, and nothing sent while one is open.
  *
  * The requests are the ones the old form sent (giveawayApi.ts); only what
  * may go out is checked before, by the bot's own rules (giveawayModel.ts).
+ *
+ * With a bot that can schedule (`canSchedule`) a new giveaway gets an
+ * optional start, read in the browser's time zone; a scheduled one keeps
+ * start and duration editable until it is posted. Beside the form, where the
+ * bot answers it, a preview of the post (EmbedPreview).
  */
 export function GiveawayForm({ giveaway, initialTemplate }: {
   /** The giveaway to change; a new one without. */
@@ -108,11 +137,12 @@ export function GiveawayForm({ giveaway, initialTemplate }: {
   /** Id of a template to start from, from the template list. */
   initialTemplate?: string
 }) {
-  const { t } = useGiveawayCopy()
+  const { t, lang } = useGiveawayCopy()
   const { localize, path } = useLang()
   const router = useRouter()
   const d = useGiveawayData()
   const editing = Boolean(giveaway)
+  const scheduledEdit = giveaway?.status === 'SCHEDULED'
   const formRef = useRef<HTMLFormElement>(null)
   const { busy, run } = useBusy()
 
@@ -123,12 +153,19 @@ export function GiveawayForm({ giveaway, initialTemplate }: {
     const tpl = d.templates.find(x => String(x.id) === initialTemplate)
     return tpl ? applyTemplate(newDraft(d.settings), tpl, d.settings) : newDraft(d.settings)
   })
+  // The form a scheduled giveaway started with: start and duration go along
+  // only when they differ from it (editBody).
+  const [scheduledFrom] = useState<GiveawayDraft | undefined>(() =>
+    giveaway?.status === 'SCHEDULED' ? draftOf(giveaway, d.settings) : undefined)
   const [errors, setErrors] = useState<FieldErrors>({})
   const [formError, setFormError] = useState<string | null>(null)
   const update = (patch: Partial<GiveawayDraft>) => setDraft(x => ({ ...x, ...patch }))
   const prizeList = splitPrizes(draft.prizes)
   const perWinner = draft.prizeMode === 'INDIVIDUAL' && prizeList.length > 0
   const couponReady = Boolean(d.tebex?.configured)
+  const showStart = scheduledEdit || (!editing && d.canSchedule)
+  const showDuration = !editing || scheduledEdit
+  const preview = useGiveawayPreview(draft, giveaway)
 
   function pickTemplate(id: string) {
     setFromTemplate(id)
@@ -142,16 +179,21 @@ export function GiveawayForm({ giveaway, initialTemplate }: {
 
   async function submit(e: FormEvent) {
     e.preventDefault()
-    const found = validateDraft(draft, editing ? 'edit' : 'create')
+    const now = Date.now()
+    // A start typed while the bot could not schedule stays out of the body.
+    const sent = showStart ? draft : { ...draft, startAt: '' }
+    const found = validateDraft(sent, editing ? 'edit' : 'create', { now, scheduledFrom })
     if (Object.keys(found).length > 0) {
-      setErrors(Object.fromEntries(Object.keys(found).map(f => [f, draftErrorText(t, f as DraftField)])))
+      setErrors(Object.fromEntries(Object.keys(found).map(f => [
+        f, f === 'startAt' ? startErrorText(t, sent.startAt, now, scheduledEdit) : draftErrorText(t, f as DraftField),
+      ])))
       setFormError(t.form_check)
       focusFirstInvalid(formRef.current)
       return
     }
     setErrors({})
     setFormError(null)
-    const res = await run('save', () => giveaway ? editGiveaway(giveaway.id, editBody(draft)) : createGiveaway(createBody(draft)))
+    const res = await run('save', () => giveaway ? editGiveaway(giveaway.id, editBody(sent, scheduledFrom)) : createGiveaway(createBody(sent)))
     if (!res.ok) {
       const field = fieldOfError(res.data.error)
       const text = errorText(t, res)
@@ -166,9 +208,12 @@ export function GiveawayForm({ giveaway, initialTemplate }: {
       d.setFlash({ tone: 'success', text: t.done_edit, path })
       return
     }
-    const id = (res.data as { id?: string }).id
-    const target = id ? giveawayDetailHref(id) : giveawayHref('giveaways')
-    d.setFlash({ tone: 'success', text: t.done_create, path: target })
+    const answer = res.data as { id?: string; status?: string; startAt?: string | null }
+    const target = answer.id ? giveawayDetailHref(answer.id) : giveawayHref('giveaways')
+    const startText = answer.status === 'SCHEDULED' && answer.startAt
+      ? t.done_schedule.replace('{when}', formatDateTime(answer.startAt, lang) ?? '')
+      : t.done_create
+    d.setFlash({ tone: 'success', text: startText, path: target })
     router.push(localize(target))
   }
 
@@ -176,9 +221,20 @@ export function GiveawayForm({ giveaway, initialTemplate }: {
   const packageItems = d.packages.map(p => ({ id: p.id, label: p.name }))
   const packageCopy = { search: t.pick_search_packages, chosen: t.pick_chosen, none: t.pick_none, noMatch: t.pick_no_match, empty: t.pick_no_packages, remove: t.pick_remove }
 
+  const scheduling = showStart && draft.startAt.trim() !== ''
+  const zone = browserZone()
+
   return (
-    <form ref={formRef} noValidate onSubmit={submit} className="grid max-w-[72rem]">
-      {editing && <p className="mb-6 max-w-[65ch] text-[var(--color-muted-foreground)]">{t.edit_intro}</p>}
+    <form
+      ref={formRef}
+      noValidate
+      onSubmit={submit}
+      // On a wide screen the preview stands beside the form and stays in view
+      // while the fields scroll; below that it follows the last section.
+      className="grid max-w-[72rem] gap-x-10 @[96rem]:max-w-none @[96rem]:grid-cols-[minmax(0,72rem)_minmax(22rem,30rem)]"
+    >
+      <div className="min-w-0">
+      {editing && <p className="mb-6 max-w-[65ch] text-[var(--color-muted-foreground)]">{scheduledEdit ? t.edit_intro_scheduled : t.edit_intro}</p>}
 
       <FormSection title={t.sec_message} description={editing ? t.sec_message_desc_edit : t.sec_message_desc}>
         {!editing && d.templates.length > 0 && (
@@ -208,8 +264,31 @@ export function GiveawayForm({ giveaway, initialTemplate }: {
 
       <PrizeSection draft={draft} update={update} errors={errors} editing={editing} />
 
-      {!editing && (
-        <FormSection title={t.sec_duration} description={draft.winnerMode === 'FIRST_CLICK' ? t.sec_duration_desc_fast : t.sec_duration_desc}>
+      {showDuration && (
+        <FormSection
+          title={showStart ? t.sec_schedule : t.sec_duration}
+          description={draft.winnerMode === 'FIRST_CLICK' ? t.sec_duration_desc_fast : showStart ? t.sec_schedule_desc : t.sec_duration_desc}
+        >
+          {showStart && (
+            <FormField
+              label={t.f_start}
+              hint={(scheduledEdit ? t.f_start_hint_edit : t.f_start_hint).replace('{zone}', zone)}
+              error={errors.startAt}
+              required={scheduledEdit}
+            >
+              {field => (
+                <Input
+                  {...field}
+                  type="datetime-local"
+                  value={draft.startAt}
+                  min={isoToLocalInput(new Date(d.loadedAt).toISOString())}
+                  max={isoToLocalInput(new Date(d.loadedAt + MAX_DURATION_SECONDS * 1000).toISOString())}
+                  onChange={e => update({ startAt: e.target.value })}
+                  className={cn(WIDTH.short, 'w-auto')}
+                />
+              )}
+            </FormField>
+          )}
           <DurationField label={t.f_duration} value={draft.duration} onChange={v => update({ duration: v })} error={errors.duration} />
         </FormSection>
       )}
@@ -308,13 +387,20 @@ export function GiveawayForm({ giveaway, initialTemplate }: {
           </Button>
         </div>
       </FormSection>
+      </div>
+
+      <aside className="min-w-0 border-t border-[var(--color-border)] py-6 empty:hidden @[96rem]:sticky @[96rem]:top-4 @[96rem]:row-span-2 @[96rem]:self-start @[96rem]:border-t-0 @[96rem]:py-0">
+        <PreviewPanel state={preview} editingPosted={editing && !scheduledEdit} />
+      </aside>
 
       <div className="grid gap-4 border-t border-[var(--color-border)] pt-6">
         {formError && <Notice tone="danger" role="alert">{formError}</Notice>}
         <div className="flex flex-wrap gap-3">
           <Button type="submit" disabled={busy !== null} aria-busy={busy !== null || undefined}>
-            {busy ? <CircleNotch className="h-4 w-4 animate-spin" /> : editing ? <FloppyDisk className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-            {editing ? t.btn_save_changes : t.btn_start}
+            {busy
+              ? <CircleNotch className="h-4 w-4 animate-spin" />
+              : editing ? <FloppyDisk className="h-4 w-4" /> : scheduling ? <CalendarBlank className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+            {editing ? t.btn_save_changes : scheduling ? t.btn_schedule : t.btn_start}
           </Button>
           {!editing && (
             <Button asChild variant="outline">

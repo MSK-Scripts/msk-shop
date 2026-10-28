@@ -1,34 +1,49 @@
 'use client'
 
 import { useState, type ReactNode } from 'react'
+import { useRouter } from 'next/navigation'
 
 import { ConfirmDialog } from '@/components/dashboard/ConfirmDialog'
 import { FormField } from '@/components/dashboard/FormField'
+import { Notice } from '@/components/dashboard/Notice'
 import { RowMenu, type RowMenuItem } from '@/components/dashboard/RowMenu'
 import { useLang } from '@/components/i18n/LangProvider'
 import {
-  ArrowSquareOut, CircleNotch, Clock, DiceFive, Layout, Pause, PencilSimple, Play, Prohibit, Stop,
+  ArrowSquareOut, CircleNotch, Clock, DiceFive, Layout, Pause, PencilSimple, Play, Prohibit, Stop, Trash,
 } from '@/components/icons'
 import { Button } from '@/components/ui/Button'
 import { Dialog } from '@/components/ui/Dialog'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { giveawayDetailHref, giveawayHref } from '@/lib/dashboardNav'
+import { formatNumber } from '@/lib/format'
 import {
-  changeGiveaway, extendGiveaway, rerollGiveaway, saveGiveawayAsTemplate, type ActionResult, type Lifecycle,
+  changeGiveaway, deleteGiveaway, extendGiveaway, rerollGiveaway, saveGiveawayAsTemplate, type ActionResult, type Lifecycle,
 } from './giveawayApi'
-import { durationText, durationValid, type DurationInput, type Giveaway } from './giveawayModel'
+import { canDelete, durationText, durationValid, winnerLabel as nameOf, type DurationInput, type Giveaway } from './giveawayModel'
 import { useGiveawayCopy, useGiveawayData } from './GiveawayProvider'
 import { DurationField } from './formParts'
 import { errorText, useBusy } from './useGiveawayAction'
 
-type DialogKind = 'end' | 'cancel' | 'rerollAll' | 'rerollOne' | 'extend' | 'template'
+type DialogKind = 'end' | 'cancel' | 'rerollAll' | 'rerollOne' | 'extend' | 'template' | 'delete'
+
+/**
+ * What a deletion needs to know first, from the bot's answer for this one
+ * giveaway (`/giveaway`): how many coupon codes were handed out. Only a bot
+ * of the scheduling release sends it, and only then is deleting offered.
+ */
+export interface DeletionInfo { couponsIssued: number }
 
 /**
  * What can be done with one giveaway, by its state (plan 6.5): at most one
  * action inline, the rest in the overflow menu. The bot accepts end, cancel,
  * pause and extend only while a giveaway runs, resume only while it is
- * paused and reroll only once it has ended; nothing else is offered.
+ * paused and reroll only once it has ended; nothing else is offered. A
+ * scheduled one has no message yet: it can be changed and cancelled, and
+ * none of the actions of a running giveaway apply.
+ *
+ * Deleting is offered for an ended, cancelled or scheduled giveaway, and only
+ * with `deletion`: the number of coupon codes the dialog has to warn about.
  *
  * Ending, cancelling and drawing again ask first, with buttons that name
  * the consequence. Pausing and resuming do not: both can be undone with one
@@ -37,9 +52,14 @@ type DialogKind = 'end' | 'cancel' | 'rerollAll' | 'rerollOne' | 'extend' | 'tem
  * `row` sits in a table row (36 px buttons are allowed there), `header` in
  * the head of the giveaway's own page.
  */
-export function GiveawayActions({ giveaway: g, variant }: { giveaway: Giveaway; variant: 'row' | 'header' }) {
-  const { t } = useGiveawayCopy()
-  const { path } = useLang()
+export function GiveawayActions({ giveaway: g, variant, deletion }: {
+  giveaway: Giveaway
+  variant: 'row' | 'header'
+  deletion?: DeletionInfo
+}) {
+  const { t, lang } = useGiveawayCopy()
+  const { path, localize } = useLang()
+  const router = useRouter()
   const d = useGiveawayData()
   const { busy, run } = useBusy()
   const [open, setOpen] = useState<DialogKind | null>(null)
@@ -84,6 +104,26 @@ export function GiveawayActions({ giveaway: g, variant }: { giveaway: Giveaway; 
     })
   }
 
+  /**
+   * Deletes after the confirmation. The route removes the public result page
+   * once the bot confirmed; the list is where the visitor lands, since the
+   * page of this giveaway is gone.
+   */
+  async function remove() {
+    const res = await run('delete', () => deleteGiveaway(g.id))
+    if (!res.ok) {
+      setDialogError(errorText(t, res))
+      await d.reloadGiveaways()
+      return
+    }
+    close()
+    const list = giveawayHref('giveaways')
+    const pageLeft = res.data.resultPage === 'failed'
+    d.setFlash({ tone: pageLeft ? 'warning' : 'success', text: (pageLeft ? t.done_delete_page : t.done_delete).replace('{title}', g.title), path: list })
+    router.push(localize(list))
+    await d.reloadGiveaways()
+  }
+
   function extend() {
     if (!durationValid(extendBy)) { setExtendInvalid(true); return }
     setExtendInvalid(false)
@@ -116,6 +156,9 @@ export function GiveawayActions({ giveaway: g, variant }: { giveaway: Giveaway; 
       </Button>
     )
     if (variant === 'row') menu.push({ id: 'edit', label: t.act_edit, icon: PencilSimple, href: giveawayDetailHref(g.id) })
+  } else if (g.status === 'SCHEDULED') {
+    if (variant === 'row') menu.push({ id: 'edit', label: t.act_edit, icon: PencilSimple, href: giveawayDetailHref(g.id) })
+    menu.push({ id: 'cancel', label: t.act_cancel, icon: Prohibit, onSelect: () => show('cancel'), danger: true })
   } else if (g.status === 'ENDED') {
     menu.push({ id: 'rerollAll', label: t.act_reroll_all, icon: DiceFive, onSelect: () => show('rerollAll'), danger: true })
     if ((g.winnerIds?.length ?? 0) > 0) {
@@ -139,11 +182,18 @@ export function GiveawayActions({ giveaway: g, variant }: { giveaway: Giveaway; 
   }
   // Any state: a running giveaway may be saved too, to repeat it later.
   menu.push({ id: 'template', label: t.act_template, icon: Layout, onSelect: () => show('template') })
+  const deletable = Boolean(deletion) && canDelete(g)
+  if (deletable) menu.push({ id: 'delete', label: t.act_delete, icon: Trash, onSelect: () => show('delete'), danger: true })
 
+  const coupons = deletion?.couponsIssued ?? 0
+
+  // The stored name where there is one, the id beside it, so two winners of
+  // the same name stay apart.
   const winnerLabel = (id: string) => {
     const w = g.winners?.find(x => x.userId === id)
     const prize = w && w.prizeIndex != null ? g.prizes[w.prizeIndex] : undefined
-    return prize ? `@${id} (${prize})` : `@${id}`
+    const who = w?.displayName?.trim() ? `${nameOf(w)} (@${id})` : `@${id}`
+    return prize ? `${who} (${prize})` : who
   }
 
   return (
@@ -200,6 +250,39 @@ export function GiveawayActions({ giveaway: g, variant }: { giveaway: Giveaway; 
             </Button>
           </Dialog>
         </>
+      )}
+
+      {g.status === 'SCHEDULED' && (
+        <ConfirmDialog
+          open={open === 'cancel'}
+          onClose={close}
+          onConfirm={() => void lifecycle('cancel', t.done_cancel)}
+          title={title(t.cf_cancel_title)}
+          description={t.cf_cancel_desc_scheduled}
+          confirmLabel={t.act_cancel}
+          cancelLabel={t.cf_cancel_keep_scheduled}
+          busy={busy === 'cancel'}
+          error={dialogError}
+        />
+      )}
+
+      {deletable && (
+        <ConfirmDialog
+          open={open === 'delete'}
+          onClose={close}
+          onConfirm={() => void remove()}
+          title={title(t.cf_delete_title)}
+          description={g.status === 'SCHEDULED' ? t.cf_delete_desc_scheduled : t.cf_delete_desc}
+          notice={coupons > 0 && (
+            <Notice tone="warning">
+              {coupons === 1 ? t.cf_delete_coupons_one : t.cf_delete_coupons_n.replace('{n}', formatNumber(coupons, lang))}
+            </Notice>
+          )}
+          confirmLabel={t.cf_delete_confirm}
+          cancelLabel={t.cf_delete_keep}
+          busy={busy === 'delete'}
+          error={dialogError}
+        />
       )}
 
       {g.status === 'ENDED' && (

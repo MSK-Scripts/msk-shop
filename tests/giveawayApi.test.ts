@@ -1,13 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
-  changeGiveaway, clearTebexSecret, createGiveaway, deleteTemplate, editGiveaway, extendGiveaway, fetchData,
-  loadDashboard, rerollGiveaway, revealTebexSecret, saveGiveawayAsTemplate, saveSettings, saveTebexSecret,
-  saveTebexStore, saveTemplate, type DataKind,
+  changeGiveaway, clearTebexSecret, createGiveaway, deleteGiveaway, deleteTemplate, editGiveaway, extendGiveaway,
+  fetchData, fetchGiveaway, fetchHistory, loadDashboard, loadExtras, previewGiveaway, rerollGiveaway,
+  revealTebexSecret, saveGiveawayAsTemplate, saveSettings, saveTebexSecret, saveTebexStore, saveTemplate,
+  type DataKind,
 } from '@/app/[lang]/dashboard/giveaway-bot/giveawayApi'
 import {
-  applyTemplate, createBody, draftOf, durationInput, durationText, editBody, newDraft, templateBody, templateDraft,
-  validateDraft, type Giveaway, type GiveawayDraft, type Settings, type Template,
+  applyTemplate, createBody, draftOf, durationInput, durationText, editBody, fieldOfError, isoToLocalInput,
+  listKnowsSchedule, localInputToIso, newDraft, previewBody, templateBody, templateDraft, validateDraft,
+  type Giveaway, type GiveawayDraft, type Settings, type Template,
 } from '@/app/[lang]/dashboard/giveaway-bot/giveawayModel'
 
 /**
@@ -285,5 +287,136 @@ describe('form rules', () => {
     const d = draftOf(g, SETTINGS)
     expect(d.blacklist).toEqual(['111'])
     expect(d.whitelist).toEqual([])
+  })
+})
+
+// ── The scheduling release of the bot (discord_giveawaybot#20) ──────────────
+
+describe('requests of the scheduling release', () => {
+  it('asks for one giveaway, the history and the guild through the data route', async () => {
+    await fetchGiveaway('AB12CD')
+    expect(sent().url).toBe('/api/giveaway/data?kind=giveaway&id=AB12CD')
+    calls = []
+    await fetchHistory(90)
+    expect(sent().url).toBe('/api/giveaway/data?kind=history&days=90')
+  })
+
+  it('deletes by id only, and previews with the create body and nothing else', async () => {
+    await deleteGiveaway('AB12CD')
+    expect(sent()).toEqual(action({ action: 'delete', id: 'AB12CD' }))
+    calls = []
+    const ctrl = new AbortController()
+    await previewGiveaway({ title: 'T', description: 'D', duration: '1d' }, ctrl.signal)
+    expect(sent()).toEqual(action({ action: 'preview', title: 'T', description: 'D', duration: '1d' }))
+    expect(calls[0].init?.signal).toBe(ctrl.signal)
+  })
+
+  it('creates with a start in the browser\'s zone, sent with its offset', async () => {
+    await createGiveaway(createBody(draft({ startAt: '2026-11-01T19:00' })))
+    const { startAt } = sent().body as { startAt: string }
+    expect(startAt).toMatch(/^2026-11-01T19:00:00[+-]\d{2}:\d{2}$/)
+    expect(Date.parse(startAt)).toBe(new Date(2026, 10, 1, 19, 0).getTime())
+  })
+
+  it('sends no start at all when none is set, so an older bot gets the body it knows', () => {
+    expect(createBody(draft())).not.toHaveProperty('startAt')
+    expect(createBody(draft({ startAt: '   ' }))).not.toHaveProperty('startAt')
+  })
+
+  it('reads impossible dates as none', () => {
+    expect(localInputToIso('2026-02-30T10:00')).toBeNull()
+    expect(localInputToIso('2026-11-31T10:00')).toBeNull()
+    expect(localInputToIso('tomorrow')).toBeNull()
+    expect(localInputToIso('2026-11-01T19:00:30')).toMatch(/^2026-11-01T19:00:00/)
+  })
+
+  it('edits a scheduled giveaway with start and duration only when they changed', async () => {
+    const g = {
+      id: 'S1', channelId: 'c', title: 't', description: 'd', prizes: [], prizeMode: 'ALL', winnerMode: 'RANDOM',
+      winnersCount: 1, status: 'SCHEDULED', startAt: '2026-11-01T18:00:00.000Z', endAt: '2026-11-03T18:00:00.000Z',
+      createdAt: null, endedAt: null, entryCount: 0, couponPercent: null, couponPackages: [], couponValidDays: null,
+      blacklistRoles: null, whitelistRoles: null, bonusRoles: null,
+    } as Giveaway
+    const from = draftOf(g, SETTINGS)
+    expect(durationText(from.duration)).toBe('172800s')
+    expect(from.duration).toMatchObject({ amount: '2', unit: 'd' })
+
+    expect(editBody(from, from)).not.toHaveProperty('startAt')
+    expect(editBody(from, from)).not.toHaveProperty('duration')
+
+    const moved = editBody({ ...from, startAt: '2026-11-05T20:30' }, from)
+    expect(Date.parse((moved as unknown as { startAt: string }).startAt)).toBe(new Date(2026, 10, 5, 20, 30).getTime())
+    expect(moved).not.toHaveProperty('duration')
+
+    const longer = editBody({ ...from, duration: { ...from.duration, amount: '3' } }, from)
+    expect(longer).toMatchObject({ duration: '3d' })
+    expect(longer).not.toHaveProperty('startAt')
+  })
+
+  it('stops a start in the past, beyond a year or without a date before any request', () => {
+    const now = Date.parse('2026-10-28T12:00:00.000Z')
+    const at = (ms: number) => isoToLocalInput(new Date(ms).toISOString())
+    expect(validateDraft(draft({ startAt: at(now + 3600_000) }), 'create', { now })).toEqual({})
+    expect(validateDraft(draft({ startAt: at(now - 3600_000) }), 'create', { now })).toHaveProperty('startAt')
+    expect(validateDraft(draft({ startAt: at(now + 366 * 86400_000) }), 'create', { now })).toHaveProperty('startAt')
+    expect(validateDraft(draft({ startAt: '2026-02-30T10:00' }), 'create', { now })).toHaveProperty('startAt')
+
+    // A scheduled giveaway needs a start; one nobody touched is not checked
+    // again, so a title fix right before the start still goes out.
+    const from = draft({ startAt: at(now - 60_000) })
+    expect(validateDraft(from, 'edit', { now, scheduledFrom: from })).toEqual({})
+    expect(validateDraft({ ...from, startAt: '' }, 'edit', { now, scheduledFrom: from })).toHaveProperty('startAt')
+    expect(validateDraft({ ...from, duration: { amount: '0', unit: 'd' } }, 'edit', { now, scheduledFrom: from })).toHaveProperty('duration')
+  })
+
+  it('previews without an empty channel, and a posted giveaway with the time it has left', () => {
+    const now = Date.parse('2026-10-28T12:00:00.000Z')
+    expect(previewBody(draft({ channelId: '' }), undefined, now)).not.toHaveProperty('channelId')
+    expect(previewBody(draft(), undefined, now)).toMatchObject({ channelId: '900000000000000001', duration: '2h' })
+
+    const running = previewBody(draft({ startAt: '2026-11-01T19:00' }), { status: 'ACTIVE', endAt: '2026-10-28T13:30:00.000Z' }, now)
+    expect(running).toMatchObject({ duration: '5400s' })
+    expect(running).not.toHaveProperty('startAt')
+  })
+
+  it('maps the refusals of a start to its field', () => {
+    for (const code of ['invalid_start', 'start_in_past', 'start_too_far']) expect(fieldOfError(code)).toBe('startAt')
+    expect(fieldOfError('not_scheduled')).toBe('form')
+  })
+})
+
+describe('an older bot without the new routes', () => {
+  it('leaves guild and history out when they answer 404', async () => {
+    const asked: string[] = []
+    const extras = await loadExtras(async (kind, params) => {
+      asked.push(params ? `${kind}:${JSON.stringify(params)}` : kind)
+      return { error: 'not_found' }
+    })
+    expect(extras).toEqual({ guild: null, history: null })
+    expect(asked.sort()).toEqual(['guild', 'history:{"days":"30"}'])
+  })
+
+  it('takes them from a newer bot, and only an icon from Discord\'s CDN', async () => {
+    const answer = (icon: string) => loadExtras(async kind => kind === 'guild'
+      ? { guild: { id: '111111111111111111', name: 'MSK', iconUrl: icon, memberCount: 12 } }
+      : { days: 30, history: [{ date: '2026-10-28', created: 1, ended: 0, entries: 14 }, { date: 'bad' }] })
+    const good = await answer('https://cdn.discordapp.com/icons/1/a.png?size=128')
+    expect(good.guild).toEqual({ id: '111111111111111111', name: 'MSK', iconUrl: 'https://cdn.discordapp.com/icons/1/a.png?size=128', memberCount: 12 })
+    expect(good.history).toEqual({ days: 30, history: [{ date: '2026-10-28', created: 1, ended: 0, entries: 14 }] })
+    expect((await answer('https://evil.example/a.png')).guild?.iconUrl).toBeNull()
+    expect((await answer('http://cdn.discordapp.com/icons/1/a.png')).guild?.iconUrl).toBeNull()
+  })
+
+  it('cannot schedule until a giveaway carries the key the newer bot always sends', () => {
+    const old = { id: 'A', status: 'ACTIVE' } as Giveaway
+    expect(listKnowsSchedule([])).toBe(false)
+    expect(listKnowsSchedule([old])).toBe(false)
+    expect(listKnowsSchedule([old, { ...old, startAt: null }])).toBe(true)
+  })
+
+  it('answers no history for a 404', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => new Response('{"error":"not_found"}', { status: 404 })))
+    expect((await fetchHistory(30)).history).toBeNull()
+    expect((await fetchGiveaway('AB12CD')).giveaway).toBeNull()
   })
 })

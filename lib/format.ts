@@ -35,6 +35,31 @@ export function formatDate(value: string | number | Date | null | undefined, lan
   return new Intl.DateTimeFormat(LOCALE[lang], { ...options, timeZone: DISPLAY_TIME_ZONE }).format(date)
 }
 
+/**
+ * A calendar day without its year, `28.10.` or `Oct 28`, for the labels of a
+ * chart over days whose year is plain. The day is taken as given, in UTC: the
+ * bot counts its history per UTC day (`2026-10-28`), and in German time that
+ * midnight would still be the day before for an hour or two.
+ */
+export function formatDayMonth(value: string | number | Date | null | undefined, lang: Lang): string | null {
+  const date = toDate(value)
+  if (!date) return null
+  const options: Intl.DateTimeFormatOptions = lang === 'de'
+    ? { day: '2-digit', month: '2-digit' }
+    : { month: 'short', day: 'numeric' }
+  return new Intl.DateTimeFormat(LOCALE[lang], { ...options, timeZone: 'UTC' }).format(date)
+}
+
+/** A whole calendar day, `28.10.2026` or `Oct 28, 2026`, taken in UTC like `formatDayMonth`. */
+export function formatDay(value: string | number | Date | null | undefined, lang: Lang): string | null {
+  const date = toDate(value)
+  if (!date) return null
+  const options: Intl.DateTimeFormatOptions = lang === 'de'
+    ? { day: '2-digit', month: '2-digit', year: 'numeric' }
+    : { month: 'short', day: 'numeric', year: 'numeric' }
+  return new Intl.DateTimeFormat(LOCALE[lang], { ...options, timeZone: 'UTC' }).format(date)
+}
+
 /** The value for a `<time dateTime>` attribute: the instant in ISO 8601. */
 export function isoDate(value: string | number | Date | null | undefined): string | undefined {
   return toDate(value)?.toISOString()
