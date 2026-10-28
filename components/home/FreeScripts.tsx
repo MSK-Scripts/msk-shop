@@ -1,30 +1,21 @@
 import { ArrowSquareOut } from '@/components/icons'
 import { Section, TextLink } from '@/components/home/Section'
-import { prefetchFor } from '@/components/layout/navigation'
 import { Badge } from '@/components/ui/Badge'
-import { CUSTOM_PACKAGES } from '@/content/custom-packages'
+import { FREE_SCRIPT_IDS, packagesById } from '@/content/custom-packages'
 import { homeTranslations, layoutTranslations, type Lang } from '@/lib/i18n'
 
 /**
  * The free FiveM scripts as a list, not as big cards (plan 5.4): in the
  * August audit the free part took 31 % of the page, more than the paid one.
- *
- * Picked by a fixed id list rather than a field in the content file:
- * `CUSTOM_PACKAGES` mixes FiveM scripts and web tools, and which of them the
- * home page shows is a decision of the home page. msk_core comes first, the
- * paid resources depend on it. An id that no longer exists drops out silently
- * (msk_jobGPS is commented out in the content file).
+ * Which entries count as free scripts is `FREE_SCRIPT_IDS` in the content
+ * file, shared with the free scripts page.
  */
-const FIVEM_SCRIPT_IDS = ['msk_core', 'msk_fuel', 'msk_enginetoggle', 'msk_givevehicle', 'msk_jobGPS'] as const
 
 export function FreeScripts({ lang }: { lang: Lang }) {
   const t = homeTranslations[lang]
   const nav = layoutTranslations[lang]
 
-  const scripts = FIVEM_SCRIPT_IDS.flatMap(id => {
-    const pkg = CUSTOM_PACKAGES.find(p => p.id === id)
-    return pkg ? [pkg] : []
-  })
+  const scripts = packagesById(FREE_SCRIPT_IDS)
   if (scripts.length === 0) return null
 
   return (
@@ -35,7 +26,7 @@ export function FreeScripts({ lang }: { lang: Lang }) {
       intro={t.free_scripts_subtitle}
       action={
         <>
-          <TextLink href="/fivem/free" prefetch={prefetchFor('/fivem/free')}>{t.free_all}</TextLink>
+          <TextLink href="/fivem/free">{t.free_all}</TextLink>
           <TextLink href="/stats">{t.free_scripts_stats}</TextLink>
         </>
       }

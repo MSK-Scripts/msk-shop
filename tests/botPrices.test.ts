@@ -2,10 +2,11 @@ import { createElement, type ComponentProps, type ReactElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { afterEach, describe, expect, it } from 'vitest'
 
+import { BotsOverview } from '@/components/bots/BotsOverview'
 import { TicketBotTiers } from '@/components/bots/TicketBotTiers'
 import { LangProvider } from '@/components/i18n/LangProvider'
-import { subscriptionTermsTranslations, type Lang } from '@/lib/i18n'
-import { TIER_CONFIG, formatTierPrice, type Tier } from '@/lib/tiers'
+import { homeTranslations, subscriptionTermsTranslations, type Lang } from '@/lib/i18n'
+import { TIER_CONFIG, cheapestPaidTier, formatTierPrice, type Tier } from '@/lib/tiers'
 
 /**
  * The prices on the bot pages come from lib/tiers.ts, the table the checkout
@@ -69,5 +70,24 @@ describe('ticket bot price table', () => {
     for (const sentence of [terms.contract_partner, terms.vat_exempt, terms.final_prices]) {
       expect(html.indexOf(sentence)).toBeGreaterThan(table)
     }
+  })
+})
+
+describe('Discord bots overview', () => {
+  const overview = (lang: Lang) => render(lang, createElement(BotsOverview, { lang }))
+
+  it.each(['en', 'de'] as const)('names the cheapest paid plan of lib/tiers.ts as the entry price (%s)', lang => {
+    const from = homeTranslations[lang].bot_price_ticket.replace('{price}', formatTierPrice(cheapestPaidTier(), lang))
+    expect(overview(lang)).toContain(from)
+  })
+
+  it('follows a price change in TIER_CONFIG', () => {
+    // Still the cheapest paid plan after the change, so it stays the entry price.
+    TIER_CONFIG.premium.priceCents = 123
+    expect(overview('en')).toContain('plans from €1.23 a month')
+  })
+
+  it('calls the giveaway bot free', () => {
+    expect(overview('de')).toContain(homeTranslations.de.bot_price_giveaway)
   })
 })

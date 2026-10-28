@@ -1460,6 +1460,166 @@ export const homeTranslations = {
   },
 } as const;
 
+// ── Overview pages of Phase 5: Discord bots, web tools, about, free scripts ──
+// Where the home page already says the same thing (descriptions, prices,
+// headings), the pages read homeTranslations instead of keeping a copy here.
+// `{discord}` and `{fivem}` in a title are brand words, set in the band green.
+
+export const discordPageTranslations = {
+  en: {
+    title: "Two bots of our own for your {discord} server",
+    bots_label: "The bots",
+    to_ticket: "To the Ticket Bot",
+    to_giveaway: "To the Giveaway Bot",
+    highlights: "In short",
+  },
+  de: {
+    title: "Zwei eigene Bots für deinen {discord}-Server",
+    bots_label: "Die Bots",
+    to_ticket: "Zum Ticket Bot",
+    to_giveaway: "Zum Giveaway Bot",
+    highlights: "Kurz gesagt",
+  },
+} as const;
+
+export const toolsPageTranslations = {
+  en: {
+    open: "Open {name}",
+    docs: "Documentation",
+    free: "Free",
+    // Plan 5.7: MSK Forms has paid plans with MSK Scripts as contract partner.
+    forms_plans: "Free to start. Paid plans Pro and Enterprise, per Discord server.",
+    forms_pricing: "Plans and prices",
+    forms_terms: "The terms of MSK Forms apply",
+    images_open: "Open the gallery",
+    screenshot: "Screenshot of {name}",
+  },
+  de: {
+    open: "{name} öffnen",
+    docs: "Dokumentation",
+    free: "Kostenlos",
+    forms_plans: "Kostenlos nutzbar. Bezahlte Tarife Pro und Enterprise, je Discord-Server.",
+    forms_pricing: "Tarife und Preise",
+    forms_terms: "Es gelten die AGB von MSK Forms",
+    images_open: "Zur Galerie",
+    screenshot: "Screenshot von {name}",
+  },
+} as const;
+
+export const freePageTranslations = {
+  en: {
+    title: "Free {fivem} scripts",
+    docs: "Documentation",
+    // {n} is the live server count from fivestats.io.
+    servers: "Running on {n} servers",
+    servers_source: "Live counts per script",
+    paid: "The paid scripts",
+  },
+  de: {
+    title: "Kostenlose {fivem}-Scripts",
+    docs: "Dokumentation",
+    servers: "Läuft auf {n} Servern",
+    servers_source: "Live-Zahlen je Script",
+    paid: "Die bezahlten Scripts",
+  },
+} as const;
+
+export const aboutPageTranslations = {
+  en: {
+    kicker: "About MSK",
+    lead: "MSK Scripts is Moritz Kohm, known as Musiker15, a self-employed developer in Germany.",
+    who_kicker: "The person",
+    who_title: "Moritz Kohm, known as Musiker15",
+    who_text_1:
+      "He has run MSK Scripts as his own business since May 2022 and builds the FiveM scripts, Discord bots and web tools on this site himself.",
+    who_text_2:
+      "Support in Discord comes from him too, so your question reaches the person who wrote the code.",
+    facts_label: "Facts",
+    fact_brand: "Brand",
+    fact_owner: "Owner",
+    fact_since: "Self-employed since",
+    fact_since_value: "May 2022",
+    fact_form: "Legal form",
+    fact_form_value: "Sole proprietorship",
+    fact_place: "Based in",
+    fact_place_value: "Germany",
+    fact_partner: "Contract partner",
+    fact_partner_value:
+      "MSK Scripts for the Ticket Bot and MSK Forms subscriptions. For purchases in the shop the seller is Tebex Limited.",
+    imprint: "Full address in the imprint",
+    build_kicker: "What he builds",
+    build_title: "Three product lines, one workshop",
+    numbers_kicker: "In numbers",
+    numbers_title: "Measured, not estimated",
+    numbers_intro:
+      "Each figure comes from a source that can be checked. If a source cannot be reached, its figure is left out rather than estimated.",
+    n_buyers: "unique buyers",
+    n_buyers_source: "Accounts with at least one completed payment in the shop",
+    n_servers: "servers running msk_core",
+    n_servers_source: "Live count from fivestats.io",
+    n_docs: "documentation pages",
+    n_docs_source: "Counted from the sitemap of the documentation",
+    n_reversal: "of settled payments refunded or charged back",
+    // {refunds}, {chargebacks} and {settled} are counts from the same snapshot.
+    n_reversal_source: "{refunds} refunds and {chargebacks} chargebacks out of {settled} settled payments",
+    n_first: "first sale on record",
+    n_asof: "Shop figures as of {date}, updated nightly.",
+    links_kicker: "Where to find him",
+    links_title: "Discord, GitHub and the rest",
+    link_discord: "Support and questions, answered by the developer",
+    link_github: "The open-source projects of MSK Scripts",
+    link_docs: "Installation and configuration of every script and bot",
+    link_site: "Personal website",
+    link_email: "Email",
+  },
+  de: {
+    kicker: "Über MSK",
+    lead: "Hinter MSK Scripts steht Moritz Kohm, bekannt als Musiker15, selbstständiger Entwickler in Deutschland.",
+    who_kicker: "Die Person",
+    who_title: "Moritz Kohm, bekannt als Musiker15",
+    who_text_1:
+      "Seit Mai 2022 führt er MSK Scripts als eigenes Gewerbe und baut die FiveM-Scripts, Discord-Bots und Web-Tools auf dieser Seite selbst.",
+    who_text_2:
+      "Auch den Support im Discord macht er selbst, deine Frage landet also bei dem, der den Code geschrieben hat.",
+    facts_label: "Eckdaten",
+    fact_brand: "Marke",
+    fact_owner: "Inhaber",
+    fact_since: "Selbstständig seit",
+    fact_since_value: "Mai 2022",
+    fact_form: "Rechtsform",
+    fact_form_value: "Einzelunternehmen",
+    fact_place: "Sitz",
+    fact_place_value: "Deutschland",
+    fact_partner: "Vertragspartner",
+    fact_partner_value:
+      "MSK Scripts für die Abos von Ticket Bot und MSK Forms. Bei Käufen im Shop ist Tebex Limited der Verkäufer.",
+    imprint: "Vollständige Anschrift im Impressum",
+    build_kicker: "Was er baut",
+    build_title: "Drei Produktlinien, eine Werkstatt",
+    numbers_kicker: "In Zahlen",
+    numbers_title: "Gemessen, nicht geschätzt",
+    numbers_intro:
+      "Jede Zahl stammt aus einer Quelle, die sich prüfen lässt. Ist eine Quelle nicht erreichbar, fehlt ihre Zahl, statt geschätzt zu werden.",
+    n_buyers: "einzigartige Käufer",
+    n_buyers_source: "Konten mit mindestens einer abgeschlossenen Zahlung im Shop",
+    n_servers: "Server auf msk_core",
+    n_servers_source: "Live-Zahl von fivestats.io",
+    n_docs: "Doku-Seiten",
+    n_docs_source: "Gezählt aus der Sitemap der Dokumentation",
+    n_reversal: "der abgerechneten Zahlungen erstattet oder zurückgebucht",
+    n_reversal_source: "{refunds} Erstattungen und {chargebacks} Rückbuchungen bei {settled} abgerechneten Zahlungen",
+    n_first: "erster Verkauf",
+    n_asof: "Shop-Zahlen vom {date}, nachts aktualisiert.",
+    links_kicker: "Wo du ihn findest",
+    links_title: "Discord, GitHub und der Rest",
+    link_discord: "Support und Fragen, beantwortet vom Entwickler",
+    link_github: "Die quelloffenen Projekte von MSK Scripts",
+    link_docs: "Installation und Konfiguration jedes Scripts und Bots",
+    link_site: "Persönliche Website",
+    link_email: "E-Mail",
+  },
+} as const;
+
 // ── FiveM catalogue, product page, category pages ─────────────────────────────
 // Since Phase 4 of the redesign (28.10.2026) the catalogue lists products, one
 // card per script, and Encrypted and Source are the two choices on its page.

@@ -49,6 +49,46 @@ export const PAGE_SEO: Record<string, Record<Lang, PageSeo>> = {
       description: 'Alle kostenpflichtigen MSK FiveM Scripts, jedes als Encrypted- oder Source-Fassung, dazu das Abo für alle. Preise inkl. MwSt.',
     },
   },
+  '/fivem/free': {
+    en: {
+      title:       'Free FiveM Scripts',
+      description: 'Free, open-source FiveM scripts by MSK Scripts on GitHub, with documentation and live server counts. msk_core is the library the paid scripts build on.',
+    },
+    de: {
+      title:       'Kostenlose FiveM-Scripts',
+      description: 'Kostenlose FiveM-Scripts von MSK Scripts, quelloffen auf GitHub, mit Doku und Live-Serverzahlen. msk_core ist die Bibliothek der bezahlten Scripts.',
+    },
+  },
+  '/discord': {
+    en: {
+      title:       'Discord Bots: Ticket Bot and Giveaway Bot',
+      description: 'Two Discord bots by MSK Scripts: a self-hosted ticket bot with hosted transcripts and a free, restart-safe giveaway bot.',
+    },
+    de: {
+      title:       'Discord-Bots: Ticket Bot und Giveaway Bot',
+      description: 'Zwei Discord-Bots von MSK Scripts: ein Ticket-Bot zum Selbsthosten mit gehosteten Transkripten und ein kostenloser, neustartsicherer Giveaway-Bot.',
+    },
+  },
+  '/tools': {
+    en: {
+      title:       'Web Tools: Forms, Paste, Short Links, Images',
+      description: 'MSK Forms, MSK Paste, MSK Shortener and a gallery of transparent FiveM images. Open source, no trackers.',
+    },
+    de: {
+      title:       'Web-Tools: Formulare, Paste, Kurzlinks, Bilder',
+      description: 'MSK Forms, MSK Paste, MSK Shortener und eine Galerie mit transparenten FiveM-Bildern. Offener Quellcode, keine Tracker.',
+    },
+  },
+  '/about': {
+    en: {
+      title:       'About MSK Scripts',
+      description: 'Who is behind MSK Scripts: Moritz Kohm, known as Musiker15, self-employed developer in Germany since 2022. Measured figures, Discord and GitHub.',
+    },
+    de: {
+      title:       'Über MSK Scripts',
+      description: 'Wer hinter MSK Scripts steht: Moritz Kohm, bekannt als Musiker15, seit 2022 selbstständiger Entwickler in Deutschland. Gemessene Zahlen, Discord, GitHub.',
+    },
+  },
   '/stats': {
     en: {
       title:       'Resource Statistics',

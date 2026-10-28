@@ -113,7 +113,10 @@ describe('buildSitemapEntries', () => {
     const entries = await buildSitemapEntries()
     expect(find(entries, `${BASE}/en`)).toBeDefined()
     expect(find(entries, `${BASE}/en/discord/ticket-bot`)).toBeDefined()
-    expect(entries.every(e => !e.url.includes('/fivem/'))).toBe(true)
+    // The product pages come from Tebex and drop out; the free scripts page
+    // is a fixed page and stays.
+    const fivem = entries.map(e => e.url).filter(u => u.includes('/fivem/'))
+    expect(fivem.sort()).toEqual([`${BASE}/de/fivem/kostenlos`, `${BASE}/en/fivem/free`])
   })
 })
 

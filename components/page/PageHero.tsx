@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react'
+import { Fragment, type ReactNode } from 'react'
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
-import { CaretRight, Check } from '@/components/icons'
+import { ArrowRight, CaretRight, Check } from '@/components/icons'
 import { cn } from '@/lib/utils'
 
 export interface Crumb {
@@ -82,6 +82,55 @@ export function PageHero({
 /** A brand word in the heading, in the band green (plan 4.4). */
 export function Accent({ children }: { children: ReactNode }) {
   return <em className="not-italic text-[var(--color-band-accent)]">{children}</em>
+}
+
+const BRAND_WORDS: Record<string, string> = { fivem: 'FiveM', discord: 'Discord' }
+
+/** A heading from a translation, its `{fivem}` and `{discord}` set as brand words. */
+export function BrandTitle({ template }: { template: string }) {
+  return template.split(/\{(fivem|discord)\}/).map((part, i) =>
+    i % 2 === 1 ? <Accent key={i}>{BRAND_WORDS[part]}</Accent> : <Fragment key={i}>{part}</Fragment>,
+  )
+}
+
+/**
+ * Links beside the heading, one row each, as in the entry list of the home
+ * page hero: title, a line under it, an arrow. An `href` starting with `#`
+ * jumps within the page.
+ */
+export function HeroLinks({
+  label, links,
+}: {
+  label: string
+  links: Array<{ href: string; title: string; sub?: string; price?: string }>
+}) {
+  return (
+    <nav aria-label={label} className="border-t-2 border-[var(--color-band-accent)]">
+      <ul>
+        {links.map(l => {
+          const cls = 'group flex min-h-16 items-center justify-between gap-3 border-b border-[var(--color-band-line)] px-1 py-3.5 text-[var(--color-band-foreground)]'
+          const body = (
+            <>
+              <span className="grid gap-0.5">
+                <span className="font-display text-h3 font-[650] group-hover:text-[var(--color-band-accent)]">{l.title}</span>
+                {l.sub && <span className="text-small text-[var(--color-band-muted)]">{l.sub}</span>}
+                {l.price && <span className="text-small font-semibold tabular-nums">{l.price}</span>}
+              </span>
+              <ArrowRight className="h-5 w-5 shrink-0 text-[var(--color-band-accent)] transition-transform duration-150 group-hover:translate-x-[3px]" />
+            </>
+          )
+          return (
+            <li key={l.href}>
+              {/* A jump within the page is a plain anchor; LocaleLink is for paths. */}
+              {l.href.startsWith('#')
+                ? <a href={l.href} className={cls}>{body}</a>
+                : <Link href={l.href} className={cls}>{body}</Link>}
+            </li>
+          )
+        })}
+      </ul>
+    </nav>
+  )
 }
 
 /**

@@ -45,7 +45,11 @@ export const SITEMAP_STYLESHEET = '/sitemap.xsl'
 const STATIC_ROUTES = [
   '/',
   '/fivem',
+  '/fivem/free',
   '/stats',
+  '/discord',
+  '/tools',
+  '/about',
   '/tools/images',
   '/tools/images/upload',
   '/discord/ticket-bot',

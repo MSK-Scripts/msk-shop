@@ -26,7 +26,8 @@ function pagesOnDisk(): string[] {
 }
 
 /** Table entries whose pages come in later phases of the redesign. */
-const PLANNED = ['/fivem/free', '/discord', '/tools', '/about']
+// Empty since Phase 5 of the redesign (28.10.2026) brought the last four pages.
+const PLANNED: string[] = []
 
 describe('route table', () => {
   it('gives every internal path a public form in both languages', () => {

@@ -30,12 +30,14 @@ export const TOOL_URLS = {
 } as const
 
 /**
- * Pages the navigation already links to but that only arrive in Phase 5 of
- * the redesign. They are not prefetched, because a prefetch of a missing page
- * is a 404 in the console on every page view. Remove an entry when its page
- * lands.
+ * Pages the navigation already links to but that do not exist yet. They are
+ * not prefetched, because a prefetch of a missing page is a 404 in the console
+ * on every page view. Remove an entry when its page lands.
+ *
+ * Empty since Phase 5 of the redesign (28.10.2026), which brought the last
+ * four: `/discord`, `/tools`, `/about` and `/fivem/free`.
  */
-const PENDING_PAGES = new Set(['/discord', '/tools', '/about', '/fivem/free'])
+const PENDING_PAGES = new Set<string>()
 
 /** `prefetch` for a `LocaleLink` to `href`: off for pages that do not exist yet. */
 export function prefetchFor(href: string): false | undefined {

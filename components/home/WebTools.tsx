@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import { ArrowSquareOut } from '@/components/icons'
 import { Section } from '@/components/home/Section'
-import { CUSTOM_PACKAGES } from '@/content/custom-packages'
+import { CUSTOM_PACKAGES, WEB_TOOL_IDS } from '@/content/custom-packages'
 import { homeTranslations, layoutTranslations, type Lang } from '@/lib/i18n'
 
 /**
@@ -13,7 +13,7 @@ import { homeTranslations, layoutTranslations, type Lang } from '@/lib/i18n'
  * The one line comes from the navigation texts, which exist in both
  * languages; the content file only has English.
  */
-const TOOL_IDS = ['msk-forms', 'msk-paste', 'msk-shortener'] as const
+const TOOL_IDS = WEB_TOOL_IDS
 
 function imageSrc(src: string): string {
   return src.startsWith('/') || /^https?:\/\//i.test(src) ? src : `/${src}`
