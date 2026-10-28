@@ -271,7 +271,7 @@ export default function VerifyClient({ session, step: _step, errorCode }: Props)
   }
 
   return (
-    <div className="container-page flex min-h-[calc(100vh-4rem-12rem)] flex-col items-center justify-center py-12 md:py-16">
+    <div className="flex min-h-[calc(100dvh-var(--app-topbar)-12rem)] w-full flex-col items-center justify-center py-6 md:py-10">
       <div className="w-full max-w-lg">
 
         {/* Header */}

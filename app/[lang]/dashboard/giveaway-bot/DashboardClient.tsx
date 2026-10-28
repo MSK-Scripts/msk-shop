@@ -1,9 +1,8 @@
 'use client';
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  Gift,
   Plus,
   Pause,
   Play,
@@ -12,12 +11,9 @@ import {
   DiceFive as Dice5,
   PencilSimple as Pencil,
   Clock,
-  SignOut as LogOut,
   ArrowsClockwise as RefreshCw,
-  GearSix as SettingsIcon,
   CircleNotch as Loader2,
   ArrowSquareOut as ExternalLink,
-  Storefront as Store,
   Ticket,
   Eye,
   EyeSlash as EyeOff,
@@ -27,7 +23,9 @@ import {
   FloppyDisk as Save,
   Lightning as Zap,
 } from '@/components/icons';
-import { giveawayDashboardTranslations, type Lang } from '@/lib/i18n';
+import { dashboardShellTranslations, giveawayDashboardTranslations, type Lang } from '@/lib/i18n';
+import { giveawayHref, type GiveawaySection as Section } from '@/lib/dashboardNav';
+import { StatGrid, StatTile } from '@/components/dashboard/StatTile';
 import { useLang } from '@/components/i18n/LangProvider';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -132,13 +130,51 @@ function StatusBadge({ status }: { status: Giveaway['status'] }) {
   );
 }
 
-export default function DashboardClient({ guildId, owner }: { guildId: string; owner: boolean }) {
+// ── Data of the dashboard ─────────────────────────────────────────────────────
+
+interface GiveawayData {
+  owner:           boolean;
+  loading:         boolean;
+  error:           string | null;
+  setError:        (e: string | null) => void;
+  giveaways:       Giveaway[];
+  templates:       Template[];
+  settings:        Settings | null;
+  setSettings:     (s: Settings) => void;
+  roles:           Role[];
+  channels:        Channel[];
+  tebex:           TebexStatus | null;
+  setTebex:        (s: TebexStatus) => void;
+  packages:        TebexPackage[];
+  loadAll:         () => Promise<void>;
+  reloadGiveaways: () => Promise<void>;
+  reloadTemplates: () => Promise<void>;
+}
+
+const DataCtx = createContext<GiveawayData | null>(null);
+
+function useGiveawayData(): GiveawayData {
+  const data = useContext(DataCtx);
+  if (!data) throw new Error('GiveawayProvider is missing');
+  return data;
+}
+
+/**
+ * Loads what the dashboard shows, once per visit, and keeps it while the
+ * visitor moves between its areas.
+ *
+ * Sits in the layout of the signed-in pages, above the page that changes per
+ * area: until Phase 7 the areas were tabs of one component that loaded all of
+ * this on mount, and moving between their new addresses must not reload it
+ * each time. The guild comes from the signed giveaway session on the server
+ * side of every request (`/api/giveaway/data`), never from here.
+ */
+export function GiveawayProvider({ owner, children }: { owner: boolean; children: ReactNode }) {
   const router = useRouter();
   const { lang, localize } = useLang();
   const t = giveawayDashboardTranslations[lang];
   // A string, so it is stable across renders and safe in the deps below.
   const verifyHref = localize('/dashboard/giveaway-bot/verify');
-  const [tab, setTab] = useState<'giveaways' | 'templates' | 'settings' | 'store'>('giveaways');
   const [giveaways, setGiveaways] = useState<Giveaway[]>([]);
   const [templates, setTemplates] = useState<Template[]>([]);
   const [settings, setSettings] = useState<Settings | null>(null);
@@ -207,87 +243,90 @@ export default function DashboardClient({ guildId, owner }: { guildId: string; o
     run();
   }, [runLoadAll]);
 
-  async function logout() {
-    await fetch('/api/giveaway/logout', { method: 'POST' });
-    router.push(verifyHref);
-  }
-
-  if (loading) {
-    return (
-      <main className="flex min-h-[60vh] items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin text-[var(--color-muted-foreground)]" />
-      </main>
-    );
-  }
+  const value: GiveawayData = {
+    owner, loading, error, setError, giveaways, templates, settings, setSettings,
+    roles, channels, tebex, setTebex, packages, loadAll, reloadGiveaways, reloadTemplates,
+  };
 
   return (
     <Ctx.Provider value={{ t, lang }}>
-      {/* Capped on purpose: the content is a settings form plus a
-          giveaway list. A 1920 px wide form field is not more usable
-          than a 1000 px wide one, only harder to read.
-          Since 22.08.2026 `container-page` instead of its own max-w-6xl,
-          so that this dashboard and the ticketbot dashboard are equally
-          wide. Before that they stood at 1152 versus 2560 px. */}
-      <main className="container-page w-full py-10">
-        <div className="mb-6 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--color-primary)]/15 text-[var(--color-primary)]">
-              <Gift className="h-5 w-5" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold tracking-tight">{t.dashboard_title}</h1>
-              <p className="font-mono text-xs text-[var(--color-muted-foreground)]">{t.server} {guildId}</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={loadAll} title={t.refresh}><RefreshCw className="h-4 w-4" /></Button>
-            <Button variant="outline" size="sm" onClick={logout}><LogOut className="mr-2 h-4 w-4" /> {t.logout}</Button>
-          </div>
-        </div>
-
-        {error && (
-          <div role="alert" className="mb-4 rounded-lg border border-[var(--color-danger)]/40 bg-[var(--color-danger)]/10 px-4 py-3 text-sm text-[var(--color-danger)]">{error}</div>
-        )}
-
-        <div className="mb-6 flex gap-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)] p-1 text-sm font-semibold">
-          {([
-            ['giveaways', t.tab_giveaways],
-            ['templates', t.tab_templates],
-            ['settings', t.tab_settings],
-            // The store tab only exists for the server owner.
-            ...(owner ? [['store', t.tab_store] as const] : []),
-          ] as const).map(([key, label]) => (
-            <button
-              key={key}
-              onClick={() => setTab(key)}
-              className={cn(
-                'flex flex-1 items-center justify-center gap-2 rounded px-3 py-1.5 transition-colors',
-                tab === key ? 'bg-[var(--color-primary)] text-[var(--color-primary-foreground)]' : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]',
-              )}
-            >
-              {key === 'giveaways' ? <Gift className="h-4 w-4" /> : key === 'templates' ? <LayoutTemplate className="h-4 w-4" /> : key === 'store' ? <Store className="h-4 w-4" /> : <SettingsIcon className="h-4 w-4" />} {label}
-            </button>
-          ))}
-        </div>
-
-        {tab === 'giveaways' && (
-          <GiveawaysTab
-            giveaways={giveaways} channels={channels} roles={roles} reload={reloadGiveaways} setError={setError}
-            packages={packages} couponReady={Boolean(tebex?.configured)} ownerHint={owner}
-            templates={templates} settings={settings} reloadTemplates={reloadTemplates}
-          />
-        )}
-        {tab === 'templates' && (
-          <TemplatesTab templates={templates} roles={roles} settings={settings} reload={reloadTemplates} setError={setError} />
-        )}
-        {tab === 'settings' && (
-          <SettingsTab settings={settings} roles={roles} channels={channels} onSaved={(s) => setSettings(s)} setError={setError} />
-        )}
-        {tab === 'store' && owner && (
-          <StoreTab tebex={tebex} packages={packages} onChanged={(s) => setTebex(s)} setError={setError} />
-        )}
-      </main>
+      <DataCtx.Provider value={value}>{children}</DataCtx.Provider>
     </Ctx.Provider>
+  );
+}
+
+/** The refresh action in the page head: loads everything again. */
+export function GiveawayRefreshButton() {
+  const { t } = useCtx();
+  const { loadAll, loading } = useGiveawayData();
+  return (
+    <Button variant="outline" onClick={loadAll} disabled={loading}>
+      <RefreshCw className={cn('h-4 w-4', loading && 'animate-spin')} /> {t.refresh}
+    </Button>
+  );
+}
+
+/**
+ * One area of the dashboard: what its tab showed until Phase 7, plus the new
+ * overview. The page of each area renders this with its name.
+ */
+export function GiveawaySection({ section }: { section: Section }) {
+  const { lang } = useCtx();
+  const d = useGiveawayData();
+
+  return (
+    <>
+      {d.error && (
+        <div role="alert" className="mb-4 rounded-lg border border-[var(--color-danger)]/40 bg-[var(--color-danger)]/10 px-4 py-3 text-sm text-[var(--color-danger)]">{d.error}</div>
+      )}
+
+      {d.loading ? (
+        <div className="flex min-h-[40vh] items-center justify-center">
+          <Loader2 className="h-6 w-6 animate-spin text-[var(--color-muted-foreground)]" />
+        </div>
+      ) : (
+        <>
+          {section === 'overview' && <OverviewSection lang={lang} giveaways={d.giveaways} templates={d.templates} />}
+          {section === 'giveaways' && (
+            <GiveawaysTab
+              giveaways={d.giveaways} channels={d.channels} roles={d.roles} reload={d.reloadGiveaways} setError={d.setError}
+              packages={d.packages} couponReady={Boolean(d.tebex?.configured)} ownerHint={d.owner}
+              templates={d.templates} settings={d.settings} reloadTemplates={d.reloadTemplates}
+            />
+          )}
+          {section === 'templates' && (
+            <TemplatesTab templates={d.templates} roles={d.roles} settings={d.settings} reload={d.reloadTemplates} setError={d.setError} />
+          )}
+          {section === 'settings' && (
+            <SettingsTab settings={d.settings} roles={d.roles} channels={d.channels} onSaved={(s) => d.setSettings(s)} setError={d.setError} />
+          )}
+          {/* The store area only exists for the server owner. */}
+          {section === 'store' && d.owner && (
+            <StoreTab tebex={d.tebex} packages={d.packages} onChanged={(s) => d.setTebex(s)} setError={d.setError} />
+          )}
+        </>
+      )}
+    </>
+  );
+}
+
+// ── Overview (new in Phase 7) ────────────────────────────────────────────────
+
+/**
+ * Counts from the lists the dashboard already loads; nothing is fetched for
+ * it. Each tile leads to the area behind its number.
+ */
+function OverviewSection({ lang, giveaways, templates }: { lang: Lang; giveaways: Giveaway[]; templates: Template[] }) {
+  const s = dashboardShellTranslations[lang];
+  const count = (...wanted: Giveaway['status'][]) => giveaways.filter(g => wanted.includes(g.status)).length;
+  const number = new Intl.NumberFormat(lang === 'de' ? 'de-DE' : 'en-GB');
+  return (
+    <StatGrid>
+      <StatTile label={s.gw_stat_running} value={number.format(count('ACTIVE'))} href={giveawayHref('giveaways')} />
+      <StatTile label={s.gw_stat_paused} value={number.format(count('PAUSED'))} href={giveawayHref('giveaways')} />
+      <StatTile label={s.gw_stat_ended} value={number.format(count('ENDED', 'CANCELLED'))} href={giveawayHref('giveaways')} />
+      <StatTile label={s.gw_stat_templates} value={number.format(templates.length)} href={giveawayHref('templates')} />
+    </StatGrid>
   );
 }
 

@@ -2,6 +2,7 @@ import { cookies } from 'next/headers';
 import { parseGiveawayVerify } from '@/lib/giveawaySession';
 import { giveawayQuery }     from '@/lib/giveawayDb';
 import VerifyClient          from './VerifyClient';
+import { GiveawayShell }     from '../GiveawayShell';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,7 +19,7 @@ export default async function GiveawayVerifyPage() {
 
   // Not logged in via Discord yet → login step.
   if (!session?.guilds || !session.discordUserId) {
-    return <VerifyClient step="login" guilds={[]} />;
+    return <GiveawayShell session={null}><VerifyClient step="login" guilds={[]} /></GiveawayShell>;
   }
 
   // Restrict admin guilds to those the bot is in (GuildSettings row).
@@ -35,5 +36,5 @@ export default async function GiveawayVerifyPage() {
     botGuilds = adminGuilds.filter((g) => present.has(g.id));
   }
 
-  return <VerifyClient step="select" guilds={botGuilds} />;
+  return <GiveawayShell session={null}><VerifyClient step="select" guilds={botGuilds} /></GiveawayShell>;
 }

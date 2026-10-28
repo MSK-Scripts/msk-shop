@@ -84,8 +84,18 @@ export const ROUTES: readonly RouteDef[] = [
   // the plan keeps them out of the translated table on purpose.
   route('/dashboard/ticket-bot'),
   route('/dashboard/ticket-bot/verify'),
+  // One address per server and area since Phase 7. `[server]` is a Discord
+  // guild id and only ever looked up among the session's own servers.
+  route('/dashboard/ticket-bot/[server]'),
+  route('/dashboard/ticket-bot/[server]/domains'),
+  route('/dashboard/ticket-bot/[server]/transcripts'),
+  route('/dashboard/ticket-bot/[server]/hosting'),
   route('/dashboard/giveaway-bot'),
   route('/dashboard/giveaway-bot/verify'),
+  route('/dashboard/giveaway-bot/giveaways'),
+  route('/dashboard/giveaway-bot/templates'),
+  route('/dashboard/giveaway-bot/settings'),
+  route('/dashboard/giveaway-bot/store'),
   route('/admin'),
 ]
 

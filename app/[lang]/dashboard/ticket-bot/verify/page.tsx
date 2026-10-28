@@ -1,6 +1,7 @@
 import { cookies }          from 'next/headers';
 import { parseSession }     from '@/lib/session';
 import VerifyClient         from './VerifyClient';
+import { TicketBotShell }   from '../TicketBotShell';
 
 // Session/cookie dependent → never cache statically/per route.
 export const dynamic = 'force-dynamic';
@@ -21,11 +22,14 @@ export default async function VerifyPage({
   const sessionRaw  = cookieStore.get('msk_verify_session')?.value;
   const session     = sessionRaw ? parseSession(sessionRaw) : null;
 
+  // Signed out of the dashboard: the shell without navigation or servers.
   return (
-    <VerifyClient
-      session={session}
-      step={params.step ?? null}
-      errorCode={params.error ?? null}
-    />
+    <TicketBotShell servers={[]} currentId={null}>
+      <VerifyClient
+        session={session}
+        step={params.step ?? null}
+        errorCode={params.error ?? null}
+      />
+    </TicketBotShell>
   )
 }

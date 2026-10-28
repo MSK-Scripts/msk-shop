@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import {
   Globe,
@@ -12,16 +11,14 @@ import {
   ArrowSquareOut as ExternalLink,
   CircleNotch as Loader2,
   Info,
-  SignOut as LogOut,
-  FileText,
-  HardDrives as Server,
   CreditCard,
-  CaretDown as ChevronDown,
-  type IconComponent,
 } from '@/components/icons'
-import { dashboardTranslations } from '@/lib/i18n'
+import { dashboardShellTranslations, dashboardTranslations } from '@/lib/i18n'
+import { ticketBotHref, ticketBotSections, type TicketBotSection } from '@/lib/dashboardNav'
+import { StatGrid, StatTile } from '@/components/dashboard/StatTile'
+import { StatusBadge as DashboardStatus } from '@/components/dashboard/StatusBadge'
 import { useLang } from '@/components/i18n/LangProvider'
-import { TIER_CONFIG, formatTierPrice, type BillingInterval, type Tier } from '@/lib/tiers'
+import { formatTierPrice, type BillingInterval, type Tier } from '@/lib/tiers'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -74,11 +71,6 @@ interface Guild {
   access_grace_ends_at:    number | null
 }
 
-interface Props {
-  guilds:   Guild[]
-  serverIp: string
-}
-
 type T = typeof dashboardTranslations['en'] | typeof dashboardTranslations['de']
 
 function StatusBadge({ status, t }: { status: Guild['domain_status']; t: { active_label: string; pending_label: string } }) {
@@ -118,100 +110,53 @@ const TIER_COLORS: Record<Tier, string> = {
   business:     'text-[var(--color-tier-business)] bg-[var(--color-tier-business)]/10 border-[var(--color-tier-business)]/30',
 }
 
-export default function DashboardClient({ guilds, serverIp }: Props) {
-  const { lang, localize } = useLang()
+/**
+ * One area of one server of the ticket bot dashboard.
+ *
+ * Until Phase 7 of the redesign this was one page with a server select and
+ * three tabs in local state. Each area now has an address of its own
+ * (`/dashboard/ticket-bot/<server>/<area>`), the shell draws sidebar and
+ * server switcher, and this renders what the tab used to show. The server
+ * page has already checked that `guild` belongs to the signed-in person;
+ * every request below sends its id to a route that checks again.
+ */
+export default function TicketBotPanel({ guild, serverIp, section }: {
+  guild:    Guild
+  serverIp: string
+  section:  TicketBotSection
+}) {
+  const { lang } = useLang()
   const t = dashboardTranslations[lang]
-
-  const [selectedId, setSelectedId] = useState(guilds[0]?.guild_id ?? '')
-  const router = useRouter()
-  const selected = guilds.find(g => g.guild_id === selectedId) ?? guilds[0]
-
-  const handleLogout = async () => {
-    try {
-      await fetch('/api/dashboard/logout', { method: 'POST' })
-    } catch { /* leave even on network error */ }
-    // refresh() after push(): the verify page reads the session cookie
-    // server-side, and that has just been deleted.
-    router.push(localize('/dashboard/ticket-bot/verify'))
-    router.refresh()
-  }
-
   return (
-    <div className="container-page py-10 md:py-14">
-      <div>
-
-        {/* Header */}
-        <div className="mb-8">
-          <span className="eyebrow">{t.label}</span>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight md:text-4xl">{t.title}</h1>
-        </div>
-
-        {/* Server switcher (only when the account owns more than one server) */}
-        {guilds.length > 1 && (
-          <div className="mb-6">
-            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[var(--color-muted-foreground)]">
-              {t.switch_server}
-            </label>
-            <div className="relative inline-block w-full max-w-sm">
-              <select
-                value={selectedId}
-                onChange={e => setSelectedId(e.target.value)}
-                className="w-full appearance-none rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2 pr-9 text-sm font-medium focus:border-[var(--color-primary)] focus:outline-none"
-              >
-                {guilds.map(g => (
-                  <option key={g.guild_id} value={g.guild_id}>
-                    {(g.guild_name || g.guild_id)} · {t[`tier_${g.tier}` as 'tier_basic' | 'tier_premium' | 'tier_premium_plus']}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-muted-foreground)]" />
-            </div>
-          </div>
-        )}
-
-        {/* Per-guild panel, keyed so all local state resets on server switch */}
-        {selected && (
-          <GuildPanel
-            key={selected.guild_id}
-            guild={selected}
-            serverIp={serverIp}
-            lang={lang}
-            t={t}
-            onLogout={handleLogout}
-          />
-        )}
-      </div>
-    </div>
+    <GuildPanel
+      key={guild.guild_id}
+      guild={guild}
+      serverIp={serverIp}
+      lang={lang}
+      t={t}
+      section={section}
+    />
   )
 }
 
 // ── Single-guild dashboard panel ─────────────────────────────────────────────
 
-type TabKey = 'domain' | 'transcripts' | 'hosting'
-
 function GuildPanel({
-  guild, serverIp, lang, t, onLogout,
+  guild, serverIp, lang, t, section,
 }: {
   guild:    Guild
   serverIp: string
   lang:     'en' | 'de'
   t:        T
-  onLogout: () => void
+  section:  TicketBotSection
 }) {
   const guildId = guild.guild_id
   const { localize } = useLang()
-
-  const [tab, setTab] = useState<TabKey>('domain')
-  const tabs: { key: TabKey; label: string; icon: IconComponent }[] = [
-    { key: 'domain',      label: t.tab_domain,      icon: Globe },
-    { key: 'transcripts', label: t.tab_transcripts, icon: FileText },
-    // Shown for every paying tier, not only for an already-hosted guild: this is
-    // where hosting is switched ON, so gating it on is_hosted would hide the
-    // only door to it.
-    ...(TIER_CONFIG[guild.tier].botHosting
-      ? [{ key: 'hosting' as const, label: t.tab_hosting, icon: Server }]
-      : []),
-  ]
+  const s = dashboardShellTranslations[lang]
+  // Hosting is offered for every paying tier, not only for an already-hosted
+  // guild: that area is where hosting is switched ON. The page redirects to
+  // the overview when the plan has no hosting, so this is the second check.
+  const hostingOffered = ticketBotSections(guild.tier).includes('hosting')
 
   const hasPremium = guild.tier !== 'basic'
   // Everything above the current tier is a possible upgrade.
@@ -368,10 +313,6 @@ function GuildPanel({
 
   return (
     <>
-      <p className="-mt-4 mb-6 text-sm text-[var(--color-muted-foreground)]">
-        {t.server_id}{' '}
-        <code className="font-mono text-xs">{guild.guild_id}</code>
-      </p>
 
       {/* Discord rights for this server are gone and the clock is running.
           Sits above everything else and carries role="alert": it appears on a
@@ -394,6 +335,36 @@ function GuildPanel({
           </p>
         </div>
       )}
+
+      {section === 'overview' && (
+      <>
+      <StatGrid className="mb-6">
+        <StatTile label={s.tb_stat_plan} value={t[`tier_${guild.tier}` as 'tier_basic' | 'tier_premium' | 'tier_premium_plus']} />
+        <StatTile
+          label={s.tb_stat_domain}
+          href={ticketBotHref(guildId, 'domains')}
+          value={
+            <DashboardStatus tone={domainStatus === 'active' ? 'success' : domainStatus === 'pending_dns' ? 'warning' : 'neutral'}>
+              {domainStatus === 'active' ? s.tb_domain_active : domainStatus === 'pending_dns' ? s.tb_domain_pending : s.tb_domain_none}
+            </DashboardStatus>
+          }
+          hint={domainStatus !== 'none' && domain ? domain : undefined}
+        />
+        <StatTile
+          label={s.tb_stat_hosting}
+          href={hostingOffered ? ticketBotHref(guildId, 'hosting') : undefined}
+          value={
+            <DashboardStatus tone={guild.is_hosted ? 'success' : 'neutral'}>
+              {!hostingOffered ? s.tb_hosting_none : guild.is_hosted ? s.tb_hosting_on : s.tb_hosting_off}
+            </DashboardStatus>
+          }
+        />
+      </StatGrid>
+
+      <p className="mb-4 text-small text-[var(--color-muted-foreground)]">
+        {t.server_id}{' '}
+        <code className="font-mono">{guild.guild_id}</code>
+      </p>
 
       {/* Tier Badge + Subscription + Quick Links */}
       <div className="mb-2 flex flex-wrap items-center justify-between gap-3">
@@ -443,16 +414,6 @@ function GuildPanel({
               {t.docs}
             </a>
           </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onLogout}
-            title={t.logout_title}
-            className="hover:border-[var(--color-danger)]/40 hover:text-[var(--color-danger)]"
-          >
-            <LogOut className="h-3.5 w-3.5" />
-            {t.logout}
-          </Button>
         </div>
       </div>
 
@@ -501,29 +462,11 @@ function GuildPanel({
         )}
       </div>
 
-      {/* Tab Bar */}
-      <div className="mb-6 border-b border-[var(--color-border)]">
-        <div className="-mb-px flex gap-1 overflow-x-auto">
-          {tabs.map(({ key, label, icon: Icon }) => (
-            <button
-              key={key}
-              onClick={() => setTab(key)}
-              className={cn(
-                'inline-flex shrink-0 items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors',
-                tab === key
-                  ? 'border-[var(--color-primary)] text-[var(--color-primary)]'
-                  : 'border-transparent text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]',
-              )}
-            >
-              <Icon className="h-4 w-4" />
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
+      </>
+      )}
 
       {/* Custom Domain Card */}
-      {tab === 'domain' && (
+      {section === 'domains' && (
       <div className="flex flex-col gap-4">
       <Card className="p-6">
         <div className="mb-1 flex flex-wrap items-center gap-2">
@@ -659,10 +602,10 @@ function GuildPanel({
       )}
 
       {/* Transcripts overview: for all logged-in users (only their own) */}
-      {tab === 'transcripts' && <TranscriptsCard lang={lang} guildId={guildId} />}
+      {section === 'transcripts' && <TranscriptsCard lang={lang} guildId={guildId} />}
 
       {/* Bot Config Editor: only for hosted customers */}
-      {tab === 'hosting' && (
+      {section === 'hosting' && hostingOffered && (
         // The gap lives here, not on the individual cards. Each of these
         // components used to carry its own margin, and they disagreed: the
         // editor spaces its cards with an inner gap and no bottom margin, the

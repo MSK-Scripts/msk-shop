@@ -42,7 +42,7 @@ export default function VerifyClient({ step, guilds }: { step: 'login' | 'select
   }
 
   return (
-    // No second <main>: the root layout already renders one, and two of
+    // No second <main>: the app shell already renders one, and two of
     // them are not allowed in a document.
     <div className="mx-auto flex min-h-[70vh] w-full max-w-2xl flex-col items-center justify-center px-4 py-16">
       <div className="mb-8 flex flex-col items-center text-center">
