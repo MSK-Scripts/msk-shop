@@ -8,15 +8,15 @@ import { giveawayQuery, giveawayQueryOne } from '@/lib/giveawayDb';
 export interface GiveawayStats {
   available:       boolean;
   servers:         number;                  // GuildSettings rows
-  giveaways:       number;                  // Giveaway rows (all statuses)
-  activeGiveaways: number;                  // status = ACTIVE
+  giveaways:       number;                  // Giveaway rows (all statuses, scheduled ones included)
+  activeGiveaways: number;                  // status = ACTIVE, never SCHEDULED
   entries:         number;                  // Entry rows
   winners:         number;                  // Winner rows
   templates:       number;                  // GiveawayTemplate rows
-  avgEntries:      number;                  // entries / giveaways, rounded
+  avgEntries:      number;                  // entries / started giveaways, rounded
   maxEntries:      number;                  // most entries on a single giveaway
   langs:           Record<string, number>;  // en / de / fr / es / hu / pl / pt
-  status:          Record<string, number>;  // ACTIVE / PAUSED / ENDED / CANCELLED
+  status:          Record<string, number>;  // SCHEDULED / ACTIVE / PAUSED / ENDED / CANCELLED
 }
 
 interface CountRow  { total: number }
@@ -33,7 +33,7 @@ export const EMPTY_GIVEAWAY_STATS: GiveawayStats = {
   avgEntries:      0,
   maxEntries:      0,
   langs:           { en: 0, de: 0, fr: 0, es: 0, hu: 0, pl: 0, pt: 0 },
-  status:          { ACTIVE: 0, PAUSED: 0, ENDED: 0, CANCELLED: 0 },
+  status:          { SCHEDULED: 0, ACTIVE: 0, PAUSED: 0, ENDED: 0, CANCELLED: 0 },
 };
 
 export async function loadGiveawayStats(): Promise<GiveawayStats> {
@@ -77,6 +77,10 @@ export async function loadGiveawayStats(): Promise<GiveawayStats> {
       if (key) status[key] = (status[key] ?? 0) + Number(row.count);
     }
 
+    // A scheduled giveaway is not posted yet and cannot have entries; counted
+    // in the average it would pull it down for every giveaway planned ahead.
+    const started = giveawaysTotal - (status.SCHEDULED ?? 0);
+
     return {
       available:       true,
       servers:         Number(servers?.total ?? 0),
@@ -85,7 +89,7 @@ export async function loadGiveawayStats(): Promise<GiveawayStats> {
       entries:         entriesTotal,
       winners:         Number(winners?.total ?? 0),
       templates:       Number(templates?.total ?? 0),
-      avgEntries:      giveawaysTotal > 0 ? Math.round(entriesTotal / giveawaysTotal) : 0,
+      avgEntries:      started > 0 ? Math.round(entriesTotal / started) : 0,
       maxEntries:      Number(maxEntries?.total ?? 0),
       langs,
       status,

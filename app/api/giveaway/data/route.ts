@@ -6,8 +6,16 @@ import { query }                             from '@/lib/db';
 import { getPreferredLang } from '@/lib/serverLang';
 import { publicPath } from '@/lib/routes';
 
+import { GIVEAWAY_ID }                       from '@/lib/giveawayResults';
+
 // Read proxy to the bot control endpoint. guildId ALWAYS comes from the session.
-const ALLOWED = new Set(['giveaways', 'giveaway', 'settings', 'roles', 'channels', 'templates', 'tebex', 'tebexPackages']);
+// `guild` and `history` came with the scheduling release of the bot; an older
+// bot answers both with 404, and the dashboard then leaves out what needs them.
+const ALLOWED = new Set(['giveaways', 'giveaway', 'settings', 'roles', 'channels', 'templates', 'tebex', 'tebexPackages', 'guild', 'history']);
+
+// The two ranges the overview offers. The bot takes 1 to 365; nothing else is
+// passed on, so the query string cannot be used to make it count a year.
+const HISTORY_DAYS = new Set(['30', '90']);
 
 // The bot checks these queries against guild.ownerId, for which it needs the
 // user's Discord ID. It comes from the signed session, never from the query.
@@ -33,11 +41,22 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'invalid_kind' }, { status: 400 });
   }
 
-  // An id is only passed through for /giveaway.
+  // An id is only passed through for /giveaway, days only for /history, each
+  // in the one shape the bot accepts.
   const search: Record<string, string> = {};
   if (kind === 'giveaway') {
     const id = String(searchParams.get('id') ?? '').trim().toUpperCase();
-    if (id) search.id = id;
+    if (!GIVEAWAY_ID.test(id)) {
+      return NextResponse.json({ error: 'invalid_id' }, { status: 400 });
+    }
+    search.id = id;
+  }
+  if (kind === 'history') {
+    const days = String(searchParams.get('days') ?? '30');
+    if (!HISTORY_DAYS.has(days)) {
+      return NextResponse.json({ error: 'invalid_days' }, { status: 400 });
+    }
+    search.days = days;
   }
 
   if (OWNER_KINDS.has(kind)) {
