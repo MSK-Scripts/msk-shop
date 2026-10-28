@@ -389,7 +389,7 @@ export function GiveawayForm({ giveaway, initialTemplate }: {
       </FormSection>
       </div>
 
-      <aside className="min-w-0 border-t border-[var(--color-border)] py-6 empty:hidden @[96rem]:sticky @[96rem]:top-4 @[96rem]:row-span-2 @[96rem]:self-start @[96rem]:border-t-0 @[96rem]:py-0">
+      <aside className="min-w-0 border-t border-[var(--color-border)] py-6 empty:hidden @[96rem]:sticky @[96rem]:top-[calc(var(--app-topbar)+5px+1rem)] @[96rem]:row-span-2 @[96rem]:self-start @[96rem]:border-t-0 @[96rem]:py-0">
         <PreviewPanel state={preview} editingPosted={editing && !scheduledEdit} />
       </aside>
 
