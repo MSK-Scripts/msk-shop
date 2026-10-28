@@ -56,6 +56,7 @@ The admin dashboard (`/admin`):
 - Tebex store management through the Plugin API: payments (including free grants and refunds), player lookup, coupons, gift cards, bans and package edits
 - Ticket Bot API keys and tier overrides
 - Image gallery management: edit, move and delete images, moderate submissions, run a file/database sync check
+- Email and IP addresses masked on the server, revealed per row with an audit entry; areas without the permission stay listed with the permission they need ([admin dashboard guide](admin-dashboard.md))
 
 And on the infrastructure side:
 
