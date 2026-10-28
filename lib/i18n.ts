@@ -625,8 +625,10 @@ export const dashboardTranslations = {
     sub_confirm_title:    'Check your order',
     sub_confirm_service:  'Service',
     sub_confirm_price:    'Total price',
-    sub_confirm_price_value: '{price} per month, VAT-exempt as a small business under § 19 UStG',
-    sub_confirm_price_value_year: '{price} per year, VAT-exempt as a small business under § 19 UStG',
+    // The VAT note, the contract partner and Stripe follow below the summary,
+    // from subscriptionTermsTranslations (draft 2.3 of the legal texts).
+    sub_confirm_price_value: '{price} per month',
+    sub_confirm_price_value_year: '{price} per year',
     sub_confirm_term:     'Term',
     sub_confirm_term_value:
                           'One month, renews monthly, can be cancelled at any time to the end of the billing period.',
@@ -636,7 +638,7 @@ export const dashboardTranslations = {
     sub_confirm_legal_and: 'and confirm that you have read the',
     sub_confirm_terms:    'Terms and Conditions',
     sub_confirm_withdrawal: 'withdrawal instructions',
-    sub_confirm_legal_post: '. Payment is handled by Stripe.',
+    sub_confirm_legal_post: '.',
     sub_confirm_submit:   'Subscribe with obligation to pay',
     sub_confirm_cancel:   'Cancel',
     dpa_accept:           'I conclude the data processing agreement.',
@@ -905,8 +907,8 @@ export const dashboardTranslations = {
     sub_confirm_title:    'Bestellung prüfen',
     sub_confirm_service:  'Leistung',
     sub_confirm_price:    'Gesamtpreis',
-    sub_confirm_price_value: '{price} pro Monat, steuerfrei als Kleinunternehmer nach § 19 UStG',
-    sub_confirm_price_value_year: '{price} pro Jahr, steuerfrei als Kleinunternehmer nach § 19 UStG',
+    sub_confirm_price_value: '{price} pro Monat',
+    sub_confirm_price_value_year: '{price} pro Jahr',
     sub_confirm_term:     'Laufzeit',
     sub_confirm_term_value:
                           'Ein Monat, verlängert sich monatlich, jederzeit zum Ende des Abrechnungszeitraums kündbar.',
@@ -916,7 +918,7 @@ export const dashboardTranslations = {
     sub_confirm_legal_and: 'und bestätigst, die',
     sub_confirm_terms:    'AGB',
     sub_confirm_withdrawal: 'Widerrufsbelehrung',
-    sub_confirm_legal_post: ' gelesen zu haben. Die Zahlung wickelt Stripe ab.',
+    sub_confirm_legal_post: ' gelesen zu haben.',
     sub_confirm_submit:   'Zahlungspflichtig abonnieren',
     sub_confirm_cancel:   'Abbrechen',
     dpa_accept:           'Ich schließe die Vereinbarung zur Auftragsverarbeitung ab.',
@@ -926,6 +928,36 @@ export const dashboardTranslations = {
 } as const;
 
 // Giveaway dashboard + verify translations
+/**
+ * What every subscription offer of MSK Scripts states next to its price, in
+ * both the price table of a landing page and the order summary before the
+ * order button. One table, so the sentence on the page and the sentence above
+ * the button cannot drift apart.
+ *
+ * Wording from the draft of the legal texts (vault, plans/2026-10-27-
+ * rechtstexte-entwurf.md): 2.3 for the price statement, 1.4 for the contract
+ * languages. "Steuerfrei" rather than "nicht ausgewiesen": since 2025 the small
+ * business scheme of § 19 UStG is an exemption. "inkl. MwSt." would be wrong.
+ */
+export const subscriptionTermsTranslations = {
+  en: {
+    contract_partner:   'Your contract partner is MSK Scripts (Moritz Kohm), payment is processed by Stripe.',
+    vat_exempt:         'VAT-exempt as a small business under § 19 UStG (German VAT Act), no VAT is charged.',
+    final_price:        'The price shown is the final price.',
+    final_prices:       'The prices shown are final prices.',
+    // Art. 246c no. 4 EGBGB: the languages available for concluding the
+    // contract, stated before the order is placed.
+    contract_languages: 'Contract languages: German, English.',
+  },
+  de: {
+    contract_partner:   'Dein Vertragspartner ist MSK Scripts (Moritz Kohm), die Zahlung wickelt Stripe ab.',
+    vat_exempt:         'Steuerfrei als Kleinunternehmer nach § 19 UStG, es wird keine Umsatzsteuer berechnet.',
+    final_price:        'Der angegebene Preis ist der Endpreis.',
+    final_prices:       'Die angegebenen Preise sind Endpreise.',
+    contract_languages: 'Vertragssprachen: Deutsch, Englisch.',
+  },
+} as const;
+
 export const giveawayDashboardTranslations = {
   en: {
     // Shared / chrome

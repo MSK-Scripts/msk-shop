@@ -21,13 +21,13 @@ import {
 } from '@/components/icons'
 import { dashboardTranslations } from '@/lib/i18n'
 import { useLang } from '@/components/i18n/LangProvider'
-import { TIER_CONFIG, formatTierPrice, yearlyMonthsFree, type BillingInterval, type Tier } from '@/lib/tiers'
+import { TIER_CONFIG, formatTierPrice, type BillingInterval, type Tier } from '@/lib/tiers'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import DnsInstructions from './DnsInstructions'
 import { cn } from '@/lib/utils'
-import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
+import { OrderSummary, type PaidTier } from './OrderSummary'
 
 const BotConfigEditor = dynamic(() => import('@/components/BotConfigEditor'), { ssr: false })
 const TranscriptsCard = dynamic(() => import('./TranscriptsCard'), { ssr: false })
@@ -98,7 +98,6 @@ function StatusBadge({ status, t }: { status: Guild['domain_status']; t: { activ
 /** Ascending order of the tiers. Controls what is offered as an upgrade. */
 const TIER_ORDER: Tier[] = ['basic', 'premium', 'premium_plus', 'business']
 
-type PaidTier = Exclude<Tier, 'basic'>
 
 const GET_LABEL: Record<PaidTier, 'sub_get_premium' | 'sub_get_plus' | 'sub_get_business'> = {
   premium:      'sub_get_premium',
@@ -457,83 +456,19 @@ function GuildPanel({
         </div>
       </div>
 
-      {/* Order summary (§ 312j Abs. 2 BGB).
-          Sits immediately before the order button and names the service,
-          total price and term, plus the links to the terms (AGB) and the
-          cancellation policy. Deliberately an expanding block and not a
-          modal: a `position: fixed` overlay in a subtree with `sticky`
-          ends up beneath other elements, which on 18.08.2026 already once
-          put the gallery over the dialog. */}
+      {/* Order summary (§ 312j Abs. 2 BGB), right before the order button. */}
       {pendingTier && (
-        <div className="mb-6 rounded-lg border border-[var(--color-primary)]/30 bg-[color-mix(in_oklab,var(--color-primary)_6%,transparent)] p-4">
-          <h2 className="text-sm font-bold text-[var(--color-foreground)]">{t.sub_confirm_title}</h2>
-          <dl className="mt-3 space-y-1.5 text-sm">
-            <div className="flex flex-wrap gap-x-2">
-              <dt className="text-[var(--color-muted-foreground)]">{t.sub_confirm_service}:</dt>
-              <dd className="font-medium text-[var(--color-foreground)]">
-                {t[`tier_${pendingTier}` as 'tier_premium' | 'tier_premium_plus' | 'tier_business']}
-                {' · '}{guild.guild_name ?? guild.guild_id}
-              </dd>
-            </div>
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-              <dt className="text-[var(--color-muted-foreground)]">{t.sub_interval}:</dt>
-              <dd className="flex items-center gap-1.5">
-                {(['monthly', 'yearly'] as const).map(option => (
-                  <button
-                    key={option}
-                    type="button"
-                    onClick={() => setBillingInterval(option)}
-                    aria-pressed={billingInterval === option}
-                    disabled={billingLoading !== null}
-                    className={
-                      billingInterval === option
-                        ? 'rounded-md border border-[var(--color-primary)] bg-[var(--color-primary)]/10 px-2.5 py-1 text-xs font-semibold text-[var(--color-primary)]'
-                        : 'rounded-md border border-[var(--color-border)] px-2.5 py-1 text-xs font-medium text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]'
-                    }
-                  >
-                    {option === 'monthly' ? t.sub_interval_monthly : t.sub_interval_yearly}
-                  </button>
-                ))}
-                <span className="text-xs text-[var(--color-primary)]">
-                  {t.sub_interval_save.replace('{n}', String(yearlyMonthsFree(pendingTier)))}
-                </span>
-              </dd>
-            </div>
-            <div className="flex flex-wrap gap-x-2">
-              <dt className="text-[var(--color-muted-foreground)]">{t.sub_confirm_price}:</dt>
-              <dd className="font-medium text-[var(--color-foreground)]">
-                {(billingInterval === 'yearly' ? t.sub_confirm_price_value_year : t.sub_confirm_price_value)
-                  .replace('{price}', formatTierPrice(pendingTier, lang, billingInterval))}
-              </dd>
-            </div>
-            <div className="flex flex-wrap gap-x-2">
-              <dt className="text-[var(--color-muted-foreground)]">{t.sub_confirm_term}:</dt>
-              <dd className="font-medium text-[var(--color-foreground)]">
-                {billingInterval === 'yearly' ? t.sub_confirm_term_value_year : t.sub_confirm_term_value}
-              </dd>
-            </div>
-          </dl>
-          <p className="mt-3 text-xs leading-relaxed text-[var(--color-muted-foreground)]">
-            {t.sub_confirm_legal_pre}{' '}
-            <Link href="/legal/terms" className="text-[var(--color-primary)] hover:underline">{t.sub_confirm_terms}</Link>
-            {' '}{t.sub_confirm_legal_and}{' '}
-            <Link href="/legal/withdrawal" className="text-[var(--color-primary)] hover:underline">{t.sub_confirm_withdrawal}</Link>
-            {t.sub_confirm_legal_post}
-          </p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            {/* The wording is prescribed by law (§ 312j Abs. 3 BGB) and
-                must not be shortened to "Abonnieren" or "Weiter". */}
-            <Button size="sm" onClick={() => handleCheckout(pendingTier, billingInterval)} disabled={billingLoading !== null}>
-              {billingLoading === pendingTier
-                ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                : <CreditCard className="h-3.5 w-3.5" />}
-              {t.sub_confirm_submit}
-            </Button>
-            <Button size="sm" variant="ghost" onClick={() => setPendingTier(null)} disabled={billingLoading !== null}>
-              {t.sub_confirm_cancel}
-            </Button>
-          </div>
-        </div>
+        <OrderSummary
+          lang={lang}
+          tier={pendingTier}
+          guildLabel={guild.guild_name ?? guild.guild_id}
+          interval={billingInterval}
+          onIntervalChange={setBillingInterval}
+          busy={billingLoading !== null}
+          submitting={billingLoading === pendingTier}
+          onSubmit={() => handleCheckout(pendingTier, billingInterval)}
+          onCancel={() => setPendingTier(null)}
+        />
       )}
 
       {/* Trial / billing hint + error */}
