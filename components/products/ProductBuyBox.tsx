@@ -4,10 +4,10 @@ import { useState, type ReactNode } from 'react'
 import { ArrowDown, Storefront } from '@/components/icons'
 import { AddToCartButton } from '@/components/packages/AddToCartButton'
 import { PackagePrice } from '@/components/packages/PackagePrice'
+import { RadioCard } from '@/components/ui/RadioCard'
 import { optionFor, type BuyOption } from '@/lib/buyOptions'
 import type { PackageVariant } from '@/lib/config'
-import { packagesTranslations, type Lang } from '@/lib/i18n'
-import { cn } from '@/lib/utils'
+import { legalCopy, packagesTranslations, type Lang } from '@/lib/i18n'
 
 interface Props {
   lang: Lang
@@ -63,24 +63,13 @@ export function ProductBuyBox({ lang, options, initial, subscription, requiremen
           <legend className="sr-only">{t.buy_legend}</legend>
           <div className="grid grid-cols-1 gap-2.5 @min-[17rem]:grid-cols-2">
             {choices.map(option => (
-              <label
+              <RadioCard
                 key={option.variant}
-                className={cn(
-                  'relative grid min-h-11 cursor-pointer content-start gap-0.5 rounded-md border-[1.5px] border-[var(--color-input)] bg-[var(--color-card)] px-3.5 py-3 transition-colors duration-150',
-                  'hover:border-[var(--color-foreground)]',
-                  'has-[:checked]:border-[var(--color-primary)] has-[:checked]:bg-[var(--color-accent-soft)] has-[:checked]:shadow-[inset_0_0_0_1.5px_var(--color-primary)]',
-                  'has-[:focus-visible]:outline-solid has-[:focus-visible]:outline-[3px] has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-[color:var(--color-ring)]',
-                  'forced-colors:has-[:checked]:outline-solid forced-colors:has-[:checked]:outline-[3px] forced-colors:has-[:checked]:outline-[color:Highlight]',
-                )}
+                name="variant"
+                value={option.variant}
+                checked={selected.variant === option.variant}
+                onChange={() => setChosen(option.variant)}
               >
-                <input
-                  type="radio"
-                  name="variant"
-                  value={option.variant}
-                  checked={selected.variant === option.variant}
-                  onChange={() => setChosen(option.variant)}
-                  className="absolute inset-0 m-0 h-full w-full cursor-pointer opacity-0"
-                />
                 <span className="font-semibold">
                   {option.variant === 'source' ? t.variant_source : t.variant_encrypted}
                 </span>
@@ -93,7 +82,7 @@ export function ProductBuyBox({ lang, options, initial, subscription, requiremen
                 <span className="text-label text-[var(--color-muted-foreground)]">
                   {option.variant === 'source' ? t.variant_line_source : t.variant_line_encrypted}
                 </span>
-              </label>
+              </RadioCard>
             ))}
           </div>
         </fieldset>
@@ -115,7 +104,8 @@ export function ProductBuyBox({ lang, options, initial, subscription, requiremen
         <p className="flex gap-2">
           <Storefront className="mt-[0.2em] h-4 w-4 shrink-0" />
           <span>
-            {t.buy_seller}
+            {/* Draft legal copy 2.1, who sells (§ 5b (1) UWG). */}
+            {legalCopy[lang].product_seller}
             {subscription ? null : ` ${t.buy_license}`}
           </span>
         </p>

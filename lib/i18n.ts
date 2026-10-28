@@ -1658,7 +1658,6 @@ export const packagesTranslations = {
     buy_legend: 'Release',
     buy_vat: 'incl. VAT',
     buy_delivery: 'Delivered at once through the CFX.re Keymaster.',
-    buy_seller: 'Sold by Tebex Limited, merchant of record. Price includes VAT.',
     buy_license: 'One server per license.',
     buy_requirements: 'Requirements and documentation',
     release_line: 'Version {version} · updated {date}',
@@ -1758,7 +1757,6 @@ export const packagesTranslations = {
     buy_legend: 'Fassung',
     buy_vat: 'inkl. MwSt.',
     buy_delivery: 'Sofort über den CFX.re-Keymaster geliefert.',
-    buy_seller: 'Verkauf über Tebex Limited als Vertragspartner. Preis inkl. MwSt.',
     buy_license: 'Eine Lizenz gilt für einen Server.',
     buy_requirements: 'Voraussetzungen und Dokumentation',
     release_line: 'Version {version} · aktualisiert am {date}',
@@ -1935,6 +1933,63 @@ export const cartTranslations = {
     account_body:       'Deine Käufe und Downloads liegen im Tebex-Kundenportal.',
     account_history:    'Kaufhistorie ansehen',
   },
+} as const;
+
+// ── Draft legal copy (decision E10) ──────────────────────────────────────────
+// Every sentence of the purchase path that carries legal weight, verbatim
+// from the draft in the vault (`msk-shop/plans/2026-10-27-rechtstexte-
+// entwurf.md`, sections 2.1, 2.2 and 2.5). The drafts still wait for a
+// lawyer; Moritz decided to build with them now. They live in this one table
+// so the reviewed wording can replace them in one go, and so nobody edits a
+// legal sentence in passing while restyling a page.
+//
+// A part in square brackets becomes a link (components/legal/LinkedText.tsx);
+// `{total}` is filled with the basket total.
+export const legalCopy = {
+  en: {
+    // 2.1 Product page, under the buy button (§ 5b (1) UWG: who sells).
+    product_seller:
+      "Sold by Tebex Limited (London, UK), our merchant of record. Price includes VAT. You order and pay at Tebex's checkout, where their terms and withdrawal policy apply.",
+    // 2.2 Cart, the button to Tebex and the notice above it. Not "order with
+    // obligation to pay": the order is placed in the Tebex checkout (§ 312j BGB).
+    cart_button: 'Continue to payment at Tebex',
+    cart_seller:
+      'Seller and contracting party is Tebex Limited (London, UK). MSK Scripts grants you the licence to use the scripts ([Terms § 3]).',
+    cart_total: 'Total including VAT: {total}',
+    // 2.5 Withdraw from contract: first ask which contract. MSK accepts no
+    // withdrawal on behalf of Tebex (answer F4), the shop choice only points
+    // the way.
+    withdraw_question: 'What do you want to withdraw from?',
+    withdraw_subscription: 'A subscription with MSK Scripts',
+    withdraw_subscription_sub: 'Ticket Bot, MSK Forms',
+    withdraw_shop: 'A purchase in the shop',
+    withdraw_shop_sub: 'FiveM scripts, sold by Tebex',
+    withdraw_shop_text:
+      'Purchases in the shop are contracts with Tebex Limited, so please declare your withdrawal to Tebex: [Tebex checkout support]. For digital content, the right of withdrawal expires once you have agreed to immediate delivery and acknowledged that you lose it (§ 356 (6) no. 2 BGB).',
+  },
+  de: {
+    product_seller:
+      'Verkäufer ist Tebex Limited (London, UK) als Merchant of Record. Preis inkl. MwSt. Bestellung und Bezahlung erfolgen im Tebex-Checkout, dort gelten deren Bedingungen und Widerrufsbelehrung.',
+    cart_button: 'Weiter zur Zahlung bei Tebex',
+    cart_seller:
+      'Verkäufer und Vertragspartner ist Tebex Limited (London, UK). Die Nutzungsrechte an den Scripts räumt dir MSK Scripts ein ([AGB § 3]).',
+    cart_total: 'Gesamtpreis inkl. MwSt.: {total}',
+    withdraw_question: 'Wovon möchtest du zurücktreten?',
+    withdraw_subscription: 'Abo bei MSK Scripts',
+    withdraw_subscription_sub: 'Ticket Bot, MSK Forms',
+    withdraw_shop: 'Kauf im Shop',
+    withdraw_shop_sub: 'FiveM-Scripts, Verkäufer Tebex',
+    withdraw_shop_text:
+      'Käufe im Shop schließt du mit Tebex Limited. Den Widerruf erklärst du deshalb gegenüber Tebex: [Tebex-Checkout-Support]. Bei digitalen Inhalten erlischt das Widerrufsrecht, wenn du der sofortigen Bereitstellung zugestimmt und bestätigt hast, dass du es dadurch verlierst (§ 356 Abs. 6 Nr. 2 BGB).',
+  },
+} as const;
+
+/** Where the draft legal copy links to: our terms (§ 3) and Tebex' own pages. */
+export const LEGAL_LINKS = {
+  terms: '/legal/terms',
+  /** Contact address the imprint names for Tebex' checkout support. */
+  tebexSupport: 'https://www.tebex.io/contact/checkout',
+  tebexTerms: 'https://checkout.tebex.io/terms',
 } as const;
 
 // ── Category pages ───────────────────────────────────────────────────────────
