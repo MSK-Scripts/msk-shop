@@ -30,6 +30,8 @@ export interface CustomPackage {
   id: string
   name: string
   description: string
+  /** German version of `description`. Without it the German page shows the English one. */
+  descriptionDe?: string
   price?: string
   isFree?: boolean
   image: string
@@ -63,6 +65,8 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
     name: "MSK Core",
     description:
       "Our core library for our resources, providing common utilities, and more.",
+    descriptionDe:
+      "Unsere Kernbibliothek für unsere Ressourcen, mit gemeinsamen Hilfsfunktionen und mehr.",
     price: "Free",
     isFree: true,
     image: "msk_core-banner.webp",
@@ -79,6 +83,7 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
     id: "msk_enginetoggle",
     name: "MSK EngineToggle",
     description: "A simple resource for toggling the FiveM engine on and off.",
+    descriptionDe: "Eine einfache Ressource, um den Motor in FiveM an- und auszuschalten.",
     price: "Free",
     isFree: true,
     image: "msk_enginetoggle-banner.webp",
@@ -97,6 +102,8 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
     name: "MSK GiveVehicle",
     description:
       "Give, spawn, delete & manage vehicles through an in-game admin dashboard",
+    descriptionDe:
+      "Fahrzeuge vergeben, spawnen, löschen und verwalten, über ein Admin-Dashboard im Spiel",
     price: "Free",
     isFree: true,
     image: "msk_givevehicle-banner.webp",
@@ -132,6 +139,8 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
     name: "MSK Fuel",
     description:
       "The complete fuel state (level, max volume, fuel type) is stored on StateBags and is therefore fully network-synchronized between all players.",
+    descriptionDe:
+      "Der komplette Tankzustand (Füllstand, Tankgröße, Kraftstoffart) liegt in StateBags und ist dadurch zwischen allen Spielern über das Netzwerk synchron.",
     price: "Free",
     isFree: true,
     image: "msk_fuel-banner.webp",

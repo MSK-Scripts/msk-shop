@@ -1301,267 +1301,140 @@ export const giveawayResultTranslations = {
 // switch calls router.refresh(), which re-renders those server components.
 export const homeTranslations = {
   en: {
-    hero_h1_line1: "Premium FiveM",
-    hero_h1_line2: "Scripts.",
-    hero_h1_accent: "Built by a player.",
-    hero_subtitle:
-      "High quality FiveM resources, Tools & Discord bots for your community. All our products are developed in-house and come with dedicated support.",
-    hero_btn_browse: "Browse packages",
-    hero_btn_github: "View on GitHub",
+    // Hero. `{fivem}` and `{discord}` are the brand words, set in green.
+    hero_title: "Scripts and bots for your {fivem} and {discord} server",
+    hero_lead:
+      "FiveM scripts, Discord bots and web tools, built and supported by one developer in Germany since 2022.",
+    entry_label: "Entry by need",
+    entry_fivem: "For your FiveM server",
+    entry_fivem_sub: "Garage, vehicle keys, handcuffs, free scripts",
+    // {price} is the cheapest paid script in Tebex, formatted per language.
+    entry_fivem_price: "Paid scripts from {price}",
+    entry_discord: "For your Discord server",
+    entry_discord_sub: "Ticket bot, giveaway bot",
+    // {price} is the cheapest paid ticket bot plan from lib/tiers.ts.
+    entry_discord_price: "Free, plans from {price} a month",
+    entry_tools: "Web tools",
+    entry_tools_sub: "Forms, paste, short links, image gallery",
+    entry_tools_price: "Free",
 
-    trust_customers: "Customers",
-    trust_resources: "Resources",
-    trust_support: "Discord Support",
-    trust_frameworks: "Frameworks",
-
-    why_eyebrow: "Benefits",
-    why_heading: "Why MSK Scripts?",
-    why_subtitle:
-      "No template farms and no corporate roadmap, just well-built FiveM scripts you can rely on.",
-    why_features: [
-      {
-        title: "Quality over Quantity",
-        description:
-          "Every script is personally coded, tested and maintained. No template farms.",
-      },
-      {
-        title: "Regular Updates",
-        description:
-          "New features and bugfixes ship as they’re ready, not on a corporate roadmap.",
-      },
-      {
-        title: "Real Support",
-        description:
-          "Discord support from the person who actually wrote the code.",
-      },
-      {
-        title: "Open Documentation",
-        description:
-          "Full guides, examples and exports, so you never have to guess how something works.",
-      },
-    ],
-
-    featured_heading_featured: "Featured Packages",
-    featured_heading_all: "All Packages",
-    featured_all_link: "All packages",
-
-    how_eyebrow: "How it works",
-    how_heading: "From package to running server",
-    how_subtitle:
-      "Four steps, and you are done. No waiting for a key and no manual unlocking.",
-    how_steps: [
-      {
-        title: "Pick your version",
-        text: "Most resources come as an Encrypted and a Source version. Both run on Asset Escrow, but Source leaves most of the code readable and only keeps the core functions encrypted.",
-      },
-      {
-        title: "Sign in with CFX.re",
-        text: "Your CFX.re account is what the resource gets tied to, so it lands in the right Keymaster.",
-      },
-      {
-        title: "Pay through Tebex",
-        text: "Checkout is handled by Tebex. Your payment details never touch this site.",
-      },
-      {
-        title: "Start building",
-        text: "Right after payment the resource shows up under Granted Assets in your CFX.re Keymaster. Questions go to Discord, answered by the developer.",
-      },
-    ],
-    how_note:
-      "Both versions use the FiveM Asset Escrow system, so they need an active CFX.re account and a server that is online.",
-    how_btn_docs: "Read the docs",
-
-    // Free FiveM scripts. The entries themselves live in
-    // content/custom-packages.ts; this is only the section frame.
-    free_scripts_heading: "Free FiveM Scripts",
-    free_scripts_subtitle:
-      "Open source on GitHub, free to use on your server. msk_core is the shared library the paid resources build on.",
-    free_scripts_stats: "Live server counts",
-
-    custom_eyebrow: "GitHub & More",
-    custom_title: "Free tools",
-    custom_subtitle:
-      "Free tools, Discord bots, and open-source libraries from the MSK ecosystem.",
-
-    cta_heading: "Support comes from the person who wrote the code.",
-    // {count} is replaced with the measured buyer count (lib/shopStats.ts).
-    cta_heading_measured: "{count} unique buyers since 2022",
-    cta_subtitle:
-      "Discord has help before and after buying, sneak peeks and announcements, straight from the developer.",
-    cta_btn_discord: "Join Discord",
-    cta_btn_github: "Browse GitHub",
-
-    // Release log. Sourced from MSK-Scripts/VERSIONS, see lib/releases.ts.
-    release_title: "Release log",
-    release_count: "last {n}",
-    release_docs: "Full changelogs in the documentation",
-    // The summaries come from the changelogs and exist in English only, so
-    // both languages keep the original wording.
-
-    // Proof line. Every number is measured, see PRODUCT.md -> Evidence on Hand.
+    // Measured figures under the hero. Every number is measured, see
+    // PRODUCT.md -> Evidence on Hand. The refund rate is not here (E6).
+    proof_label: "MSK Scripts in numbers",
     proof_buyers: "unique buyers",
     proof_servers: "servers running msk_core",
-    proof_reversal: "refunded or charged back",
     proof_docs: "documentation pages",
 
-    catalog_heading: "The complete catalogue",
+    catalog_kicker: "FiveM scripts",
+    catalog_heading: "Scripts for your FiveM server",
     catalog_subtitle:
       "Every resource comes as Encrypted or Source. Both run on Asset Escrow.",
-    catalog_all: "View all packages",
+    catalog_all: "All FiveM scripts",
     variant_encrypted: "Encrypted",
     variant_source: "Source",
     sub_heading: "Or take everything as a subscription",
     sub_subtitle: "Access to every resource, cancel monthly.",
     sub_per_month: "/ month",
-    sub_cta: "View",
 
-    bots_heading: "Discord bots",
+    bots_kicker: "Discord bots",
+    bots_heading: "Two bots of our own for your Discord server",
     bots_subtitle:
-      "Two bots of our own, usable independently of the shop. The giveaway bot is free, the ticket bot has a free tier.",
+      "Usable independently of the shop. The giveaway bot is free, the ticket bot has a free tier.",
     bot_ticket_desc:
       "Ticket system with hosted transcripts, a custom domain and a dashboard for managing the bot.",
     bot_giveaway_desc:
       "Giveaways with entry requirements, templates and public result pages, so the draw stays verifiable.",
+    // {price} comes from lib/tiers.ts.
+    bot_price_ticket: "Free, plans from {price} a month",
+    bot_price_giveaway: "Free",
     bot_overview: "Overview",
-    bot_verify: "Verify",
     bot_dashboard: "Dashboard",
     bot_stats: "Statistics",
 
+    tools_kicker: "Web tools",
+    tools_heading: "Small tools from the same workshop",
     tools_subtitle:
-      "Side projects from the same shop. Open source, no signup, no trackers.",
-    tools_all: "Everything on GitHub",
-  },
-  de: {
-    hero_h1_line1: "Premium FiveM",
-    hero_h1_line2: "Scripts.",
-    hero_h1_accent: "Von einem Spieler entwickelt.",
-    hero_subtitle:
-      "Hochwertige FiveM-Ressourcen, Tools und Discord-Bots für deine Community. Alle unsere Produkte werden intern entwickelt und werden durch einen engagierten Support begleitet.",
-    hero_btn_browse: "Pakete ansehen",
-    hero_btn_github: "Auf GitHub ansehen",
-
-    trust_customers: "Kunden",
-    trust_resources: "Ressourcen",
-    trust_support: "Discord-Support",
-    trust_frameworks: "Frameworks",
-
-    why_eyebrow: "Vorteile",
-    why_heading: "Warum MSK Scripts?",
-    why_subtitle:
-      "Keine Template-Farmen und keine Konzern-Roadmap, sondern sorgfältig gebaute FiveM-Scripts, auf die du dich verlassen kannst.",
-    why_features: [
-      {
-        title: "Qualität statt Quantität",
-        description:
-          "Jedes Script wird persönlich programmiert, getestet und gepflegt. Keine Template-Farmen.",
-      },
-      {
-        title: "Regelmäßige Updates",
-        description:
-          "Neue Features und Bugfixes kommen, sobald sie fertig sind, nicht nach Konzern-Roadmap.",
-      },
-      {
-        title: "Echter Support",
-        description:
-          "Discord-Support von der Person, die den Code tatsächlich geschrieben hat.",
-      },
-      {
-        title: "Offene Dokumentation",
-        description:
-          "Vollständige Anleitungen, Beispiele und Exports, damit du nicht rätseln musst, wie etwas funktioniert.",
-      },
-    ],
-
-    featured_heading_featured: "Empfohlene Pakete",
-    featured_heading_all: "Alle Pakete",
-    featured_all_link: "Alle Pakete",
-
-    how_eyebrow: "So läuft es ab",
-    how_heading: "Vom Paket zum laufenden Server",
-    how_subtitle:
-      "Vier Schritte, dann läuft es. Kein Warten auf einen Key, kein manuelles Freischalten.",
-    how_steps: [
-      {
-        title: "Version wählen",
-        text: "Die meisten Ressourcen gibt es als Encrypted- und als Source-Version. Beide laufen über Asset Escrow, bei Source bleibt aber der größte Teil des Codes lesbar, verschlüsselt sind nur die Kernfunktionen.",
-      },
-      {
-        title: "Mit CFX.re anmelden",
-        text: "An deinen CFX.re-Account wird die Ressource gebunden, damit sie im richtigen Keymaster landet.",
-      },
-      {
-        title: "Über Tebex zahlen",
-        text: "Der Checkout läuft bei Tebex. Deine Zahlungsdaten berühren diese Seite nie.",
-      },
-      {
-        title: "Loslegen",
-        text: "Direkt nach der Zahlung taucht die Ressource unter Granted Assets in deinem CFX.re-Keymaster auf. Fragen gehen an Discord, beantwortet vom Entwickler.",
-      },
-    ],
-    how_note:
-      "Beide Versionen nutzen das FiveM Asset Escrow System, brauchen also einen aktiven CFX.re-Account und einen Server, der online ist.",
-    how_btn_docs: "Zur Dokumentation",
+      "Side projects from the same shop. Open source, no trackers.",
+    tools_source: "Source code",
 
     // Free FiveM scripts. The entries themselves live in
     // content/custom-packages.ts; this is only the section frame.
-    free_scripts_heading: "Kostenlose FiveM Scripts",
+    free_kicker: "Free",
+    free_scripts_heading: "Free FiveM scripts",
     free_scripts_subtitle:
-      "Open Source auf GitHub, frei nutzbar auf deinem Server. msk_core ist die Bibliothek, auf der die bezahlten Resourcen aufbauen.",
-    free_scripts_stats: "Live-Serverzahlen",
+      "Open source on GitHub, free to use on your server. msk_core is the shared library the paid resources build on.",
+    free_scripts_stats: "Live server counts",
+    free_all: "All free scripts",
 
-    custom_eyebrow: "GitHub & mehr",
-    custom_title: "Kostenlose Tools",
-    custom_subtitle:
-      "Kostenlose Tools, Discord-Bots und Open-Source-Bibliotheken aus dem MSK-Ökosystem.",
+    about_kicker: "Who is behind it",
+    about_heading: "One developer, from code to support",
+    about_text:
+      "MSK Scripts is Moritz Kohm, known as Musiker15, a self-employed developer in Germany. He has run it as his own business since 2022 and builds the FiveM scripts, Discord bots and web tools on this site himself. Support in Discord comes from him too, so your question reaches the person who wrote the code.",
+    about_more: "More about MSK",
+  },
+  de: {
+    hero_title: "Scripts und Bots für deinen {fivem}- und {discord}-Server",
+    hero_lead:
+      "FiveM-Scripts, Discord-Bots und Web-Tools, seit 2022 gebaut und betreut von einem Entwickler aus Deutschland.",
+    entry_label: "Einstieg nach Bedarf",
+    entry_fivem: "Für deinen FiveM-Server",
+    entry_fivem_sub: "Garage, Fahrzeugschlüssel, Handschellen, kostenlose Scripts",
+    entry_fivem_price: "Bezahl-Scripts ab {price}",
+    entry_discord: "Für deinen Discord-Server",
+    entry_discord_sub: "Ticket-Bot, Giveaway-Bot",
+    entry_discord_price: "Kostenlos, Pakete ab {price} im Monat",
+    entry_tools: "Web-Tools",
+    entry_tools_sub: "Formulare, Paste, Kurzlinks, Bildergalerie",
+    entry_tools_price: "Kostenlos",
 
-    cta_heading:
-      "Der Support kommt von der Person, die den Code geschrieben hat.",
-    // {count} is replaced with the measured buyer count (lib/shopStats.ts).
-    cta_heading_measured: "{count} einzigartige Käufer seit 2022",
-    cta_subtitle:
-      "Im Discord gibt es Hilfe vor und nach dem Kauf, Vorab-Einblicke und Ankündigungen, direkt vom Entwickler.",
-    cta_btn_discord: "Discord beitreten",
-    cta_btn_github: "GitHub ansehen",
-
-    // Release log. Sourced from MSK-Scripts/VERSIONS, see lib/releases.ts.
-    release_title: "Release-Protokoll",
-    release_count: "letzte {n}",
-    release_docs: "Vollständige Changelogs in der Dokumentation",
-    // The summaries come from the changelogs and exist in English only, so
-    // both languages keep the original wording.
-
-    // Proof line. Every number is measured, see PRODUCT.md -> Evidence on Hand.
-    proof_buyers: "Einzigartige Käufer",
+    proof_label: "MSK Scripts in Zahlen",
+    proof_buyers: "einzigartige Käufer",
     proof_servers: "Server auf msk_core",
-    proof_reversal: "erstattet oder zurückgebucht",
     proof_docs: "Doku-Seiten",
 
-    catalog_heading: "Der komplette Katalog",
+    catalog_kicker: "FiveM-Scripts",
+    catalog_heading: "Scripts für deinen FiveM-Server",
     catalog_subtitle:
       "Jede Ressource gibt es als Encrypted oder Source. Beide laufen über Asset Escrow.",
-    catalog_all: "Alle Pakete ansehen",
+    catalog_all: "Alle FiveM-Scripts",
     variant_encrypted: "Encrypted",
     variant_source: "Source",
     sub_heading: "Oder alles im Abo",
     sub_subtitle: "Zugriff auf sämtliche Ressourcen, monatlich kündbar.",
     sub_per_month: "/ Monat",
-    sub_cta: "Ansehen",
 
-    bots_heading: "Discord Bots",
+    bots_kicker: "Discord-Bots",
+    bots_heading: "Zwei eigene Bots für deinen Discord-Server",
     bots_subtitle:
-      "Zwei eigene Bots, unabhängig vom Shop nutzbar. Der Giveaway Bot ist kostenlos, der Ticket Bot hat eine kostenlose Stufe.",
+      "Unabhängig vom Shop nutzbar. Der Giveaway-Bot ist kostenlos, der Ticket-Bot hat eine kostenlose Stufe.",
     bot_ticket_desc:
       "Ticketsystem mit gehosteten Transkripten, eigener Domain und einem Dashboard zur Bot-Verwaltung.",
     bot_giveaway_desc:
       "Verlosungen mit Teilnahmebedingungen, Vorlagen und öffentlichen Ergebnisseiten, damit die Ziehung nachvollziehbar bleibt.",
+    bot_price_ticket: "Kostenlos, Pakete ab {price} im Monat",
+    bot_price_giveaway: "Kostenlos",
     bot_overview: "Übersicht",
-    bot_verify: "Verifizieren",
     bot_dashboard: "Dashboard",
     bot_stats: "Statistiken",
 
+    tools_kicker: "Web-Tools",
+    tools_heading: "Kleine Werkzeuge aus derselben Werkstatt",
     tools_subtitle:
-      "Nebenprojekte aus demselben Haus. Offener Quellcode, keine Anmeldung, keine Tracker.",
-    tools_all: "Alles auf GitHub",
+      "Nebenprojekte aus demselben Haus. Offener Quellcode, keine Tracker.",
+    tools_source: "Quellcode",
+
+    free_kicker: "Kostenlos",
+    free_scripts_heading: "Kostenlose FiveM-Scripts",
+    free_scripts_subtitle:
+      "Open Source auf GitHub, frei nutzbar auf deinem Server. msk_core ist die Bibliothek, auf der die bezahlten Ressourcen aufbauen.",
+    free_scripts_stats: "Live-Serverzahlen",
+    free_all: "Alle kostenlosen Scripts",
+
+    about_kicker: "Wer dahintersteht",
+    about_heading: "Ein Entwickler, vom Code bis zum Support",
+    about_text:
+      "Hinter MSK Scripts steht Moritz Kohm, bekannt als Musiker15, selbstständiger Entwickler in Deutschland. Seit 2022 führt er es als eigenes Gewerbe und baut die FiveM-Scripts, Discord-Bots und Web-Tools auf dieser Seite selbst. Auch den Support im Discord macht er selbst, deine Frage landet also bei dem, der den Code geschrieben hat.",
+    about_more: "Mehr über MSK",
   },
 } as const;
 

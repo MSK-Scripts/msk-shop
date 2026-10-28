@@ -1,71 +1,74 @@
-import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
-import { ArrowRight } from '@/components/icons'
-import { CustomPackageCard } from '@/components/home/CustomPackageCard'
+import { ArrowSquareOut } from '@/components/icons'
+import { Section, TextLink } from '@/components/home/Section'
+import { prefetchFor } from '@/components/layout/navigation'
+import { Badge } from '@/components/ui/Badge'
 import { CUSTOM_PACKAGES } from '@/content/custom-packages'
-import { homeTranslations, type Lang } from '@/lib/i18n'
+import { homeTranslations, layoutTranslations, type Lang } from '@/lib/i18n'
 
 /**
- * Die kostenlosen FiveM-Scripts.
+ * The free FiveM scripts as a list, not as big cards (plan 5.4): in the
+ * August audit the free part took 31 % of the page, more than the paid one.
  *
- * Sie standen zwischenzeitlich nur noch auf `/stats`, wo es um Live-Server-
- * zahlen geht, nicht um das Script selbst. Damit war das halbe Angebot von der
- * Startseite verschwunden, obwohl msk_core die Grundlage der bezahlten
- * Resourcen ist und die Zahl im Hero-Badge stellt.
- *
- * Ausgewählt über eine feste Id-Liste statt über ein Feld in der Content-Datei:
- * `CUSTOM_PACKAGES` mischt FiveM-Scripts und Web-Tools, und die Zuordnung ist
- * eine Entscheidung der Startseite, keine Eigenschaft des Eintrags. Eine Id, die
- * es nicht (mehr) gibt, fällt still weg — deshalb steht unten ein Hinweis.
+ * Picked by a fixed id list rather than a field in the content file:
+ * `CUSTOM_PACKAGES` mixes FiveM scripts and web tools, and which of them the
+ * home page shows is a decision of the home page. msk_core comes first, the
+ * paid resources depend on it. An id that no longer exists drops out silently
+ * (msk_jobGPS is commented out in the content file).
  */
-const FIVEM_SCRIPT_IDS = [
-  'msk_core',
-  'msk_fuel',
-  'msk_enginetoggle',
-  'msk_givevehicle',
-  'msk_jobGPS',
-] as const
+const FIVEM_SCRIPT_IDS = ['msk_core', 'msk_fuel', 'msk_enginetoggle', 'msk_givevehicle', 'msk_jobGPS'] as const
 
 export function FreeScripts({ lang }: { lang: Lang }) {
   const t = homeTranslations[lang]
+  const nav = layoutTranslations[lang]
 
-  // Reihenfolge folgt FIVEM_SCRIPT_IDS, nicht der Reihenfolge in der
-  // Content-Datei: msk_core gehört nach vorn, es ist die Abhängigkeit der
-  // anderen. `flatMap` statt `filter`, damit auskommentierte oder umbenannte
-  // Einträge (z. B. msk_jobGPS) die Sektion nicht mit einer Lücke rendern.
   const scripts = FIVEM_SCRIPT_IDS.flatMap(id => {
     const pkg = CUSTOM_PACKAGES.find(p => p.id === id)
     return pkg ? [pkg] : []
   })
-
   if (scripts.length === 0) return null
 
   return (
-    <section className="border-t border-[var(--color-border)]">
-      <div className="container-page py-14 md:py-16">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-              {t.free_scripts_heading}
-            </h2>
-            <p className="mt-2 max-w-[68ch] text-sm text-[var(--color-muted-foreground)]">
-              {t.free_scripts_subtitle}
+    <Section
+      id="free-title"
+      kicker={t.free_kicker}
+      title={t.free_scripts_heading}
+      intro={t.free_scripts_subtitle}
+      action={
+        <>
+          <TextLink href="/fivem/free" prefetch={prefetchFor('/fivem/free')}>{t.free_all}</TextLink>
+          <TextLink href="/stats">{t.free_scripts_stats}</TextLink>
+        </>
+      }
+    >
+      <ul className="grid border-t border-[var(--color-border)] @4xl:grid-cols-2 @4xl:gap-x-[clamp(2rem,4cqi,5rem)]">
+        {scripts.map(pkg => (
+          <li key={pkg.id} className="grid gap-2 border-b border-[var(--color-border)] py-5">
+            <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+              <h3 className="font-display text-h3 font-[650]">{pkg.name}</h3>
+              <a
+                href={pkg.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-11 items-center gap-1.5 font-semibold text-[var(--color-primary)] underline-offset-4 hover:text-[var(--color-primary-hover)] hover:underline"
+              >
+                GitHub
+                <ArrowSquareOut className="h-4 w-4" />
+                <span className="sr-only"> {pkg.name}, {nav.nav_new_tab}</span>
+              </a>
+            </div>
+            <p className="max-w-[40rem] text-[var(--color-muted-foreground)]">
+              {lang === 'de' && pkg.descriptionDe ? pkg.descriptionDe : pkg.description}
             </p>
-          </div>
-          <Link
-            href="/stats"
-            className="inline-flex items-center gap-1 text-sm font-semibold text-[var(--color-primary)] transition-colors hover:underline"
-          >
-            {t.free_scripts_stats}
-            <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
-        </div>
-
-        <div className="mt-8 grid gap-6 grid-cols-[repeat(auto-fit,minmax(min(100%,var(--grid-card)),1fr))]">
-          {scripts.map(pkg => (
-            <CustomPackageCard key={pkg.id} pkg={pkg} />
-          ))}
-        </div>
-      </div>
-    </section>
+            {pkg.badges.length > 0 && (
+              <ul className="flex flex-wrap gap-1.5">
+                {pkg.badges.map(b => (
+                  <li key={b.label}><Badge variant="tag">{b.label}</Badge></li>
+                ))}
+              </ul>
+            )}
+          </li>
+        ))}
+      </ul>
+    </Section>
   )
 }

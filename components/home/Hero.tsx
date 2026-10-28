@@ -1,90 +1,79 @@
+import { Fragment } from 'react'
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 import { ArrowRight } from '@/components/icons'
-import { Button } from '@/components/ui/Button'
-import { ReleaseFeed } from '@/components/home/ReleaseFeed'
-import { SITE_CONFIG } from '@/lib/config'
+import { prefetchFor } from '@/components/layout/navigation'
 import { homeTranslations, type Lang } from '@/lib/i18n'
-import type { ReleaseEntry } from '@/lib/releases'
-import { GithubMark } from '@/components/icons/GithubMark'
+
+/** The heading with its two brand words set in the band green (plan 4.4). */
+function Title({ template }: { template: string }) {
+  const words: Record<string, string> = { fivem: 'FiveM', discord: 'Discord' }
+  return template.split(/\{(fivem|discord)\}/).map((part, i) =>
+    i % 2 === 1
+      ? <em key={i} className="not-italic text-[var(--color-band-accent)]">{words[part]}</em>
+      : <Fragment key={i}>{part}</Fragment>,
+  )
+}
 
 /**
- * Der Hero füllt bewusst den sichtbaren Bereich.
+ * The hero on the anthracite band (sample page of Phase 0): one sentence on
+ * what MSK is, and the entry by need, one line per product line. From 1280 px
+ * heading and entry list stand side by side (plan 4.7).
  *
- * `min-h` statt `h`: bei einem niedrigen oder stark gezoomten Fenster wächst
- * die Sektion über die Bildschirmhöhe hinaus und scrollt, statt den Inhalt zu
- * stauchen oder abzuschneiden. `100svh` statt `100vh`, weil auf dem Telefon
- * sonst die einfahrende Browserleiste mitgerechnet wird und der Hero beim
- * Scrollen springt. Die 4rem sind die Höhe des stickenden Headers
- * (`h-16` in components/layout/Header.tsx), damit hier genau der Rest steht.
+ * Replaces the release log in terminal look, which is on the exclusion list
+ * (4.2). The updates move to the product pages as a plain list (Phase 4).
  *
- * `children` ist der Platz für die Belegzeile: sie gehört optisch in den Hero,
- * bleibt aber eine eigene Komponente, weil sie eigene Datenquellen hat.
+ * The prices are real data or nothing: the cheapest paid script from Tebex,
+ * the cheapest ticket bot plan from lib/tiers.ts. Without Tebex the FiveM line
+ * just shows no price.
  */
 export function Hero({
-  lang, releases, children,
+  lang, fivemFrom, botFrom,
 }: {
   lang: Lang
-  releases: ReleaseEntry[]
-  children?: React.ReactNode
+  /** Cheapest paid FiveM script, formatted, or null without Tebex data. */
+  fivemFrom: string | null
+  /** Cheapest paid ticket bot plan per month, formatted. */
+  botFrom: string
 }) {
   const t = homeTranslations[lang]
 
+  const entries = [
+    { href: '/fivem',   title: t.entry_fivem,   sub: t.entry_fivem_sub,   price: fivemFrom ? t.entry_fivem_price.replace('{price}', fivemFrom) : null },
+    { href: '/discord', title: t.entry_discord, sub: t.entry_discord_sub, price: t.entry_discord_price.replace('{price}', botFrom) },
+    { href: '/tools',   title: t.entry_tools,   sub: t.entry_tools_sub,   price: t.entry_tools_price },
+  ]
+
   return (
-    <section className="relative flex min-h-[calc(100svh-4rem)] flex-col overflow-hidden">
-      <div aria-hidden className="hero-decor-gradient pointer-events-none absolute inset-0" />
-
-      {/* `flex-1` nimmt die Resthöhe, `items-center` zentriert beide Spalten
-          darin vertikal. Auf einem hohen Fenster steht der Inhalt damit in der
-          Mitte, auf einem flachen füllt er die Fläche ohne Sprung. */}
-      <div className="container-page relative flex flex-1 items-center py-10 lg:py-14">
-        {/* Both columns carry their own cap and the pair is centred, instead of
-            each taking a share of the row. The old 1.06fr/0.94fr split gave the
-            text column 896 px at 1854 px while the text inside used about
-            515 px, and that leftover showed up as a ~450 px hole in the middle
-            of the hero. Letting the feed absorb it instead only moved the
-            problem: the feed grew to 1156 px and its rows pulled apart.
-            Capping both and centring the group keeps each block at its natural
-            size and closes the gap to the 48 px gutter. `minmax(0, …)` so the
-            columns still give way between `lg` and the point where both caps
-            fit; below `lg` the grid is single-column and none of this applies. */}
-        <div className="grid w-full items-center gap-10 lg:grid-cols-[minmax(0,34rem)_minmax(0,50rem)] lg:justify-center lg:gap-12">
-
-          {/* Text-Spalte */}
-          <div>
-            <h1 className="text-balance text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
-              {t.hero_h1_line1}<br />
-              {t.hero_h1_line2}<br />
-              <span className="text-[var(--color-primary)]">{t.hero_h1_accent}</span>
-            </h1>
-
-            <p className="mt-6 max-w-[42ch] text-pretty text-lg text-[var(--color-muted-foreground)] md:text-xl">
-              {t.hero_subtitle}
-            </p>
-
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button asChild size="lg">
-                <Link href="/fivem">
-                  {t.hero_btn_browse}
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="outline">
-                <a href={SITE_CONFIG.github} target="_blank" rel="noopener noreferrer">
-                  <GithubMark className="h-4 w-4" />
-                  {t.hero_btn_github}
-                </a>
-              </Button>
-            </div>
-          </div>
-
-          {/* Release-Protokoll statt des früheren Terminal-Mockups. Das enthielt
-              einen erfundenen Benchmark („12 vehicles indexed in 42 ms"). */}
-          <ReleaseFeed lang={lang} releases={releases} />
+    <section aria-labelledby="hero-title" className="surface-band">
+      <div className="container-page grid items-end gap-[var(--space-stack)] py-[clamp(3rem,2rem+5vw,11rem)] min-[1280px]:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] min-[1280px]:gap-x-[clamp(3rem,5vw,10rem)]">
+        <div className="grid gap-[clamp(1rem,0.5rem+1vw,2rem)]">
+          <h1 id="hero-title" className="max-w-[18ch] text-display font-[750] tracking-[-0.02em]">
+            <Title template={t.hero_title} />
+          </h1>
+          <p className="max-w-[46ch] text-lead text-[var(--color-band-muted)]">{t.hero_lead}</p>
         </div>
-      </div>
 
-      {/* Belegzeile, am unteren Rand des sichtbaren Bereichs. */}
-      {children}
+        <nav aria-label={t.entry_label} className="border-t-2 border-[var(--color-band-accent)]">
+          <ul className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,13rem),1fr))] gap-x-8 min-[1280px]:grid-cols-1">
+            {entries.map(e => (
+              <li key={e.href}>
+                <Link
+                  href={e.href}
+                  prefetch={prefetchFor(e.href)}
+                  className="group flex h-full min-h-16 items-center justify-between gap-3 border-b border-[var(--color-band-line)] px-1 py-3.5 text-[var(--color-band-foreground)]"
+                >
+                  <span className="grid gap-0.5">
+                    <span className="font-display text-h3 font-[650] group-hover:text-[var(--color-band-accent)]">{e.title}</span>
+                    <span className="text-small text-[var(--color-band-muted)]">{e.sub}</span>
+                    {e.price && <span className="text-small font-semibold tabular-nums">{e.price}</span>}
+                  </span>
+                  <ArrowRight className="h-5 w-5 shrink-0 text-[var(--color-band-accent)] transition-transform duration-150 group-hover:translate-x-[3px]" />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
     </section>
   )
 }

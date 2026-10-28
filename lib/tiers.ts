@@ -130,6 +130,16 @@ export function getExpiresAt(tier: Tier): Date {
 }
 
 /** Billing interval of a paid subscription. */
+/**
+ * The cheapest tier that costs money, for "plans from ... a month" on the
+ * home page. Derived from the table, so a price change cannot leave a stale
+ * "from" price behind.
+ */
+export function cheapestPaidTier(): Tier {
+  const paid = (Object.keys(TIER_CONFIG) as Tier[]).filter(tier => TIER_CONFIG[tier].priceCents > 0);
+  return paid.reduce((best, tier) => (TIER_CONFIG[tier].priceCents < TIER_CONFIG[best].priceCents ? tier : best));
+}
+
 export type BillingInterval = 'monthly' | 'yearly';
 
 /**

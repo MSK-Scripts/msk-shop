@@ -3,21 +3,22 @@ import { pageSeo } from '@/lib/pageSeo'
 import { getRequestLang } from '@/lib/serverLang'
 import { Hero } from '@/components/home/Hero'
 import { ProofLine } from '@/components/home/ProofLine'
-import { Catalog } from '@/components/home/Catalog'
-import { HowItWorks } from '@/components/home/HowItWorks'
-import { WhyMSK } from '@/components/home/WhyMSK'
+import { Catalog, cheapestScript } from '@/components/home/Catalog'
 import { Bots } from '@/components/home/Bots'
+import { WebTools } from '@/components/home/WebTools'
 import { FreeScripts } from '@/components/home/FreeScripts'
-import { CustomPackages } from '@/components/home/CustomPackages'
-import { CTASection } from '@/components/home/CTASection'
+import { About } from '@/components/home/About'
 import { alternatesFor, openGraphFor } from '@/lib/seo'
 import { publicPath } from '@/lib/routes'
 import { JsonLd } from '@/components/JsonLd'
 import { webSiteJsonLd } from '@/lib/jsonLd'
 import { loadHeadlineStat } from '@/lib/fivestats'
 import { loadDocPageCount } from '@/lib/docsPages'
-import { loadReleases } from '@/lib/releases'
 import { loadShopStats } from '@/lib/shopStats'
+import { getPackages } from '@/lib/tebex'
+import { formatEuro } from '@/lib/price'
+import { cheapestPaidTier, formatTierPrice } from '@/lib/tiers'
+import type { TebexPackage } from '@/types/tebex'
 
 // The home page collects impressions on generic queries for
 // FiveM scripts, so it carries its title itself instead of going through the
@@ -35,61 +36,59 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /**
- * Order of the sections, and why it is this way:
+ * Order of the sections (plan 5.4, English as the lead version):
  *
- *   Hero + proof   → who and what, with verifiable numbers instead of claims
- *   Catalog        → the product, right after instead of at 40 % scroll depth
- *   Why MSK        → why buy here of all places
- *   How it works   → the escrow/Keymaster mechanics, which saves support tickets
- *   Bots           → two products of our own, previously buried in the free grid
- *   Free scripts   → the free FiveM resources, msk_core first
- *   Tools          → web side projects, behind the purchase path
- *   CTA            → closing
+ *   Hero           -> what MSK is, and the entry by need
+ *   Proof          -> at most three measured figures
+ *   FiveM scripts  -> the paid scripts and the subscription
+ *   Discord bots   -> both bots in a zigzag
+ *   Web tools      -> a compact row
+ *   Free scripts   -> a list, not a grid of big cards
+ *   About          -> three sentences, no photo
  *
- * "Why" comes before "How": first the purchase decision, then the mechanics of
- * fulfilment. The other way round, the page explains the process for a purchase
- * it has not yet convinced anyone of.
+ * The close is the green band above the footer, which every public page has:
+ * Discord support and the documentation as two ways, no second call to buy.
+ * Gone: the release log in terminal look, "Why MSK" as a row of four icon
+ * cards and the second closing section (exclusion list, plan 4.2).
  */
 export default async function HomePage() {
-  const [{ lang }, headline, releases, stats, docPages] = await Promise.all([
+  const [{ lang }, headline, stats, docPages, packages] = await Promise.all([
     getRequestLang(),
     // Fail-soft: none of these sources may take down the home page. If one
     // fails, the corresponding figure disappears; nothing is estimated.
     loadHeadlineStat().catch(err => {
-      console.warn('[home] fivestats headline stat nicht verfügbar:', err)
+      console.warn('[home] fivestats headline stat unavailable:', err)
       return null
     }),
-    loadReleases(4).catch(err => {
-      console.warn('[home] Release-Protokoll nicht verfügbar:', err)
-      return []
-    }),
     loadShopStats().catch(err => {
-      console.warn('[home] Shop-Kennzahlen nicht verfügbar:', err)
+      console.warn('[home] shop stats unavailable:', err)
       return null
     }),
     loadDocPageCount().catch(err => {
-      console.warn('[home] Doku-Seitenzahl nicht verfügbar:', err)
+      console.warn('[home] doc page count unavailable:', err)
       return null
     }),
+    getPackages().catch(err => {
+      console.warn('[home] Tebex unavailable, catalogue hidden:', err)
+      return [] as TebexPackage[]
+    }),
   ])
+
+  const cheapest = cheapestScript(packages)
+  const ticketFrom = formatTierPrice(cheapestPaidTier(), lang)
 
   return (
     <>
       {/* The site as an entity, next to the Organization from the root layout.
           Only here: the home page is the one address that stands for the site. */}
       <JsonLd data={webSiteJsonLd()} />
-      {/* The proof line sits inside the hero, not below it: it is the proof for
-          the hero's claim and must therefore be visible without scrolling. */}
-      <Hero lang={lang} releases={releases}>
-        <ProofLine lang={lang} stats={stats} servers={headline} docPages={docPages} />
-      </Hero>
-      <Catalog lang={lang} />
-      <WhyMSK lang={lang} />
-      <HowItWorks lang={lang} />
-      <Bots lang={lang} />
+      <Hero lang={lang} fivemFrom={cheapest === null ? null : formatEuro(cheapest, lang)} botFrom={ticketFrom} />
+      <ProofLine lang={lang} stats={stats} servers={headline} docPages={docPages} />
+      <Catalog lang={lang} packages={packages} />
+      <Bots lang={lang} ticketFrom={ticketFrom} />
+      <WebTools lang={lang} />
       <FreeScripts lang={lang} />
-      <CustomPackages lang={lang} />
-      <CTASection lang={lang} stats={stats} />
+      <About lang={lang} />
     </>
   )
 }

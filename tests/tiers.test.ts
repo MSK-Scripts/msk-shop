@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach, vi } from 'vitest'
 import {
-  formatTierPrice, getExpiresAt, TIER_CONFIG, yearlyMonthsFree, type Tier,
+  cheapestPaidTier, formatTierPrice, getExpiresAt, TIER_CONFIG, yearlyMonthsFree, type Tier,
 } from '@/lib/tiers'
 
 /**
@@ -114,5 +114,20 @@ describe('formatTierPrice', () => {
     expect(formatTierPrice('premium_plus', 'en')).toBe('€9.99')
     expect(formatTierPrice('premium_plus', 'en', 'monthly')).toBe('€9.99')
     expect(formatTierPrice('premium_plus', 'en', 'yearly')).toBe('€99.00')
+  })
+})
+
+// The home page says "free, plans from ... a month". That "from" is a price
+// claim, so it must be the lowest price anyone actually pays, never the free
+// tier and never a dearer one.
+describe('cheapestPaidTier', () => {
+  it('is the paid tier with the lowest monthly price', () => {
+    const tier = cheapestPaidTier()
+    expect(TIER_CONFIG[tier].priceCents).toBeGreaterThan(0)
+    for (const other of LADDER) {
+      if (TIER_CONFIG[other].priceCents > 0) {
+        expect(TIER_CONFIG[tier].priceCents).toBeLessThanOrEqual(TIER_CONFIG[other].priceCents)
+      }
+    }
   })
 })

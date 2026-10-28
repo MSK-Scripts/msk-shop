@@ -89,15 +89,14 @@ app/                        Next.js App Router pages & API routes
 components/
 ├── bots/                   Ticket Bot and Giveaway Bot landing pages, comparison table
 ├── cart/                   Slide-in cart drawer
-├── home/                   Homepage sections (Hero, ProofLine, Catalog, Bots, HowItWorks, ...)
+├── home/                   Homepage sections (Hero, ProofLine, Catalog, Bots, WebTools, FreeScripts, About)
 ├── i18n/                   LangProvider, LanguageDropdown, LocaleLink (internal path -> address of the page language)
 ├── icons/                  Local brand marks (GitHub and others)
 ├── images/                 Gallery cards, search, copy-URL button, brand notice
-├── layout/                 Header, Footer, payment marks
+├── layout/                 Header (main nav, mobile menu, account menu), Footer, closing band, 404 page, payment marks
 ├── legal/                  Legal-text renderer
 ├── packages/               PackageCard, PackagePrice, AddToCartButton, PackageGallery
-├── search/                 Command-palette search (⌘K)
-├── theme/                  ThemeProvider + ThemeToggle
+├── theme/                  ThemeProvider + ThemeSwitch (system, light, dark)
 ├── ui/                     Button, Card, Badge, Container, Input, Skeleton, NewsPopup
 └── BotConfigEditor.tsx     Hosted-bot panel: bot control and live log console. The name
                             is historic, the config editor moved into the bot itself

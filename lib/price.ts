@@ -44,3 +44,12 @@ export function resolveDisplayPrice(
 
   return { original, price, isFree, hasDiscount, discountPct }
 }
+
+/**
+ * A euro amount in the format of the page language: `19,99 €` on the German
+ * pages, `€19.99` on the English ones (plan 5.9). Same locales as
+ * `formatTierPrice` in lib/tiers.ts.
+ */
+export function formatEuro(value: number, lang: 'en' | 'de'): string {
+  return new Intl.NumberFormat(lang === 'de' ? 'de-DE' : 'en-GB', { style: 'currency', currency: 'EUR' }).format(value)
+}

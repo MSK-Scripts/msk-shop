@@ -1,8 +1,7 @@
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 import Image from 'next/image'
-import { ArrowRight } from '@/components/icons'
-import { getPackages } from '@/lib/tebex'
-import { resolveDisplayPrice } from '@/lib/price'
+import { Section, TextLink } from '@/components/home/Section'
+import { formatEuro, resolveDisplayPrice } from '@/lib/price'
 import { plainExcerpt } from '@/lib/seo'
 import { Card, CardTitle, CardDescription } from '@/components/ui/Card'
 import { Badge, type BadgeVariant } from '@/components/ui/Badge'
@@ -41,15 +40,12 @@ import type { TebexPackage } from '@/types/tebex'
  * Bewusst ohne Sale-Daten: die sind user-spezifisch und hängen an einem
  * authentifizierten Basket-Ident, den es hier server-seitig nicht gibt.
  */
+function priceValue(pkg: TebexPackage): number {
+  return resolveDisplayPrice(pkg.base_price ?? 0, pkg.total_price ?? pkg.base_price ?? 0).price
+}
+
 function price(pkg: TebexPackage, lang: Lang): string {
-  const { price: value } = resolveDisplayPrice(
-    pkg.base_price ?? 0,
-    pkg.total_price ?? pkg.base_price ?? 0,
-  )
-  return `${value.toLocaleString(lang === 'de' ? 'de-DE' : 'en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })} €`
+  return formatEuro(priceValue(pkg), lang)
 }
 
 function Variant({
@@ -73,13 +69,13 @@ function Variant({
     >
       <span
         className={
-          'block font-mono text-[0.9375rem] font-bold tabular-nums group-hover/variant:underline ' +
+          'block font-display text-lead font-bold tabular-nums group-hover/variant:underline ' +
           (accent ? 'text-[var(--color-primary)]' : '')
         }
       >
         {price(pkg, lang)}
       </span>
-      <span className="block text-[0.6875rem] font-medium text-[var(--color-muted-foreground)]">
+      <span className="block text-small font-medium text-[var(--color-muted-foreground)]">
         {label}
       </span>
     </Link>
@@ -119,8 +115,8 @@ function CatalogCard({ row, lang }: { row: Row; lang: Lang }) {
             className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
           />
         ) : (
-          <span className="absolute inset-0 flex items-center justify-center font-mono text-lg font-semibold tracking-wider text-[color-mix(in_oklab,var(--color-foreground)_18%,transparent)]">
-            {row.key}
+          <span className="absolute inset-0 flex items-center justify-center font-display text-h3 font-semibold text-[var(--color-muted-foreground)]">
+            {row.name}
           </span>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
@@ -134,14 +130,14 @@ function CatalogCard({ row, lang }: { row: Row; lang: Lang }) {
       </Link>
 
       <div className="flex flex-1 flex-col gap-3 p-5">
-        <CardTitle className="text-base">
+        <CardTitle className="font-display text-product font-[750] [font-stretch:112%]">
           <Link href={row.href} prefetch={false} className="hover:underline">
             {row.name}
           </Link>
         </CardTitle>
 
         {row.description && (
-          <CardDescription className="line-clamp-3 text-[0.8125rem]">
+          <CardDescription className="line-clamp-3 text-small">
             {row.description}
           </CardDescription>
         )}
@@ -149,12 +145,7 @@ function CatalogCard({ row, lang }: { row: Row; lang: Lang }) {
         {row.tags && row.tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {row.tags.map(tag => (
-              <span
-                key={tag}
-                className="rounded border border-[var(--color-border)] bg-[var(--color-muted)] px-2 py-0.5 text-[0.625rem] text-[var(--color-muted-foreground)]"
-              >
-                {tag}
-              </span>
+              <Badge key={tag} variant="tag">{tag}</Badge>
             ))}
           </div>
         )}
@@ -176,17 +167,11 @@ function CatalogCard({ row, lang }: { row: Row; lang: Lang }) {
   )
 }
 
-export async function Catalog({ lang }: { lang: Lang }) {
-  const t = homeTranslations[lang]
-
-  // Fail-soft wie bisher: ohne Tebex-Zugriff (CI-Builds ohne Secrets) fällt die
-  // Sektion weg, statt den Prerender zu sprengen.
-  const all = await getPackages().catch(err => {
-    console.warn('[Catalog] Tebex nicht verfügbar, Sektion ausgeblendet:', err)
-    return [] as TebexPackage[]
-  })
-  if (all.length === 0) return null
-
+/**
+ * The paid catalogue rows, one per resource with both variants. Shared with
+ * the hero, which shows the cheapest of them as its entry price.
+ */
+export function catalogRows(all: TebexPackage[]): Row[] {
   const byId = new Map(all.map(p => [p.id, p]))
 
   // Die Paarung Encrypted ⇄ Source steht in content/resource-stats.ts, damit
@@ -214,51 +199,61 @@ export async function Catalog({ lang }: { lang: Lang }) {
     })
     .flatMap(r => (r ? [r] : []))
 
+  return rows
+}
+
+/** The cheapest paid script, or null without Tebex data. */
+export function cheapestScript(all: TebexPackage[]): number | null {
+  const prices = catalogRows(all)
+    .flatMap(r => [r.encrypted, r.source])
+    .flatMap(p => (p ? [priceValue(p)] : []))
+    .filter(v => v > 0)
+  return prices.length > 0 ? Math.min(...prices) : null
+}
+
+export function Catalog({ lang, packages: all }: { lang: Lang; packages: TebexPackage[] }) {
+  const t = homeTranslations[lang]
+
+  // Fail-soft: without Tebex (CI builds without secrets) the section drops
+  // out instead of breaking the prerender. The page loads the packages once.
+  const rows = catalogRows(all)
   if (rows.length === 0) return null
+
+  const byId = new Map(all.map(p => [p.id, p]))
 
   const subs = SUBSCRIPTION_PACKAGE_IDS
   const subEncrypted = subs ? byId.get(subs.encrypted) : undefined
   const subSource = subs ? byId.get(subs.source) : undefined
 
   return (
-    <section className="container-page py-14 md:py-16">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight md:text-4xl">{t.catalog_heading}</h2>
-          <p className="mt-2 max-w-[62ch] text-sm text-[var(--color-muted-foreground)]">
-            {t.catalog_subtitle}
-          </p>
-        </div>
-        <Link
-          href="/fivem"
-          className="inline-flex items-center gap-1 text-sm font-semibold text-[var(--color-primary)] transition-colors hover:underline"
-        >
-          {t.catalog_all}
-          <ArrowRight className="h-3.5 w-3.5" />
-        </Link>
-      </div>
-
-      {/* Vier bezahlte Ressourcen: eine Reihe ab xl, davor 2×2, auf dem Telefon
-          gestapelt. Kein lg-Zwischenschritt, bei drei Spalten stünde die vierte
-          Karte allein in der zweiten Reihe. */}
-      <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+    // No top rule: the proof line above already draws one.
+    <Section
+      className="border-t-0"
+      id="catalog-title"
+      kicker={t.catalog_kicker}
+      title={t.catalog_heading}
+      intro={t.catalog_subtitle}
+      action={<TextLink href="/fivem">{t.catalog_all}</TextLink>}
+    >
+      {/* `auto-fit` with a fixed minimum: the paid scripts stay in one row
+          wherever three fit, and stretch instead of leaving empty columns on
+          a wide screen. The screenshot-first card follows in Phase 4. */}
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,18rem),1fr))] gap-5">
         {rows.map(row => (
           <CatalogCard key={row.key} row={row} lang={lang} />
         ))}
       </div>
 
       {subEncrypted && subSource && (
-        <div className="mt-6 flex flex-wrap items-center gap-x-8 gap-y-4 rounded-xl border border-[var(--color-border)] bg-[color-mix(in_oklab,var(--color-muted)_50%,var(--color-background))] px-5 py-4">
-          <div className="min-w-[16rem] flex-1">
-            <div className="font-semibold">{t.sub_heading}</div>
-            <p className="mt-0.5 text-[0.8125rem] text-[var(--color-muted-foreground)]">
-              {t.sub_subtitle}
-            </p>
+        <div className="mt-5 flex flex-wrap items-center gap-x-8 gap-y-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-accent-soft)] px-5 py-4">
+          <div className="min-w-[min(100%,16rem)] flex-1">
+            <p className="font-display text-h3 font-[650]">{t.sub_heading}</p>
+            <p className="mt-0.5 text-small text-[var(--color-muted-foreground)]">{t.sub_subtitle}</p>
           </div>
           <Variant pkg={subEncrypted} label={`${t.variant_encrypted} ${t.sub_per_month}`} lang={lang} align="right" />
           <Variant pkg={subSource} label={`${t.variant_source} ${t.sub_per_month}`} accent lang={lang} align="right" />
         </div>
       )}
-    </section>
+    </Section>
   )
 }

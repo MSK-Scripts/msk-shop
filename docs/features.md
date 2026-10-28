@@ -12,7 +12,9 @@ The shop side:
 - Coupon codes (apply and remove)
 - Catalog filters, per-package badges, tags and custom descriptions
 - A "custom packages" section for things that don't live on Tebex (Discord bots, GitHub repos and so on)
-- Measured shop figures on the homepage (hidden rather than shown stale when the nightly snapshot is too old) and a release feed read from the public `MSK-Scripts/VERSIONS` repository
+- Measured shop figures on the homepage (hidden rather than shown stale when the nightly snapshot is too old); the release feed read from the public `MSK-Scripts/VERSIONS` repository (`lib/releases.ts`) moves to the product pages in Phase 4 of the redesign
+- Header with the three product lines (FiveM scripts, Discord bots, web tools) and their pages, an account entry that keeps the shop login (CFX.re) and the bot logins (Discord) apart, and a theme switch (system, light, dark) in the account menu and the footer; no search until the catalogue reaches about 20 products
+- An unknown address gets a server-rendered 404 page in its language with the status 404, set by the proxy
 - Live resource statistics page (`/en/stats`, `/de/statistiken`) powered by fivestats.io: server counts, ranking and a 7-day trend chart for every MSK resource
 - Every page under `/en/` and `/de/` with translated German paths from one route table (`lib/routes.ts`); `/` redirects by remembered choice, then browser language; old addresses answer 308; canonical and hreflang on every public page and a generated sitemap
 - Legal pages in English and German, written in plain Markdown so they can be edited without touching code
