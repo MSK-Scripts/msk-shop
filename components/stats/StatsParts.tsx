@@ -40,7 +40,8 @@ export function StatsHero({
     <PageHero
       id={id}
       crumbs={crumbs}
-      kicker={live ? labels.live : labels.unavailable}
+      // No green kicker without data: the warning line below says it in words.
+      kicker={live ? labels.live : undefined}
       title={title}
       lead={subtitle}
     >

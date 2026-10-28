@@ -18,7 +18,7 @@ For **MSK Forms**, the terms at forms.msk-scripts.de/terms apply.
 
 (2) A consumer is any natural person who enters into a legal transaction for purposes that are predominantly outside their trade, business or profession (§ 13 BGB); an entrepreneur is anyone acting in the exercise of their trade, business or profession (§ 14 BGB).
 
-(3) These Terms are available at www.msk-scripts.de/en/legal/terms and can be saved and printed. The contract language is German; the English version is provided for information, and in the event of discrepancies the German version prevails.
+(3) These Terms are available at www.msk-scripts.de/en/legal/terms and can be saved and printed. The contract languages and how the two versions relate are set out in § 14 (3).
 
 ## § 2 Shop: contracting party, payment, delivery
 

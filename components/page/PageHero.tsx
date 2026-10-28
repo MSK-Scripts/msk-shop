@@ -23,7 +23,9 @@ export function PageHero({
 }: {
   /** Id of the h1, which names the section. */
   id: string
-  kicker: string
+  /** Green label above the heading. Left out where green would claim a
+      success that is not there (e.g. statistics that are unavailable). */
+  kicker?: string
   title: ReactNode
   lead?: ReactNode
   actions?: ReactNode
@@ -64,7 +66,7 @@ export function PageHero({
             </nav>
           )}
           <div className="grid gap-2.5">
-            <span className="kicker">{kicker}</span>
+            {kicker && <span className="kicker">{kicker}</span>}
             <h1 id={id} className="max-w-[20ch] text-display font-[750] tracking-[-0.02em] text-balance">
               {title}
             </h1>

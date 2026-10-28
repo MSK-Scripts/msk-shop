@@ -16,7 +16,7 @@ Für **MSK Forms** gelten die AGB unter forms.msk-scripts.de/terms.
 
 (2) Verbraucher ist jede natürliche Person, die ein Rechtsgeschäft zu Zwecken abschließt, die überwiegend weder ihrer gewerblichen noch selbständigen beruflichen Tätigkeit zugerechnet werden können (§ 13 BGB); Unternehmer ist, wer in Ausübung seiner gewerblichen oder selbständigen beruflichen Tätigkeit handelt (§ 14 BGB).
 
-(3) Die AGB sind unter www.msk-scripts.de/de/rechtliches/agb abrufbar, speicherbar und druckbar. Vertragssprache ist Deutsch; die englische Fassung dient der Information, bei Abweichungen gilt die deutsche.
+(3) Die AGB sind unter www.msk-scripts.de/de/rechtliches/agb abrufbar, speicherbar und druckbar. Vertragssprachen und das Verhältnis der beiden Fassungen regelt § 14 Abs. 3.
 
 ## § 2 Shop: Vertragspartner, Zahlung, Lieferung
 
