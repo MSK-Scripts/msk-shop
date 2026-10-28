@@ -62,21 +62,25 @@ export function paymentColumns(c: AdminCopy, lang: Lang, onDetails: (p: Payment)
       sortValue: p => Date.parse(p.date) || null,
       cell: p => <time dateTime={isoDate(p.date)} className="tabular-nums">{formatDateTime(p.date, lang) ?? p.date}</time>,
     },
-    { id: 'txn', header: c.payments.col_txn, nowrap: true, sortValue: p => String(p.id), cell: p => <span className="font-mono">{p.id}</span> },
+    {
+      // The id opens the detail, the one place a payment can be refunded.
+      id: 'txn', header: c.payments.col_txn, nowrap: true, sortValue: p => String(p.id),
+      cell: p => (
+        <Button variant="link" className="min-h-9 px-0 font-mono" onClick={() => onDetails(p)} aria-label={fillCopy(c.payments.details_of, { id: p.id })}>
+          {p.id}
+        </Button>
+      ),
+    },
     { id: 'player', header: c.payments.col_player, sortValue: p => p.player?.name ?? null, cell: p => p.player?.name ?? <NoneText /> },
     {
-      id: 'packages', header: c.payments.col_packages, className: 'min-w-[12rem]',
+      id: 'packages', header: c.payments.col_packages, className: 'min-w-[10rem]',
       cell: p => (p.packages ?? []).map(pkg => pkg.name).join(', ') || <NoneText />,
     },
     { id: 'amount', header: c.payments.col_amount, numeric: true, nowrap: true, sortValue: p => Number(p.amount), cell: p => money(p, lang) },
     { id: 'status', header: c.payments.col_status, nowrap: true, sortValue: p => paymentKind(p), cell: p => <PaymentStatus payment={p} c={c} /> },
     {
-      id: 'email', header: c.payments.col_email, className: 'min-w-[14rem]',
+      id: 'email', header: c.payments.col_email,
       cell: p => <RevealValue kind="payment" id={String(p.id)} field="email" masked={p.email} record={`${c.payments.col_txn} ${p.id}`} />,
-    },
-    {
-      id: 'actions', header: <span className="sr-only">{c.common.actions}</span>, nowrap: true,
-      cell: p => <Button variant="outline" size="sm" onClick={() => onDetails(p)}>{c.payments.details}</Button>,
     },
   ]
 }
@@ -224,7 +228,7 @@ export function PaymentDetail({ payment, canRefund, onBack, reload, setFlash }: 
     [c.payments.f_player, player],
     [c.payments.f_amount, amount],
     [c.payments.f_status, <PaymentStatus key="s" payment={payment} c={c} />],
-    [c.payments.f_email, <RevealValue key="e" kind="payment" id={String(payment.id)} field="email" masked={payment.email} record={`${c.payments.col_txn} ${payment.id}`} />],
+    [c.payments.f_email, <RevealValue key="e" kind="payment" id={String(payment.id)} field="email" masked={payment.email} record={`${c.payments.col_txn} ${payment.id}`} size="md" />],
     [c.payments.f_gateway, payment.gateway?.name ?? c.common.none],
     [c.payments.f_creator, payment.creator_code || c.common.none],
     [c.payments.f_packages, (payment.packages ?? []).map(p => p.name).join(', ') || c.common.none],

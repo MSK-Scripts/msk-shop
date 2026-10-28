@@ -205,9 +205,9 @@ const FIELD_NAME: Record<RevealField, 'field_email' | 'field_ip' | 'field_api_ke
  * in this component's state only: hiding it, leaving the page or reloading
  * the list forgets it. Nothing stores or logs it.
  *
- * The button is 36 px, the size allowed inside a dense table.
+ * The button is 36 px inside a dense table and 44 px elsewhere.
  */
-export function RevealValue({ kind, id, field, masked, record, className, onRevealed }: {
+export function RevealValue({ kind, id, field, masked, record, className, onRevealed, size = 'sm' }: {
   kind: RevealKind
   id: string
   field: RevealField
@@ -218,6 +218,8 @@ export function RevealValue({ kind, id, field, masked, record, className, onReve
   className?: string
   /** For a value that is also copied, the API key. */
   onRevealed?: (value: string | null) => void
+  /** `sm` (36 px) inside a dense table, `md` (44 px) everywhere else. */
+  size?: 'sm' | 'md'
 }) {
   const { c } = useAdminCopy()
   const [value, setValue] = useState<string | null>(null)
@@ -229,6 +231,7 @@ export function RevealValue({ kind, id, field, masked, record, className, onReve
   const label = { field: c.common[FIELD_NAME[field]], record }
 
   async function reveal() {
+    if (busy) return
     setBusy(true)
     setFailed(false)
     try {
@@ -253,12 +256,14 @@ export function RevealValue({ kind, id, field, masked, record, className, onReve
         {value ?? masked}
       </span>
       {value === null ? (
-        <Button variant="ghost" size="sm" onClick={reveal} disabled={busy} aria-label={fillCopy(c.common.reveal_label, label)}>
+        // Not disabled while it loads: a disabled button drops the focus,
+        // and the same button turns into Hide once the value is there.
+        <Button variant="ghost" size={size} onClick={reveal} aria-busy={busy || undefined} aria-label={fillCopy(c.common.reveal_label, label)}>
           {busy ? <CircleNotch className="h-4 w-4 animate-spin" /> : <Eye className="h-4 w-4" />}
           {c.common.reveal}
         </Button>
       ) : (
-        <Button variant="ghost" size="sm" onClick={hide} aria-label={fillCopy(c.common.hide_label, label)}>
+        <Button variant="ghost" size={size} onClick={hide} aria-label={fillCopy(c.common.hide_label, label)}>
           <EyeSlash className="h-4 w-4" />
           {c.common.hide_value}
         </Button>

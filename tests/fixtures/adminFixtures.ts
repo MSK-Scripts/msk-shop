@@ -89,8 +89,8 @@ const coupons = [
 
 const auditRows = [
   { id: 12, discord_user_id: '111111111111111111', display_name: 'Musiker15', action: 'image_upload.approve', target: '0b8c5f0e-3c1b-4d55-9a0e-6c2b1f4d9e10', detail: JSON.stringify({ category: 'brand', name: 'opengewerk-logo', submittedBy: '222222222222222222' }), created_at: ago(0, 2) },
-  { id: 11, discord_user_id: '111111111111111111', display_name: 'Musiker15', action: 'ban.create', target: 'quick_buyer', detail: JSON.stringify({ reason: `Chargeback fraud, second account ${EMAILS[3]}` }), created_at: ago(4) },
-  { id: 10, discord_user_id: '333333333333333333', display_name: 'Lena', action: 'payment.create_free', target: 'UniqueFamily', detail: JSON.stringify({ packages: [{ id: 6001 }], price: 0 }), created_at: ago(2) },
+  { id: 11, discord_user_id: '333333333333333333', display_name: 'Lena', action: 'payment.create_free', target: 'UniqueFamily', detail: JSON.stringify({ packages: [{ id: 6001 }], price: 0 }), created_at: ago(2) },
+  { id: 10, discord_user_id: '111111111111111111', display_name: 'Musiker15', action: 'ban.create', target: 'quick_buyer', detail: JSON.stringify({ reason: `Chargeback fraud, second account ${EMAILS[3]}` }), created_at: ago(4) },
   { id: 9, discord_user_id: '333333333333333333', display_name: 'Lena', action: 'data.reveal', target: 'payment:51235', detail: JSON.stringify({ field: 'email' }), created_at: ago(6) },
   { id: 8, discord_user_id: '444444444444444444', display_name: null, action: 'coupon.delete', target: '899', detail: null, created_at: ago(9) },
   { id: 7, discord_user_id: '111111111111111111', display_name: 'Musiker15', action: 'api_key.change_tier', target: '900394679634370640', detail: JSON.stringify({ from: 'basic', to: 'premium' }), created_at: ago(12) },

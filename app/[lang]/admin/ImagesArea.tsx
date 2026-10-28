@@ -86,7 +86,7 @@ export function ImageFiguresView({ figures, onCategory }: { figures: ImageFigure
       id: 'category', header: c.images.col_category, sortValue: s => s.name,
       cell: s => (
         <span className="inline-flex flex-wrap items-center gap-2">
-          <Button variant="link" className="min-h-9 font-semibold" onClick={() => onCategory(s.slug)}>{s.name}</Button>
+          <Button variant="link" className="min-h-9 px-0 font-semibold" onClick={() => onCategory(s.slug)}>{s.name}</Button>
           {!s.isPublic && <StatusBadge tone="neutral">{c.images.not_listed}</StatusBadge>}
         </span>
       ),
@@ -425,6 +425,7 @@ function SyncCheck() {
       )}
     >
       {error && <Notice tone="danger" role="alert" title={error} />}
+      {!report && !error && <p className="text-[var(--color-muted-foreground)]">{c.images.sync_not_run}</p>}
       {report && (report.unavailable
         ? <Notice tone="warning" title={report.unavailable} />
         : (

@@ -51,7 +51,7 @@ function PermissionPicker({ selected, onChange, idPrefix, sections }: {
     onChange(next)
   }
   const templates = (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap items-start gap-2">
       {TEMPLATES.map(t => (
         <Button key={t} variant="outline" onClick={() => onChange(new Set(ROLE_TEMPLATES[t]))} title={c.team.templates[t].description}>
           {c.team.templates[t].label}
