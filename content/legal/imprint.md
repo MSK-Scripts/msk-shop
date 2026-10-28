@@ -51,7 +51,7 @@ Subscriptions for the Ticket Bot transcript service and MSK Forms are processed 
 MSK Scripts stores and publishes content provided by users (ticket transcripts, image gallery, giveaway result pages, MSK Paste, MSK Forms) and is therefore a hosting service provider within the meaning of Regulation (EU) 2022/2065. Single point of contact for authorities (Art. 11 DSA) and users (Art. 12 DSA):
 
 Email: info@msk-scripts.de
-Postal address: Moritz Kohm, MSK Scripts, c/o Impressumservice Dein-Impressum, Stettiner Str. 41, 35410 Hungen
+Postal address: Moritz Kohm, MSK Scripts, Hauptstraße 103, 68535 Edingen-Neckarhausen, Germany
 
 Languages: German and English. The point of contact is staffed personally.
 

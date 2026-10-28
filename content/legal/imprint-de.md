@@ -49,7 +49,7 @@ Abonnements für den Ticket-Bot-Transcript-Service und MSK Forms werden über **
 MSK Scripts speichert und veröffentlicht von Nutzern bereitgestellte Inhalte (Ticket-Transkripte, Bildergalerie, Giveaway-Ergebnisseiten, MSK Paste, MSK Forms) und ist damit Hostingdiensteanbieter im Sinne der Verordnung (EU) 2022/2065. Zentrale Kontaktstelle für Behörden (Art. 11 DSA) und Nutzer (Art. 12 DSA):
 
 E-Mail: info@msk-scripts.de
-Postanschrift: Moritz Kohm, MSK Scripts, c/o Impressumservice Dein-Impressum, Stettiner Str. 41, 35410 Hungen
+Postanschrift: Moritz Kohm, MSK Scripts, Hauptstraße 103, 68535 Edingen-Neckarhausen, Deutschland
 
 Sprachen: Deutsch und Englisch. Die Kontaktstelle wird persönlich betreut.
 
