@@ -94,21 +94,21 @@ export interface ProductCopy {
 export const PRODUCT_COPY: Record<string, ProductCopy> = {
   garage: {
     summary: {
-      en: 'A complete, server-authoritative garage and impound system for ESX with a modern React UI and a security-first backend.',
-      de: 'Ein komplettes Garagen- und Abschlepphof-System für ESX: der Server prüft alles, die Oberfläche ist modernes React, das Backend auf Sicherheit gebaut.',
+      en: 'A complete, server-authoritative garage and impound system for ESX, QBCore and Qbox with a modern React UI and a security-first backend.',
+      de: 'Ein komplettes Garagen- und Abschlepphof-System für ESX, QBCore und Qbox: der Server prüft alles, die Oberfläche ist modernes React, das Backend auf Sicherheit gebaut.',
     },
     seo: {
       en: {
         title:       'MSK Garage, FiveM Garage & Impound',
-        description: 'Server-authoritative FiveM garage and impound system for ESX with a React admin dashboard. Available as Encrypted or Source release.',
+        description: 'Server-authoritative FiveM garage and impound system for ESX, QBCore and Qbox with a React admin dashboard. Available as Encrypted or Source release.',
       },
       de: {
         title:       'MSK Garage, FiveM Garage & Impound',
-        description: 'Server-autoritatives FiveM Garage- und Impound-System für ESX mit React-Admin-Dashboard. Als Encrypted- oder Source-Fassung erhältlich.',
+        description: 'Server-autoritatives FiveM Garage- und Impound-System für ESX, QBCore und Qbox mit React-Admin-Dashboard. Als Encrypted- oder Source-Fassung erhältlich.',
       },
     },
-    frameworks: ['ESX'],
-    requires: ['msk_core', 'ox_lib', 'oxmysql'],
+    frameworks: ['ESX', 'QBCore', 'Qbox'],
+    requires: ['msk_core 4.1.0+', 'ox_lib', 'oxmysql'],
     optional: ['AdvancedParking', 'VehicleDeformation', 'MSK VehicleKeys', 'VehicleKeyChain', 'Jaksam Vehicle Keys'],
   },
   handcuffs: {
@@ -127,7 +127,7 @@ export const PRODUCT_COPY: Record<string, ProductCopy> = {
       },
     },
     frameworks: ['ESX', 'QBCore'],
-    requires: ['msk_core', 'oxmysql'],
+    requires: ['msk_core 4.1.0+', 'oxmysql'],
     optional: ['ox_target or qb-target', 'pma-voice or saltychat'],
   },
   vehiclekeys: {
@@ -146,7 +146,7 @@ export const PRODUCT_COPY: Record<string, ProductCopy> = {
       },
     },
     frameworks: ['ESX', 'QBCore'],
-    requires: ['msk_core', 'ox_lib', 'oxmysql'],
+    requires: ['msk_core 4.1.0+', 'ox_lib', 'oxmysql'],
     optional: ['ox_target', 'msk_enginetoggle'],
   },
   'all-access': {
