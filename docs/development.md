@@ -95,7 +95,8 @@ components/
 ├── images/                 Gallery cards, search, copy-URL button, brand notice
 ├── layout/                 Header (main nav, mobile menu, account menu), Footer, closing band, 404 page, payment marks
 ├── legal/                  Legal-text renderer
-├── packages/               PackageCard, PackagePrice, AddToCartButton, PackageGallery
+├── packages/               PackagePrice, AddToCartButton, PackageGallery
+├── products/               Product card, catalogue filter, product page with buy box (Encrypted/Source), comparison table
 ├── theme/                  ThemeProvider + ThemeSwitch (system, light, dark)
 ├── ui/                     Button, Card, Badge, Container, Input, Skeleton, NewsPopup
 └── BotConfigEditor.tsx     Hosted-bot panel: bot control and live log console. The name
@@ -201,24 +202,15 @@ A fresh database gets everything from `schema.sql`. Existing databases are updat
 Most of the shop configuration lives in **`lib/config.ts`**:
 
 ```ts
-// Which Tebex packages show up on the homepage
-export const FEATURED_PACKAGE_IDS = [5301828, 6446947, 6372865]
-
-// One or more badges per package
-// Variants: 'esx' | 'qb' | 'standalone' | 'js' | 'ts' | 'lua' | 'py' | 'discord' | 'fivem'
-export const PACKAGE_BADGES: Record<number, Badge[]> = {
-  5301828: [{ label: 'ESX', variant: 'esx' }, { label: 'Lua', variant: 'lua' }],
-  6446947: [{ label: 'ESX', variant: 'esx' }, { label: 'QBCore', variant: 'qb' }, { label: 'Lua', variant: 'lua' }],
-}
-
-// Short description shown on package cards
-export const PACKAGE_DESCRIPTIONS: Record<number, string> = {
-  5301828: 'Realistic handcuffs with animations, props, drag and more.',
-}
-
-// Tags shown on package cards
-export const PACKAGE_TAGS: Record<number, string[]> = {
-  5301828: ['msk_core', 'pma-voice'],
+// What the shop says about a product, keyed by its slug (see "Products" below)
+export const PRODUCT_COPY: Record<string, ProductCopy> = {
+  handcuffs: {
+    summary: { en: 'Realistic handcuffs with …', de: 'Realistische Handschellen mit …' },
+    seo: { en: { title: '…', description: '…' }, de: { title: '…', description: '…' } },
+    frameworks: ['ESX', 'QBCore'],          // tags on the card, catalogue filter
+    requires: ['msk_core', 'oxmysql'],      // "Requirements" on the product page
+    optional: ['pma-voice or saltychat'],
+  },
 }
 
 // News popup, shown on every full page load
@@ -246,7 +238,17 @@ A few more things worth knowing:
 - **Custom packages** (the non-Tebex ones) live in **`content/custom-packages.ts`**.
 - **Resource statistics** are configured in **`content/resource-stats.ts`**: each entry maps a `resource_name` (the exact FiveM folder name) to a free resource (linked to GitHub) or a paid one (linked to its two Tebex variants).
 - **Legal pages** are plain Markdown in **`content/legal/*.md`**, one file per language.
-- **SEO titles and descriptions** for pages, packages and categories live in `lib/pageSeo.ts` and `lib/config.ts`, in both languages.
+- **SEO titles and descriptions** for pages, products and categories live in `lib/pageSeo.ts` and `lib/config.ts`, in both languages.
+
+### Products
+
+Tebex keeps every script twice, as an Encrypted and a Source package. The shop sells one product with the two as a choice on its page. `lib/products.ts` is the one place that groups them:
+
+- The pairing comes from `content/resource-stats.ts` (the two package ids of every paid resource) and `SUBSCRIPTION_PACKAGE_IDS` in `lib/config.ts`. Nothing is maintained twice.
+- The address is `/fivem/<slug>` in both languages. The slug of a script is its resource name without `msk_` (`msk_garage` is `/fivem/garage`); the subscription is `/fivem/all-access` (`/de/fivem/alle-scripts`).
+- Old addresses with a Tebex id (`/en/fivem/5732588`, `/packages/5732588`) answer 308 to the product in one hop, with `?variant=source` when the id was the Source package. The canonical address never carries the variant.
+- An unknown slug or id is answered by the proxy with the 404 page of its language and status 404, before a page renders.
+- A package added in Tebex without an entry still gets a product: paired with a partner of the same Tebex slug stem (`radio-e`, `radio-s`), otherwise on its own, under a derived slug. The proxy asks Tebex (at most once a minute) for addresses the configured products do not know. Add the resource to `content/resource-stats.ts` and its copy to `PRODUCT_COPY` to give it a stable slug, a summary and requirements.
 
 ---
 

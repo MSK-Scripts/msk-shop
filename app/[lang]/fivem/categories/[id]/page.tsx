@@ -1,17 +1,20 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
-import { CaretRight as ChevronRight, ArrowLeft } from '@/components/icons'
-import { getCategory, getCategories } from '@/lib/tebex'
-import { PackageCard } from '@/components/packages/PackageCard'
+import { CaretRight, ArrowLeft } from '@/components/icons'
+import { ProductCard } from '@/components/products/ProductCard'
+import { SubscriptionCard } from '@/components/products/SubscriptionCard'
 import { Button } from '@/components/ui/Button'
-import { PACKAGE_BADGES, PACKAGE_TAGS, PACKAGE_DESCRIPTIONS, CATEGORY_SEO, resolveVariant } from '@/lib/config'
+import { CATEGORY_SEO, resolveVariant } from '@/lib/config'
 import { sanitizeTebexHtml, pickLanguageBlock } from '@/lib/sanitize'
 import { categoriesTranslations, packagesTranslations } from '@/lib/i18n'
 import { getRequestLang } from '@/lib/serverLang'
+import { groupProducts } from '@/lib/products'
+import { productCard } from '@/lib/productView'
 import { publicPath } from '@/lib/routes'
 import { LANGS } from '@/lib/lang'
 import { alternatesFor, DEFAULT_OG_IMAGE, openGraphFor, plainExcerpt } from '@/lib/seo'
+import { getCategories, getCategory, getPackages } from '@/lib/tebex'
 import { JsonLd } from '@/components/JsonLd'
 import { breadcrumbJsonLd } from '@/lib/jsonLd'
 
@@ -48,7 +51,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     const description =
       snippet?.description ||
       plainExcerpt(cat.description) ||
-      `Browse ${count} ${count === 1 ? 'package' : 'packages'} in ${cat.name} from MSK Scripts.`
+      `Browse ${count} ${count === 1 ? 'script' : 'scripts'} in ${cat.name} from MSK Scripts.`
     const title = snippet?.title ?? cat.name
 
     return {
@@ -72,6 +75,14 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   }
 }
 
+/**
+ * A Tebex category as a list of products, with the cards of the catalogue.
+ *
+ * The two variant categories (Encrypted Version, Source Version) hold one
+ * package of each script. Their cards name that variant's price and lead to
+ * the product page with that variant chosen, so "Source" does not show the
+ * Encrypted price as "from".
+ */
 export default async function CategoryPage({
   params,
 }: {
@@ -79,95 +90,72 @@ export default async function CategoryPage({
 }) {
   const { id } = await params
 
-  // Until 22.08.2026 this page resolved no language at all: it inherited
-  // `lang="de"` from the root layout and delivered every text below it in
-  // English. Resolution now works as in `app/packages/page.tsx`.
-  const [{ lang }, category] = await Promise.all([
+  const [{ lang }, category, packages] = await Promise.all([
     getRequestLang(),
     getCategory(id).catch(() => null),
+    getPackages().catch(() => []),
   ])
   if (!category) notFound()
 
   const t = categoriesTranslations[lang]
-  // Only on the two variant categories: there the notice explains that
-  // the same script also exists in the other edition.
-  const showVariantNote = resolveVariant({ category: { id: Number(id) } }) !== null
+  const focus = resolveVariant({ category: { id: category.id } }) ?? undefined
 
-  const packageCount = category.packages?.length ?? 0
-  const countLabel = (packageCount === 1 ? t.count_one : t.count_many)
-    .replace('{n}', packageCount.toLocaleString(lang === 'de' ? 'de-DE' : 'en-US'))
+  const inCategory = new Set((category.packages ?? []).map(p => p.id))
+  const products = groupProducts(packages).filter(p => p.variants.some(v => inCategory.has(v.pkg.id)))
+  const scripts = products.filter(p => p.kind === 'script').map(p => productCard(p, lang, focus))
+  const subscriptions = products.filter(p => p.kind === 'subscription').map(p => productCard(p, lang, focus))
+  const total = scripts.length + subscriptions.length
+
+  const countLabel = (total === 1 ? t.count_one : t.count_many)
+    .replace('{n}', total.toLocaleString(lang === 'de' ? 'de-DE' : 'en-US'))
 
   return (
-    // `container-page` like `/fivem`: both routes are pure card grids,
-    // and DESIGN.md names the wide container for exactly that. During the
-    // container cleanup on 22.08. this page had been overlooked.
-    <div className="container-page py-10 md:py-14">
+    <div className="container-page grid gap-[var(--space-stack)] py-[clamp(1.5rem,1rem+2vw,4rem)]">
       {/* Must match the visible breadcrumb below, in the language of the page. */}
       <JsonLd
         data={breadcrumbJsonLd([
-          { name: t.breadcrumb_home,     path: publicPath(lang, '/') },
-          { name: t.breadcrumb_packages, path: publicPath(lang, '/fivem') },
+          { name: t.breadcrumb_home,  path: publicPath(lang, '/') },
+          { name: t.breadcrumb_fivem, path: publicPath(lang, '/fivem') },
           { name: category.name },
         ])}
       />
 
-      {/* Breadcrumb */}
-      <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-1.5 text-xs text-[var(--color-muted-foreground)]">
-        <Link href="/" className="transition-colors hover:text-[var(--color-foreground)]">{t.breadcrumb_home}</Link>
-        <ChevronRight className="h-3 w-3" />
-        <Link href="/fivem" className="transition-colors hover:text-[var(--color-foreground)]">{t.breadcrumb_packages}</Link>
-        <ChevronRight className="h-3 w-3" />
-        <span className="text-[var(--color-foreground)]">{category.name}</span>
-      </nav>
+      <div className="grid gap-3">
+        <nav aria-label="Breadcrumb" className="text-small text-[var(--color-muted-foreground)]">
+          <ol className="flex flex-wrap items-center gap-x-1.5">
+            <li><Link href="/" className="inline-flex min-h-6 items-center hover:text-[var(--color-foreground)] hover:underline">{t.breadcrumb_home}</Link></li>
+            <li aria-hidden><CaretRight className="h-3 w-3" /></li>
+            <li><Link href="/fivem" className="inline-flex min-h-6 items-center hover:text-[var(--color-foreground)] hover:underline">{t.breadcrumb_fivem}</Link></li>
+            <li aria-hidden><CaretRight className="h-3 w-3" /></li>
+            <li aria-current="page" className="text-[var(--color-foreground)]">{category.name}</li>
+          </ol>
+        </nav>
 
-      {/* No eyebrow any more: the page has exactly one section, the word
-          duplicated the navigation group and carried no information.
-          DESIGN.md rations the element to at most one per three
-          sections. */}
-      <header className="mb-10">
-        <h1 className="text-3xl font-bold tracking-tight md:text-4xl">{category.name}</h1>
-        {category.description && (
-          <div
-            className="tebex-description mt-3 max-w-3xl"
-            dangerouslySetInnerHTML={{
-              // The Tebex texts maintain both languages in one HTML as a
-              // [GER] block followed by [ENG]. Without the cut they appear
-              // one below the other on the page.
-              __html: sanitizeTebexHtml(pickLanguageBlock(category.description, lang)),
-            }}
-          />
-        )}
-        <p className="mt-3 text-sm text-[var(--color-muted-foreground)]">{countLabel}</p>
+        <header className="grid gap-3">
+          <h1 className="font-display text-display font-[750] tracking-[-0.02em]">{category.name}</h1>
+          {category.description && (
+            <div
+              className="tebex-description max-w-[44rem]"
+              dangerouslySetInnerHTML={{
+                // The Tebex texts maintain both languages in one HTML as a
+                // [GER] block followed by [ENG]. Without the cut they appear
+                // one below the other on the page.
+                __html: sanitizeTebexHtml(pickLanguageBlock(category.description, lang)),
+              }}
+            />
+          )}
+          <p className="text-lead text-[var(--color-muted-foreground)]">{countLabel}</p>
+          {focus && (
+            <p className="max-w-[44rem] text-body text-[var(--color-muted-foreground)]">
+              {packagesTranslations[lang].variant_note}
+            </p>
+          )}
+        </header>
+      </div>
 
-        {showVariantNote && (
-          <p className="mt-4 max-w-3xl rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)] px-4 py-3 text-xs leading-relaxed text-[var(--color-muted-foreground)]">
-            {packagesTranslations[lang].variant_note}
-          </p>
-        )}
-      </header>
-
-      {category.packages && category.packages.length > 0 ? (
-        <section aria-labelledby="category-results-heading">
-          {/* Screen readers only: the page jumped from H1 to the cards'
-              H3. Visible, the heading would be a duplicate; the
-              category name already sits above it as H1. */}
-          <h2 id="category-results-heading" className="sr-only">{t.region_results}</h2>
-          <div className="grid gap-6 grid-cols-[repeat(auto-fill,minmax(min(100%,var(--grid-card)),1fr))]">
-            {category.packages.map(pkg => (
-              <PackageCard
-                key={pkg.id}
-                lang={lang}
-                pkg={pkg}
-                badges={PACKAGE_BADGES[pkg.id]}
-                tags={PACKAGE_TAGS[pkg.id]}
-                description={PACKAGE_DESCRIPTIONS[pkg.id]}
-              />
-            ))}
-          </div>
-        </section>
-      ) : (
-        <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-[var(--color-border)] py-20 text-center">
-          <p className="text-lg font-semibold">{t.none_title}</p>
+      {total === 0 ? (
+        <div className="grid justify-items-center gap-3 rounded-lg border border-dashed border-[var(--color-border)] px-4 py-16 text-center">
+          <p className="font-display text-h3 font-[650]">{t.none_title}</p>
           <Button asChild>
             <Link href="/fivem">
               <ArrowLeft className="h-4 w-4" />
@@ -175,6 +163,23 @@ export default async function CategoryPage({
             </Link>
           </Button>
         </div>
+      ) : (
+        <section aria-labelledby="category-results-heading" className="grid gap-[var(--space-stack)]">
+          {/* Screen readers only: the category name already sits above as H1. */}
+          <h2 id="category-results-heading" className="sr-only">{t.region_results}</h2>
+          {scripts.length > 0 && (
+            <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,var(--grid-card)),1fr))] gap-[clamp(1rem,1.2vw,1.75rem)]">
+              {scripts.map(card => (
+                <li key={card.slug} className="grid">
+                  <ProductCard card={card} lang={lang} />
+                </li>
+              ))}
+            </ul>
+          )}
+          {subscriptions.map(card => (
+            <SubscriptionCard key={card.slug} card={card} lang={lang} headingLevel={3} />
+          ))}
+        </section>
       )}
     </div>
   )

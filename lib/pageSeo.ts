@@ -41,12 +41,12 @@ export const PAGE_SEO: Record<string, Record<Lang, PageSeo>> = {
   },
   '/fivem': {
     en: {
-      title:       'All Packages',
-      description: 'Browse all FiveM resources, tools and Discord bots from MSK Scripts.',
+      title:       'FiveM Scripts for ESX and QBCore',
+      description: 'Every paid MSK FiveM script, each as Encrypted or Source release, and the subscription for all of them. Prices include VAT.',
     },
     de: {
-      title:       'Alle FiveM Scripts und Pakete',
-      description: 'Alle FiveM-Ressourcen, Tools und Discord-Bots von MSK Scripts auf einen Blick.',
+      title:       'FiveM Scripts für ESX und QBCore',
+      description: 'Alle kostenpflichtigen MSK FiveM Scripts, jedes als Encrypted- oder Source-Fassung, dazu das Abo für alle. Preise inkl. MwSt.',
     },
   },
   '/stats': {

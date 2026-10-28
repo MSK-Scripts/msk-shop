@@ -207,51 +207,6 @@ export const CATEGORY_SEO: Record<number, SearchSnippets> = {
 }
 
 
-// ── Package Badges ────────────────────────────────────────────
-// Add one or more badges to packages by their Tebex package ID.
-// badge.label = Text shown on the badge (e.g. "ESX", "QBCore", "Standalone")
-// badge.variant = Color style: 'esx' | 'qb' | 'standalone' | 'js' | 'lua' | 'py' | 'discord' | 'fivem'
-//
-// Color reference:
-//   esx        → orange (ESX logo color)
-//   qb         → purple
-//   standalone → green (accent)
-//   js         → yellow
-//   lua        → blue
-//   py         → sky blue
-//   discord    → indigo
-//   fivem      → orange
-
-export type BadgeVariant = 'esx' | 'qb' | 'standalone' | 'js' | 'lua' | 'py' | 'discord' | 'fivem'
-export interface Badge { label: string; variant: BadgeVariant }
-
-export const PACKAGE_BADGES: Record<number, Badge[]> = {
-  5732587: [{ label: 'ESX', variant: 'esx' }, { label: 'Lua', variant: 'lua' }], // MSK Garage - E
-  5732588: [{ label: 'ESX', variant: 'esx' }, { label: 'Lua', variant: 'lua' }], // MSK Garage - S
-  5159927: [{ label: 'ESX', variant: 'esx' }, { label: 'QBCore', variant: 'qb' }, { label: 'Lua', variant: 'lua' }], // MSK Handcuffs - E
-  5301828: [{ label: 'ESX', variant: 'esx' }, { label: 'QBCore', variant: 'qb' }, { label: 'Lua', variant: 'lua' }], // MSK Handcuffs - S
-  6446936: [{ label: 'ESX', variant: 'esx' }, { label: 'QBCore', variant: 'qb' }, { label: 'Lua', variant: 'lua' }], // MSK VehicleKeys - E
-  6446947: [{ label: 'ESX', variant: 'esx' }, { label: 'QBCore', variant: 'qb' }, { label: 'Lua', variant: 'lua' }], // MSK VehicleKeys - S
-  7569109: [{ label: 'Subscription', variant: 'standalone' }, { label: 'Lua', variant: 'lua' }], // Subscription - Encrypted Version
-  7569121: [{ label: 'Subscription', variant: 'standalone' }, { label: 'Lua', variant: 'lua' }], // Subscription - Source Version
-}
-
-// ── Package Descriptions ─────────────────────────────────────
-// Optional custom description shown on package cards.
-// If empty ("") or not set, the Tebex description is used.
-// Keep it short: 1 to 2 sentences max.
-
-export const PACKAGE_DESCRIPTIONS: Record<number, string> = {
-  5732587: 'A complete, server-authoritative garage and impound system for ESX with a modern React UI and a security-first backend.', // MSK Garage - E
-  5732588: 'A complete, server-authoritative garage and impound system for ESX with a modern React UI and a security-first backend.', // MSK Garage - S
-  5159927: 'Realistic handcuffs with animations, props, drag, headbag, tape and ankle tracker.', // MSK Handcuffs - E
-  5301828: 'Realistic handcuffs with animations, props, drag, headbag, tape and ankle tracker.', // MSK Handcuffs - S
-  6446936: 'Unique vehicle key items with lock/unlock, key menu, job vehicles and much more.', // MSK VehicleKeys - E
-  6446947: 'Unique vehicle key items with lock/unlock, key menu, job vehicles and much more.', // MSK VehicleKeys - S
-  7569109: 'This subscription is intended purely as a trial model. The goal is to let you test all scripts thoroughly within one month before deciding on the final purchase of individual resources. It does not replace a permanent license purchase.', // Subscription - Encrypted Version
-  7569121: 'This subscription is intended purely as a trial model. The goal is to let you test all scripts thoroughly within one month before deciding on the final purchase of individual resources. It does not replace a permanent license purchase.', // Subscription - Source Version 
-}
-
 // ── License variant ───────────────────────────────────────────
 // Every script exists twice, as Encrypted and as Source. Until
 // 22.08.2026 the difference appeared nowhere on the purchase surface: the two
@@ -280,22 +235,4 @@ export function resolveVariant(
   if (/\bsource\b/i.test(name))    return 'source'
   if (/\bencrypted\b/i.test(name)) return 'encrypted'
   return null
-}
-
-// ── Package Tags ──────────────────────────────────────────────
-// Optional small tags shown below the package name on cards.
-// Example: ['ESX', 'oxmysql', 'msk_core']
-
-export const PACKAGE_TAGS: Record<number, string[]> = {
-  5732587: ['oxmysql','msk_core', 'AdvancedParking', 'MSK VehicleKeys', 'Jaksam Vehicle Keys'], // MSK Garage - E
-  5732588: ['oxmysql','msk_core', 'AdvancedParking', 'MSK VehicleKeys', 'Jaksam Vehicle Keys'], // MSK Garage - S
-  5159927: ['msk_core', 'pma-voice', 'saltychat'], // MSK Handcuffs - E
-  5301828: ['msk_core', 'pma-voice', 'saltychat'], // MSK Handcuffs - S
-  6446936: ['oxmysql', 'msk_core', 'ox_inventory', 'msk_enginetoggle'], // MSK VehicleKeys - E
-  6446947: ['oxmysql', 'msk_core', 'ox_inventory', 'msk_enginetoggle'], // MSK VehicleKeys - S
-  // The two subscription packages deliberately have no entry. `Subscription` is
-  // not a dependency but the product type, and as a badge it already sits at the
-  // top of the image on the card (PACKAGE_BADGES). In this list it also ended up
-  // in the "Funktioniert mit" ("Works with") filter group, between saltychat and
-  // oxmysql, where it does not belong.
 }
