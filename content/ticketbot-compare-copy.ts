@@ -90,7 +90,7 @@ const en: TicketBotCompareCopy = {
     tickettool: 'Ticket Tool',
   },
   rows: [
-    { criterion: 'Hosting',        msk: 'Self-hosted, or hosted by us on any paid tier', tickets: 'Self-hosted', sayrix: 'Self-hosted', tickettool: 'Hosted by the vendor' },
+    { criterion: 'Hosting',        msk: 'Self-hosted, or hosted by us from the Hosted plan up', tickets: 'Self-hosted', sayrix: 'Self-hosted', tickettool: 'Hosted by the vendor' },
     { criterion: 'Source code',    msk: 'AGPL-3.0', tickets: 'GPL-3.0', sayrix: 'AGPL-3.0', tickettool: 'Closed' },
     { criterion: 'GitHub stars',   msk: '1', tickets: '1,471', sayrix: '502', tickettool: 'n/a' },
     { criterion: 'Language',       msk: 'JavaScript (Node 24)', tickets: 'JavaScript', sayrix: 'TypeScript', tickettool: 'n/a' },
@@ -108,7 +108,7 @@ const en: TicketBotCompareCopy = {
   honest: [
     'You run several Discord servers from one instance. Ours registers its commands for a single server, so every server needs its own instance and its own bot application. Discord Tickets handles many servers at once.',
     'You want a large project with many contributors. Discord Tickets has roughly 1,400 more stars than we do and a correspondingly larger community. If a bus-factor of one is a problem for you, that is a real argument, and we are not going to talk you out of it.',
-    'You have no server, no interest in getting one, and you do not want to pay for one either. Running it yourself assumes you can keep a Node process alive. We do host it for you on any paid tier, but if free is the requirement, Ticket Tool is the honest answer.',
+    'You have no server, no interest in getting one, and you do not want to pay for one either. Running it yourself assumes you can keep a Node process alive. We do host it for you from the Hosted plan up, but if free is the requirement, Ticket Tool is the honest answer.',
   ],
 
   faqHeading: 'Frequently asked questions',
@@ -123,7 +123,7 @@ const en: TicketBotCompareCopy = {
     },
     {
       q: 'Do I need a server to run it?',
-      a: 'To run it yourself, yes: Node.js 24 and a process that stays alive, so a small VPS, a Raspberry Pi or any always-on machine will do. There is a Docker image and a compose file, which is the simplest route, and SQLite is the default so no database server is required. If you would rather not, every paid tier includes hosting on our servers: you enter three values from the Discord developer portal in the dashboard and we install and run it for you.',
+      a: 'To run it yourself, yes: Node.js 24 and a process that stays alive, so a small VPS, a Raspberry Pi or any always-on machine will do. There is a Docker image and a compose file, which is the simplest route, and SQLite is the default so no database server is required. If you would rather not, the Hosted and Business plans include hosting on our servers: you enter three values from the Discord developer portal in the dashboard and we install and run it for you.',
     },
     {
       q: 'Where is the ticket data stored?',
@@ -187,7 +187,7 @@ const de: TicketBotCompareCopy = {
     tickettool: 'Ticket Tool',
   },
   rows: [
-    { criterion: 'Betrieb',          msk: 'Selbst gehostet, auf jedem bezahlten Tarif auch von uns', tickets: 'Selbst gehostet', sayrix: 'Selbst gehostet', tickettool: 'Vom Anbieter gehostet' },
+    { criterion: 'Betrieb',          msk: 'Selbst gehostet, ab dem Tarif Hosted auch von uns', tickets: 'Selbst gehostet', sayrix: 'Selbst gehostet', tickettool: 'Vom Anbieter gehostet' },
     { criterion: 'Quellcode',        msk: 'AGPL-3.0', tickets: 'GPL-3.0', sayrix: 'AGPL-3.0', tickettool: 'Geschlossen' },
     { criterion: 'GitHub-Sterne',    msk: '1', tickets: '1.471', sayrix: '502', tickettool: 'entfällt' },
     { criterion: 'Sprache',          msk: 'JavaScript (Node 24)', tickets: 'JavaScript', sayrix: 'TypeScript', tickettool: 'entfällt' },
@@ -205,7 +205,7 @@ const de: TicketBotCompareCopy = {
   honest: [
     'Du betreibst mehrere Discord-Server aus einer Instanz. Unserer registriert seine Befehle für genau einen Server, jeder weitere braucht also eine eigene Instanz und eine eigene Bot-Application. Discord Tickets kann viele Server gleichzeitig.',
     'Du willst ein großes Projekt mit vielen Mitwirkenden. Discord Tickets hat rund 1.400 Sterne mehr als wir und entsprechend mehr Community. Wenn dich ein Bus-Faktor von eins stört, ist das ein berechtigtes Argument, und wir werden es dir nicht ausreden.',
-    'Du hast keinen Server, willst auch keinen, und du willst dafür nichts bezahlen. Selbst betreiben setzt voraus, dass du einen Node-Prozess am Leben halten kannst. Wir hosten ihn auf jedem bezahlten Tarif für dich, aber wenn kostenlos die Bedingung ist, ist Ticket Tool die ehrliche Antwort.',
+    'Du hast keinen Server, willst auch keinen, und du willst dafür nichts bezahlen. Selbst betreiben setzt voraus, dass du einen Node-Prozess am Leben halten kannst. Wir hosten ihn ab dem Tarif Hosted für dich, aber wenn kostenlos die Bedingung ist, ist Ticket Tool die ehrliche Antwort.',
   ],
 
   faqHeading: 'Häufige Fragen',
@@ -220,7 +220,7 @@ const de: TicketBotCompareCopy = {
     },
     {
       q: 'Brauche ich einen Server dafür?',
-      a: 'Wenn du ihn selbst betreiben willst, ja: Node.js 24 und ein Prozess, der durchläuft, also ein kleiner VPS, ein Raspberry Pi oder irgendeine Maschine, die an bleibt. Es gibt ein Docker-Image und eine Compose-Datei, das ist der einfachste Weg, und SQLite ist der Standard, ein Datenbankserver ist also nicht nötig. Wenn du lieber nicht willst: in jedem bezahlten Tarif ist das Hosting auf unseren Servern enthalten. Du trägst drei Werte aus dem Discord Developer Portal ins Dashboard ein, den Rest machen wir.',
+      a: 'Wenn du ihn selbst betreiben willst, ja: Node.js 24 und ein Prozess, der durchläuft, also ein kleiner VPS, ein Raspberry Pi oder irgendeine Maschine, die an bleibt. Es gibt ein Docker-Image und eine Compose-Datei, das ist der einfachste Weg, und SQLite ist der Standard, ein Datenbankserver ist also nicht nötig. Wenn du lieber nicht willst: in den Tarifen Hosted und Business ist das Hosting auf unseren Servern enthalten. Du trägst drei Werte aus dem Discord Developer Portal ins Dashboard ein, den Rest machen wir.',
     },
     {
       q: 'Wo liegen die Ticketdaten?',
