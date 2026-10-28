@@ -2,6 +2,7 @@
 
 import { useCallback } from 'react'
 import { useCartStore } from '@/store/cart'
+import { canAddToBasket } from '@/lib/basketFlow'
 import {
   createBasket, getBasket, addToBasket, addGiftToBasket,
   removeFromBasket, applyCoupon, removeCoupon, getAllAuthUrls,
@@ -130,9 +131,10 @@ export function useCart() {
     try {
       const id = await ensureBasket()
       const currentBasket = await getBasket(id)
-      if (!currentBasket.username) {
+      if (!canAddToBasket(currentBasket)) {
         // Stored login state is stale (expired/completed basket), Tebex would
-        // reject the add with 422. Re-auth and resume instead of failing silently.
+        // reject the add with 422 (decision E9, lib/basketFlow.ts). Re-auth and
+        // resume instead of failing silently.
         await loginAndAdd(packageId, packageType)
         return true
       }
@@ -164,7 +166,7 @@ export function useCart() {
     try {
       const id = await ensureBasket()
       const currentBasket = await getBasket(id)
-      if (!currentBasket.username) {
+      if (!canAddToBasket(currentBasket)) {
         await loginAndAdd(packageId, packageType)
         return false
       }

@@ -1687,9 +1687,14 @@ export const packagesTranslations = {
     req_docs: 'Installation and minimum versions in the documentation',
     updates_heading: 'Latest updates',
     detail_download_free: 'Download free',
-    detail_login:         'Login to purchase',
+    // Plan 5.6: the button says what it is for, the sentence below it says
+    // that the CFX.re sign-in comes first and why (E9).
+    detail_login:         'Add to cart',
     detail_add:           'Add to cart',
-    detail_login_hint:    'Login with your CFX.re account to purchase',
+    // Decision E9: Tebex answers an add to a basket without sign-in with 422
+    // "User must login before adding packages to basket", so the sign-in
+    // stays before the cart and the reason is stated at the button.
+    detail_login_hint:    'Tebex only fills a cart after the CFX.re sign-in, because the scripts are delivered to that account.',
     detail_gift:          'Gift this',
     detail_close:         'Close',
     detail_cancel:        'Cancel',
@@ -1782,9 +1787,9 @@ export const packagesTranslations = {
     req_docs: 'Installation und Mindestversionen in der Dokumentation',
     updates_heading: 'Letzte Updates',
     detail_download_free: 'Kostenlos herunterladen',
-    detail_login:         'Zum Kaufen anmelden',
+    detail_login:         'In den Warenkorb',
     detail_add:           'In den Warenkorb',
-    detail_login_hint:    'Zum Kaufen mit deinem CFX.re-Konto anmelden',
+    detail_login_hint:    'Tebex füllt den Warenkorb erst nach der CFX.re-Anmeldung, weil die Scripts an dieses Konto geliefert werden.',
     detail_gift:          'Verschenken',
     detail_close:         'Schließen',
     detail_cancel:        'Abbrechen',
