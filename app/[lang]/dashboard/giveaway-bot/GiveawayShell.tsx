@@ -8,7 +8,7 @@ import { ServerSwitcher } from '@/components/dashboard/ServerSwitcher'
 import { useLang } from '@/components/i18n/LangProvider'
 import { GearSix, Gift, Layout, SquaresFour, Storefront, type IconComponent } from '@/components/icons'
 import { dashboardShellTranslations } from '@/lib/i18n'
-import { giveawayHref, giveawaySections, type GiveawaySection } from '@/lib/dashboardNav'
+import { giveawayHref, giveawaySectionOf, giveawaySections, type GiveawaySection } from '@/lib/dashboardNav'
 
 const ICONS: Record<GiveawaySection, IconComponent> = {
   overview:  SquaresFour,
@@ -52,7 +52,9 @@ export function GiveawayShell({ session, children }: {
         })),
       }]
     : undefined
-  const current = sections.find(id => giveawayHref(id) === path)
+  // A page below an area (one giveaway, a new template) keeps its area marked.
+  const area = giveawaySectionOf(path)
+  const current = area && sections.includes(area) ? area : undefined
 
   async function signOut() {
     await fetch('/api/giveaway/logout', { method: 'POST' })
@@ -65,6 +67,7 @@ export function GiveawayShell({ session, children }: {
       productIcon={Gift}
       homeHref={session ? giveawayHref('overview') : '/dashboard/giveaway-bot/verify'}
       nav={nav}
+      currentId={current}
       pageTitle={current ? labels[current] : undefined}
       switcher={session && (
         <ServerSwitcher

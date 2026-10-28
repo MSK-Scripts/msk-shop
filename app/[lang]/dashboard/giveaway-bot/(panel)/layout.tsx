@@ -1,5 +1,5 @@
 import { GiveawayShell } from '../GiveawayShell'
-import { GiveawayProvider } from '../DashboardClient'
+import { GiveawayProvider } from '../GiveawayProvider'
 import { loadGiveawaySession } from '../loadSession'
 
 export const dynamic = 'force-dynamic'

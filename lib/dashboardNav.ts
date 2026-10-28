@@ -55,3 +55,26 @@ export function giveawaySections(owner: boolean): GiveawaySection[] {
 export function giveawayHref(section: GiveawaySection): string {
   return section === 'overview' ? '/dashboard/giveaway-bot' : `/dashboard/giveaway-bot/${section}`
 }
+
+/**
+ * The pages below an area (Phase 9): a new giveaway, one giveaway, a new or
+ * an existing template. The id only selects among what the session's server
+ * returned; every request behind these pages takes the guild from the
+ * signed session.
+ */
+export const GIVEAWAY_NEW_HREF = '/dashboard/giveaway-bot/giveaways/new'
+export const TEMPLATE_NEW_HREF = '/dashboard/giveaway-bot/templates/new'
+
+export function giveawayDetailHref(id: string): string {
+  return `/dashboard/giveaway-bot/giveaways/${encodeURIComponent(id)}`
+}
+
+export function templateHref(id: number | string): string {
+  return `/dashboard/giveaway-bot/templates/${encodeURIComponent(String(id))}`
+}
+
+/** The area a giveaway dashboard path belongs to, its sub-pages included. */
+export function giveawaySectionOf(path: string): GiveawaySection | null {
+  if (path === giveawayHref('overview')) return 'overview'
+  return GIVEAWAY_SECTIONS.find(s => s !== 'overview' && (path === giveawayHref(s) || path.startsWith(`${giveawayHref(s)}/`))) ?? null
+}

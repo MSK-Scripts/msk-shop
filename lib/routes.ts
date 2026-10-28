@@ -93,7 +93,13 @@ export const ROUTES: readonly RouteDef[] = [
   route('/dashboard/giveaway-bot'),
   route('/dashboard/giveaway-bot/verify'),
   route('/dashboard/giveaway-bot/giveaways'),
+  // Phase 9: a page per giveaway and template, and one to create each.
+  // The id is looked up among what the session's server returned.
+  route('/dashboard/giveaway-bot/giveaways/new'),
+  route('/dashboard/giveaway-bot/giveaways/[id]'),
   route('/dashboard/giveaway-bot/templates'),
+  route('/dashboard/giveaway-bot/templates/new'),
+  route('/dashboard/giveaway-bot/templates/[id]'),
   route('/dashboard/giveaway-bot/settings'),
   route('/dashboard/giveaway-bot/store'),
   route('/admin'),
