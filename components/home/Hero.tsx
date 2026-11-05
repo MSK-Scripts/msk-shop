@@ -22,25 +22,23 @@ function Title({ template }: { template: string }) {
  * Replaces the release log in terminal look, which is on the exclusion list
  * (4.2). The updates move to the product pages as a plain list (Phase 4).
  *
- * The prices are real data or nothing: the cheapest paid script from Tebex,
- * the cheapest ticket bot plan from lib/tiers.ts. Without Tebex the FiveM line
- * just shows no price.
+ * The prices are real data: the cheapest ticket bot plan from lib/tiers.ts.
+ * The FiveM scripts are free on GitHub since 05.11.2026, so that line says
+ * so instead of the cheapest Tebex price it used to show.
  */
 export function Hero({
-  lang, fivemFrom, botFrom,
+  lang, botFrom,
 }: {
   lang: Lang
-  /** Cheapest paid FiveM script, formatted, or null without Tebex data. */
-  fivemFrom: string | null
   /** Cheapest paid ticket bot plan per month, formatted. */
   botFrom: string
 }) {
   const t = homeTranslations[lang]
 
   const entries = [
-    { href: '/fivem',   title: t.entry_fivem,   sub: t.entry_fivem_sub,   price: fivemFrom ? t.entry_fivem_price.replace('{price}', fivemFrom) : null },
-    { href: '/discord', title: t.entry_discord, sub: t.entry_discord_sub, price: t.entry_discord_price.replace('{price}', botFrom) },
-    { href: '/tools',   title: t.entry_tools,   sub: t.entry_tools_sub,   price: t.entry_tools_price },
+    { href: '/fivem/free', title: t.entry_fivem,   sub: t.entry_fivem_sub,   price: t.entry_fivem_price },
+    { href: '/discord',    title: t.entry_discord, sub: t.entry_discord_sub, price: t.entry_discord_price.replace('{price}', botFrom) },
+    { href: '/tools',      title: t.entry_tools,   sub: t.entry_tools_sub,   price: t.entry_tools_price },
   ]
 
   return (

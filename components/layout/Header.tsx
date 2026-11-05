@@ -4,7 +4,7 @@ import { Suspense, useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
-import { List, ShoppingCart, X } from '@/components/icons'
+import { List, X } from '@/components/icons'
 import { LanguageDropdown } from '@/components/i18n/LanguageDropdown'
 import { useLang } from '@/components/i18n/LangProvider'
 import { AccountMenu, type AccountState } from '@/components/layout/AccountMenu'
@@ -60,8 +60,8 @@ function Brand() {
   return (
     <Link href="/" className="flex min-h-11 shrink-0 items-center gap-2.5 text-[var(--color-foreground)]">
       <Image src="/logo.png" alt="" width={36} height={36} priority className="h-9 w-9 rounded-lg object-contain" />
-      {/* Below 360 px the name gives way to cart and menu; it stays the
-          link's name for a screen reader. */}
+      {/* Below 360 px the name gives way to the menu; it stays the link's
+          name for a screen reader. */}
       <span className="sr-only font-display text-lead font-bold tracking-[-0.01em] [font-stretch:108%] min-[360px]:not-sr-only">
         MSK Scripts
       </span>
@@ -75,15 +75,19 @@ const actionClass =
 
 /**
  * The header (plan 5.3, sample page of Phase 0): MSK green stripe on top,
- * brand, the product lines, then language, cart and account. No search, the
+ * brand, the product lines, then language and account. No search, the
  * catalogue is far below the 20 products where one pays off (E5).
+ *
+ * No cart since 05.11.2026: the FiveM scripts are free on GitHub and nothing
+ * is sold through Tebex any more. The shop sign-in in the account menu stays
+ * until the Tebex code is removed.
  */
 export function Header() {
   const { lang } = useLang()
   const t = layoutTranslations[lang]
   const pathname = usePathname()
-  const { itemCount, loginAndAdd } = useCart()
-  const { openCart, username, clearBasket } = useCartStore()
+  const { loginAndAdd } = useCart()
+  const { username, clearBasket } = useCartStore()
   const [menuOpen, setMenuOpen] = useState(false)
   const [signingIn, setSigningIn] = useState(false)
   const headerRef = useRef<HTMLElement>(null)
@@ -93,7 +97,6 @@ export function Header() {
   // client render the defaults, or the markup would differ and React would
   // drop the event handlers of the whole subtree.
   const hydrated = useHydrated()
-  const count = hydrated ? itemCount : 0
 
   // Menus close on every route change. Adjusted during render rather than in
   // an effect, so the open menu is never painted on the new page.
@@ -118,10 +121,6 @@ export function Header() {
     signOut: () => clearBasket(),
   }
 
-  const cartLabel = count > 0
-    ? `${t.action_cart}, ${count === 1 ? t.cart_items_one : t.cart_items.replace('{count}', String(count))}`
-    : t.action_cart
-
   return (
     <header
       ref={headerRef}
@@ -138,16 +137,6 @@ export function Header() {
 
         <div className="ml-auto flex items-center gap-[clamp(0.25rem,0.9vw,1.25rem)]">
           <LanguageDropdown className="hidden sm:block" />
-
-          <button type="button" onClick={openCart} aria-label={cartLabel} className={actionClass}>
-            <ShoppingCart className="h-5 w-5" />
-            <span className="hidden min-[1440px]:inline">{t.action_cart}</span>
-            {count > 0 && (
-              <span className="rounded-full bg-[var(--color-primary)] px-[7px] text-[0.75em] font-bold leading-[1.5] text-[var(--color-primary-foreground)] tabular-nums">
-                {count}
-              </span>
-            )}
-          </button>
 
           <AccountMenu account={account} className="hidden md:block" />
 

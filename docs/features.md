@@ -6,6 +6,8 @@ What the shop does and how the Ticket Bot tiers are defined. Back to the [README
 
 The shop side:
 
+> **The paid FiveM shop is switched off since 05.11.2026.** MSK Garage, MSK Handcuffs and MSK VehicleKeys are free on GitHub now, and the all-access subscription is gone. Their product pages and every old Tebex package address answer 301 with the GitHub repository; the catalogue, category pages, cart and checkout answer 308 with the free scripts page (`retiredRedirect` in `lib/routes.ts`, the ids in `lib/retiredProducts.ts`). Header, footer, homepage, sitemap and `llms.txt` no longer link to the paid store. The Tebex code below is still in the repository and goes in a cleanup of its own.
+
 - Full shopping cart with persistent state that survives a page reload
 - FiveM (CFX.re) login through Tebex, plus Discord OAuth so roles get assigned after a purchase
 - Gift packages with an optional recipient Discord ID

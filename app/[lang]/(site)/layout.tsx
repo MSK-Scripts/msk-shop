@@ -1,8 +1,6 @@
 import { getRequestLang } from '@/lib/serverLang'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import { CartDrawer } from '@/components/cart/CartDrawer'
-import { SalePriceFetcher } from '@/components/SalePriceFetcher'
 import { NewsPopup } from '@/components/ui/NewsPopup'
 import { JsonLd } from '@/components/JsonLd'
 import { organizationJsonLd } from '@/lib/jsonLd'
@@ -10,7 +8,8 @@ import { loadNewsPopup } from '@/lib/siteSettings'
 import { isBotPath } from '@/lib/routes'
 
 /**
- * The frame of the public site: header, cart drawer, news popup, footer.
+ * The frame of the public site: header, news popup, footer. The cart drawer
+ * and the Tebex sale price fetcher left with the paid scripts (05.11.2026).
  *
  * A route group of its own since Phase 7 of the redesign (plan 6.3). Until
  * then this sat in the root layout, and the three dashboards ran inside the
@@ -36,8 +35,6 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
     <>
       <JsonLd data={organizationJsonLd({ describe: !botLanding })} />
       <Header />
-      <CartDrawer />
-      <SalePriceFetcher />
       <NewsPopup settings={newsPopup} />
       <main id="main" tabIndex={-1} className="flex-1">{children}</main>
       <Footer />

@@ -4,10 +4,12 @@ import { join, relative, sep } from 'node:path'
 
 import {
   LEGACY_ROUTES, ROUTES, alternatePaths, chooseRootLang, internalPath, isExemptPath,
-  langFromAcceptLanguage, legacyTarget, parsePublicPath, publicPath, resolveRequest, splitLangPrefix,
+  langFromAcceptLanguage, legacyTarget, parsePublicPath, publicPath, resolveRequest, retiredRedirect,
+  splitLangPrefix,
 } from '@/lib/routes'
 import { LANGS } from '@/lib/lang'
-import { indexProducts } from '@/lib/products'
+import { groupProducts, indexProducts } from '@/lib/products'
+import type { TebexPackage } from '@/types/tebex'
 
 /** A concrete path for a pattern: every dynamic segment gets a sample value. */
 function sample(pattern: string): string {
@@ -99,10 +101,13 @@ describe('route table', () => {
     }
   })
 
-  it('serves every canonical address without a redirect', () => {
+  it('serves every canonical address without a redirect, except the retired shop pages', () => {
     for (const r of ROUTES) {
       for (const lang of LANGS) {
         const pub = publicPath(lang, sample(r.internal))
+        // Catalogue, categories, cart, checkout and the subscription keep
+        // their entry until the Tebex code goes, but only redirect.
+        if (retiredRedirect(lang, sample(r.internal))) continue
         expect(resolveRequest(pub), pub).toMatchObject({ kind: 'page', lang, path: sample(r.internal) })
       }
     }
@@ -187,9 +192,10 @@ describe('splitLangPrefix and parsePublicPath', () => {
  * used to be in next.config.js.
  */
 const OLD_ADDRESSES: Array<[string, string]> = [
-  ['/packages',                  '/en/fivem'],
-  ['/packages/5732587',          '/en/fivem/garage'],
-  ['/categories/2105296',        '/en/fivem/categories/2105296'],
+  // The paid shop is retired (05.11.2026): catalogue, categories, cart and
+  // checkout lead to the free scripts. Old package ids: 'retired shop' below.
+  ['/packages',                  '/en/fivem/free'],
+  ['/categories/2105296',        '/en/fivem/free'],
   ['/resources',                 '/en/stats'],
   ['/images',                    '/en/tools/images'],
   ['/images/upload',             '/en/tools/images/upload'],
@@ -213,21 +219,19 @@ const OLD_ADDRESSES: Array<[string, string]> = [
   ['/giveaway/dashboard',        '/en/dashboard/giveaway-bot'],
   ['/giveaway/verify',           '/en/dashboard/giveaway-bot/verify'],
   ['/account',                   '/en/account'],
-  ['/cart',                      '/en/cart'],
-  ['/checkout',                  '/en/checkout'],
+  ['/cart',                      '/en/fivem/free'],
+  ['/checkout',                  '/en/fivem/free'],
   ['/login',                     '/en/login'],
   ['/report',                    '/en/report'],
   ['/admin',                     '/en/admin'],
   // formerly in next.config.js
-  ['/package/5732587',           '/en/fivem/garage'],
-  ['/category/2105296',          '/en/fivem/categories/2105296'],
+  ['/category/2105296',          '/en/fivem/free'],
   ['/verify',                    '/en/dashboard/ticket-bot/verify'],
   ['/dashboard',                 '/en/dashboard/ticket-bot'],
   ['/stats',                     '/en/discord/ticket-bot/stats'],
   // the German versions under the old scheme
-  ['/de/packages',               '/de/fivem'],
-  ['/de/packages/5732587',       '/de/fivem/garage'],
-  ['/de/categories/2105296',     '/de/fivem/kategorien/2105296'],
+  ['/de/packages',               '/de/fivem/kostenlos'],
+  ['/de/categories/2105296',     '/de/fivem/kostenlos'],
   ['/de/resources',              '/de/statistiken'],
   ['/de/images',                 '/de/web-tools/bilder'],
   ['/de/images/upload',          '/de/web-tools/bilder/hochladen'],
@@ -250,8 +254,8 @@ const OLD_ADDRESSES: Array<[string, string]> = [
   ['/de/giveaway/dashboard',     '/de/dashboard/giveaway-bot'],
   ['/de/giveaway/verify',        '/de/dashboard/giveaway-bot/verify'],
   ['/de/account',                '/de/konto'],
-  ['/de/cart',                   '/de/warenkorb'],
-  ['/de/checkout',               '/de/kasse'],
+  ['/de/cart',                   '/de/fivem/kostenlos'],
+  ['/de/checkout',               '/de/fivem/kostenlos'],
   ['/de/login',                  '/de/anmelden'],
   ['/de/report',                 '/de/inhalt-melden'],
   ['/de/admin',                  '/de/admin'],
@@ -301,43 +305,78 @@ describe('old addresses', () => {
 })
 
 /**
- * Product addresses (Phase 4): `/fivem/<slug>`, one page per product. Every
- * Tebex package id of the configured products, under every old scheme,
- * reaches its product in one hop, with the variant preselected when it was
- * not the default one.
+ * The retired shop (05.11.2026). The three paid scripts are free on GitHub,
+ * the subscription is gone, nothing is sold through Tebex any more. Every
+ * address that named one of them, by slug or by Tebex package id, under every
+ * old scheme and in both languages, answers 301 with the repository. Forum
+ * posts and Search Console still link to the ids.
  */
-const PRODUCT_IDS: Array<[number, string]> = [
-  [5732587, '/en/fivem/garage'],
-  [5732588, '/en/fivem/garage?variant=source'],
-  [5159927, '/en/fivem/handcuffs'],
-  [5301828, '/en/fivem/handcuffs?variant=source'],
-  [6446936, '/en/fivem/vehiclekeys'],
-  [6446947, '/en/fivem/vehiclekeys?variant=source'],
-  [7569109, '/en/fivem/all-access'],
-  [7569121, '/en/fivem/all-access?variant=source'],
+const RETIRED: Array<[string, number[], string]> = [
+  ['garage',      [5732587, 5732588], 'https://github.com/MSK-Scripts/msk_garage'],
+  ['handcuffs',   [5159927, 5301828], 'https://github.com/MSK-Scripts/msk_handcuffs'],
+  ['vehiclekeys', [6446936, 6446947], 'https://github.com/MSK-Scripts/msk_vehiclekeys'],
+  ['all-access',  [7569109, 7569121], 'https://github.com/MSK-Scripts'],
 ]
 
+describe('retired shop', () => {
+  it.each(RETIRED)('sends every address of %s to GitHub with 301', (slug, ids, url) => {
+    const de = slug === 'all-access' ? 'alle-scripts' : slug
+    const addresses = [
+      `/fivem/${slug}`, `/en/fivem/${slug}`, `/de/fivem/${de}`,
+      // The English slug under /de.
+      `/de/fivem/${slug}`,
+      ...ids.flatMap(id => [
+        `/packages/${id}`, `/package/${id}`, `/fivem/${id}`,
+        `/en/fivem/${id}`, `/de/fivem/${id}`, `/en/packages/${id}`, `/de/packages/${id}`, `/de/package/${id}`,
+      ]),
+    ]
+    for (const from of addresses) {
+      expect(resolveRequest(from), from).toEqual({ kind: 'redirect', status: 301, location: url })
+    }
+  })
+
+  it('redirects before Tebex is asked, even while Tebex still lists the packages', () => {
+    // Between the deploy and switching the packages off in Tebex, the live
+    // index still knows them, now as products nothing configures.
+    const pkg = (id: number, slug: string) =>
+      ({ id, name: slug, slug, type: 'single', media: [], category: { id: 1, name: 'x' } }) as unknown as TebexPackage
+    const products = indexProducts(groupProducts([pkg(5732587, 'garage-e'), pkg(5732588, 'garage-s')]))
+    expect(resolveRequest('/en/fivem/garage', { products })).toMatchObject({ status: 301 })
+    expect(resolveRequest('/de/fivem/5732588', { products })).toMatchObject({ status: 301 })
+  })
+
+  it.each([
+    ['/en/fivem', '/en/fivem/free'],
+    ['/de/fivem', '/de/fivem/kostenlos'],
+    ['/fivem', '/en/fivem/free'],
+    ['/en/fivem/categories/2105296', '/en/fivem/free'],
+    ['/de/fivem/kategorien/2105296', '/de/fivem/kostenlos'],
+    ['/de/fivem/categories/2105296', '/de/fivem/kostenlos'],
+    ['/en/cart', '/en/fivem/free'],
+    ['/de/warenkorb', '/de/fivem/kostenlos'],
+    ['/de/cart', '/de/fivem/kostenlos'],
+    ['/en/checkout', '/en/fivem/free'],
+    ['/de/kasse', '/de/fivem/kostenlos'],
+  ])('sends the retired shop page %s to %s', (from, to) => {
+    expect(resolveRequest(from)).toEqual({ kind: 'redirect', status: 308, location: to })
+  })
+
+  it('leaves the free scripts and everything else below /fivem alone', () => {
+    expect(resolveRequest('/en/fivem/free')).toMatchObject({ kind: 'page', path: '/fivem/free' })
+    expect(resolveRequest('/de/fivem/kostenlos')).toMatchObject({ kind: 'page', path: '/fivem/free' })
+    for (const path of ['/fivem/freebie', '/fivem/garages', '/fivem/5732589', '/fivem/free']) {
+      expect(retiredRedirect('en', path), path).toBeNull()
+    }
+  })
+})
+
+/**
+ * Product addresses (Phase 4): the Tebex code stays until a cleanup of its
+ * own, so a package added in Tebex without a deploy still gets a page under
+ * a derived slug. Nothing is configured any more, so the proxy asks Tebex for
+ * every address the retired shop does not cover.
+ */
 describe('product addresses', () => {
-  it.each(PRODUCT_IDS)('sends package %i to %s from every old address', (id, to) => {
-    const de = to.replace('/en/', '/de/').replace('/fivem/all-access', '/fivem/alle-scripts')
-    for (const from of [`/packages/${id}`, `/package/${id}`, `/en/fivem/${id}`]) {
-      expect(resolveRequest(from), from).toEqual({ kind: 'redirect', status: 308, location: to })
-    }
-    for (const from of [`/de/packages/${id}`, `/de/fivem/${id}`]) {
-      expect(resolveRequest(from), from).toEqual({ kind: 'redirect', status: 308, location: de })
-    }
-  })
-
-  it('serves every product slug as it is, the target of each redirect included', () => {
-    for (const [, to] of PRODUCT_IDS) {
-      const path = to.split('?')[0]
-      expect(resolveRequest(path), path).toMatchObject({ kind: 'page', path: path.replace('/en', '') })
-      expect(resolveRequest(path)).not.toHaveProperty('unknown')
-    }
-    expect(resolveRequest('/de/fivem/garage')).toMatchObject({ kind: 'page', lang: 'de', path: '/fivem/garage' })
-    expect(resolveRequest('/de/fivem/alle-scripts')).toMatchObject({ kind: 'page', lang: 'de', path: '/fivem/all-access' })
-  })
-
   it('marks an unknown slug or id as unknown, in the language of the address', () => {
     expect(resolveRequest('/en/fivem/does-not-exist')).toMatchObject({ kind: 'page', lang: 'en', unknown: true })
     expect(resolveRequest('/de/fivem/999999')).toMatchObject({ kind: 'page', lang: 'de', unknown: true })
@@ -345,11 +384,6 @@ describe('product addresses', () => {
     expect(resolveRequest('/packages/999999')).toMatchObject({ kind: 'page', lang: 'en', unknown: true })
     // Not a redirect to the lower-case form either: there is one address.
     expect(resolveRequest('/en/fivem/Garage')).toMatchObject({ kind: 'page', unknown: true })
-  })
-
-  it('leaves the pages below /fivem alone', () => {
-    expect(resolveRequest('/en/fivem/free')).toMatchObject({ kind: 'page', path: '/fivem/free' })
-    expect(resolveRequest('/de/fivem/kategorien/2105296')).toMatchObject({ kind: 'page', path: '/fivem/categories/2105296' })
   })
 
   it('flags an unknown product as uncertain only while the configured products decide', () => {

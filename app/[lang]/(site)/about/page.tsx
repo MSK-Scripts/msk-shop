@@ -74,9 +74,9 @@ export default async function AboutPage() {
   ]
 
   const lines = [
-    { href: '/fivem',   title: home.entry_fivem,   sub: home.entry_fivem_sub },
-    { href: '/discord', title: home.entry_discord, sub: home.entry_discord_sub },
-    { href: '/tools',   title: home.entry_tools,   sub: home.entry_tools_sub },
+    { href: '/fivem/free', title: home.entry_fivem,   sub: home.entry_fivem_sub },
+    { href: '/discord',    title: home.entry_discord, sub: home.entry_discord_sub },
+    { href: '/tools',      title: home.entry_tools,   sub: home.entry_tools_sub },
   ]
 
   const links = [

@@ -1,7 +1,6 @@
 import { buildSitemapEntries, renderSitemapXml } from '@/lib/sitemap'
 
-// Same revalidation as the catalogue pages, so that new packages show up in
-// the sitemap promptly.
+// Hourly, so that a new image category shows up in the sitemap promptly.
 export const revalidate = 3600
 
 export async function GET() {

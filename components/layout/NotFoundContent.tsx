@@ -21,7 +21,7 @@ export function NotFoundContent({ lang }: { lang: Lang }) {
             <Link href="/">{t.not_found_home}</Link>
           </Button>
           <Button asChild variant="outline">
-            <Link href="/fivem">
+            <Link href="/fivem/free">
               {t.not_found_fivem}
               <ArrowRight className="h-4 w-4" />
             </Link>

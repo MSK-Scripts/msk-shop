@@ -27,6 +27,9 @@ import { getRequestLang } from '@/lib/serverLang'
  *
  * No pictures: the entries in the content file only have banners, which are
  * the identical product banners of the exclusion list (4.2).
+ *
+ * Since 05.11.2026 this is the only FiveM page: the paid scripts are free on
+ * GitHub, and the old catalogue redirects here.
  */
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -68,18 +71,12 @@ export default async function FreeScriptsPage() {
         id="free-title"
         crumbs={[
           { label: crumbs.breadcrumb_home, href: '/' },
-          { label: crumbs.breadcrumb_fivem, href: '/fivem' },
           { label: nav.nav_fivem_free },
         ]}
         kicker={home.free_kicker}
         title={<BrandTitle template={p.title} />}
         lead={home.free_scripts_subtitle}
-        actions={
-          <>
-            <TextLink href="/stats" tone="band">{p.servers_source}</TextLink>
-            <TextLink href="/fivem" tone="band">{p.paid}</TextLink>
-          </>
-        }
+        actions={<TextLink href="/stats" tone="band">{p.servers_source}</TextLink>}
       />
 
       <div className="border-t border-[var(--color-border)] py-[var(--space-section)]">

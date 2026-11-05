@@ -57,7 +57,7 @@ describe('unknown addresses in the route table', () => {
     },
   )
 
-  it.each(['/en', '/de', '/en/fivem', '/en/fivem/garage', '/de/fivem/alle-scripts', '/de/rechtliches/agb', '/de/web-tools/bilder/weapons'])(
+  it.each(['/en', '/de', '/en/fivem/free', '/de/fivem/kostenlos', '/de/rechtliches/agb', '/de/web-tools/bilder/weapons'])(
     '%s is a known page',
     path => {
       const res = resolveRequest(path)
@@ -81,7 +81,7 @@ describe('proxy', () => {
   })
 
   it('serves a known page with 200 and drops a mark the client sent itself', async () => {
-    const res = await proxy(request('/en/fivem', { [NOT_FOUND_HEADER]: '1' }))
+    const res = await proxy(request('/en/fivem/free', { [NOT_FOUND_HEADER]: '1' }))
     expect(res.status).toBe(200)
     expect(forwarded(res, NOT_FOUND_HEADER)).toBeNull()
     expect(res.headers.get('x-middleware-override-headers') ?? '').not.toContain(NOT_FOUND_HEADER)
@@ -108,18 +108,28 @@ describe('product addresses', () => {
     expect(forwarded(res, LANG_HEADER)).toBe(lang)
   })
 
-  it('serves a product slug with 200 in both languages', async () => {
-    for (const path of ['/en/fivem/garage', '/de/fivem/garage', '/en/fivem/all-access', '/de/fivem/alle-scripts']) {
-      const res = await proxy(request(path))
-      expect(res.status, path).toBe(200)
-      expect(forwarded(res, NOT_FOUND_HEADER), path).toBeNull()
-    }
+  // The paid scripts are free on GitHub since 05.11.2026 (lib/retiredProducts.ts).
+  it.each([
+    ['/en/fivem/garage', 'https://github.com/MSK-Scripts/msk_garage'],
+    ['/de/fivem/vehiclekeys', 'https://github.com/MSK-Scripts/msk_vehiclekeys'],
+    ['/de/fivem/alle-scripts', 'https://github.com/MSK-Scripts'],
+    ['/packages/5301828', 'https://github.com/MSK-Scripts/msk_handcuffs'],
+  ])('sends the retired product %s to GitHub with 301', async (path, url) => {
+    const res = await proxy(request(path))
+    expect(res.status).toBe(301)
+    expect(res.headers.get('location')).toBe(url)
   })
 
-  it('sends an old package id to its product in one hop, with the variant and the query', async () => {
-    const res = await proxy(request('/packages/5732588?ref=forum'))
+  it('does not carry the query of an old address over to GitHub', async () => {
+    const res = await proxy(request('/packages/5732588?variant=source&ref=forum'))
+    expect(res.status).toBe(301)
+    expect(res.headers.get('location')).toBe('https://github.com/MSK-Scripts/msk_garage')
+  })
+
+  it('keeps the query on a redirect within the site', async () => {
+    const res = await proxy(request('/en/cart?ref=forum'))
     expect(res.status).toBe(308)
-    expect(res.headers.get('location')).toBe('https://www.msk-scripts.de/en/fivem/garage?variant=source&ref=forum')
+    expect(res.headers.get('location')).toBe('https://www.msk-scripts.de/en/fivem/free?ref=forum')
   })
 
   it('asks Tebex about a slug the configured products do not know', async () => {

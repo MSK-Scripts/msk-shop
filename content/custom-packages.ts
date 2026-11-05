@@ -1,8 +1,8 @@
 // ═══════════════════════════════════════════════════════════════
 //  CUSTOM PACKAGES
-//  What is not sold through Tebex: the free FiveM scripts on GitHub and
-//  the web tools. FREE_SCRIPT_IDS and WEB_TOOL_IDS below pick them for the
-//  home page, /fivem/free and /tools. Button labels come from the
+//  The free FiveM scripts on GitHub and the web tools. FREE_SCRIPT_IDS
+//  and WEB_TOOL_IDS below pick them for the home page, /fivem/free and
+//  /tools. Button labels come from the
 //  translations, not from here.
 // ═══════════════════════════════════════════════════════════════
 //
@@ -69,6 +69,59 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
       { label: "FiveM" },
       { label: "Lua" },
       { label: "Standalone" },
+    ],
+  },
+  // Paid on Tebex until 05.11.2026, free on GitHub since.
+  {
+    id: "msk_garage",
+    name: "MSK Garage",
+    description:
+      "A complete, server-authoritative garage and impound system for ESX, QBCore and Qbox with a modern React UI and a security-first backend.",
+    descriptionDe:
+      "Ein komplettes Garagen- und Abschlepphof-System für ESX, QBCore und Qbox: der Server prüft alles, die Oberfläche ist modernes React, das Backend auf Sicherheit gebaut.",
+    image: "msk_garage-banner.webp",
+    link: "https://github.com/MSK-Scripts/msk_garage",
+    docsLink: "https://docu.msk-scripts.de/docs/msk_garage/",
+    badges: [
+      { label: "FiveM" },
+      { label: "Lua" },
+      { label: "ESX" },
+      { label: "QBCore" },
+      { label: "Qbox" },
+    ],
+  },
+  {
+    id: "msk_vehiclekeys",
+    name: "MSK VehicleKeys",
+    description:
+      "Unique vehicle key items with lock/unlock, key menu, job vehicles and much more.",
+    descriptionDe:
+      "Fahrzeugschlüssel als eigene Items, mit Auf- und Zuschließen, Schlüsselmenü, Jobfahrzeugen und mehr.",
+    image: "msk_vehiclekeys-banner.webp",
+    link: "https://github.com/MSK-Scripts/msk_vehiclekeys",
+    docsLink: "https://docu.msk-scripts.de/docs/msk_vehiclekeys/",
+    badges: [
+      { label: "FiveM" },
+      { label: "Lua" },
+      { label: "ESX" },
+      { label: "QBCore" },
+    ],
+  },
+  {
+    id: "msk_handcuffs",
+    name: "MSK Handcuffs",
+    description:
+      "Realistic handcuffs with animations, props, drag, headbag, tape and ankle tracker.",
+    descriptionDe:
+      "Realistische Handschellen mit Animationen, Props, Abführen, Kopfsack, Klebeband und Fußfessel.",
+    image: "msk_handcuffs-banner.webp",
+    link: "https://github.com/MSK-Scripts/msk_handcuffs",
+    docsLink: "https://docu.msk-scripts.de/docs/msk_handcuffs/",
+    badges: [
+      { label: "FiveM" },
+      { label: "Lua" },
+      { label: "ESX" },
+      { label: "QBCore" },
     ],
   },
   {
@@ -176,11 +229,14 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
 /**
  * Which entries are the free FiveM scripts and which the web tools.
  * `CUSTOM_PACKAGES` mixes both, and home page, free scripts page and tools
- * page all pick from it by these lists. msk_core comes first, the paid
- * resources depend on it. An id that no longer exists drops out silently
- * (msk_jobGPS is commented out above).
+ * page all pick from it by these lists. msk_core comes first, the other
+ * resources depend on it; the three formerly paid scripts follow. An id that
+ * no longer exists drops out silently (msk_jobGPS is commented out above).
  */
-export const FREE_SCRIPT_IDS = ['msk_core', 'msk_fuel', 'msk_enginetoggle', 'msk_givevehicle', 'msk_jobGPS'] as const
+export const FREE_SCRIPT_IDS = [
+  'msk_core', 'msk_garage', 'msk_vehiclekeys', 'msk_handcuffs',
+  'msk_fuel', 'msk_enginetoggle', 'msk_givevehicle', 'msk_jobGPS',
+] as const
 export const WEB_TOOL_IDS = ['msk-forms', 'msk-paste', 'msk-shortener'] as const
 
 /** The entries with these ids, in the order of the ids. */

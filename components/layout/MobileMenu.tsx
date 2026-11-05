@@ -13,8 +13,8 @@ export const MOBILE_MENU_ID = 'mobile-menu'
 
 /**
  * The menu below 1280 px: the three product lines as the top level with
- * their pages below (plan 5.3), then account, language and appearance. Cart
- * and the menu button stay in the bar.
+ * their pages below (plan 5.3), then account, language and appearance. The
+ * menu button stays in the bar.
  *
  * A disclosure below the bar, not a modal: the page stays where it is, the
  * panel scrolls on its own, and the button that opened it closes it again.

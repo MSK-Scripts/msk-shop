@@ -27,10 +27,11 @@ export const BOT_DOCS = {
 // They existed for a while without ever appearing on the homepage, which meant
 // the cheapest way into the catalogue was also the least visible one.
 // Set to null to hide the subscription strip.
-export const SUBSCRIPTION_PACKAGE_IDS: { encrypted: number; source: number } | null = {
-  encrypted: 7569109,
-  source:    7569121,
-}
+//
+// Null since 05.11.2026: the scripts are free on GitHub and the subscription
+// is no longer sold. Its two package ids (7569109, 7569121) live on in
+// lib/retiredProducts.ts, which sends their old addresses to GitHub.
+export const SUBSCRIPTION_PACKAGE_IDS: { encrypted: number; source: number } | null = null
 
 // ── Products ─────────────────────────────────────────────────
 // What the shop says about a product, keyed by its slug (lib/products.ts).
