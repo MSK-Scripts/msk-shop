@@ -66,22 +66,33 @@ export default function UploadClient({ lang, initialError }: { lang: Lang; initi
   )
 
   const formRef = useRef<HTMLFormElement>(null)
-  const [preview, setPreview] = useState<string | null>(null)
+  const previewRef = useRef<HTMLCanvasElement>(null)
+  const [preview, setPreview] = useState<ImageBitmap | null>(null)
   const [busy, setBusy]       = useState(false)
   const [failure, setFailure] = useState<string | null>(
     initialError ? messageFor(t, initialError) : null,
   )
   const [done, setDone]       = useState(false)
 
-  // Cleanup only, no setState: otherwise the object URL keeps the file in
-  // memory for as long as the tab is open.
-  useEffect(() => () => { if (preview) URL.revokeObjectURL(preview) }, [preview])
+  // The preview is drawn into a canvas instead of an <img> with an object
+  // URL, so nothing derived from the picked file ends up in a DOM attribute.
+  // No setState here, drawing only.
+  useEffect(() => {
+    const canvas = previewRef.current
+    if (!preview || !canvas) return
+    canvas.width = preview.width
+    canvas.height = preview.height
+    canvas.getContext('2d')?.drawImage(preview, 0, 0)
+  }, [preview])
 
   const pickFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (preview) URL.revokeObjectURL(preview)
-    setPreview(file ? URL.createObjectURL(file) : null)
+    preview?.close()
+    setPreview(null)
     setFailure(null)
+    // A file the browser cannot decode simply gets no preview; the server
+    // checks the format again anyway.
+    if (file) createImageBitmap(file).then(setPreview, () => setPreview(null))
   }
 
   const submit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -101,7 +112,7 @@ export default function UploadClient({ lang, initialError }: { lang: Lang; initi
       const d = await r.json().catch(() => ({}))
       if (!r.ok) throw new Error(typeof d.error === 'string' ? d.error : 'generic')
       formRef.current.reset()
-      if (preview) URL.revokeObjectURL(preview)
+      preview?.close()
       setPreview(null)
       setDone(true)
       await reload()
@@ -232,11 +243,7 @@ export default function UploadClient({ lang, initialError }: { lang: Lang; initi
                     <p className="mt-1 text-xs text-[var(--color-muted-foreground)]">{t.form_file_hint}</p>
                     {preview && (
                       <div className="checker-bg mt-3 flex max-h-56 items-center justify-center overflow-hidden rounded-lg p-3">
-                        {/* eslint-disable-next-line @next/next/no-img-element --
-                            A blob: URL from the local file picker. next/image
-                            cannot optimize it and is not supposed to: the
-                            file has not even left the computer yet. */}
-                        <img src={preview} alt="" className="max-h-52 object-contain" />
+                        <canvas ref={previewRef} aria-hidden="true" className="h-auto max-h-52 w-auto max-w-full" />
                       </div>
                     )}
                   </div>
