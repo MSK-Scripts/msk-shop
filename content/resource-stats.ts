@@ -8,6 +8,9 @@
 //      (this is the `resource_name` fivestats.io indexes by).
 //    - Free resources link to their GitHub repository.
 //    - Paid resources link to their two Tebex variants (Encrypted + Source).
+//      There are none since 05.11.2026: MSK Garage, MSK Handcuffs and
+//      MSK VehicleKeys are free on GitHub now. Their old Tebex package ids
+//      live on in lib/retiredProducts.ts, which redirects them.
 //
 //  The API key lives server-side only (FIVESTATS_API_KEY in .env.local) —
 //  it never reaches the client. See lib/fivestats.ts.
@@ -63,7 +66,8 @@ const GITHUB_ORG = 'https://github.com/MSK-Scripts'
 export const RESOURCE_STATS: ResourceStatEntry[] = [
   // ─── Free ────────────────────────────────────────────────────
   // msk_core is always listed first; the remaining free resources follow
-  // alphabetically.
+  // alphabetically. Garage, Handcuffs and VehicleKeys were paid until
+  // 05.11.2026.
   {
     resourceName: "msk_core",
     versionsFile: "Lib.json",
@@ -86,11 +90,25 @@ export const RESOURCE_STATS: ResourceStatEntry[] = [
     github: `${GITHUB_ORG}/msk_fuel`,
   },
   {
+    resourceName: "msk_garage",
+    versionsFile: "Garage.json",
+    displayName: "MSK Garage",
+    tier: "free",
+    github: `${GITHUB_ORG}/msk_garage`,
+  },
+  {
     resourceName: "msk_givevehicle",
     versionsFile: "GiveVehicle.json",
     displayName: "MSK GiveVehicle",
     tier: "free",
     github: `${GITHUB_ORG}/msk_givevehicle`,
+  },
+  {
+    resourceName: "msk_handcuffs",
+    versionsFile: "Handcuffs.json",
+    displayName: "MSK Handcuffs",
+    tier: "free",
+    github: `${GITHUB_ORG}/msk_handcuffs`,
   },
   {
     resourceName: "msk_jobGPS",
@@ -105,27 +123,11 @@ export const RESOURCE_STATS: ResourceStatEntry[] = [
     tier: "free",
     github: `${GITHUB_ORG}/msk_storage`,
   },
-
-  // ─── Paid ────────────────────────────────────────────────────
-  {
-    resourceName: "msk_garage",
-    versionsFile: "Garage.json",
-    displayName: "MSK Garage",
-    tier: "paid",
-    packages: { encrypted: 5732587, source: 5732588 },
-  },
-  {
-    resourceName: "msk_handcuffs",
-    versionsFile: "Handcuffs.json",
-    displayName: "MSK Handcuffs",
-    tier: "paid",
-    packages: { encrypted: 5159927, source: 5301828 },
-  },
   {
     resourceName: "msk_vehiclekeys",
     versionsFile: "VehicleKeys.json",
     displayName: "MSK VehicleKeys",
-    tier: "paid",
-    packages: { encrypted: 6446936, source: 6446947 },
+    tier: "free",
+    github: `${GITHUB_ORG}/msk_vehiclekeys`,
   },
 ];

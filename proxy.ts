@@ -161,10 +161,12 @@ const liveProductIndex = createLiveIndexLoader(getPackages)
 /**
  * The redirect target with the query string of the request. A target can
  * bring a query of its own (`?variant=source` for an old Source package id);
- * the request's parameters are added behind it.
+ * the request's parameters are added behind it. A target off the site (a
+ * retired product's GitHub repository) gets none: `?variant=source` means
+ * nothing there.
  */
 function redirectTarget(location: string, search: string): string {
-  if (!search) return location
+  if (!search || /^https?:\/\//.test(location)) return location
   return location.includes('?') ? `${location}&${search.slice(1)}` : `${location}${search}`
 }
 

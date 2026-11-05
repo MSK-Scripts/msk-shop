@@ -6,7 +6,7 @@
 
 The headless storefront behind [msk-scripts.de](https://www.msk-scripts.de), built on Next.js 16, React 19, TypeScript, Tailwind CSS and MariaDB.
 
-It sells FiveM resources through the Tebex Headless API and doubles as the management platform for the Discord Ticket Bot and the Giveaway Bot: API keys, Stripe subscriptions, hosted transcripts, custom domains and fully hosted bots. It also runs the MSK image gallery and its CDN.
+It used to sell FiveM resources through the Tebex Headless API; since November 2026 those scripts are free on GitHub and the paid shop is switched off. It doubles as the management platform for the Discord Ticket Bot and the Giveaway Bot: API keys, Stripe subscriptions, hosted transcripts, custom domains and fully hosted bots. It also runs the MSK image gallery and its CDN.
 
 **This is not an open-source project.** The code is public to read, not free to use, see [License](#license).
 

@@ -1,6 +1,3 @@
-import { getCategories, getPackages } from '@/lib/tebex'
-import { groupProducts } from '@/lib/products'
-import { productUpdatedAt } from '@/lib/productView'
 import { listCategories } from '@/lib/images'
 import { absoluteUrl } from '@/lib/siteUrl'
 import { X_DEFAULT_PATH, alternatePaths } from '@/lib/routes'
@@ -19,13 +16,12 @@ import { X_DEFAULT_PATH, alternatePaths } from '@/lib/routes'
  * that does not exist.
  *
  * `lastmod`, on the other hand, is evaluated by Google, but only if the value is
- * "consistently and verifiably accurate". Before, it held `new Date()` for **all**
- * URLs, so the value moved forward with every revalidation and said nothing
- * about the page. Now:
- *
- *   - product pages   → the most recent `updated_at` of their variants
- *   - category pages  → the most recent `updated_at` of their packages
- *   - everything static → **no** `lastmod` at all
+ * "consistently and verifiably accurate". Before 22.08.2026 it held `new Date()`
+ * for **all** URLs, so the value moved forward with every revalidation and
+ * said nothing about the page. The product and category pages took theirs
+ * from Tebex' `updated_at`; they left the sitemap on 05.11.2026 with the paid
+ * scripts (they redirect now, see `retiredRedirect` in lib/routes.ts). What
+ * is left has **no** `lastmod` at all.
  *
  * No date is better than a wrong one: if it is missing, Google simply does not
  * use it. If it is recognizably made up, the whole file loses its credibility.
@@ -44,7 +40,6 @@ export const SITEMAP_STYLESHEET = '/sitemap.xsl'
 /** Static, publicly indexable pages. */
 const STATIC_ROUTES = [
   '/',
-  '/fivem',
   '/fivem/free',
   '/stats',
   '/discord',
@@ -68,25 +63,6 @@ const STATIC_ROUTES = [
   '/cancel-contract',
   '/report',
 ]
-
-/**
- * Parses a Tebex timestamp defensively. If it is missing or unusable,
- * `undefined` is returned and the entry gets no `lastmod`, see the
- * reasoning above. The API already returns `created_at` as `null` for some
- * packages, so `updated_at` cannot be relied on without a check.
- */
-function parseTimestamp(value?: string | null): Date | undefined {
-  if (!value) return undefined
-  const date = new Date(value)
-  return Number.isNaN(date.getTime()) ? undefined : date
-}
-
-/** Most recent date of a list, or `undefined` if none is usable. */
-function newest(dates: Array<Date | undefined>): Date | undefined {
-  const usable = dates.filter((d): d is Date => d !== undefined)
-  if (usable.length === 0) return undefined
-  return usable.reduce((a, b) => (a > b ? a : b))
-}
 
 /**
  * Every page is in the sitemap twice, once per language, and both entries
@@ -114,39 +90,13 @@ function bothLanguages(path: string, lastModified?: Date): SitemapEntry[] {
 export async function buildSitemapEntries(): Promise<SitemapEntry[]> {
   const staticEntries: SitemapEntry[] = STATIC_ROUTES.flatMap(path => bothLanguages(path))
 
-  // Fail-soft: if Tebex is unreachable (CI build without secrets, API outage),
-  // a valid sitemap with the static pages is still delivered instead of
-  // bringing down the whole build.
-  const [packages, categories] = await Promise.all([
-    getPackages().catch(err => {
-      console.warn('[sitemap] Tebex-Pakete nicht verfügbar:', err)
-      return []
-    }),
-    getCategories().catch(err => {
-      console.warn('[sitemap] Tebex-Kategorien nicht verfügbar:', err)
-      return []
-    }),
-  ])
-
-  // One entry per product page; the old package ids answer 308 to it.
-  const packageEntries: SitemapEntry[] = groupProducts(packages).flatMap(product =>
-    bothLanguages(product.path, parseTimestamp(productUpdatedAt(product))),
-  )
-
-  // `getCategories()` queries with `includePackages=1`, so the packages are
-  // already there. A category page changes exactly when one of its packages
-  // changes.
-  const categoryEntries: SitemapEntry[] = categories.flatMap(cat =>
-    bothLanguages(`/fivem/categories/${cat.id}`, newest((cat.packages ?? []).map(pkg => parseTimestamp(pkg.updated_at)))),
-  )
-
   // Gallery: the overview and category pages belong here, the individual
   // images do NOT. There are thousands of them, and a sitemap may hold
   // 50,000 URLs, so they live in `/sitemap-images.xml`, which also brings
   // the image namespace that Google evaluates for image search.
   //
-  // Fail-soft as with Tebex: without a database (CI build) the sitemap stays
-  // valid instead of bringing down the build.
+  // Fail-soft: without a database (CI build) the sitemap stays valid instead
+  // of bringing down the build.
   const imageCategories = await listCategories('en').catch(err => {
     console.warn('[sitemap] Bildkategorien nicht verfuegbar:', err)
     return []
@@ -156,7 +106,7 @@ export async function buildSitemapEntries(): Promise<SitemapEntry[]> {
     .filter(c => c.count > 0)
     .flatMap(c => bothLanguages(`/tools/images/${c.slug}`))
 
-  return [...staticEntries, ...packageEntries, ...categoryEntries, ...imageCategoryEntries]
+  return [...staticEntries, ...imageCategoryEntries]
 }
 
 /**

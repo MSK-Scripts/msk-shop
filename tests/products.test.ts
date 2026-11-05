@@ -1,5 +1,18 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
+// The product model runs against the paid catalogue of 05.11.2026, see
+// tests/fixtures/paidCatalogue.ts. Live, nothing is configured as paid any more.
+vi.mock('@/content/resource-stats', async importOriginal => {
+  const actual = await importOriginal<typeof import('@/content/resource-stats')>()
+  const { PAID_RESOURCE_STATS } = await import('./fixtures/paidCatalogue')
+  return { ...actual, RESOURCE_STATS: PAID_RESOURCE_STATS }
+})
+vi.mock('@/lib/config', async importOriginal => {
+  const actual = await importOriginal<typeof import('@/lib/config')>()
+  const { PAID_SUBSCRIPTION_PACKAGE_IDS } = await import('./fixtures/paidCatalogue')
+  return { ...actual, SUBSCRIPTION_PACKAGE_IDS: PAID_SUBSCRIPTION_PACKAGE_IDS }
+})
+
 import { buyOptions, optionFor } from '@/lib/buyOptions'
 import { PRODUCT_COPY, SITE_CONFIG } from '@/lib/config'
 import {

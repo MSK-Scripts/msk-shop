@@ -30,7 +30,6 @@ export function footerColumns(lang: Lang): Array<{ title: string; links: FooterL
     {
       title: t.footer_col_products,
       links: [
-        { label: t.nav_fivem,      href: '/fivem' },
         { label: t.nav_fivem_free, href: '/fivem/free' },
         { label: 'Ticket Bot',     href: '/discord/ticket-bot' },
         { label: 'Giveaway Bot',   href: '/discord/giveaway-bot' },

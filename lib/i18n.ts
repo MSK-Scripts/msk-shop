@@ -1960,8 +1960,7 @@ export const homeTranslations = {
     entry_label: "Entry by need",
     entry_fivem: "For your FiveM server",
     entry_fivem_sub: "Garage, vehicle keys, handcuffs, free scripts",
-    // {price} is the cheapest paid script in Tebex, formatted per language.
-    entry_fivem_price: "Paid scripts from {price}",
+    entry_fivem_price: "Free, open source on GitHub",
     entry_discord: "For your Discord server",
     entry_discord_sub: "Ticket bot, giveaway bot",
     // {price} is the cheapest paid ticket bot plan from lib/tiers.ts.
@@ -2009,7 +2008,7 @@ export const homeTranslations = {
     free_kicker: "Free",
     free_scripts_heading: "Free FiveM scripts",
     free_scripts_subtitle:
-      "Open source on GitHub, free to use on your server. msk_core is the shared library the paid resources build on.",
+      "Open source on GitHub, free to use on your server. msk_core is the shared library the other resources build on.",
     free_scripts_stats: "Live server counts",
     free_all: "All free scripts",
 
@@ -2026,7 +2025,7 @@ export const homeTranslations = {
     entry_label: "Einstieg nach Bedarf",
     entry_fivem: "Für deinen FiveM-Server",
     entry_fivem_sub: "Garage, Fahrzeugschlüssel, Handschellen, kostenlose Scripts",
-    entry_fivem_price: "Bezahl-Scripts ab {price}",
+    entry_fivem_price: "Kostenlos, Open Source auf GitHub",
     entry_discord: "Für deinen Discord-Server",
     entry_discord_sub: "Ticket-Bot, Giveaway-Bot",
     entry_discord_price: "Kostenlos, Pakete ab {price} im Monat",
@@ -2068,7 +2067,7 @@ export const homeTranslations = {
     free_kicker: "Kostenlos",
     free_scripts_heading: "Kostenlose FiveM-Scripts",
     free_scripts_subtitle:
-      "Open Source auf GitHub, frei nutzbar auf deinem Server. msk_core ist die Bibliothek, auf der die bezahlten Ressourcen aufbauen.",
+      "Open Source auf GitHub, frei nutzbar auf deinem Server. msk_core ist die Bibliothek, auf der die anderen Ressourcen aufbauen.",
     free_scripts_stats: "Live-Serverzahlen",
     free_all: "Alle kostenlosen Scripts",
 
@@ -2133,14 +2132,12 @@ export const freePageTranslations = {
     // {n} is the live server count from fivestats.io.
     servers: "Running on {n} servers",
     servers_source: "Live counts per script",
-    paid: "The paid scripts",
   },
   de: {
     title: "Kostenlose {fivem}-Scripts",
     docs: "Dokumentation",
     servers: "Läuft auf {n} Servern",
     servers_source: "Live-Zahlen je Script",
-    paid: "Die bezahlten Scripts",
   },
 } as const;
 
@@ -2753,12 +2750,8 @@ export const layoutTranslations = {
     nav_about:         'About',
     // aria-label of the small button that opens a product line's panel.
     nav_submenu:       'More in {name}',
-    nav_fivem_paid:         'Paid scripts',
-    nav_fivem_paid_desc:    'Every script as Encrypted or Source',
     nav_fivem_free:         'Free scripts',
-    nav_fivem_free_desc:    'Open source on GitHub, msk_core included',
-    nav_fivem_allaccess:      'All-access subscription',
-    nav_fivem_allaccess_desc: 'Access to every resource, cancel monthly',
+    nav_fivem_free_desc:    'Every MSK script, open source on GitHub',
     nav_fivem_stats:        'Server statistics',
     nav_fivem_stats_desc:   'Live server counts per script',
     nav_ticket_desc:        'Tickets with hosted transcripts and a dashboard',
@@ -2846,12 +2839,8 @@ export const layoutTranslations = {
     nav_tools:         'Web-Tools',
     nav_about:         'Über MSK',
     nav_submenu:       'Mehr unter {name}',
-    nav_fivem_paid:         'Bezahl-Scripts',
-    nav_fivem_paid_desc:    'Jedes Script als Encrypted oder Source',
     nav_fivem_free:         'Kostenlose Scripts',
-    nav_fivem_free_desc:    'Open Source auf GitHub, samt msk_core',
-    nav_fivem_allaccess:      'Alle Scripts im Abo',
-    nav_fivem_allaccess_desc: 'Zugriff auf sämtliche Ressourcen, monatlich kündbar',
+    nav_fivem_free_desc:    'Jedes MSK-Script, Open Source auf GitHub',
     nav_fivem_stats:        'Serverstatistiken',
     nav_fivem_stats_desc:   'Live-Serverzahlen je Script',
     nav_ticket_desc:        'Tickets mit gehosteten Transkripten und Dashboard',

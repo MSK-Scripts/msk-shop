@@ -1,6 +1,7 @@
 import type { Lang } from '@/lib/i18n'
 import { DEFAULT_LANG, LANGS, isLang } from '@/lib/lang'
 import { STATIC_PRODUCT_INDEX, productTarget, type ProductIndex } from '@/lib/products'
+import { retiredProductUrl } from '@/lib/retiredProducts'
 
 /**
  * The route table: one place that knows what every page is called in every
@@ -380,9 +381,10 @@ export type Resolution =
   | { kind: 'pass' }
   /**
    * `location` is a path, possibly with a query of its own (`?variant=source`);
-   * the proxy appends the query string of the request.
+   * the proxy appends the query string of the request. A retired product
+   * leads off the site: then `location` is an absolute URL and gets no query.
    */
-  | { kind: 'redirect'; status: 307 | 308; location: string }
+  | { kind: 'redirect'; status: 301 | 307 | 308; location: string }
   /**
    * Render a page. `path` is the internal path (basis for canonical and
    * hreflang), `target` the address Next routes (`/de/legal/terms`).
@@ -428,6 +430,33 @@ function resolveProduct(internal: string, index: ProductIndex): ProductResolutio
   return target ? { kind: 'product', ...target } : { kind: 'unknown' }
 }
 
+// ─── Retired shop pages ──────────────────────────────────────────────────────
+
+/**
+ * Where the paid FiveM shop went (05.11.2026). Nothing is sold through Tebex
+ * any more, so every page that only made sense with something to buy
+ * redirects:
+ *
+ *   - a former product page, by slug or by an old Tebex package id, answers
+ *     301 with its GitHub repository (lib/retiredProducts.ts),
+ *   - the catalogue, the category pages, cart and checkout answer 308 with
+ *     the free scripts page of the same language.
+ *
+ * The pages themselves and their route table entries stay until the Tebex
+ * code is removed; they are just never reached. `null` for every other path.
+ */
+export const RETIRED_SHOP_TARGET = '/fivem/free'
+
+export function retiredRedirect(lang: Lang, internal: string): Resolution | null {
+  const product = /^\/fivem\/([^/]+)$/.exec(internal)
+  const url = product ? retiredProductUrl(product[1]) : null
+  if (url) return { kind: 'redirect', status: 301, location: url }
+  if (internal === '/fivem' || isAtOrBelow(internal, ['/fivem/categories', '/cart', '/checkout'])) {
+    return { kind: 'redirect', status: 308, location: publicPath(lang, RETIRED_SHOP_TARGET) }
+  }
+  return null
+}
+
 function targetOf(lang: Lang, internal: string): string {
   return internal === '/' ? `/${lang}` : `/${lang}${internal}`
 }
@@ -447,6 +476,8 @@ function looksLikeFile(path: string): boolean {
  *     (the other language's words, an old address) answers 308 to it,
  *   - a product page answers for its slug only: an old package id answers
  *     308 to its product, an unknown slug or id is an unknown address,
+ *   - a retired shop page answers 301 (product) or 308 (catalogue, cart,
+ *     checkout), see `retiredRedirect`,
  *   - exempt addresses are never prefixed or redirected,
  *   - an unknown address is rendered by the 404 page of its language.
  */
@@ -467,6 +498,8 @@ export function resolveRequest(pathname: string, ctx: RequestContext = {}): Reso
     // before `/en/stats` existed, and links to it are still out there.
     const internal = legacyTarget(pathname) ?? internalPath(DEFAULT_LANG, pathname)
     if (internal !== null) {
+      const retired = retiredRedirect(DEFAULT_LANG, internal)
+      if (retired) return retired
       const product = resolveProduct(internal, index)
       if (product.kind === 'unknown') {
         // `/packages/<id>` of a package that does not exist: the 404 page
@@ -493,6 +526,9 @@ export function resolveRequest(pathname: string, ctx: RequestContext = {}): Reso
   if (resolved === null) {
     return { kind: 'page', lang, path: rest, target: pathname, unknown: true }
   }
+
+  const retired = retiredRedirect(lang, resolved)
+  if (retired) return retired
 
   const product = resolveProduct(resolved, index)
   if (product.kind === 'unknown') {

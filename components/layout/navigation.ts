@@ -49,14 +49,14 @@ export function productLines(lang: Lang): ProductLine[] {
   return [
     {
       id: 'fivem',
-      href: '/fivem',
+      // Every script is free on GitHub since 05.11.2026; the paid catalogue
+      // and the subscription redirect (lib/routes.ts, `retiredRedirect`).
+      href: '/fivem/free',
       label: t.nav_fivem,
       matches: ['/fivem', '/stats'],
       links: [
-        { href: '/fivem',            label: t.nav_fivem_paid,      description: t.nav_fivem_paid_desc },
-        { href: '/fivem/free',       label: t.nav_fivem_free,      description: t.nav_fivem_free_desc },
-        { href: '/fivem/all-access', label: t.nav_fivem_allaccess, description: t.nav_fivem_allaccess_desc },
-        { href: '/stats',            label: t.nav_fivem_stats,     description: t.nav_fivem_stats_desc },
+        { href: '/fivem/free', label: t.nav_fivem_free,  description: t.nav_fivem_free_desc },
+        { href: '/stats',      label: t.nav_fivem_stats, description: t.nav_fivem_stats_desc },
       ],
     },
     {

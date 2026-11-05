@@ -1,30 +1,25 @@
 import { botLandingEntries } from '@/lib/botSeo'
 import { SITE_CONFIG } from '@/lib/config'
 import { pageSeo } from '@/lib/pageSeo'
-import { groupProducts } from '@/lib/products'
-import { productSnippet } from '@/lib/productView'
 import { absoluteUrl } from '@/lib/siteUrl'
 import { publicPath } from '@/lib/routes'
-import type { TebexPackage } from '@/types/tebex'
 
 /**
  * `/llms.txt`: the short map of the site for language models. What the shop
  * sells, which pages there are and what each one answers.
  *
  * Every title and every description comes from the place the page itself
- * takes it from: `PAGE_SEO` for the fixed pages, `productSnippet` for the
- * products, `botLandingEntries` for the bot landing pages. A second wording
+ * takes it from: `PAGE_SEO` for the fixed pages, `botLandingEntries` for the
+ * bot landing pages. A second wording
  * kept here would drift from the first, and this file is exactly the one a
  * model quotes from.
  *
  * English only, the default language, with one pointer to `/de`. Listing both
  * would have doubled every line without telling a reader anything new.
  *
- * It names no prices. They change with every sale, and the product page with
- * its `Offer` markup is the place that keeps them current.
- *
- * One line per product, not per Tebex package: Encrypted and Source are two
- * choices on one page since Phase 4 of the redesign.
+ * It names no prices. The FiveM scripts are free on GitHub since 05.11.2026,
+ * so the paid product lines from Tebex left this file, and the ticket bot
+ * plans are on its landing page.
  */
 
 const LANG = 'en' as const
@@ -43,12 +38,7 @@ function section(heading: string, lines: string[]): string[] {
   return lines.length > 0 ? [`## ${heading}`, '', ...lines, ''] : []
 }
 
-/**
- * Takes the packages as an argument rather than loading them: the route
- * decides what to do when Tebex does not answer, and a test can call this
- * without a network.
- */
-export function renderLlmsTxt(packages: TebexPackage[]): string {
+export function renderLlmsTxt(): string {
   const home = pageSeo('/', LANG)
 
   const lines = [
@@ -59,11 +49,7 @@ export function renderLlmsTxt(packages: TebexPackage[]): string {
     `Every page also exists in German under ${absoluteUrl('/de')}. The documentation for the scripts lives at ${SITE_CONFIG.docs}.`,
     '',
     ...section('FiveM scripts', [
-      page('/fivem'),
-      ...groupProducts(packages).map(product => {
-        const { title, description } = productSnippet(product, LANG)
-        return entry(title, absoluteUrl(publicPath(LANG, product.path)), description)
-      }),
+      page('/fivem/free'),
     ]),
     ...section(
       'Discord bots',

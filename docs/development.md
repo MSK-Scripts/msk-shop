@@ -241,11 +241,13 @@ A few more things worth knowing:
 
 - **Custom packages** (the free scripts and web tools, not sold through Tebex) live in **`content/custom-packages.ts`**.
 - **The news popup** is edited in the admin (News popup area) and stored in the database, no deploy needed; its shape is checked in `lib/newsPopup.ts`.
-- **Resource statistics** are configured in **`content/resource-stats.ts`**: each entry maps a `resource_name` (the exact FiveM folder name) to a free resource (linked to GitHub) or a paid one (linked to its two Tebex variants).
+- **Resource statistics** are configured in **`content/resource-stats.ts`**: each entry maps a `resource_name` (the exact FiveM folder name) to a free resource (linked to GitHub) or a paid one (linked to its two Tebex variants). Since 05.11.2026 every entry is free.
 - **Legal pages** are plain Markdown in **`content/legal/*.md`**, one file per language.
 - **SEO titles and descriptions** for pages, products and categories live in `lib/pageSeo.ts` and `lib/config.ts`, in both languages.
 
 ### Products
+
+> **Retired since 05.11.2026.** The three paid scripts are free on GitHub and `SUBSCRIPTION_PACKAGE_IDS` is `null`, so nothing below is configured any more. `retiredRedirect` in `lib/routes.ts` answers before any of it: a former product slug or one of its Tebex package ids (kept in `lib/retiredProducts.ts`) gets a 301 to the GitHub repository, in every old scheme and both languages, and the catalogue, category pages, cart and checkout get a 308 to `/fivem/free`. The model below stays until the Tebex code is removed; its tests run against the last paid configuration (`tests/fixtures/paidCatalogue.ts`).
 
 Tebex keeps every script twice, as an Encrypted and a Source package. The shop sells one product with the two as a choice on its page. `lib/products.ts` is the one place that groups them:
 

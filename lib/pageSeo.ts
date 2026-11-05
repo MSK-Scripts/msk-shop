@@ -27,15 +27,15 @@ export const PAGE_SEO: Record<string, Record<Lang, PageSeo>> = {
     en: {
       title:       'FiveM Scripts, Tools & Discord Bots | MSK Scripts',
       description:
-        'FiveM scripts and resources for ESX and QBCore, plus free self-hosted Discord bots. '
-        + 'Escrow protected releases, delivered through the CFX.re Keymaster.',
+        'Free, open-source FiveM scripts for ESX and QBCore on GitHub, '
+        + 'plus self-hosted Discord bots and web tools.',
       absolute: true,
     },
     de: {
       title:       'FiveM Scripts, Tools und Discord-Bots | MSK Scripts',
       description:
-        'FiveM Scripts und Ressourcen für ESX und QBCore, dazu kostenlose Discord-Bots zum Selbsthosten. '
-        + 'Escrow-geschützte Releases, ausgeliefert über den CFX.re-Keymaster.',
+        'Kostenlose, quelloffene FiveM Scripts für ESX und QBCore auf GitHub, '
+        + 'dazu Discord-Bots zum Selbsthosten und Web-Tools.',
       absolute: true,
     },
   },
@@ -52,11 +52,11 @@ export const PAGE_SEO: Record<string, Record<Lang, PageSeo>> = {
   '/fivem/free': {
     en: {
       title:       'Free FiveM Scripts',
-      description: 'Free, open-source FiveM scripts by MSK Scripts on GitHub, with documentation and live server counts. msk_core is the library the paid scripts build on.',
+      description: 'Free, open-source FiveM scripts by MSK Scripts on GitHub: Garage, VehicleKeys, Handcuffs, msk_core and more, with documentation and live server counts.',
     },
     de: {
       title:       'Kostenlose FiveM-Scripts',
-      description: 'Kostenlose FiveM-Scripts von MSK Scripts, quelloffen auf GitHub, mit Doku und Live-Serverzahlen. msk_core ist die Bibliothek der bezahlten Scripts.',
+      description: 'Kostenlose FiveM-Scripts von MSK Scripts, quelloffen auf GitHub: Garage, VehicleKeys, Handcuffs, msk_core und mehr, mit Doku und Live-Serverzahlen.',
     },
   },
   '/discord': {
