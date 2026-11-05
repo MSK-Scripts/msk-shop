@@ -72,18 +72,6 @@ export const RESOURCE_STATS: ResourceStatEntry[] = [
     github: `${GITHUB_ORG}/msk_core`,
   },
   {
-    resourceName: "msk_aimedic",
-    displayName: "MSK AI Medic",
-    tier: "free",
-    github: `${GITHUB_ORG}/msk_aimedic`,
-  },
-  {
-    resourceName: "msk_aitaxi",
-    displayName: "MSK AI Taxi",
-    tier: "free",
-    github: `${GITHUB_ORG}/msk_aitaxi`,
-  },
-  {
     resourceName: "msk_enginetoggle",
     versionsFile: "EngineToggle.json",
     displayName: "MSK EngineToggle",
