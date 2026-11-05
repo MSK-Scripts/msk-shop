@@ -1,6 +1,6 @@
 # Widerrufsbelehrung
 
-Stand: Oktober 2026
+Stand: November 2026
 
 Diese Widerrufsbelehrung gilt für **kostenpflichtige Abonnements** (Ticket-Bot-Transcript-Service Premium, Hosted und Business sowie MSK Forms Pro und Enterprise), bei denen MSK Scripts dein Vertragspartner ist und Stripe lediglich die Zahlung abwickelt.
 

@@ -1,6 +1,6 @@
 # Terms and Conditions
 
-Last updated: October 2026
+Last updated: November 2026
 
 German statutory references (§ = section, Art. = article) are kept unchanged.
 

@@ -1,6 +1,6 @@
 # Withdrawal Instructions
 
-Last updated: October 2026
+Last updated: November 2026
 
 These withdrawal instructions apply to **paid subscriptions** (Ticket Bot transcript service Premium, Hosted and Business, as well as MSK Forms Pro and Enterprise) for which MSK Scripts is your contracting party and Stripe merely handles the payment.
 

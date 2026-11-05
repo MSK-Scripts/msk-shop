@@ -1,6 +1,6 @@
 # Allgemeine Geschäftsbedingungen (AGB)
 
-Stand: Oktober 2026
+Stand: November 2026
 
 ## § 1 Geltungsbereich
 
