@@ -58,7 +58,7 @@ export interface TicketBotCompareCopy {
 }
 
 /** Stand der Sternzahlen, damit die Seite ihre eigene Halbwertszeit ausweist. */
-export const COMPARE_DATA_DATE = '2026-08-29'
+export const COMPARE_DATA_DATE = '2026-11-05'
 
 const en: TicketBotCompareCopy = {
   altHref:  publicPath('de', '/discord/ticket-bot/compare'),
@@ -90,16 +90,16 @@ const en: TicketBotCompareCopy = {
     tickettool: 'Ticket Tool',
   },
   rows: [
-    { criterion: 'Hosting',        msk: 'Self-hosted, or hosted by us from the Hosted plan up', tickets: 'Self-hosted', sayrix: 'Self-hosted', tickettool: 'Hosted by the vendor' },
+    { criterion: 'Hosting',        msk: 'Self-hosted, or hosted by us from the Hosted plan up', tickets: 'Self-hosted, free public bot or paid managed bot', sayrix: 'Self-hosted', tickettool: 'Hosted by the vendor' },
     { criterion: 'Source code',    msk: 'AGPL-3.0', tickets: 'GPL-3.0', sayrix: 'AGPL-3.0', tickettool: 'Closed' },
-    { criterion: 'GitHub stars',   msk: '1', tickets: '1,471', sayrix: '502', tickettool: 'n/a' },
+    { criterion: 'GitHub stars',   msk: '4', tickets: '1,494', sayrix: '500', tickettool: 'n/a' },
     { criterion: 'Language',       msk: 'JavaScript (Node 24)', tickets: 'JavaScript', sayrix: 'TypeScript', tickettool: 'n/a' },
-    { criterion: 'Database',       msk: 'SQLite, MySQL/MariaDB or PostgreSQL', tickets: 'SQLite, MySQL or PostgreSQL', sayrix: 'SQLite', tickettool: 'Vendor side' },
+    { criterion: 'Database',       msk: 'SQLite, MySQL/MariaDB or PostgreSQL', tickets: 'SQLite, MySQL/MariaDB or PostgreSQL', sayrix: 'SQLite', tickettool: 'Vendor side' },
     { criterion: 'Servers per instance', msk: 'One', tickets: 'Many', sayrix: 'One', tickettool: 'Many' },
-    { criterion: 'Transcripts',    msk: 'Self-contained HTML, as a file or a hosted link', tickets: 'HTML and text', sayrix: 'HTML', tickettool: 'Hosted, on their domain' },
-    { criterion: 'Web dashboard',  msk: 'Built in, optional, 7 languages', tickets: 'Separate paid service', sayrix: 'No', tickettool: 'Yes' },
-    { criterion: 'Docker',         msk: 'Yes', tickets: 'Yes', sayrix: 'No official image', tickettool: 'n/a' },
-    { criterion: 'Costs money for', msk: 'Transcript hosting beyond 30 days, attachments, custom domains, bot hosting', tickets: 'The hosted dashboard', sayrix: 'Nothing', tickettool: 'Higher limits and branding' },
+    { criterion: 'Transcripts',    msk: 'Self-contained HTML, as a file or a hosted link', tickets: 'Text file from a template, Markdown by default; messages archived in the database', sayrix: 'Uploaded to ticket.pm, shared as a link', tickettool: 'HTML file kept in Discord, displayed on their website' },
+    { criterion: 'Web dashboard',  msk: 'Built in, optional, 7 languages', tickets: 'Built in', sayrix: 'No', tickettool: 'Yes' },
+    { criterion: 'Docker',         msk: 'Yes', tickets: 'Yes', sayrix: 'Dockerfile and compose file, no prebuilt image', tickettool: 'n/a' },
+    { criterion: 'Costs money for', msk: 'Transcript hosting beyond 30 days, attachments, custom domains, bot hosting', tickets: 'The managed bot', sayrix: 'Nothing', tickettool: 'Premium ($8 a month): claiming, automatic transcripts, a custom bot profile' },
   ],
 
   honestHeading: 'When our bot is the wrong choice',
@@ -107,8 +107,8 @@ const en: TicketBotCompareCopy = {
     'Three cases where we would point you elsewhere. If none of them apply, the bot is probably a good fit.',
   honest: [
     'You run several Discord servers from one instance. Ours registers its commands for a single server, so every server needs its own instance and its own bot application. Discord Tickets handles many servers at once.',
-    'You want a large project with many contributors. Discord Tickets has roughly 1,400 more stars than we do and a correspondingly larger community. If a bus factor of one is a problem for you, that is a real argument, and we are not going to talk you out of it.',
-    'You have no server, no interest in getting one, and you do not want to pay for one either. Running it yourself assumes you can keep a Node process alive. We do host it for you from the Hosted plan up, but if free is the requirement, Ticket Tool is the honest answer.',
+    'You want a large project with many contributors. Discord Tickets has roughly 1,500 more stars than we do and a correspondingly larger community. If a bus factor of one is a problem for you, that is a real argument, and we are not going to talk you out of it.',
+    'You have no server, no interest in getting one, and you do not want to pay for one either. Running it yourself assumes you can keep a Node process alive. We do host it for you from the Hosted plan up. If it has to be free, Ticket Tool or the free public bot of Discord Tickets is the honest answer.',
   ],
 
   faqHeading: 'Frequently asked questions',
@@ -127,7 +127,7 @@ const en: TicketBotCompareCopy = {
     },
     {
       q: 'Where is the ticket data stored?',
-      a: 'On your machine. The bot writes to SQLite by default, or to your own MySQL, MariaDB or PostgreSQL. There is no telemetry. The only data that ever leaves your server is a transcript you upload to the transcript service, and only if you configured an API key.',
+      a: 'On your machine. The bot writes to SQLite by default, or to your own MySQL, MariaDB or PostgreSQL. There is no telemetry. The only ticket data that ever leaves your server is a transcript you upload to the transcript service, and only if you configured an API key.',
     },
     {
       q: 'Can it run several Discord servers at once?',
@@ -187,16 +187,16 @@ const de: TicketBotCompareCopy = {
     tickettool: 'Ticket Tool',
   },
   rows: [
-    { criterion: 'Betrieb',          msk: 'Selbst gehostet, ab dem Tarif Hosted auch von uns', tickets: 'Selbst gehostet', sayrix: 'Selbst gehostet', tickettool: 'Vom Anbieter gehostet' },
+    { criterion: 'Betrieb',          msk: 'Selbst gehostet, ab dem Tarif Hosted auch von uns', tickets: 'Selbst gehostet, kostenloser öffentlicher Bot oder bezahlter Managed-Bot', sayrix: 'Selbst gehostet', tickettool: 'Vom Anbieter gehostet' },
     { criterion: 'Quellcode',        msk: 'AGPL-3.0', tickets: 'GPL-3.0', sayrix: 'AGPL-3.0', tickettool: 'Geschlossen' },
-    { criterion: 'GitHub-Sterne',    msk: '1', tickets: '1.471', sayrix: '502', tickettool: 'entfällt' },
+    { criterion: 'GitHub-Sterne',    msk: '4', tickets: '1.494', sayrix: '500', tickettool: 'entfällt' },
     { criterion: 'Sprache',          msk: 'JavaScript (Node 24)', tickets: 'JavaScript', sayrix: 'TypeScript', tickettool: 'entfällt' },
-    { criterion: 'Datenbank',        msk: 'SQLite, MySQL/MariaDB oder PostgreSQL', tickets: 'SQLite, MySQL oder PostgreSQL', sayrix: 'SQLite', tickettool: 'Beim Anbieter' },
+    { criterion: 'Datenbank',        msk: 'SQLite, MySQL/MariaDB oder PostgreSQL', tickets: 'SQLite, MySQL/MariaDB oder PostgreSQL', sayrix: 'SQLite', tickettool: 'Beim Anbieter' },
     { criterion: 'Server pro Instanz', msk: 'Einer', tickets: 'Mehrere', sayrix: 'Einer', tickettool: 'Mehrere' },
-    { criterion: 'Transkripte',      msk: 'Eigenständiges HTML, als Datei oder gehosteter Link', tickets: 'HTML und Text', sayrix: 'HTML', tickettool: 'Gehostet, auf deren Domain' },
-    { criterion: 'Web-Dashboard',    msk: 'Eingebaut, optional, 7 Sprachen', tickets: 'Getrennter, kostenpflichtiger Dienst', sayrix: 'Nein', tickettool: 'Ja' },
-    { criterion: 'Docker',           msk: 'Ja', tickets: 'Ja', sayrix: 'Kein offizielles Image', tickettool: 'entfällt' },
-    { criterion: 'Kostet Geld für',  msk: 'Transkript-Hosting über 30 Tage hinaus, Anhänge, eigene Domains, Bot-Hosting', tickets: 'Das gehostete Dashboard', sayrix: 'Nichts', tickettool: 'Höhere Limits und Branding' },
+    { criterion: 'Transkripte',      msk: 'Eigenständiges HTML, als Datei oder gehosteter Link', tickets: 'Textdatei aus einer Vorlage, standardmäßig Markdown; Nachrichten archiviert in der Datenbank', sayrix: 'Hochgeladen zu ticket.pm, geteilt als Link', tickettool: 'HTML-Datei, liegt in Discord, Anzeige auf deren Website' },
+    { criterion: 'Web-Dashboard',    msk: 'Eingebaut, optional, 7 Sprachen', tickets: 'Eingebaut', sayrix: 'Nein', tickettool: 'Ja' },
+    { criterion: 'Docker',           msk: 'Ja', tickets: 'Ja', sayrix: 'Dockerfile und Compose-Datei, kein fertiges Image', tickettool: 'entfällt' },
+    { criterion: 'Kostet Geld für',  msk: 'Transkript-Hosting über 30 Tage hinaus, Anhänge, eigene Domains, Bot-Hosting', tickets: 'Den Managed-Bot', sayrix: 'Nichts', tickettool: 'Premium (8 US-Dollar im Monat): Claiming, automatische Transkripte, eigenes Bot-Profil' },
   ],
 
   honestHeading: 'Wann unser Bot die falsche Wahl ist',
@@ -204,8 +204,8 @@ const de: TicketBotCompareCopy = {
     'Drei Fälle, in denen wir dich woanders hinschicken würden. Trifft keiner davon zu, passt der Bot vermutlich gut.',
   honest: [
     'Du betreibst mehrere Discord-Server aus einer Instanz. Unserer registriert seine Befehle für genau einen Server, jeder weitere braucht also eine eigene Instanz und eine eigene Bot-Application. Discord Tickets kann viele Server gleichzeitig.',
-    'Du willst ein großes Projekt mit vielen Mitwirkenden. Discord Tickets hat rund 1.400 Sterne mehr als wir und entsprechend mehr Community. Wenn dich ein Bus-Faktor von eins stört, ist das ein berechtigtes Argument, und wir werden es dir nicht ausreden.',
-    'Du hast keinen Server, willst auch keinen, und du willst dafür nichts bezahlen. Selbst betreiben setzt voraus, dass du einen Node-Prozess am Leben halten kannst. Wir hosten ihn ab dem Tarif Hosted für dich, aber wenn kostenlos die Bedingung ist, ist Ticket Tool die ehrliche Antwort.',
+    'Du willst ein großes Projekt mit vielen Mitwirkenden. Discord Tickets hat rund 1.500 Sterne mehr als wir und entsprechend mehr Community. Wenn dich ein Bus-Faktor von eins stört, ist das ein berechtigtes Argument, und wir werden es dir nicht ausreden.',
+    'Du hast keinen Server, willst auch keinen, und du willst dafür nichts bezahlen. Selbst betreiben setzt voraus, dass du einen Node-Prozess am Leben halten kannst. Wir hosten ihn ab dem Tarif Hosted für dich. Wenn es kostenlos sein muss, sind Ticket Tool oder der kostenlose öffentliche Bot von Discord Tickets die ehrliche Antwort.',
   ],
 
   faqHeading: 'Häufige Fragen',
@@ -224,7 +224,7 @@ const de: TicketBotCompareCopy = {
     },
     {
       q: 'Wo liegen die Ticketdaten?',
-      a: 'Auf deiner Maschine. Der Bot schreibt standardmäßig in SQLite oder in deine eigene MySQL, MariaDB oder PostgreSQL. Es gibt keine Telemetrie. Das Einzige, was deinen Server je verlässt, ist ein Transkript, das du zum Transkriptdienst hochlädst, und auch das nur, wenn du einen API-Key hinterlegt hast.',
+      a: 'Auf deiner Maschine. Der Bot schreibt standardmäßig in SQLite oder in deine eigene MySQL, MariaDB oder PostgreSQL. Es gibt keine Telemetrie. Ticketdaten verlassen deinen Server nur als Transkript, das du zum Transkriptdienst hochlädst, und auch das nur, wenn du einen API-Key hinterlegt hast.',
     },
     {
       q: 'Kann er mehrere Discord-Server gleichzeitig bedienen?',
