@@ -13,7 +13,7 @@ import { JsonLd } from '@/components/JsonLd'
 import { webSiteJsonLd } from '@/lib/jsonLd'
 import { loadHeadlineStat } from '@/lib/fivestats'
 import { loadDocPageCount } from '@/lib/docsPages'
-import { loadShopStats } from '@/lib/shopStats'
+import { loadDiscordMemberCount } from '@/lib/discordMembers'
 import { cheapestPaidTier, formatTierPrice } from '@/lib/tiers'
 
 // The home page collects impressions on generic queries for
@@ -50,7 +50,7 @@ export async function generateMetadata(): Promise<Metadata> {
  * cards and the second closing section (exclusion list, plan 4.2).
  */
 export default async function HomePage() {
-  const [{ lang }, headline, stats, docPages] = await Promise.all([
+  const [{ lang }, headline, discordMembers, docPages] = await Promise.all([
     getRequestLang(),
     // Fail-soft: none of these sources may take down the home page. If one
     // fails, the corresponding figure disappears; nothing is estimated.
@@ -58,8 +58,8 @@ export default async function HomePage() {
       console.warn('[home] fivestats headline stat unavailable:', err)
       return null
     }),
-    loadShopStats().catch(err => {
-      console.warn('[home] shop stats unavailable:', err)
+    loadDiscordMemberCount().catch(err => {
+      console.warn('[home] discord member count unavailable:', err)
       return null
     }),
     loadDocPageCount().catch(err => {
@@ -76,7 +76,7 @@ export default async function HomePage() {
           Only here: the home page is the one address that stands for the site. */}
       <JsonLd data={webSiteJsonLd()} />
       <Hero lang={lang} botFrom={ticketFrom} />
-      <ProofLine lang={lang} stats={stats} servers={headline} docPages={docPages} />
+      <ProofLine lang={lang} discordMembers={discordMembers} servers={headline} docPages={docPages} />
       <Bots lang={lang} ticketFrom={ticketFrom} />
       <WebTools lang={lang} />
       <FreeScripts lang={lang} />
