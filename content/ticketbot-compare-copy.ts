@@ -108,7 +108,7 @@ const en: TicketBotCompareCopy = {
   honest: [
     'You run several Discord servers from one instance. Ours registers its commands for a single server, so every server needs its own instance and its own bot application. Discord Tickets handles many servers at once.',
     'You want a large project with many contributors. Discord Tickets has roughly 1,500 more stars than we do and a correspondingly larger community. If a bus factor of one is a problem for you, that is a real argument, and we are not going to talk you out of it.',
-    'You have no server, no interest in getting one, and you do not want to pay for one either. Running it yourself assumes you can keep a Node process alive. We do host it for you from the Hosted plan up, but if free is the requirement, Ticket Tool is the honest answer.',
+    'You have no server, no interest in getting one, and you do not want to pay for one either. Running it yourself assumes you can keep a Node process alive. We do host it for you from the Hosted plan up. If it has to be free, Ticket Tool or the free public bot of Discord Tickets is the honest answer.',
   ],
 
   faqHeading: 'Frequently asked questions',
@@ -205,7 +205,7 @@ const de: TicketBotCompareCopy = {
   honest: [
     'Du betreibst mehrere Discord-Server aus einer Instanz. Unserer registriert seine Befehle für genau einen Server, jeder weitere braucht also eine eigene Instanz und eine eigene Bot-Application. Discord Tickets kann viele Server gleichzeitig.',
     'Du willst ein großes Projekt mit vielen Mitwirkenden. Discord Tickets hat rund 1.500 Sterne mehr als wir und entsprechend mehr Community. Wenn dich ein Bus-Faktor von eins stört, ist das ein berechtigtes Argument, und wir werden es dir nicht ausreden.',
-    'Du hast keinen Server, willst auch keinen, und du willst dafür nichts bezahlen. Selbst betreiben setzt voraus, dass du einen Node-Prozess am Leben halten kannst. Wir hosten ihn ab dem Tarif Hosted für dich, aber wenn kostenlos die Bedingung ist, ist Ticket Tool die ehrliche Antwort.',
+    'Du hast keinen Server, willst auch keinen, und du willst dafür nichts bezahlen. Selbst betreiben setzt voraus, dass du einen Node-Prozess am Leben halten kannst. Wir hosten ihn ab dem Tarif Hosted für dich. Wenn es kostenlos sein muss, sind Ticket Tool oder der kostenlose öffentliche Bot von Discord Tickets die ehrliche Antwort.',
   ],
 
   faqHeading: 'Häufige Fragen',
