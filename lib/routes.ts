@@ -70,6 +70,9 @@ export const ROUTES: readonly RouteDef[] = [
   route('/account',  '/konto'),
   route('/login',    '/anmelden'),
   route('/report',   '/inhalt-melden'),
+  // Result of the GitHub Sponsors verification started from the Discord bot.
+  // noindex and in robots.txt, only ever reached through a redirect.
+  route('/sponsor/verify', '/sponsor/verifizieren'),
 
   route('/legal/imprint',    '/rechtliches/impressum'),
   route('/legal/privacy',    '/rechtliches/datenschutz'),
@@ -538,6 +541,6 @@ export function isShopPath(internal: string): boolean {
 export function hasClosingBand(internal: string): boolean {
   return !isAtOrBelow(internal, [
     '/admin', '/dashboard', '/account', '/checkout', '/login',
-    '/legal', '/withdraw-contract', '/cancel-contract', '/report',
+    '/legal', '/withdraw-contract', '/cancel-contract', '/report', '/sponsor',
   ])
 }

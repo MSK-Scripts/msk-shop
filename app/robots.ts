@@ -25,6 +25,7 @@ const BLOCKED = [
   '/cart',
   '/checkout',
   '/login',
+  '/sponsor/verify',
   '/auth/',
   '/botproxy',
   '/dashboard/',

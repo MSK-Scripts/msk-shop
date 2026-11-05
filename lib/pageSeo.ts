@@ -205,6 +205,10 @@ export const PAGE_SEO: Record<string, Record<Lang, PageSeo>> = {
     en: { title: 'Sign in',   description: 'Sign in with your CFX.re account to buy MSK Scripts resources.' },
     de: { title: 'Anmelden',  description: 'Mit dem CFX.re-Konto anmelden, um Ressourcen von MSK Scripts zu kaufen.' },
   },
+  '/sponsor/verify': {
+    en: { title: 'Sponsor verification',      description: 'Link your GitHub account to receive the Sponsor role on the MSK Scripts Discord.' },
+    de: { title: 'Sponsoren-Verifizierung',   description: 'GitHub-Konto verknüpfen und die Sponsor-Rolle auf dem Discord von MSK Scripts erhalten.' },
+  },
   '/account': {
     en: { title: 'Account',     description: 'Your CFX.re account and linked Discord ID.' },
     de: { title: 'Mein Konto',  description: 'Dein CFX.re-Konto und die verknüpfte Discord-ID.' },
