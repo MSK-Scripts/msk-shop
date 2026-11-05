@@ -1,6 +1,6 @@
 # Datenschutzerklärung
 
-Stand: Oktober 2026
+Stand: November 2026
 
 Diese Datenschutzerklärung gilt für www.msk-scripts.de und die Subdomains docu., discord., paste. und s.msk-scripts.de sowie für die von MSK Scripts betriebenen Discord-Bots. Für **MSK Forms** (forms.msk-scripts.de) gilt eine eigene Datenschutzerklärung; MSK Paste und MSK Shortener haben zusätzlich Kurzhinweise auf ihren Seiten.
 
@@ -38,6 +38,8 @@ Wir setzen ausschließlich technisch notwendige Cookies und Speicherobjekte, die
 | `msk_gw_oauth_state` | Giveaway Dashboard | CSRF-Schutz im Discord-Login | 10 Min. |
 | `msk_gw_verify` | Giveaway Dashboard | Discord-ID und administrierbare Server während der Auswahl | 1 Std. |
 | `msk_giveaway_session` | Giveaway Dashboard | Anmeldung für den gewählten Server | 30 Tage |
+| `msk_sponsor_state` | Sponsor-Verifizierung | Discord-ID aus dem Verify-Link (signiert) | 10 Min. |
+| `msk_sponsor_oauth_state` | Sponsor-Verifizierung | CSRF-Schutz im GitHub-Login | 10 Min. |
 | `msk_upload_oauth_state` | Bildergalerie | CSRF-Schutz im Discord-Login | 10 Min. |
 | `msk_upload_session` | Bildergalerie | Anmeldung für das Einreichen von Bildern | 7 Tage |
 | `msk_admin_oauth_state` | Admin-Bereich | CSRF-Schutz im Discord-Login | 10 Min. |
@@ -96,6 +98,7 @@ Die Anmeldung mit Discord erfolgt über **Discord Inc.**, 444 De Haro Street, Sa
 - **MSK Shortener** (s.msk-scripts.de): Speichert Ziel-URL, Kurzcode, optionales Passwort (bcrypt) und Ablaufdatum; bei Erstellung und jedem Klick einen mit geheimem Salt gehashten (pseudonymisierten) IP-Wert, Gerätetyp, Browser, Betriebssystem und Referrer-Domain für Missbrauchsschutz und Klickstatistik. Rechtsgrundlage: Art. 6 Abs. 1 lit. b und lit. f DSGVO.
 - **Dokumentation** (docu.msk-scripts.de): statische Seiten, nur Server-Logs nach Abschnitt 3.
 - **Widerrufs- und Kündigungsfunktion:** Nutzt du „Vertrag widerrufen“ oder „Verträge hier kündigen“, verarbeiten wir Name, Vertragsangaben, E-Mail-Adresse und Zeitpunkt und senden eine Eingangsbestätigung. Rechtsgrundlage: Art. 6 Abs. 1 lit. b und c DSGVO; Aufbewahrung 3 Jahre zum Jahresende.
+- **GitHub-Sponsoren (Discord-Rolle):** Klickst du in unserem Discord auf "Verify", erhältst du einen persönlichen, 15 Minuten gültigen Link mit deiner Discord-ID. Darüber meldest du dich mit GitHub an (**GitHub, Inc.**, San Francisco, USA, ohne zusätzliche Berechtigungen, nur dein öffentliches Profil). Wir speichern deine Discord-ID, deine GitHub-Konto-ID und deinen GitHub-Benutzernamen als Verknüpfung. Über die GitHub-API prüfen wir, ob dieses Konto die Organisation MSK-Scripts sponsert (Art, Betrag und Datum des Sponsorings), bei der Anmeldung und danach täglich; diese Angaben speichern wir nicht. Ist das Sponsoring gültig, vergeben wir über die Discord-API die Rolle "Sponsor" auf unserem Server und entziehen sie nach Ablauf wieder. Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO (Bereitstellung des Ticket-Supports für Sponsoren). Die Übermittlung an GitHub in die USA stützt sich auf das EU-US Data Privacy Framework und Standardvertragsklauseln. Datenschutz bei GitHub: https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement
 - **E-Mail und Discord-Support:** Anfragen speichern wir zur Bearbeitung und löschen sie 12 Monate nach Abschluss, sofern keine Aufbewahrungspflicht besteht.
 
 ## 11. Empfänger
@@ -107,6 +110,7 @@ Die Anmeldung mit Discord erfolgt über **Discord Inc.**, 444 De Haro Street, Sa
 | Tebex Limited | Shop-Verkauf und Zahlung | eigenständig Verantwortlicher | UK (Angemessenheitsbeschluss) |
 | Stripe Payments Europe, Ltd. | Abo-Zahlungen | eigenständig Verantwortlicher | IE / USA (DPF, SCC) |
 | Discord Inc. | OAuth-Login, Bot-API | eigenständig Verantwortlicher | USA (DPF, SCC) |
+| GitHub, Inc. | GitHub-Login, Prüfung des Sponsorings | eigenständig Verantwortlicher | USA (DPF, SCC) |
 | Cfx.re (Tebex-Identitätsdienst) | CFX.re-Login | eigenständig Verantwortlicher | – |
 | Internet Security Research Group (Let's Encrypt) | TLS-Zertifikate für eigene Domains | eigenständig Verantwortlicher | USA |
 | fivestats.io | Ressourcen-Statistik (keine Nutzerdaten) | – | – |
@@ -125,6 +129,7 @@ Die Anmeldung mit Discord erfolgt über **Discord Inc.**, 444 De Haro Street, Sa
 | Pastes | gewähltes Ablaufdatum (10 Min. bis 1 Jahr) |
 | Kurzlinks | bis Löschung/Ablauf; Klickstatistik pseudonymisiert unbefristet |
 | Widerrufs-/Kündigungserklärungen | 3 Jahre zum Jahresende |
+| Sponsor-Verknüpfung (Discord-ID, GitHub-Konto) | bis du die Löschung verlangst oder das GitHub-Konto mit einem anderen Discord-Konto verknüpft wird |
 | Support-Anfragen | 12 Monate nach Abschluss |
 
 ## 13. Deine Rechte

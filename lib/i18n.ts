@@ -2618,6 +2618,45 @@ export const accountTranslations = {
   },
 } as const;
 
+// ── GitHub Sponsors verification (`/sponsor/verify`) ─────────────────────────
+// One title and text per status of lib/sponsorLink.ts (SPONSOR_STATUSES).
+export const sponsorTranslations = {
+  en: {
+    breadcrumb:                 'Sponsor verification',
+    granted_title:              'You are verified',
+    granted_text:               'Thanks for sponsoring MSK Scripts! You now have the Sponsor role on our Discord server and can open support tickets.',
+    linked_no_sponsorship_title:'GitHub account linked',
+    linked_no_sponsorship_text: 'We linked your GitHub account, but found no current sponsorship of at least $5. Once you sponsor, the role arrives with the next daily sync, or right away if you click Verify on Discord again.',
+    role_failed_title:          'Almost there',
+    role_failed_text:           'Your sponsorship is verified, but we could not give you the role on Discord. Make sure you are a member of our Discord server, then click Verify there again.',
+    link_invalid_title:         'This link has expired',
+    link_invalid_text:          'Verification links are personal and valid for 15 minutes. Click Verify on our Discord server to get a new one.',
+    rate_limited_title:         'Too many attempts',
+    rate_limited_text:          'Please wait a few minutes, then click Verify on Discord again.',
+    error_title:                'Something went wrong',
+    error_text:                 'We could not complete the verification. Please try again later by clicking Verify on Discord. If it keeps failing, contact us on Discord.',
+    sponsor_link:               'Become a sponsor on GitHub',
+    discord_link:               'Back to Discord',
+  },
+  de: {
+    breadcrumb:                 'Sponsoren-Verifizierung',
+    granted_title:              'Du bist verifiziert',
+    granted_text:               'Danke, dass du MSK Scripts unterstützt! Du hast jetzt die Sponsor-Rolle auf unserem Discord-Server und kannst Support-Tickets eröffnen.',
+    linked_no_sponsorship_title:'GitHub-Konto verknüpft',
+    linked_no_sponsorship_text: 'Wir haben dein GitHub-Konto verknüpft, aber kein aktuelles Sponsoring ab 5 $ gefunden. Sobald du sponserst, bekommst du die Rolle mit dem nächsten täglichen Abgleich, oder sofort, wenn du auf Discord noch einmal auf Verify klickst.',
+    role_failed_title:          'Fast geschafft',
+    role_failed_text:           'Dein Sponsoring ist bestätigt, aber wir konnten dir die Rolle auf Discord nicht geben. Prüfe, ob du Mitglied auf unserem Discord-Server bist, und klicke dort noch einmal auf Verify.',
+    link_invalid_title:         'Dieser Link ist abgelaufen',
+    link_invalid_text:          'Verifizierungslinks sind persönlich und 15 Minuten gültig. Klicke auf unserem Discord-Server auf Verify, um einen neuen zu bekommen.',
+    rate_limited_title:         'Zu viele Versuche',
+    rate_limited_text:          'Bitte warte ein paar Minuten und klicke dann auf Discord noch einmal auf Verify.',
+    error_title:                'Etwas ist schiefgelaufen',
+    error_text:                 'Die Verifizierung konnte nicht abgeschlossen werden. Bitte versuche es später noch einmal über Verify auf Discord. Klappt es weiterhin nicht, melde dich bei uns auf Discord.',
+    sponsor_link:               'Sponsor auf GitHub werden',
+    discord_link:               'Zurück zu Discord',
+  },
+} as const;
+
 // ── Draft legal copy (decision E10) ──────────────────────────────────────────
 // Every sentence of the purchase path that carries legal weight, verbatim
 // from the draft in the vault (`msk-shop/plans/2026-10-27-rechtstexte-

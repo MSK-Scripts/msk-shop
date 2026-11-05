@@ -579,3 +579,23 @@ CREATE TABLE IF NOT EXISTS msk_content_reports (
 --
 -- Aufbewahrung: Widerrufe und Kuendigungen 3 Jahre zum Jahresende (so steht es
 -- in der Datenschutzerklaerung, Abschnitt 12). Das erledigt `cleanup.js`.
+
+-- ============================================================================
+-- GitHub Sponsors -> Discord "Sponsor" role (Migration 004-sponsor-links.sql)
+-- ============================================================================
+-- Which GitHub account belongs to which Discord user. Written by
+-- GET /api/sponsor/callback, read by GET /api/sponsor/members (the bot's daily
+-- reconcile). The sponsorship itself is not stored, GitHub is asked live on
+-- every check. Matched by github_user_id (databaseId), not by the login, which
+-- can be renamed. One GitHub account maps to one Discord account; linking it
+-- again moves it (lib/sponsorLinks.ts deletes the old row in the same
+-- transaction).
+CREATE TABLE IF NOT EXISTS msk_sponsor_links (
+    discord_user_id VARCHAR(20)      NOT NULL PRIMARY KEY,
+    github_user_id  BIGINT UNSIGNED  NOT NULL,
+    github_login    VARCHAR(100)     NULL,
+    created_at      TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    UNIQUE KEY uq_github_user (github_user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

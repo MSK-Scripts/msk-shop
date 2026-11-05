@@ -138,6 +138,18 @@ STATS_IGNORED_API_KEYS=key1,key2,key3
 
 # Resource statistics (the /en/stats page)
 FIVESTATS_API_KEY=your_fivestats_api_key
+
+# GitHub Sponsors -> Discord "Sponsor" role (see .env.example). The feature
+# stays off, with a log line naming what is missing, until all of these are set.
+SPONSOR_LINK_SECRET=<openssl rand -hex 32, same value as in the bot>
+SPONSOR_SYNC_SECRET=<openssl rand -hex 32, same value as in the bot>
+GITHUB_SPONSOR_CLIENT_ID=your_github_oauth_client_id
+GITHUB_SPONSOR_CLIENT_SECRET=your_github_oauth_client_secret
+GITHUB_SPONSORS_TOKEN=<classic PAT of an org owner, scopes read:org and read:user>
+SPONSOR_GITHUB_ORG=MSK-Scripts
+SPONSOR_DISCORD_BOT_TOKEN=your_bot_token
+SPONSOR_GUILD_ID=your_guild_id
+SPONSOR_ROLE_ID=your_sponsor_role_id
 ```
 
 > Never commit `.env.local`. It is listed in `.gitignore`.

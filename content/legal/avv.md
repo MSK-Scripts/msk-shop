@@ -2,7 +2,7 @@
 
 pursuant to Art. 28 (3) GDPR
 
-Last updated: October 2026
+Last updated: November 2026
 
 This agreement becomes part of the contract as soon as you, as the operator of a Discord server, activate the **Ticket Bot transcript service**, **Hosted Bot Management** or **MSK Forms** ("controller", "you"). The processor is Moritz Kohm, MSK Scripts, Hauptstraße 103, 68535 Edingen-Neckarhausen ("MSK Scripts", "we"). You can access this agreement at any time at https://www.msk-scripts.de/en/legal/dpa and save it for your records.
 
