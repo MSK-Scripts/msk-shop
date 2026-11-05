@@ -1,6 +1,6 @@
 # Privacy Policy
 
-Last updated: October 2026
+Last updated: November 2026
 
 This privacy policy applies to www.msk-scripts.de and the subdomains docu., discord., paste. and s.msk-scripts.de as well as to the Discord bots operated by MSK Scripts. A separate privacy policy applies to **MSK Forms** (forms.msk-scripts.de); MSK Paste and MSK Shortener additionally carry short notices on their own pages.
 
@@ -38,6 +38,7 @@ We only use technically necessary cookies and storage objects that are strictly 
 | `msk_gw_oauth_state` | Giveaway dashboard | CSRF protection during the Discord login | 10 min. |
 | `msk_gw_verify` | Giveaway dashboard | Discord ID and administrable servers during the selection | 1 hour |
 | `msk_giveaway_session` | Giveaway dashboard | sign-in for the selected server | 30 days |
+| `msk_sponsor_state` | Sponsor verification | CSRF protection in the GitHub login, Discord ID from the verify link | 10 min |
 | `msk_upload_oauth_state` | Image gallery | CSRF protection during the Discord login | 10 min. |
 | `msk_upload_session` | Image gallery | sign-in for submitting images | 7 days |
 | `msk_admin_oauth_state` | Admin area | CSRF protection during the Discord login | 10 min. |
@@ -96,6 +97,7 @@ Signing in with Discord takes place via **Discord Inc.**, 444 De Haro Street, Sa
 - **MSK Shortener** (s.msk-scripts.de): Stores the target URL, short code, an optional password (bcrypt) and an expiry date; on creation and on every click it stores an IP value hashed with a secret salt (pseudonymised), device type, browser, operating system and referrer domain for abuse protection and click statistics. Legal basis: Art. 6 (1) (b) and (f) GDPR.
 - **Documentation** (docu.msk-scripts.de): static pages, only server logs as described in section 3.
 - **Withdrawal and cancellation function:** If you use "Withdraw from contract" or "Cancel contracts here", we process your name, contract details, email address and the time, and send you an acknowledgement of receipt. Legal basis: Art. 6 (1) (b) and (c) GDPR; retention 3 years to the end of the year.
+- **GitHub sponsors (Discord role):** When you click "Verify" on our Discord, you get a personal link with your Discord ID that is valid for 15 minutes. Through it you sign in with GitHub (**GitHub, Inc.**, San Francisco, USA, with no extra permissions, only your public profile). We store your Discord ID, your GitHub account ID and your GitHub username as a link. Using the GitHub API we check whether this account sponsors the organisation MSK-Scripts (type, amount and date of the sponsorship), at sign-in and daily after that; we do not store these details. If the sponsorship is valid, we give you the "Sponsor" role on our Discord server through the Discord API and remove it again once it ends. Legal basis: Art. 6 (1) (b) GDPR (providing ticket support to sponsors). The transfer to GitHub in the USA is based on the EU-US Data Privacy Framework and standard contractual clauses. GitHub privacy statement: https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement
 - **Email and Discord support:** We store enquiries in order to handle them and delete them 12 months after they are closed, unless a retention obligation applies.
 
 ## 11. Recipients
@@ -107,6 +109,7 @@ Signing in with Discord takes place via **Discord Inc.**, 444 De Haro Street, Sa
 | Tebex Limited | Shop sale and payment | Independent controller | UK (adequacy decision) |
 | Stripe Payments Europe, Ltd. | Subscription payments | Independent controller | IE / USA (DPF, SCC) |
 | Discord Inc. | OAuth login, bot API | Independent controller | USA (DPF, SCC) |
+| GitHub, Inc. | GitHub login, sponsorship check | Independent controller | USA (DPF, SCC) |
 | Cfx.re (Tebex identity service) | CFX.re login | Independent controller | – |
 | Internet Security Research Group (Let's Encrypt) | TLS certificates for custom domains | Independent controller | USA |
 | fivestats.io | Resource statistics (no user data) | – | – |
@@ -125,6 +128,7 @@ Signing in with Discord takes place via **Discord Inc.**, 444 De Haro Street, Sa
 | Pastes | selected expiry date (10 min. to 1 year) |
 | Short links | until deletion/expiry; click statistics pseudonymised indefinitely |
 | Withdrawal/cancellation declarations | 3 years to the end of the year |
+| Sponsor link (Discord ID, GitHub account) | until you ask for deletion or the GitHub account is linked to another Discord account |
 | Support enquiries | 12 months after closure |
 
 ## 13. Your rights
