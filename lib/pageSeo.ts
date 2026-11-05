@@ -92,7 +92,7 @@ export const PAGE_SEO: Record<string, Record<Lang, PageSeo>> = {
   '/stats': {
     en: {
       title:       'Resource Statistics',
-      description: 'Live adoption statistics of MSK Scripts FiveM resources across all servers, powered by fivestats.io.',
+      description: 'How many FiveM servers run the resources of MSK Scripts. Live figures from fivestats.io.',
     },
     de: {
       title:       'Resourcen-Statistiken',

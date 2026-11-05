@@ -59,9 +59,9 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
     id: "msk_core",
     name: "MSK Core",
     description:
-      "Our core library for our resources, providing common utilities, and more.",
+      "The core library our other resources build on, with shared utility functions and more.",
     descriptionDe:
-      "Unsere Kernbibliothek für unsere Ressourcen, mit gemeinsamen Hilfsfunktionen und mehr.",
+      "Die Kernbibliothek, auf der unsere anderen Ressourcen aufbauen, mit gemeinsamen Hilfsfunktionen und mehr.",
     image: "msk_core-banner.webp",
     link: "https://github.com/MSK-Scripts/msk_core",
     docsLink: "https://docu.msk-scripts.de/docs/msk_core/",
@@ -76,9 +76,9 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
     id: "msk_garage",
     name: "MSK Garage",
     description:
-      "A complete, server-authoritative garage and impound system for ESX, QBCore and Qbox with a modern React UI and a security-first backend.",
+      "A complete garage and impound system for ESX, QBCore and Qbox. The server checks every action, and the interface is built with React.",
     descriptionDe:
-      "Ein komplettes Garagen- und Abschlepphof-System für ESX, QBCore und Qbox: der Server prüft alles, die Oberfläche ist modernes React, das Backend auf Sicherheit gebaut.",
+      "Ein komplettes Garagen- und Abschlepphof-System für ESX, QBCore und Qbox. Der Server prüft jede Aktion, die Oberfläche ist mit React gebaut.",
     image: "msk_garage-banner.webp",
     link: "https://github.com/MSK-Scripts/msk_garage",
     docsLink: "https://docu.msk-scripts.de/docs/msk_garage/",
@@ -94,7 +94,7 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
     id: "msk_vehiclekeys",
     name: "MSK VehicleKeys",
     description:
-      "Unique vehicle key items with lock/unlock, key menu, job vehicles and much more.",
+      "Unique vehicle key items with lock/unlock, key menu, job vehicles and more.",
     descriptionDe:
       "Fahrzeugschlüssel als eigene Items, mit Auf- und Zuschließen, Schlüsselmenü, Jobfahrzeugen und mehr.",
     image: "msk_vehiclekeys-banner.webp",
@@ -189,9 +189,9 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
     id: "msk-forms",
     name: "MSK Forms",
     description:
-      "A modern form & application platform with status feedback and native Discord integration.",
+      "A platform for forms and applications, with status feedback and native Discord integration.",
     descriptionDe:
-      "Eine moderne Plattform für Formulare und Bewerbungen, mit Statusrückmeldung und nativer Discord-Anbindung.",
+      "Eine Plattform für Formulare und Bewerbungen, mit Statusrückmeldung und nativer Discord-Anbindung.",
     image: "msk_forms.webp",
     link: "https://forms.msk-scripts.de/",
     secondaryLink: "https://github.com/MSK-Scripts/msk-forms",
@@ -215,9 +215,9 @@ export const CUSTOM_PACKAGES: CustomPackage[] = [
     id: "msk-shortener",
     name: "MSK Shortener",
     description:
-      "Fast, privacy-friendly URL shortener. No cookies, no trackers, no signup.",
+      "A fast, privacy-friendly URL shortener without cookies, trackers or signup.",
     descriptionDe:
-      "Schneller, datenschutzfreundlicher Linkkürzer. Keine Cookies, keine Tracker, keine Anmeldung.",
+      "Ein schneller, datenschutzfreundlicher Linkkürzer ohne Cookies, Tracker und Anmeldung.",
     image: "msk_shortener.webp",
     link: "https://s.msk-scripts.de/",
     secondaryLink: "https://github.com/MSK-Scripts/msk-shortener",

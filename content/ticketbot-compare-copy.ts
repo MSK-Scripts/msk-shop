@@ -107,7 +107,7 @@ const en: TicketBotCompareCopy = {
     'Three cases where we would point you elsewhere. If none of them apply, the bot is probably a good fit.',
   honest: [
     'You run several Discord servers from one instance. Ours registers its commands for a single server, so every server needs its own instance and its own bot application. Discord Tickets handles many servers at once.',
-    'You want a large project with many contributors. Discord Tickets has roughly 1,400 more stars than we do and a correspondingly larger community. If a bus-factor of one is a problem for you, that is a real argument, and we are not going to talk you out of it.',
+    'You want a large project with many contributors. Discord Tickets has roughly 1,400 more stars than we do and a correspondingly larger community. If a bus factor of one is a problem for you, that is a real argument, and we are not going to talk you out of it.',
     'You have no server, no interest in getting one, and you do not want to pay for one either. Running it yourself assumes you can keep a Node process alive. We do host it for you from the Hosted plan up, but if free is the requirement, Ticket Tool is the honest answer.',
   ],
 
