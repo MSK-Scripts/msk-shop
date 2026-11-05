@@ -5,7 +5,7 @@ import { publicPath } from '@/lib/routes'
 import { getPreferredLang } from '@/lib/serverLang'
 import { absoluteUrl, siteUrl } from '@/lib/siteUrl'
 import {
-  SPONSOR_STATE_COOKIE, SPONSOR_STATE_TTL_S, newOAuthState, readSponsorConfig, signStateCookie,
+  SPONSOR_OAUTH_STATE_COOKIE, SPONSOR_STATE_COOKIE, SPONSOR_STATE_TTL_S, newOAuthState, readSponsorConfig, signStateCookie,
   verifyLinkToken, type SponsorStatus,
 } from '@/lib/sponsorLink'
 
@@ -45,12 +45,14 @@ export async function GET(req: Request) {
   })
 
   const res = NextResponse.redirect(`https://github.com/login/oauth/authorize?${params.toString()}`)
-  res.cookies.set(SPONSOR_STATE_COOKIE, signStateCookie({ discordId: link.discordId, state }, config.linkSecret), {
+  const cookieOptions = {
     httpOnly: true,
     secure:   true,
     sameSite: 'lax',
     maxAge:   SPONSOR_STATE_TTL_S,
     path:     '/api/sponsor',
-  })
+  } as const
+  res.cookies.set(SPONSOR_STATE_COOKIE, signStateCookie({ discordId: link.discordId }, config.linkSecret), cookieOptions)
+  res.cookies.set(SPONSOR_OAUTH_STATE_COOKIE, state, cookieOptions)
   return res
 }

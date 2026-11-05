@@ -5,7 +5,7 @@ import { publicPath } from '@/lib/routes'
 import { getPreferredLang } from '@/lib/serverLang'
 import { absoluteUrl, siteUrl } from '@/lib/siteUrl'
 import {
-  GITHUB_LOGIN_RE, SPONSOR_STATE_COOKIE, readSponsorConfig, readStateCookie, safeEqual,
+  GITHUB_LOGIN_RE, SPONSOR_OAUTH_STATE_COOKIE, SPONSOR_STATE_COOKIE, readSponsorConfig, readStateCookie, safeEqual,
   type SponsorStatus,
 } from '@/lib/sponsorLink'
 import { grantSponsorRole, upsertSponsorLink } from '@/lib/sponsorLinks'
@@ -13,8 +13,8 @@ import { currentSponsors } from '@/lib/sponsors'
 
 // GitHub sends the browser back here. Log lines name the outcome, never the
 // Discord or GitHub id, the token or the code (log injection, privacy). In order:
-//   1. state from the query equals the state in our signed cookie (CSRF), the
-//      cookie is deleted on every path;
+//   1. state from the query equals the state cookie (CSRF), and the signed
+//      cookie names the Discord user; both cookies are deleted on every path;
 //   2. the code is exchanged for a token, which is used once for GET /user and
 //      then forgotten (never stored, never logged);
 //   3. the link Discord user <-> GitHub account is saved;
@@ -26,7 +26,9 @@ export async function GET(req: Request) {
   const lang = await getPreferredLang()
   const finish = (status: SponsorStatus) => {
     const res = NextResponse.redirect(absoluteUrl(publicPath(lang, `/sponsor/verify?status=${status}`)))
-    res.cookies.set(SPONSOR_STATE_COOKIE, '', { httpOnly: true, secure: true, sameSite: 'lax', maxAge: 0, path: '/api/sponsor' })
+    for (const name of [SPONSOR_STATE_COOKIE, SPONSOR_OAUTH_STATE_COOKIE]) {
+      res.cookies.set(name, '', { httpOnly: true, secure: true, sameSite: 'lax', maxAge: 0, path: '/api/sponsor' })
+    }
     return res
   }
 
@@ -40,8 +42,10 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
   const code  = searchParams.get('code')
   const state = searchParams.get('state')
-  const saved = readStateCookie((await cookies()).get(SPONSOR_STATE_COOKIE)?.value, config.linkSecret)
-  if (!code || !state || !saved || !safeEqual(state, saved.state)) {
+  const jar   = await cookies()
+  const saved = readStateCookie(jar.get(SPONSOR_STATE_COOKIE)?.value, config.linkSecret)
+  const expectedState = jar.get(SPONSOR_OAUTH_STATE_COOKIE)?.value
+  if (!code || !state || !saved || !expectedState || !safeEqual(state, expectedState)) {
     return finish('link_invalid')
   }
   const discordId = saved.discordId

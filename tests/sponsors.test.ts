@@ -80,14 +80,14 @@ describe('link token', () => {
 
 describe('state cookie', () => {
   it('round-trips and expires after ten minutes', () => {
-    const c = signStateCookie({ discordId: USER, state: 'f'.repeat(32) }, SECRET, NOW)
-    expect(readStateCookie(c, SECRET, NOW + 60_000)).toEqual({ discordId: USER, state: 'f'.repeat(32) })
+    const c = signStateCookie({ discordId: USER }, SECRET, NOW)
+    expect(readStateCookie(c, SECRET, NOW + 60_000)).toEqual({ discordId: USER })
     expect(readStateCookie(c, SECRET, NOW + 10 * 60_000)).toBeNull()
   })
 
   it('is not interchangeable with a link token', () => {
     expect(readStateCookie(signLinkToken(payload(), SECRET), SECRET, NOW)).toBeNull()
-    const c = signStateCookie({ discordId: USER, state: 'f'.repeat(32) }, SECRET, NOW)
+    const c = signStateCookie({ discordId: USER }, SECRET, NOW)
     expect(verifyLinkToken(c, { secret: SECRET, guildId: GUILD, nowMs: NOW })).toBeNull()
   })
 })

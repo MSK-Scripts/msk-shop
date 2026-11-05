@@ -33,6 +33,11 @@ export const SPONSOR_LINK_TTL_S = 15 * 60
 /** Lifetime of the OAuth state cookie. */
 export const SPONSOR_STATE_TTL_S = 10 * 60
 export const SPONSOR_STATE_COOKIE = 'msk_sponsor_state'
+// The OAuth state sits in its own plain cookie, compared with the `state`
+// query parameter in the callback (the same pattern as the Discord verify
+// login). It stays out of the signed cookie on purpose: a random value fed
+// into the HMAC reads to CodeQL as a password hashed with SHA-256.
+export const SPONSOR_OAUTH_STATE_COOKIE = 'msk_sponsor_oauth_state'
 
 const MIN_SECRET_LENGTH = 32
 
@@ -173,7 +178,6 @@ export function verifyLinkToken(
 
 export interface SponsorState {
   discordId: string
-  state:     string
 }
 
 export function newOAuthState(): string {
@@ -182,7 +186,7 @@ export function newOAuthState(): string {
 
 export function signStateCookie(value: SponsorState, secret: string, nowMs: number = Date.now()): string {
   const exp = Math.floor(nowMs / 1000) + SPONSOR_STATE_TTL_S
-  const b64 = Buffer.from(JSON.stringify({ d: value.discordId, s: value.state, exp })).toString('base64url')
+  const b64 = Buffer.from(JSON.stringify({ d: value.discordId, exp })).toString('base64url')
   return `${b64}.${hmac(secret, STATE_PREFIX + b64)}`
 }
 
@@ -195,8 +199,7 @@ export function readStateCookie(cookie: string | null | undefined, secret: strin
   if (!p) return null
   if (typeof p.exp !== 'number' || p.exp <= Math.floor(nowMs / 1000)) return null
   if (typeof p.d !== 'string' || !SNOWFLAKE_RE.test(p.d)) return null
-  if (typeof p.s !== 'string' || !/^[0-9a-f]{32}$/.test(p.s)) return null
-  return { discordId: p.d, state: p.s }
+  return { discordId: p.d }
 }
 
 // ── Result page ──────────────────────────────────────────────────────────────

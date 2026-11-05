@@ -38,7 +38,8 @@ We only use technically necessary cookies and storage objects that are strictly 
 | `msk_gw_oauth_state` | Giveaway dashboard | CSRF protection during the Discord login | 10 min. |
 | `msk_gw_verify` | Giveaway dashboard | Discord ID and administrable servers during the selection | 1 hour |
 | `msk_giveaway_session` | Giveaway dashboard | sign-in for the selected server | 30 days |
-| `msk_sponsor_state` | Sponsor verification | CSRF protection in the GitHub login, Discord ID from the verify link | 10 min |
+| `msk_sponsor_state` | Sponsor verification | Discord ID from the verify link (signed) | 10 min |
+| `msk_sponsor_oauth_state` | Sponsor verification | CSRF protection in the GitHub login | 10 min |
 | `msk_upload_oauth_state` | Image gallery | CSRF protection during the Discord login | 10 min. |
 | `msk_upload_session` | Image gallery | sign-in for submitting images | 7 days |
 | `msk_admin_oauth_state` | Admin area | CSRF protection during the Discord login | 10 min. |
