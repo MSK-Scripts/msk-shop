@@ -7,7 +7,9 @@
 // GitHub account belongs to which Discord user (msk_sponsor_links).
 //
 // The token (GITHUB_SPONSORS_TOKEN) is a classic personal access token of an
-// owner of the organization with the scope `read:org`. Only an org owner sees
+// owner of the organization with the scopes `read:org` and `read:user`; GitHub
+// refuses isActive, isOneTimePayment, createdAt and tierSelectedAt without
+// read:user (INSUFFICIENT_SCOPES). Only an org owner sees
 // private sponsorships and the sponsorships of the org as a maintainer at all;
 // with a weaker token the list comes back short, not with an error.
 // =============================================================================
