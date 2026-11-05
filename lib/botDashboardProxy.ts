@@ -125,3 +125,27 @@ export const signProxySession  = (c: Omit<ProxyClaims, 'exp'>) => makeToken('bot
 export const verifyProxySession = (t?: string | null) => readToken('bot-proxysession', t)
 
 export const PROXY_SESSION_MAX_AGE_S = Math.floor(PROXY_SESSION_TTL_MS / 1000)
+
+/** Methods that only read; everything else changes something in the bot. */
+const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS'])
+
+/**
+ * Whether a request to the proxy host may be forwarded, as far as its origin goes.
+ *
+ * The bot trusts the proxy and skips its own origin and CSRF checks for proxied
+ * requests, so this is the only place where a cross-site write can be stopped.
+ * The session cookie is SameSite=Lax, and every *.msk-scripts.de host counts as
+ * the same site, so a form on another subdomain could otherwise send a POST
+ * without a body (for example /api/bot/stop) with the customer's session.
+ *
+ * Reading requests pass. A writing request needs an Origin of exactly
+ * https://PROXY_HOST. Browsers send Origin on every POST, PUT, PATCH and DELETE;
+ * if it is missing, Sec-Fetch-Site: same-origin is accepted instead, and a
+ * request with neither is refused.
+ */
+export function isAllowedProxyOrigin(method: string, headers: Headers, host: string = PROXY_HOST): boolean {
+  if (SAFE_METHODS.has(method.toUpperCase())) return true
+  const origin = headers.get('origin')
+  if (origin !== null) return origin.toLowerCase() === `https://${host}`
+  return headers.get('sec-fetch-site') === 'same-origin'
+}
