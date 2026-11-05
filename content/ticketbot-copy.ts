@@ -149,7 +149,7 @@ const en: TicketBotCopy = {
   headline: { lead: 'Discord', accent: 'Ticket Bot', tail: ' that stays on your server' },
   heroText:
     'A self-hosted ticket system for Discord admins who want their transcripts on their '
-    + 'own machine. Free, no telemetry, no basics behind a paywall.',
+    + 'own machine. It is free and sends no telemetry, and none of the basics sit behind a paywall.',
   highlights: ['Self-hosted', 'No game server needed', 'No telemetry', 'SQLite · MySQL · PostgreSQL', 'Discord.js v14'],
   heroCtaKey:     'Set up your bot in 3 minutes',
   heroCtaDocs:    'Documentation',
@@ -166,11 +166,11 @@ const en: TicketBotCopy = {
     },
     {
       title: 'Every transcript sits with someone else',
-      text:  'Your member data, your disputes, your payout arguments end up on a provider’s infrastructure, and you never find out what happens to them there.',
+      text:  'Member data, disputes and payout arguments end up on a provider’s infrastructure, and you never find out what happens to them there.',
     },
     {
       title: 'The basics cost extra',
-      text:  'Transcripts, attachments, more than one panel. The very things you got the bot for sit behind a paywall, billed per server.',
+      text:  'Transcripts, attachments and more than one panel, the things you got the bot for, sit behind a paywall and are billed per server.',
     },
   ],
 
@@ -200,7 +200,7 @@ const en: TicketBotCopy = {
 
   featuresEyebrow: 'Features',
   featuresHeading: 'A full feature set out of the box',
-  featuresSub:     'Everything a serious support team needs. No add-ons, no paywalled basics.',
+  featuresSub:     'What a support team needs, without add-ons or basics behind a paywall.',
   features: [
     { title: 'Ticket Types',           text: 'Up to 25 configurable types, each with its own emoji, color, category and questions.' },
     { title: 'Questionnaires',         text: 'Modal forms with up to 5 questions shown when a ticket is opened.' },
@@ -216,7 +216,7 @@ const en: TicketBotCopy = {
     { title: 'User Notifications',     text: 'Users can opt in to a DM when staff first replies, rate-limited to avoid spam.' },
     { title: 'Broadcast',              text: 'Send a single message to every open ticket channel at once.' },
     { title: 'Flexible Database',      text: 'Runs on SQLite with zero setup, or connect your own MySQL, MariaDB or PostgreSQL, with a migration script to move existing data.' },
-    { title: 'Self-Hosted Dashboard',  text: 'Optional built-in web dashboard to manage tickets, stats, config and the bot itself from the browser. Disabled by default, secure by default.' },
+    { title: 'Self-Hosted Dashboard',  text: 'Optional built-in web dashboard to manage tickets, stats, config and the bot itself from the browser. It is off and locked down by default.' },
   ],
 
   verifyEyebrow: 'How verification works',
@@ -256,13 +256,13 @@ const en: TicketBotCopy = {
     'Prefer not to run a server at all? Set hosting up yourself in the dashboard: '
     + 'enter your bot token, client ID and client secret, and we install the bot, start it '
     + 'and check that it really came up. Your bot then gets its own address, and your whole '
-    + 'team signs in there with Discord. No SSH access or server knowledge required.',
+    + 'team signs in there with Discord. You need neither SSH access nor any server knowledge.',
   hostedCtaDashboard: 'Set it up in the dashboard',
   hostedCtaDiscord:   'Ask on Discord',
   hostedItems: [
-    { title: 'Set up yourself',  text: 'Three values from the Discord developer portal and one button. No ticket, no waiting.' },
+    { title: 'Set up yourself',  text: 'Enter three values from the Discord developer portal and press one button. You do not have to open a ticket or wait for us.' },
     { title: 'Stays reversible', text: 'Remove hosting whenever you want. We keep the installation for 14 days, so one click brings it back with your tickets intact.' },
-    { title: 'Bot control and live logs', text: 'Start, stop, restart and update the bot, and read its output live, which is exactly what you need when it will not come up.' },
+    { title: 'Bot control and live logs', text: 'Start, stop, restart and update the bot, and read its output live, for example to see why it will not come up.' },
     { title: 'Its own address',  text: 'The bot dashboard runs on its own address with its own Discord login, so your team gets in too. Bring your own domain if you prefer.' },
   ],
 
@@ -332,7 +332,7 @@ const de: TicketBotCopy = {
   headline: { lead: 'Discord', accent: 'Ticket Bot', tail: ', der auf deinem Server bleibt' },
   heroText:
     'Ticketsystem zum Selbsthosten für Discord-Betreiber, die ihre Transkripte nicht fremden '
-    + 'Servern geben wollen. Kostenlos, ohne Telemetrie, ohne Grundfunktion hinter einer Bezahlschranke.',
+    + 'Servern geben wollen. Es ist kostenlos, sendet keine Telemetrie, und keine Grundfunktion liegt hinter einer Bezahlschranke.',
   highlights: ['Selbst gehostet', 'Kein Gameserver nötig', 'Keine Telemetrie', 'SQLite · MySQL · PostgreSQL', 'Discord.js v14'],
   heroCtaKey:     'Bot in 3 Minuten einrichten',
   heroCtaDocs:    'Dokumentation',
@@ -349,11 +349,11 @@ const de: TicketBotCopy = {
     },
     {
       title: 'Jedes Transkript liegt bei jemand anderem',
-      text:  'Deine Nutzerdaten, deine Konflikte, deine Auszahlungsstreitigkeiten landen auf der Infrastruktur eines fremden Anbieters, und du erfährst nicht, was damit passiert.',
+      text:  'Nutzerdaten, Konflikte und Auszahlungsstreitigkeiten landen auf der Infrastruktur eines fremden Anbieters, und du erfährst nicht, was damit passiert.',
     },
     {
       title: 'Die Grundfunktion kostet extra',
-      text:  'Transkripte, Anhänge, mehr als ein Panel. Genau das, wofür du den Bot geholt hast, steht hinter einer Bezahlschranke, pro Server abgerechnet.',
+      text:  'Transkripte, Anhänge und mehr als ein Panel, also das, wofür du den Bot geholt hast, stehen hinter einer Bezahlschranke und werden pro Server abgerechnet.',
     },
   ],
 
@@ -383,7 +383,7 @@ const de: TicketBotCopy = {
 
   featuresEyebrow: 'Funktionen',
   featuresHeading: 'Voller Funktionsumfang ab Werk',
-  featuresSub:     'Alles, was ein ernsthaftes Support-Team braucht. Keine Add-ons, keine Grundfunktion gegen Aufpreis.',
+  featuresSub:     'Was ein Support-Team braucht, ohne Add-ons und ohne Grundfunktion gegen Aufpreis.',
   features: [
     { title: 'Ticket-Typen',              text: 'Bis zu 25 konfigurierbare Typen, jeder mit eigenem Emoji, eigener Farbe, Kategorie und eigenen Fragen.' },
     { title: 'Fragebögen',                text: 'Modal-Formulare mit bis zu 5 Fragen, die beim Öffnen eines Tickets erscheinen.' },
@@ -399,7 +399,7 @@ const de: TicketBotCopy = {
     { title: 'Benachrichtigungen',        text: 'Nutzer können sich eine DM schicken lassen, sobald das Team zum ersten Mal antwortet, mit Ratenbegrenzung gegen Spam.' },
     { title: 'Rundnachricht',             text: 'Eine Nachricht auf einmal in jeden offenen Ticket-Kanal schicken.' },
     { title: 'Flexible Datenbank',        text: 'Läuft ohne Einrichtung auf SQLite, oder verbinde deine eigene MySQL, MariaDB oder PostgreSQL. Ein Migrationsskript übernimmt vorhandene Daten.' },
-    { title: 'Eigenes Dashboard',         text: 'Optionales mitgeliefertes Web-Dashboard für Tickets, Statistiken, Konfiguration und den Bot selbst. Standardmäßig aus, standardmäßig abgesichert.' },
+    { title: 'Eigenes Dashboard',         text: 'Optionales mitgeliefertes Web-Dashboard für Tickets, Statistiken, Konfiguration und den Bot selbst. Es ist standardmäßig aus und abgesichert.' },
   ],
 
   verifyEyebrow: 'So läuft die Verifizierung',
@@ -439,13 +439,13 @@ const de: TicketBotCopy = {
     'Du willst gar keinen eigenen Server betreiben? Richte das Hosting selbst im Dashboard ein: '
     + 'Bot-Token, Client ID und Client Secret eintragen, und wir installieren den Bot, starten ihn '
     + 'und prüfen, ob er wirklich hochgekommen ist. Dein Bot bekommt danach eine eigene Adresse, '
-    + 'an der sich dein ganzes Team mit Discord anmeldet. Ohne SSH-Zugang und ohne Serverkenntnisse.',
+    + 'an der sich dein ganzes Team mit Discord anmeldet. SSH-Zugang und Serverkenntnisse brauchst du dafür nicht.',
   hostedCtaDashboard: 'Im Dashboard einrichten',
   hostedCtaDiscord:   'Auf Discord fragen',
   hostedItems: [
-    { title: 'Selbst einrichten',   text: 'Drei Werte aus dem Discord Developer Portal und ein Knopf. Kein Ticket, kein Warten.' },
+    { title: 'Selbst einrichten',   text: 'Drei Werte aus dem Discord Developer Portal eintragen und einen Knopf drücken. Du musst kein Ticket aufmachen und nicht auf uns warten.' },
     { title: 'Bleibt umkehrbar',    text: 'Hosting jederzeit wieder entfernen. Wir heben die Installation 14 Tage auf, ein Klick holt sie samt deinen Tickets zurück.' },
-    { title: 'Steuerung und Live-Logs', text: 'Bot starten, stoppen, neu starten und aktualisieren, und seine Ausgabe live mitlesen. Genau das brauchst du, wenn er nicht hochkommt.' },
+    { title: 'Steuerung und Live-Logs', text: 'Bot starten, stoppen, neu starten und aktualisieren, und seine Ausgabe live mitlesen, etwa um zu sehen, warum er nicht hochkommt.' },
     { title: 'Eine eigene Adresse', text: 'Das Bot-Dashboard läuft unter einer eigenen Adresse mit eigenem Discord-Login, damit auch dein Team hineinkommt. Auf Wunsch unter deiner eigenen Domain.' },
   ],
 

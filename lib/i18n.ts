@@ -2000,7 +2000,7 @@ export const homeTranslations = {
     tools_kicker: "Web tools",
     tools_heading: "Small tools from the same workshop",
     tools_subtitle:
-      "Side projects from the same shop. Open source, no trackers.",
+      "Side projects with open source code and no trackers.",
     tools_source: "Source code",
 
     // Free FiveM scripts. The entries themselves live in
@@ -2061,7 +2061,7 @@ export const homeTranslations = {
     tools_kicker: "Web-Tools",
     tools_heading: "Kleine Werkzeuge aus derselben Werkstatt",
     tools_subtitle:
-      "Nebenprojekte aus demselben Haus. Offener Quellcode, keine Tracker.",
+      "Nebenprojekte mit offenem Quellcode und ohne Tracker.",
     tools_source: "Quellcode",
 
     free_kicker: "Kostenlos",
@@ -2165,11 +2165,11 @@ export const aboutPageTranslations = {
       "MSK Scripts for the Ticket Bot and MSK Forms subscriptions. For purchases in the shop the seller is Tebex Limited.",
     imprint: "Full address in the imprint",
     build_kicker: "What he builds",
-    build_title: "Three product lines, one workshop",
+    build_title: "Three product lines",
     numbers_kicker: "In numbers",
-    numbers_title: "Measured, not estimated",
+    numbers_title: "Where the numbers come from",
     numbers_intro:
-      "Each figure comes from a source that can be checked. If a source cannot be reached, its figure is left out rather than estimated.",
+      "Each figure comes from a source that can be checked. If a source cannot be reached, its figure is left out.",
     n_discord: "members on Discord",
     n_discord_source: "Live count from the invite of the MSK Scripts Discord",
     n_servers: "servers running msk_core",
@@ -2207,11 +2207,11 @@ export const aboutPageTranslations = {
       "MSK Scripts für die Abos von Ticket Bot und MSK Forms. Bei Käufen im Shop ist Tebex Limited der Verkäufer.",
     imprint: "Vollständige Anschrift im Impressum",
     build_kicker: "Was er baut",
-    build_title: "Drei Produktlinien, eine Werkstatt",
+    build_title: "Drei Produktlinien",
     numbers_kicker: "In Zahlen",
-    numbers_title: "Gemessen, nicht geschätzt",
+    numbers_title: "Woher die Zahlen kommen",
     numbers_intro:
-      "Jede Zahl stammt aus einer Quelle, die sich prüfen lässt. Ist eine Quelle nicht erreichbar, fehlt ihre Zahl, statt geschätzt zu werden.",
+      "Jede Zahl stammt aus einer Quelle, die sich prüfen lässt. Ist eine Quelle nicht erreichbar, fehlt ihre Zahl.",
     n_discord: "Mitglieder im Discord",
     n_discord_source: "Live-Zahl aus der Einladung des MSK-Scripts-Discords",
     n_servers: "Server auf msk_core",
