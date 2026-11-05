@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import {
   verifyHandoff, signProxySession, verifyProxySession, proxySecret,
   PROXY_COOKIE, PROXY_SECRET_HEADER, PROXY_USER_HEADER, PROXY_HOST, returnUrl,
-  PROXY_SESSION_MAX_AGE_S,
+  PROXY_SESSION_MAX_AGE_S, isAllowedProxyOrigin,
 } from '@/lib/botDashboardProxy'
 
 // Node runtime: we fetch a loopback address and stream arbitrary responses, both
@@ -69,6 +69,12 @@ async function handle(req: NextRequest): Promise<NextResponse> {
     const res = bounce(req)
     if (path === '/auth/logout') res.cookies.set(PROXY_COOKIE, '', { path: '/', maxAge: 0 })
     return res
+  }
+
+  // A write from another origin never reaches the bot, which trusts the proxy
+  // and skips its own CSRF check for proxied requests.
+  if (!isAllowedProxyOrigin(req.method, req.headers)) {
+    return new NextResponse('Cross-origin request refused.', { status: 403 })
   }
 
   // ── 3. Forward to the loopback bot dashboard ────────────────────────────────
