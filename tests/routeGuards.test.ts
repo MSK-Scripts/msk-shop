@@ -51,9 +51,11 @@ const GUARDS: Array<{ name: string; pattern: RegExp }> = [
   // The bot's API key: the guild is derived from the key, never from the body
   { name: 'apiKey',           pattern: /\bextractApiKey\s*\(|WHERE\s+api_key\s*=\s*\?/ },
   // Signed verify/dashboard/giveaway session from the cookie
-  { name: 'signedSession',    pattern: callOf('parseSession', 'parseDashboardSession', 'parseGiveawaySession', 'parseUploadSession') },
+  // (readStateCookie: the GitHub Sponsors OAuth state, signed with SPONSOR_LINK_SECRET)
+  { name: 'signedSession',    pattern: callOf('parseSession', 'parseDashboardSession', 'parseGiveawaySession', 'parseUploadSession', 'readStateCookie') },
   // The bot's shared secret, compared in constant time
-  { name: 'sharedSecret',     pattern: callOf('timingSafeEqual') },
+  // (bearerMatches: lib/sponsorLink.ts, timingSafeEqual behind it)
+  { name: 'sharedSecret',     pattern: callOf('timingSafeEqual', 'bearerMatches') },
   // OAuth return channel: code exchange + state check, signing only happens afterwards
   { name: 'oauthCallback',    pattern: callOf('signAdminSession', 'signSession', 'signDashboardSession', 'signGiveawaySession') },
   // Stripe webhook: signature check against STRIPE_WEBHOOK_SECRET
