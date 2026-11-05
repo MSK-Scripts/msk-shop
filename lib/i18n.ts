@@ -1970,9 +1970,9 @@ export const homeTranslations = {
     entry_tools_price: "Free",
 
     // Measured figures under the hero. Every number is measured, see
-    // PRODUCT.md -> Evidence on Hand. The refund rate is not here (E6).
+    // PRODUCT.md -> Evidence on Hand.
     proof_label: "MSK Scripts in numbers",
-    proof_buyers: "unique buyers",
+    proof_discord: "members on Discord",
     proof_servers: "servers running msk_core",
     proof_docs: "documentation pages",
 
@@ -2034,7 +2034,7 @@ export const homeTranslations = {
     entry_tools_price: "Kostenlos",
 
     proof_label: "MSK Scripts in Zahlen",
-    proof_buyers: "einzigartige Käufer",
+    proof_discord: "Mitglieder im Discord",
     proof_servers: "Server auf msk_core",
     proof_docs: "Doku-Seiten",
 
@@ -2170,17 +2170,12 @@ export const aboutPageTranslations = {
     numbers_title: "Measured, not estimated",
     numbers_intro:
       "Each figure comes from a source that can be checked. If a source cannot be reached, its figure is left out rather than estimated.",
-    n_buyers: "unique buyers",
-    n_buyers_source: "Accounts with at least one completed payment in the shop",
+    n_discord: "members on Discord",
+    n_discord_source: "Live count from the invite of the MSK Scripts Discord",
     n_servers: "servers running msk_core",
     n_servers_source: "Live count from fivestats.io",
     n_docs: "documentation pages",
     n_docs_source: "Counted from the sitemap of the documentation",
-    n_reversal: "of settled payments refunded or charged back",
-    // {refunds}, {chargebacks} and {settled} are counts from the same snapshot.
-    n_reversal_source: "{refunds} refunds and {chargebacks} chargebacks out of {settled} settled payments",
-    n_first: "first sale on record",
-    n_asof: "Shop figures as of {date}, updated nightly.",
     links_kicker: "Where to find him",
     links_title: "Discord, GitHub and the rest",
     link_discord: "Support and questions, answered by the developer",
@@ -2217,16 +2212,12 @@ export const aboutPageTranslations = {
     numbers_title: "Gemessen, nicht geschätzt",
     numbers_intro:
       "Jede Zahl stammt aus einer Quelle, die sich prüfen lässt. Ist eine Quelle nicht erreichbar, fehlt ihre Zahl, statt geschätzt zu werden.",
-    n_buyers: "einzigartige Käufer",
-    n_buyers_source: "Konten mit mindestens einer abgeschlossenen Zahlung im Shop",
+    n_discord: "Mitglieder im Discord",
+    n_discord_source: "Live-Zahl aus der Einladung des MSK-Scripts-Discords",
     n_servers: "Server auf msk_core",
     n_servers_source: "Live-Zahl von fivestats.io",
     n_docs: "Doku-Seiten",
     n_docs_source: "Gezählt aus der Sitemap der Dokumentation",
-    n_reversal: "der abgerechneten Zahlungen erstattet oder zurückgebucht",
-    n_reversal_source: "{refunds} Erstattungen und {chargebacks} Rückbuchungen bei {settled} abgerechneten Zahlungen",
-    n_first: "erster Verkauf",
-    n_asof: "Shop-Zahlen vom {date}, nachts aktualisiert.",
     links_kicker: "Wo du ihn findest",
     links_title: "Discord, GitHub und der Rest",
     link_discord: "Support und Fragen, beantwortet vom Entwickler",

@@ -15,7 +15,7 @@ import { pageSeo } from '@/lib/pageSeo'
 import { publicPath } from '@/lib/routes'
 import { alternatesFor, openGraphFor } from '@/lib/seo'
 import { getRequestLang } from '@/lib/serverLang'
-import { loadShopStats } from '@/lib/shopStats'
+import { loadDiscordMemberCount } from '@/lib/discordMembers'
 
 /**
  * `/en/about` and `/de/ueber-msk`: the person behind MSK Scripts (plan 5.2,
@@ -43,18 +43,17 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AboutPage() {
-  const [{ lang }, stats, headline, docPages] = await Promise.all([
+  const [{ lang }, discordMembers, headline, docPages] = await Promise.all([
     getRequestLang(),
     // Fail-soft: a source that fails drops its figure, nothing is estimated.
-    loadShopStats().catch(() => null),
+    loadDiscordMemberCount().catch(() => null),
     loadHeadlineStat().catch(() => null),
     loadDocPageCount().catch(() => null),
   ])
   const t = aboutPageTranslations[lang]
   const home = homeTranslations[lang]
   const nav = layoutTranslations[lang]
-  const locale = lang === 'de' ? 'de-DE' : 'en-GB'
-  const measured = aboutFigures(lang, stats, headline?.serverCount ?? null, docPages)
+  const measured = aboutFigures(lang, discordMembers, headline?.serverCount ?? null, docPages)
 
   const facts: Array<[string, React.ReactNode]> = [
     [t.fact_brand, 'MSK Scripts'],
@@ -154,11 +153,6 @@ export default async function AboutPage() {
                 </div>
               ))}
             </dl>
-            {stats && (
-              <p className="text-small text-[var(--color-muted-foreground)]">
-                {t.n_asof.replace('{date}', stats.updatedAt.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' }))}
-              </p>
-            )}
           </div>
         </Section>
       )}

@@ -1,6 +1,5 @@
 import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 import { homeTranslations, type Lang } from '@/lib/i18n'
-import type { ShopStats } from '@/lib/shopStats'
 import type { HeadlineStat } from '@/lib/fivestats'
 import { SITE_CONFIG } from '@/lib/config'
 
@@ -15,8 +14,7 @@ import { SITE_CONFIG } from '@/lib/config'
  *
  * An entry whose source is unavailable is dropped rather than replaced with an
  * estimate: a line of three numbers of which one is invented teaches the
- * reader to discount the other two. The refund rate is not here; it belongs
- * on the about page (E6).
+ * reader to discount the other two.
  */
 
 interface Entry {
@@ -27,10 +25,11 @@ interface Entry {
 }
 
 export function ProofLine({
-  lang, stats, servers, docPages,
+  lang, discordMembers, servers, docPages,
 }: {
   lang: Lang
-  stats: ShopStats | null
+  /** Members of the MSK Discord, from its invite. `null` when unreachable. */
+  discordMembers: number | null
   servers: HeadlineStat | null
   /** Documentation pages, counted from its sitemap. `null` when unreachable. */
   docPages: number | null
@@ -39,7 +38,11 @@ export function ProofLine({
   const num = (n: number) => n.toLocaleString(lang === 'de' ? 'de-DE' : 'en-GB')
 
   const entries: Entry[] = []
-  if (stats) entries.push({ value: num(stats.uniqueBuyers), label: t.proof_buyers })
+  // Until 05.11.2026 this was "unique buyers" from the Tebex shop, which no
+  // longer sells anything. Support runs through the Discord now.
+  if (discordMembers !== null) {
+    entries.push({ value: num(discordMembers), label: t.proof_discord, href: SITE_CONFIG.discord, external: true })
+  }
   if (servers) entries.push({ value: num(servers.serverCount), label: t.proof_servers, href: '/stats' })
   // Until 05.09.2026 this was a constant `206`; the real figure was 208. If
   // the source fails, the entry drops out, same as the other two.
@@ -55,9 +58,9 @@ export function ProofLine({
 
   return (
     <section aria-label={t.proof_label} className="border-b border-[var(--color-border)]">
-      <dl className="container-page flex flex-wrap gap-x-[clamp(2rem,4vw,6rem)] gap-y-4 py-[clamp(1.25rem,1rem+1vw,2.25rem)]">
+      <dl className="container-page flex flex-wrap justify-center gap-x-[clamp(2rem,4vw,6rem)] gap-y-4 py-[clamp(1.25rem,1rem+1vw,2.25rem)]">
         {entries.map(e => (
-          <div key={e.label} className="flex flex-col-reverse">
+          <div key={e.label} className="flex flex-col-reverse items-center text-center">
             <dt>
               {e.href && e.external ? (
                 <a href={e.href} target="_blank" rel="noopener noreferrer" className={linkClass}>{e.label}</a>
