@@ -102,34 +102,34 @@ export const PAGE_SEO: Record<string, Record<Lang, PageSeo>> = {
   '/discord/ticket-bot/stats': {
     en: {
       title:       'Bot Statistics',
-      description: 'Anonymous live statistics of the MSK Ticket Bot across all servers.',
+      description: 'Anonymous live statistics of the MSK Ticket Bot across all Discord servers. No server IDs, usernames or other personal data are shown.',
     },
     de: {
       title:       'Ticket-Bot-Statistiken',
-      description: 'Anonyme Live-Zahlen des MSK Ticket Bots über alle Server hinweg.',
+      description: 'Anonyme Live-Zahlen des MSK Ticket Bots über alle Discord-Server hinweg. Server-IDs, Nutzernamen und andere personenbezogene Daten zeigt die Seite nicht.',
     },
   },
   '/discord/giveaway-bot/stats': {
     en: {
       title:       'Giveaway Bot Statistics',
-      description: 'Anonymous live statistics of the MSK Giveaway Bot across all Discord servers.',
+      description: 'Anonymous live statistics of the MSK Giveaway Bot across all Discord servers. No server IDs, usernames or other personal data are shown.',
     },
     de: {
       title:       'Giveaway-Bot-Statistiken',
-      description: 'Anonyme Live-Zahlen des MSK Giveaway Bots über alle Discord-Server hinweg.',
+      description: 'Anonyme Live-Zahlen des MSK Giveaway Bots über alle Discord-Server hinweg. Server-IDs, Nutzernamen und andere personenbezogene Daten zeigt die Seite nicht.',
     },
   },
   '/legal/terms': {
-    en: { title: 'Terms & Conditions', description: 'Terms and conditions for buying and using MSK Scripts resources.' },
+    en: { title: 'Terms & Conditions', description: 'The terms and conditions of MSK Scripts for buying and using its resources. The German version is binding, this page is a translation.' },
     de: { title: 'AGB',                description: 'Allgemeine Geschäftsbedingungen für den Kauf und die Nutzung der Ressourcen von MSK Scripts.' },
   },
   '/legal/imprint': {
-    en: { title: 'Imprint',    description: 'Legal notice and contact details for MSK Scripts, Moritz Kohm.' },
-    de: { title: 'Impressum',  description: 'Anbieterkennzeichnung und Kontaktdaten von MSK Scripts, Moritz Kohm.' },
+    en: { title: 'Imprint',    description: 'Legal notice of MSK Scripts under § 5 DDG: provider, postal address and contact details of Moritz Kohm in Edingen-Neckarhausen.' },
+    de: { title: 'Impressum',  description: 'Impressum von MSK Scripts nach § 5 DDG: Anbieter, Anschrift und Kontaktdaten von Moritz Kohm in Edingen-Neckarhausen.' },
   },
   '/legal/privacy': {
-    en: { title: 'Privacy Policy',        description: 'How MSK Scripts handles personal data, in line with the GDPR.' },
-    de: { title: 'Datenschutzerklärung',  description: 'Wie MSK Scripts mit personenbezogenen Daten umgeht, nach den Vorgaben der DSGVO.' },
+    en: { title: 'Privacy Policy',        description: 'How MSK Scripts handles personal data under the GDPR: what is stored, for how long, who receives it and which rights you have.' },
+    de: { title: 'Datenschutzerklärung',  description: 'Wie MSK Scripts mit personenbezogenen Daten umgeht: was gespeichert wird, wie lange, wer es erhält und welche Rechte du nach der DSGVO hast.' },
   },
   '/legal/withdrawal': {
     en: {

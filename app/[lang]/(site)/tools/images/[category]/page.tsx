@@ -45,6 +45,20 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
       ? `Logos, banners and brand graphics by MSK Scripts. Original works, free to use where they refer to MSK Scripts, not as your own logo.`
       : `${category.count} transparent GTA V ${category.name.toLowerCase()} images, named by spawn name. Free for FiveM scripts, served from our CDN.`
 
+  // A category without a published image is a page with nothing on it. It
+  // stays reachable, so a link to it does not break, but it stays out of the
+  // index, with a description that does not start with "0 images".
+  if (category.count === 0) {
+    return {
+      title,
+      description: lang === 'de'
+        ? `In dieser Kategorie ist noch kein Bild veröffentlicht. Die anderen Kategorien der Bildergalerie sind frei für FiveM-Scripts nutzbar.`
+        : `No image has been published in this category yet. The other categories of the image gallery are free to use in FiveM scripts.`,
+      robots: { index: false, follow: true },
+      alternates: alternatesFor(lang, `/tools/images/${slug}`),
+    }
+  }
+
   return { title, description, alternates: alternatesFor(lang, `/tools/images/${slug}`) }
 }
 
@@ -59,9 +73,13 @@ export default async function CategoryPage(
   const category = await findCategory(slug, lang)
   if (!category) notFound()
 
-  const page = Math.max(1, Number(rawPage) || 1)
+  const page = Math.max(1, Math.floor(Number(rawPage)) || 1)
   const result = await listImages({ category: slug, q, page, per: DEFAULT_PER_PAGE })
   const pages  = Math.max(1, Math.ceil(result.total / result.per))
+  // A page past the end answers 404. Until 24.11.2026 it answered 200 with a
+  // "Next" link, and a crawler followed that to page 2725 in every category
+  // and language, more than 21,000 addresses.
+  if (page > pages) notFound()
 
   const num = (n: number) => new Intl.NumberFormat(lang === 'de' ? 'de-DE' : 'en-US').format(n)
 
@@ -131,15 +149,26 @@ export default async function CategoryPage(
 
         {pages > 1 && (
           <nav className="mt-10 flex items-center justify-center gap-4" aria-label="Pagination">
-            <Button asChild variant="outline" size="sm" disabled={page <= 1}>
-              <Link href={hrefFor(page - 1)} aria-disabled={page <= 1}>{t.page_prev}</Link>
-            </Button>
+            {/* At either end the button is disabled and has no href.
+                `disabled` on an `asChild` link only greyed it out, and the
+                href still pointed one page past the end. */}
+            {page > 1 ? (
+              <Button asChild variant="outline" size="sm">
+                <Link href={hrefFor(page - 1)}>{t.page_prev}</Link>
+              </Button>
+            ) : (
+              <Button variant="outline" size="sm" disabled>{t.page_prev}</Button>
+            )}
             <span className="font-mono text-xs text-[var(--color-muted-foreground)]">
               {t.page_of.replace('{page}', num(page)).replace('{pages}', num(pages))}
             </span>
-            <Button asChild variant="outline" size="sm" disabled={page >= pages}>
-              <Link href={hrefFor(page + 1)} aria-disabled={page >= pages}>{t.page_next}</Link>
-            </Button>
+            {page < pages ? (
+              <Button asChild variant="outline" size="sm">
+                <Link href={hrefFor(page + 1)}>{t.page_next}</Link>
+              </Button>
+            ) : (
+              <Button variant="outline" size="sm" disabled>{t.page_next}</Button>
+            )}
           </nav>
         )}
       </section>

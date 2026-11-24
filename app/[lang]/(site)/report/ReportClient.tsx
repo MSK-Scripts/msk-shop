@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useSearchParams } from 'next/navigation'
 import { CircleNotch as Loader2, WarningCircle } from '@/components/icons'
 
 import { useLang } from '@/components/i18n/LangProvider'
@@ -22,15 +21,14 @@ import { LegalFormShell, Field, FormCard, INPUT_CLASS, TEXTAREA_CLASS } from '@/
 
 interface Done { title: string; text: string }
 
-export function ReportClient() {
+export function ReportClient({ initialUrl }: { initialUrl: string }) {
   const { lang } = useLang()
-  const params = useSearchParams()
   const t  = legalFormTranslations[lang]
   const tl = layoutTranslations[lang]
 
-  // Derived initial value instead of `setState` in an effect: the
-  // query parameter is already fixed on the first render.
-  const [contentUrl, setContentUrl] = useState(() => params.get('url') ?? '')
+  // Initial value from the server, which read `?url=`: no `setState` in an
+  // effect, and no client-only render that pushed the heading behind the footer.
+  const [contentUrl, setContentUrl] = useState(initialUrl)
   const [reason,     setReason]     = useState('')
   const [name,       setName]       = useState('')
   const [email,      setEmail]      = useState('')

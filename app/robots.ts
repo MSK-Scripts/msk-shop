@@ -32,12 +32,23 @@ const BLOCKED = [
   '/discord/giveaway-bot/g/',
 ]
 
+/**
+ * Pages whose query variants are blocked, not the page itself. The report
+ * form is linked from every image with its own `?url=` (8,478 addresses in the
+ * crawl of 24.11.2026), all with `/report` as canonical. The form itself stays
+ * crawlable, `Disallow: /en/report?` only matches addresses with a query.
+ */
+const QUERY_BLOCKED = ['/report']
+
 export default function robots(): MetadataRoute.Robots {
   // What exists only once (API, Auth, Botproxy) gets no prefixed line: under
   // `/en/` and `/de/` it is a 404, and blocking an address that does not exist
   // is just noise in a file that someone is supposed to be able to read.
-  const disallow = BLOCKED.flatMap(p =>
-    isExemptPath(p.replace(/\/$/, '')) ? [p] : LANGS.map(lang => publicPath(lang, p)))
+  const disallow = [
+    ...BLOCKED.flatMap(p =>
+      isExemptPath(p.replace(/\/$/, '')) ? [p] : LANGS.map(lang => publicPath(lang, p))),
+    ...QUERY_BLOCKED.flatMap(p => LANGS.map(lang => `${publicPath(lang, p)}?`)),
+  ]
 
   return {
     rules: [

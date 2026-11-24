@@ -4,7 +4,7 @@ import type { Lang } from '@/lib/i18n'
 export const SITE_CONFIG = {
   name: 'MSK Scripts Shop',
   tagline: 'High quality FiveM resources & Discord bots for your server',
-  discord: 'https://discord.gg/5hHSBRHvJE',
+  discord: 'https://discord.com/invite/5hHSBRHvJE',
   github: 'https://github.com/MSK-Scripts',
   docs: 'https://docu.msk-scripts.de',
   /** The contact address from the imprint. */

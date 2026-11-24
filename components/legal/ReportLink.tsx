@@ -25,6 +25,11 @@ export function ReportLink({ path, className }: { path: string; className?: stri
   return (
     <Link
       href={`/report?url=${encodeURIComponent(absoluteUrl(localize(path)))}`}
+      // Every image page carries this link with its own `?url=`, which made
+      // 8,478 form addresses for a crawler. They all name `/report` as their
+      // canonical; `nofollow` here and the `?` line in robots.txt keep a
+      // crawler from fetching each of them first.
+      rel="nofollow"
       className={
         className
         ?? 'tap-target inline-flex items-center gap-1.5 text-xs text-[var(--color-muted-foreground)] '
