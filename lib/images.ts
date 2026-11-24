@@ -253,14 +253,19 @@ export const IMAGE_TITLE_MAX = 46
  * with the same title (crawl of 24.11.2026). Long labels drop the wording
  * step by step instead of running past what a search result shows.
  */
-export function imageTitle(image: Pick<ImageRecord, 'name' | 'label'>, lang: Lang): string {
+export function imageTitle(image: Pick<ImageRecord, 'name' | 'label' | 'ext'>, lang: Lang): string {
   const label = image.label?.trim()
   const named = label && label.toLowerCase() !== image.name.toLowerCase()
     ? `${label} (${image.name})`
     : image.name
-  const candidates = lang === 'de'
-    ? [`${named}, freigestelltes PNG`, `${named} PNG`, `${image.name} PNG`]
-    : [`${named}, transparent PNG`, `${named} PNG`, `${image.name} PNG`]
+  // The format comes from the stored file, so a JPEG in `brand` is not
+  // called a PNG. "transparent" only goes with a PNG.
+  const format = (image.ext || 'png').toUpperCase()
+  const isPng  = format === 'PNG'
+  const full   = lang === 'de'
+    ? (isPng ? `${named}, freigestelltes PNG` : `${named}, ${format}`)
+    : (isPng ? `${named}, transparent PNG`    : `${named}, ${format}`)
+  const candidates = [full, `${named} ${format}`, `${image.name} ${format}`]
   return candidates.find(c => c.length <= IMAGE_TITLE_MAX) ?? image.name
 }
 

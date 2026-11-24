@@ -46,23 +46,29 @@ describe('listImages past the last page', () => {
 
 describe('imageTitle', () => {
   it('tells pages with the same label apart by spawn name', () => {
-    const a = imageTitle({ name: 'tanker', label: 'Trailer' }, 'en')
-    const b = imageTitle({ name: 'tr2',    label: 'Trailer' }, 'en')
+    const a = imageTitle({ name: 'tanker', label: 'Trailer', ext: 'png' }, 'en')
+    const b = imageTitle({ name: 'tr2',    label: 'Trailer', ext: 'png' }, 'en')
     expect(a).not.toBe(b)
     expect(a).toBe('Trailer (tanker), transparent PNG')
   })
 
   it('does not repeat a label that is just the spawn name', () => {
-    expect(imageTitle({ name: 'adder', label: 'Adder' }, 'en')).toBe('adder, transparent PNG')
-    expect(imageTitle({ name: 'adder', label: null }, 'de')).toBe('adder, freigestelltes PNG')
+    expect(imageTitle({ name: 'adder', label: 'Adder', ext: 'png' }, 'en')).toBe('adder, transparent PNG')
+    expect(imageTitle({ name: 'adder', label: null, ext: 'png' }, 'de')).toBe('adder, freigestelltes PNG')
   })
 
   it('stays inside what a search result shows', () => {
-    const long = { name: 'acapulcogold_untrimmed_bud', label: 'Acapulco Gold Untrimmed Bud' }
+    const long = { name: 'acapulcogold_untrimmed_bud', label: 'Acapulco Gold Untrimmed Bud', ext: 'png' }
     for (const lang of ['en', 'de'] as const) {
       const title = imageTitle(long, lang)
       expect(title.length).toBeLessThanOrEqual(IMAGE_TITLE_MAX)
       expect(title).toContain(long.name)
     }
+  })
+
+  it('names the stored format instead of always saying PNG', () => {
+    const title = imageTitle({ name: 'banner', label: 'Shop banner', ext: 'jpg' }, 'en')
+    expect(title).toBe('Shop banner (banner), JPG')
+    expect(title).not.toContain('PNG')
   })
 })
