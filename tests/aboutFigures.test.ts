@@ -18,7 +18,7 @@ describe('aboutFigures', () => {
     expect(figures.map(f => f.label)).toEqual(['Mitglieder im Discord', 'Server auf msk_core', 'Doku-Seiten'])
     const discord = byLabel(figures, 'Discord')
     expect(discord?.value).toBe('1.627')
-    expect(discord?.href).toBe('https://discord.gg/5hHSBRHvJE')
+    expect(discord?.href).toBe('https://discord.com/invite/5hHSBRHvJE')
     expect(discord?.external).toBe(true)
     expect(byLabel(aboutFigures('en', 1627, 262, 252), 'Discord')?.value).toBe('1,627')
   })

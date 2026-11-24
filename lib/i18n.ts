@@ -2793,7 +2793,6 @@ export const layoutTranslations = {
     footer_discord:    'Discord support',
     footer_statistics: 'Statistics',
     footer_rights:     'All rights reserved.',
-    footer_powered_by: 'Powered by',
     footer_built_by:   'Built by',
     // Trust line above the copyright. Every claim is backed by the T&C:
     //   § 2 (Tebex as merchant of record, refunds via Tebex), § 3
@@ -2880,7 +2879,6 @@ export const layoutTranslations = {
     footer_discord:    'Discord-Support',
     footer_statistics: 'Statistiken',
     footer_rights:     'Alle Rechte vorbehalten.',
-    footer_powered_by: 'Bereitgestellt über',
     footer_built_by:   'Erstellt von',
     footer_trust_checkout:  'Checkout und Zahlung wickelt Tebex Limited als Merchant of Record ab.',
     footer_trust_license:   'Lizenz für einen Server',

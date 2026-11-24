@@ -222,10 +222,12 @@ export async function listImages(opts: ListOptions): Promise<ImageListResult> {
   const total = Number(totalRow?.total ?? 0)
 
   // LIMIT and OFFSET are inline, because mysql2 does not allow placeholders
-  // there. Both are forced above, by Math.floor and the caps above, into
-  // integers within known bounds, so no user value goes into the SQL
-  // unchecked.
+  // there. `per` is capped above; the page has no upper cap of its own, so a
+  // page past the last row stops here and never reaches the SQL. Without this
+  // `?page=1e300` (or `Infinity`) became `OFFSET 6e+301`, a syntax error and a
+  // 500, and every page past the end still cost a query.
   const offset = (page - 1) * per
+  if (offset >= total) return { total, page, per, items: [] }
 
   const rows = await query<ImageRow>(
     `SELECT i.category, i.name, i.label, i.ext, i.width, i.height, i.bytes, i.version, i.tags
@@ -237,6 +239,29 @@ export async function listImages(opts: ListOptions): Promise<ImageListResult> {
   )
 
   return { total, page, per, items: rows.map(toRecord) }
+}
+
+/**
+ * Longest title body that, with " | MSK Scripts" from the layout template,
+ * stays inside the 580 px a search result shows.
+ */
+export const IMAGE_TITLE_MAX = 46
+
+/**
+ * Title of an image page. The spawn name goes in next to the label, because
+ * labels repeat: "Trailer" stood on 16 vehicle pages, "Sou Cent" on 14, all
+ * with the same title (crawl of 24.11.2026). Long labels drop the wording
+ * step by step instead of running past what a search result shows.
+ */
+export function imageTitle(image: Pick<ImageRecord, 'name' | 'label'>, lang: Lang): string {
+  const label = image.label?.trim()
+  const named = label && label.toLowerCase() !== image.name.toLowerCase()
+    ? `${label} (${image.name})`
+    : image.name
+  const candidates = lang === 'de'
+    ? [`${named}, freigestelltes PNG`, `${named} PNG`, `${image.name} PNG`]
+    : [`${named}, transparent PNG`, `${named} PNG`, `${image.name} PNG`]
+  return candidates.find(c => c.length <= IMAGE_TITLE_MAX) ?? image.name
 }
 
 export async function getImage(category: string, name: string): Promise<ImageRecord | null> {

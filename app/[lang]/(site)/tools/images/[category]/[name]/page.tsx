@@ -12,7 +12,7 @@ import { Card } from '@/components/ui/Card'
 import { alternatesFor } from '@/lib/seo'
 import { getRequestLang } from '@/lib/serverLang'
 import { imagesTranslations, type Lang } from '@/lib/i18n'
-import { getImage, getNeighbours, listCategories } from '@/lib/images'
+import { getImage, getNeighbours, imageTitle, listCategories } from '@/lib/images'
 import { absoluteUrl } from '@/lib/siteUrl'
 import { publicPath } from '@/lib/routes'
 
@@ -33,9 +33,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   if (!image) return {}
 
   const display = image.label || image.name
-  const title = lang === 'de'
-    ? `${display} Bild, freigestellt (PNG)`
-    : `${display} image, transparent PNG`
+  const title = imageTitle(image, lang)
   const description = lang === 'de'
     ? `Freigestelltes ${display}-Bild aus GTA V, ${image.width} mal ${image.height} Pixel, kostenlos für FiveM-Scripts. Direkt über die CDN-URL nutzbar.`
     : `Transparent ${display} image from GTA V, ${image.width} by ${image.height} pixels, free for FiveM scripts. Use the CDN URL directly.`

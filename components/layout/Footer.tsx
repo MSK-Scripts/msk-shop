@@ -211,13 +211,8 @@ export function Footer() {
             <span>© {new Date().getFullYear()} MSK Scripts. {t.footer_rights}</span>
             <span aria-hidden="true">·</span>
             <span>
-              {t.footer_powered_by}{' '}
-              <a href="https://tebex.io" target="_blank" rel="noopener noreferrer" className="underline-offset-4 hover:text-[var(--color-band-foreground)] hover:underline">Tebex</a>
-            </span>
-            <span aria-hidden="true">·</span>
-            <span>
               {t.footer_built_by}{' '}
-              <a href="https://www.musiker15.de" target="_blank" rel="noopener noreferrer" className="underline-offset-4 hover:text-[var(--color-band-foreground)] hover:underline">Musiker15</a>
+              <a href={`https://www.musiker15.de/${lang}`} target="_blank" rel="noopener noreferrer" className="underline-offset-4 hover:text-[var(--color-band-foreground)] hover:underline">Musiker15</a>
             </span>
             <span aria-hidden="true">·</span>
             <a href={SITE_CONFIG.github} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-1.5 underline-offset-4 hover:text-[var(--color-band-foreground)] hover:underline">
