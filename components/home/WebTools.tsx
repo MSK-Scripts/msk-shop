@@ -40,7 +40,17 @@ export function WebTools({ lang }: { lang: Lang }) {
           <li key={tool.id} className="grid content-start gap-3">
             {tool.image && (
               <div className="relative aspect-video overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)]">
-                <Image src={imageSrc(tool.image)} alt="" fill sizes="(max-width: 767px) 100vw, 33vw" className="object-cover" />
+                {/* Width and height give the box's 16:9, the screenshots differ
+                    and are cropped to it. Without them the img carries no size
+                    in the HTML, which a crawler reports. */}
+                <Image
+                  src={imageSrc(tool.image)}
+                  alt={lang === 'de' ? `Screenshot von ${tool.name}` : `Screenshot of ${tool.name}`}
+                  width={1280}
+                  height={720}
+                  sizes="(max-width: 767px) 100vw, 33vw"
+                  className="h-full w-full object-cover"
+                />
               </div>
             )}
             <h3 className="font-display text-h3 font-[650]">{tool.name}</h3>

@@ -27,8 +27,8 @@ describe('buildSitemapEntries', () => {
       expect(find(entries, `${BASE}${path}`)?.alternates, path).toEqual({
         'en':        `${BASE}/en${rest}`,
         'de':        `${BASE}/de${rest}`,
-        // The root picks the language and redirects.
-        'x-default': `${BASE}/`,
+        // The English version of the same page, never the redirecting root.
+        'x-default': `${BASE}/en${rest}`,
       })
     }
   })
@@ -40,7 +40,7 @@ describe('buildSitemapEntries', () => {
     expect(find(entries, `${BASE}/de/rechtliches/agb`)?.alternates).toEqual({
       'en':        `${BASE}/en/legal/terms`,
       'de':        `${BASE}/de/rechtliches/agb`,
-      'x-default': `${BASE}/`,
+      'x-default': `${BASE}/en/legal/terms`,
     })
     expect(find(entries, `${BASE}/de/legal/terms`)).toBeUndefined()
     // No address without a language: those only redirect.

@@ -45,6 +45,22 @@ describe('listImages past the last page', () => {
 })
 
 describe('imageTitle', () => {
+  it('keeps the wording before falling back to the bare spawn name', () => {
+    // "Gallivanter Baller LE LWB (Armored) (baller6)" is too long for the
+    // wording; "baller6 PNG | MSK Scripts" was under 30 characters.
+    const title = imageTitle({ name: 'baller6', label: 'Gallivanter Baller LE LWB (Armored)', ext: 'png' }, 'en')
+    expect(title).toBe('baller6, transparent PNG')
+  })
+
+  it('names the category for an image published in two categories', () => {
+    const image = { name: 'ammo-22', label: '.22 Long Rifle', ext: 'png' }
+    const items   = imageTitle(image, 'en', 'Items')
+    const weapons = imageTitle(image, 'en', 'Weapons')
+    expect(items).not.toBe(weapons)
+    expect(weapons).toContain('Weapons')
+    expect(weapons.length).toBeLessThanOrEqual(IMAGE_TITLE_MAX)
+  })
+
   it('tells pages with the same label apart by spawn name', () => {
     const a = imageTitle({ name: 'tanker', label: 'Trailer', ext: 'png' }, 'en')
     const b = imageTitle({ name: 'tr2',    label: 'Trailer', ext: 'png' }, 'en')

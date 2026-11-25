@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 
 import type { Lang } from '@/lib/i18n'
 import { softwareApplicationJsonLd, type JsonLdObject } from '@/lib/jsonLd'
-import { X_DEFAULT_PATH, alternatePaths } from '@/lib/routes'
+import { alternatePaths } from '@/lib/routes'
 
 /**
  * Metadata and structured data of the two bot landing pages.
@@ -53,10 +53,10 @@ const TICKETBOT: BotDefinition = {
   codeRepository: 'https://github.com/MSK-Scripts/discord_ticketbot',
   seo: {
     en: {
-      title: 'Self-Hosted Discord Ticket Bot with Transcripts | MSK Scripts',
+      title: 'Self-Hosted Discord Ticket Bot & Transcripts | MSK Scripts',
       description:
         'Free self-hosted Discord ticket bot on Discord.js v14. HTML transcripts under your own domain, '
-        + 'attachments, SQLite or your own SQL. No telemetry, open source.',
+        + 'attachments, SQLite or your own SQL. Open source.',
       ogTitle: 'Self-Hosted Discord Ticket Bot with HTML Transcripts',
       ogDescription:
         'Free self-hosted Discord ticket bot: custom ticket types, claim system, HTML transcripts, ratings, '
@@ -107,7 +107,7 @@ const TICKETBOT_COMPARE: BotDefinition = {
         'Comparison of self-hosted Discord ticket bots, with an FAQ on hosting, data storage and pricing.',
     },
     de: {
-      title: 'Discord Ticket Bots zum Selbsthosten im Vergleich | MSK Scripts',
+      title: 'Discord Ticket Bots selbst hosten: Vergleich | MSK Scripts',
       description:
         'MSK Ticket Bot, Discord Tickets, Sayrix Ticket-Bot und das gehostete Ticket Tool im Vergleich: '
         + 'Hosting, Lizenz, Datenbank, Transkripte und Kosten.',
@@ -146,7 +146,7 @@ const GIVEAWAY: BotDefinition = {
         'Free Discord giveaway bot with button entry, restart-safe scheduling, weighted bonus entries and reroll.',
     },
     de: {
-      title: 'Discord Giveaway Bot, kostenlos & neustartsicher | MSK Scripts',
+      title: 'Discord Giveaway Bot, gratis & neustartsicher | MSK Scripts',
       description:
         'Kostenloser Discord Giveaway Bot auf Discord.js v14. Teilnahme per Knopfdruck, neustartsichere '
         + 'Zeitsteuerung, gewichtete Bonuslose und Neuauslosung.',
@@ -179,7 +179,7 @@ function metadataFor(bot: BotDefinition, lang: Lang): Metadata {
       languages: {
         'en':        bot.paths.en,
         'de':        bot.paths.de,
-        'x-default': X_DEFAULT_PATH,
+        'x-default': bot.paths.en,
       },
     },
     openGraph: {

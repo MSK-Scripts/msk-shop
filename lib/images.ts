@@ -251,9 +251,19 @@ export const IMAGE_TITLE_MAX = 46
  * Title of an image page. The spawn name goes in next to the label, because
  * labels repeat: "Trailer" stood on 16 vehicle pages, "Sou Cent" on 14, all
  * with the same title (crawl of 24.11.2026). Long labels drop the wording
- * step by step instead of running past what a search result shows.
+ * step by step instead of running past what a search result shows; before
+ * the bare "baller6 PNG" comes the spawn name with the wording, which keeps
+ * the title above 30 characters (crawl of 25.11.2026).
+ *
+ * `where` is the category name, for an image published in more than one
+ * category: `ammo-22` is in Items and in Weapons, and both pages had the same
+ * title (1,452 duplicates in the crawl of 25.11.2026).
  */
-export function imageTitle(image: Pick<ImageRecord, 'name' | 'label' | 'ext'>, lang: Lang): string {
+export function imageTitle(
+  image: Pick<ImageRecord, 'name' | 'label' | 'ext'>,
+  lang: Lang,
+  where?: string,
+): string {
   const label = image.label?.trim()
   const named = label && label.toLowerCase() !== image.name.toLowerCase()
     ? `${label} (${image.name})`
@@ -262,11 +272,26 @@ export function imageTitle(image: Pick<ImageRecord, 'name' | 'label' | 'ext'>, l
   // called a PNG. "transparent" only goes with a PNG.
   const format = (image.ext || 'png').toUpperCase()
   const isPng  = format === 'PNG'
-  const full   = lang === 'de'
-    ? (isPng ? `${named}, freigestelltes PNG` : `${named}, ${format}`)
-    : (isPng ? `${named}, transparent PNG`    : `${named}, ${format}`)
-  const candidates = [full, `${named} ${format}`, `${image.name} ${format}`]
-  return candidates.find(c => c.length <= IMAGE_TITLE_MAX) ?? image.name
+  const worded = (subject: string) => lang === 'de'
+    ? (isPng ? `${subject}, freigestelltes PNG` : `${subject}, ${format}`)
+    : (isPng ? `${subject}, transparent PNG`    : `${subject}, ${format}`)
+  const candidates = [worded(named), `${named} ${format}`, worded(image.name), `${image.name} ${format}`]
+  const placed = where ? candidates.map(c => `${c}, ${where}`) : candidates
+  return placed.find(c => c.length <= IMAGE_TITLE_MAX)
+    ?? (where ? `${image.name}, ${where}` : image.name)
+}
+
+/**
+ * Whether an image with this spawn name is also published in another
+ * category. Those pages need the category in title and description.
+ */
+export async function inOtherCategory(category: string, name: string): Promise<boolean> {
+  const row = await queryOne<{ n: number }>(
+    `SELECT COUNT(*) AS n FROM msk_images
+      WHERE name = ? AND category <> ? AND status = 'published'`,
+    [name, category],
+  )
+  return Number(row?.n ?? 0) > 0
 }
 
 export async function getImage(category: string, name: string): Promise<ImageRecord | null> {

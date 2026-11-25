@@ -158,8 +158,8 @@ describe('hreflang pairing', () => {
       const languages = build(lang).alternates?.languages as Record<string, string>
       expect(languages.en).toBe(paths.en)
       expect(languages.de).toBe(paths.de)
-      // The root picks the language and redirects: the hreflang fallback.
-      expect(languages['x-default']).toBe('/')
+      // English is the fallback, the same page, never the redirecting root.
+      expect(languages['x-default']).toBe(paths.en)
     }
   })
 

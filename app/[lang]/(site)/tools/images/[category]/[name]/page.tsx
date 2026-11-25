@@ -12,7 +12,7 @@ import { Card } from '@/components/ui/Card'
 import { alternatesFor } from '@/lib/seo'
 import { getRequestLang } from '@/lib/serverLang'
 import { imagesTranslations, type Lang } from '@/lib/i18n'
-import { getImage, getNeighbours, imageTitle, listCategories } from '@/lib/images'
+import { getImage, getNeighbours, imageTitle, inOtherCategory, listCategories } from '@/lib/images'
 import { absoluteUrl } from '@/lib/siteUrl'
 import { publicPath } from '@/lib/routes'
 
@@ -32,11 +32,22 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const image = await getImage(category, name.toLowerCase())
   if (!image) return {}
 
+  // An image in two categories (ammo in Items and Weapons) has two pages with
+  // the same picture. The category in title and description tells them apart.
+  const [categories, shared] = await Promise.all([
+    listCategories(lang),
+    inOtherCategory(category, image.name),
+  ])
+  const where   = shared ? categories.find(c => c.slug === category)?.name : undefined
   const display = image.label || image.name
-  const title = imageTitle(image, lang)
-  const description = lang === 'de'
-    ? `Freigestelltes ${display}-Bild aus GTA V, ${image.width} mal ${image.height} Pixel, kostenlos für FiveM-Scripts. Direkt über die CDN-URL nutzbar.`
-    : `Transparent ${display} image from GTA V, ${image.width} by ${image.height} pixels, free for FiveM scripts. Use the CDN URL directly.`
+  const title   = imageTitle(image, lang, where)
+  const lead = lang === 'de'
+    ? `Freigestelltes ${display}-Bild aus GTA V${where ? ` (${where})` : ''}, ${image.width} mal ${image.height} Pixel, kostenlos für FiveM-Scripts.`
+    : `Transparent ${display} image from GTA V${where ? ` (${where})` : ''}, ${image.width} by ${image.height} pixels, free for FiveM scripts.`
+  const tail = lang === 'de' ? ' Direkt über die CDN-URL nutzbar.' : ' Use the CDN URL directly.'
+  // A long label pushed the description past the 155 characters a search
+  // result shows. The CDN hint is the part that can go.
+  const description = (lead + tail).length <= 155 ? lead + tail : lead
 
   return {
     title,

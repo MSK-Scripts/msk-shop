@@ -238,7 +238,7 @@ export const PAGE_SEO: Record<string, Record<Lang, PageSeo>> = {
     },
     de: {
       title:       'FiveM- und GTA-V-Bildergalerie',
-      description: 'Kostenlose freigestellte Bilder von GTA-V-Fahrzeugen, Waffen, Items, Props und Peds für FiveM-Scripts. Über eigenes CDN, direkt über den Spawnnamen nutzbar.',
+      description: 'Kostenlose freigestellte Bilder von GTA-V-Fahrzeugen, Waffen, Items, Props und Peds für FiveM-Scripts, über unser CDN und den Spawnnamen nutzbar.',
     },
   },
 }

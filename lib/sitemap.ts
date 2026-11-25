@@ -1,6 +1,6 @@
 import { listCategories } from '@/lib/images'
 import { absoluteUrl } from '@/lib/siteUrl'
-import { X_DEFAULT_PATH, alternatePaths } from '@/lib/routes'
+import { alternatePaths } from '@/lib/routes'
 
 /**
  * Sitemap: data assembly and serialization.
@@ -78,7 +78,7 @@ function bothLanguages(path: string, lastModified?: Date): SitemapEntry[] {
   const alternates = {
     'en':        absoluteUrl(alt.en),
     'de':        absoluteUrl(alt.de),
-    'x-default': absoluteUrl(X_DEFAULT_PATH),
+    'x-default': absoluteUrl(alt.en),
   }
   return (['en', 'de'] as const).map(lang => ({
     url: absoluteUrl(alt[lang]),

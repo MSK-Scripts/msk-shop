@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { DEFAULT_OG_IMAGE, openGraphFor, plainExcerpt } from '@/lib/seo'
+import { DEFAULT_OG_IMAGE, alternatesFor, openGraphFor, plainExcerpt } from '@/lib/seo'
 
 describe('plainExcerpt', () => {
   it('gibt bei leerer Eingabe einen leeren String zurück', () => {
@@ -87,5 +87,30 @@ describe('openGraphFor', () => {
 
     expect(og.title).toBe('Paket')
     expect(og.images).toEqual([{ url: 'https://cdn/x.png', alt: 'Paket' }])
+  })
+})
+
+/**
+ * The crawl of 25.11.2026 reported all 8,669 hreflang annotations as non-200,
+ * because `x-default` named the root `/`, which answers 307. And 138 pages of
+ * the paginated gallery named page 1 as canonical and in hreflang.
+ */
+describe('alternatesFor', () => {
+  it('names the English version of the same page as x-default, never the root', () => {
+    for (const lang of ['en', 'de'] as const) {
+      const languages = alternatesFor(lang, '/legal/terms').languages as Record<string, string>
+      expect(languages['x-default']).toBe('/en/legal/terms')
+      expect(languages['x-default']).not.toBe('/')
+    }
+  })
+
+  it('carries a page of a list into canonical and every language version', () => {
+    const alt = alternatesFor('de', '/tools/images/items', '?page=3')
+    expect(alt.canonical).toBe('/de/web-tools/bilder/items?page=3')
+    expect(alt.languages).toEqual({
+      'en':        '/en/tools/images/items?page=3',
+      'de':        '/de/web-tools/bilder/items?page=3',
+      'x-default': '/en/tools/images/items?page=3',
+    })
   })
 })

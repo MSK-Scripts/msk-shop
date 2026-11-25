@@ -290,9 +290,6 @@ export function alternatePaths(internal: string): Record<Lang, string> {
   return { en: publicPath('en', internal), de: publicPath('de', internal) }
 }
 
-/** hreflang `x-default`: the root, which picks a language and redirects. */
-export const X_DEFAULT_PATH = '/'
-
 /**
  * Splits `/de/...` and `/en/...` into language and the rest. Null for a
  * path without a language prefix. The whole segment counts: `/deals` has no

@@ -2,7 +2,6 @@
 
 import { Flag } from '@/components/icons'
 
-import { LocaleLink as Link } from '@/components/i18n/LocaleLink'
 import { useLang } from '@/components/i18n/LangProvider'
 import { layoutTranslations } from '@/lib/i18n'
 import { absoluteUrl } from '@/lib/siteUrl'
@@ -14,6 +13,8 @@ import { absoluteUrl } from '@/lib/siteUrl'
 // die URL von Hand abtippen lässt, ist beides nicht — deshalb sitzt der Link
 // am Inhalt selbst und bringt die Adresse mit.
 //
+// The trigger is a button in a GET form, see below.
+//
 // The caller passes the internal path; it becomes the absolute public address
 // here, because the report form should hold the address a third party sees in
 // the browser, not an internal path.
@@ -22,22 +23,25 @@ export function ReportLink({ path, className }: { path: string; className?: stri
   const { lang, localize } = useLang()
   const label = layoutTranslations[lang].legal_report
 
+  // A GET form instead of a link. Every image page carries it with its own
+  // address, 8,478 in the crawl of 24.11.2026. As a link with `nofollow` each
+  // of them was an internal nofollow outlink in the next crawl. A form is not
+  // followed by crawlers, and for a visitor the button opens the same address
+  // the link did.
   return (
-    <Link
-      href={`/report?url=${encodeURIComponent(absoluteUrl(localize(path)))}`}
-      // Every image page carries this link with its own `?url=`, which made
-      // 8,478 form addresses for a crawler. They all name `/report` as their
-      // canonical; `nofollow` here and the `?` line in robots.txt keep a
-      // crawler from fetching each of them first.
-      rel="nofollow"
-      className={
-        className
-        ?? 'tap-target inline-flex items-center gap-1.5 text-xs text-[var(--color-muted-foreground)] '
-           + 'transition-colors hover:text-[var(--color-foreground)]'
-      }
-    >
-      <Flag className="h-3 w-3" aria-hidden="true" />
-      {label}
-    </Link>
+    <form action={localize('/report')} method="get" className="inline">
+      <input type="hidden" name="url" value={absoluteUrl(localize(path))} />
+      <button
+        type="submit"
+        className={
+          className
+          ?? 'tap-target inline-flex cursor-pointer items-center gap-1.5 text-xs text-[var(--color-muted-foreground)] '
+             + 'transition-colors hover:text-[var(--color-foreground)]'
+        }
+      >
+        <Flag className="h-3 w-3" aria-hidden="true" />
+        {label}
+      </button>
+    </form>
   )
 }
