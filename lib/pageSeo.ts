@@ -101,7 +101,7 @@ export const PAGE_SEO: Record<string, Record<Lang, PageSeo>> = {
   },
   '/discord/ticket-bot/stats': {
     en: {
-      title:       'Bot Statistics',
+      title:       'Ticket Bot Statistics',
       description: 'Anonymous live statistics of the MSK Ticket Bot across all Discord servers. No server IDs, usernames or other personal data are shown.',
     },
     de: {
@@ -121,14 +121,14 @@ export const PAGE_SEO: Record<string, Record<Lang, PageSeo>> = {
   },
   '/legal/terms': {
     en: { title: 'Terms & Conditions', description: 'The terms and conditions of MSK Scripts for buying and using its resources. The German version is binding, this page is a translation.' },
-    de: { title: 'AGB',                description: 'Allgemeine Geschäftsbedingungen für den Kauf und die Nutzung der Ressourcen von MSK Scripts.' },
+    de: { title: 'Allgemeine Geschäftsbedingungen', description: 'Allgemeine Geschäftsbedingungen für den Kauf und die Nutzung der Ressourcen von MSK Scripts.' },
   },
   '/legal/imprint': {
-    en: { title: 'Imprint',    description: 'Legal notice of MSK Scripts under § 5 DDG: provider, postal address and contact details of Moritz Kohm in Edingen-Neckarhausen.' },
-    de: { title: 'Impressum',  description: 'Impressum von MSK Scripts nach § 5 DDG: Anbieter, Anschrift und Kontaktdaten von Moritz Kohm in Edingen-Neckarhausen.' },
+    en: { title: 'Imprint and Contact', description: 'Legal notice of MSK Scripts under § 5 DDG: provider, postal address and contact details of Moritz Kohm in Edingen-Neckarhausen.' },
+    de: { title: 'Impressum und Kontakt', description: 'Impressum von MSK Scripts nach § 5 DDG: Anbieter, Anschrift und Kontaktdaten von Moritz Kohm in Edingen-Neckarhausen.' },
   },
   '/legal/privacy': {
-    en: { title: 'Privacy Policy',        description: 'How MSK Scripts handles personal data under the GDPR: what is stored, for how long, who receives it and which rights you have.' },
+    en: { title: 'Privacy Policy (GDPR)', description: 'How MSK Scripts handles personal data under the GDPR: what is stored, for how long, who receives it and which rights you have.' },
     de: { title: 'Datenschutzerklärung',  description: 'Wie MSK Scripts mit personenbezogenen Daten umgeht: was gespeichert wird, wie lange, wer es erhält und welche Rechte du nach der DSGVO hast.' },
   },
   '/legal/withdrawal': {
@@ -223,11 +223,11 @@ export const PAGE_SEO: Record<string, Record<Lang, PageSeo>> = {
   // That is why the title holds what people search for, not the section name.
   '/tools/images/upload': {
     en: {
-      title:       'Submit an Image',
+      title:       'Submit an Image to the Gallery',
       description: 'Send us a transparent GTA V or FiveM asset image for the gallery. Reviewed by hand, credited to you, free for everyone to use.',
     },
     de: {
-      title:       'Bild einreichen',
+      title:       'Bild für die Galerie einreichen',
       description: 'Schick uns ein freigestelltes GTA-V- oder FiveM-Asset für die Galerie. Wird von Hand geprüft und ist danach für alle kostenlos nutzbar.',
     },
   },
