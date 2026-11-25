@@ -16,6 +16,40 @@ const nextConfig = {
   poweredByHeader: false,
 
   /*
+   * Metadata is resolved before the head is sent, for every user agent. Since
+   * 15.2 Next streams it for browsers and only blocks for the bots in its own
+   * list. A streamed canonical or robots tag that resolves after the shell
+   * lands in the body: measured on 25.11.2026, two of six requests for
+   * /de/web-tools/bilder/props carried both after </head>, and a crawler that
+   * is not on the list reads them as missing. One regex for all is the switch
+   * the docs give for turning streaming off.
+   */
+  htmlLimitedBots: /.*/,
+
+  /*
+   * The proxy sets the security headers for every document but does not run
+   * for build assets (see the matcher in proxy.ts), so scripts, styles, fonts
+   * and optimised images left without them. Same values as in proxy.ts. The
+   * image optimiser keeps the CSP it sets itself, the static files get a
+   * policy that allows nothing, since they are no documents.
+   */
+  async headers() {
+    const base = [
+      { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
+      { key: 'X-Content-Type-Options',    value: 'nosniff' },
+      { key: 'X-Frame-Options',           value: 'SAMEORIGIN' },
+      { key: 'Referrer-Policy',           value: 'strict-origin-when-cross-origin' },
+    ]
+    return [
+      {
+        source:  '/_next/static/:path*',
+        headers: [...base, { key: 'Content-Security-Policy', value: "default-src 'none'; frame-ancestors 'self'" }],
+      },
+      { source: '/_next/image', headers: base },
+    ]
+  },
+
+  /*
    * Hier stand bis Next 16 ein `eslint: { ignoreDuringBuilds: true }`, damit der
    * Build nicht ein zweites Mal lintet und das Deploy-Log mit Warnungen flutet.
    * Next 16 kennt den Schlüssel nicht mehr und lintet im Build grundsätzlich

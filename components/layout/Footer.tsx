@@ -162,8 +162,9 @@ export function Footer() {
             <div className="grid gap-x-10 gap-y-10 @lg:grid-cols-2 @4xl:grid-cols-4 @7xl:grid-cols-[minmax(0,1.4fr)_repeat(4,minmax(0,1fr))]">
               <div className="grid content-start gap-4 @lg:col-span-2 @4xl:col-span-4 @7xl:col-span-1">
                 <Link href="/" className="inline-flex min-h-11 items-center gap-2.5 self-start text-[var(--color-band-foreground)]">
-                  <Image src="/logo.png" alt="" width={32} height={32} className="h-8 w-8 rounded-lg object-contain" />
-                  <span className="font-display text-lead font-bold [font-stretch:108%]">MSK Scripts</span>
+                  {/* The logo names the link, the written name is only seen. */}
+                  <Image src="/logo.png" alt="MSK Scripts" width={32} height={32} className="h-8 w-8 rounded-lg object-contain" />
+                  <span aria-hidden="true" className="font-display text-lead font-bold [font-stretch:108%]">MSK Scripts</span>
                 </Link>
                 <div className="grid gap-2">
                   <p className="text-small font-semibold">{t.action_theme}</p>

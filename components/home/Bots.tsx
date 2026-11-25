@@ -56,9 +56,11 @@ export function Bots({ lang, ticketFrom }: { lang: Lang; ticketFrom: string }) {
                 // The banner shows logo and wordmark of the bot, so it says
                 // something and is named after it.
                 alt={`MSK ${bot.name}`}
-                fill
+                // The banner's own size, so the img carries it in the HTML.
+                width={1920}
+                height={1080}
                 sizes="(max-width: 767px) 100vw, (max-width: 1599px) 50vw, 40vw"
-                className="object-cover"
+                className="h-full w-full object-cover"
               />
             </div>
             <div className="grid content-center gap-3">

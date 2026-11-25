@@ -59,10 +59,11 @@ function SignInReturn() {
 function Brand() {
   return (
     <Link href="/" className="flex min-h-11 shrink-0 items-center gap-2.5 text-[var(--color-foreground)]">
-      <Image src="/logo.png" alt="" width={36} height={36} priority className="h-9 w-9 rounded-lg object-contain" />
-      {/* Below 360 px the name gives way to the menu; it stays the link's
-          name for a screen reader. */}
-      <span className="sr-only font-display text-lead font-bold tracking-[-0.01em] [font-stretch:108%] min-[360px]:not-sr-only">
+      {/* The logo carries the link's name, so a screen reader hears it once
+          and it stays there below 360 px, where the written name gives way to
+          the menu. */}
+      <Image src="/logo.png" alt="MSK Scripts" width={36} height={36} priority className="h-9 w-9 rounded-lg object-contain" />
+      <span aria-hidden="true" className="hidden font-display text-lead font-bold tracking-[-0.01em] [font-stretch:108%] min-[360px]:inline">
         MSK Scripts
       </span>
     </Link>

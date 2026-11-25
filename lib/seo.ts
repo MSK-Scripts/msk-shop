@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-import { X_DEFAULT_PATH, alternatePaths } from '@/lib/routes'
+import { alternatePaths } from '@/lib/routes'
 import type { Lang } from '@/lib/i18n'
 import type { OpenGraph } from 'next/dist/lib/metadata/types/opengraph-types'
 
@@ -110,17 +110,25 @@ export function plainExcerpt(html: string | undefined | null, maxLength = 160): 
  *
  * `path` is the internal path (`/legal/terms`), not a public address
  * (`/de/rechtliches/agb`): the route table turns it into both versions.
+ * `query` (`?page=3`) is appended to all of them, for a page of a paginated
+ * list that stands for itself.
  */
-export function alternatesFor(lang: Lang, path: string): NonNullable<Metadata['alternates']> {
+export function alternatesFor(
+  lang: Lang,
+  path: string,
+  query = '',
+): NonNullable<Metadata['alternates']> {
   const alt = alternatePaths(path)
   return {
-    canonical: alt[lang],
+    canonical: alt[lang] + query,
     languages: {
-      en:          alt.en,
-      de:          alt.de,
-      // The root picks a language and redirects: the page for everyone
-      // whose browser asks for neither of the two.
-      'x-default': X_DEFAULT_PATH,
+      en:          alt.en + query,
+      de:          alt.de + query,
+      // English is the lead language: the version for everyone whose browser
+      // asks for neither of the two. Until 25.11.2026 this was the root `/`,
+      // which answers 307 and is the home page, not this page, so a crawler
+      // flagged all 8,669 annotations as a non-200 target.
+      'x-default': alt.en + query,
     },
   }
 }

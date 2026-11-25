@@ -21,17 +21,34 @@ async function findCategory(slug: string, lang: Lang) {
   return categories.find(c => c.slug === slug) ?? null
 }
 
-export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
+export async function generateMetadata(
+  { params, searchParams }: { params: Params; searchParams: Search },
+): Promise<Metadata> {
   const { category: slug } = await params
+  const { q = '', page: rawPage = '1' } = await searchParams
   const { lang } = await getRequestLang()
   const category = await findCategory(slug, lang)
   if (!category) return {}
 
+  // Every page of the list stands for itself: it shows other images than page
+  // 1, so it names itself as canonical and its own counterpart in the other
+  // language. Until 25.11.2026 pages 2 and up named page 1 in both, and a
+  // crawler reported 138 pages without a self reference or return link. A
+  // search (`?q=`) still points to the plain category.
+  const page  = Math.max(1, Math.floor(Number(rawPage)) || 1)
+  const pages = Math.max(1, Math.ceil(category.count / DEFAULT_PER_PAGE))
+  const paged = !q && page > 1 && page <= pages
+  const query = paged ? `?page=${page}` : ''
+  const pageSuffix = paged ? (lang === 'de' ? `, Seite ${page}` : `, page ${page}`) : ''
+  const pageNote = paged
+    ? (lang === 'de' ? ` Seite ${page} von ${pages}.` : ` Page ${page} of ${pages}.`)
+    : ''
+
   // Curated like the package pages: the raw category name ("Vehicles") is
   // worthless as a title; people search for what the images are.
-  const title = lang === 'de'
+  const title = (lang === 'de'
     ? `${category.name} Bilder für FiveM`
-    : `FiveM ${category.name} Images`
+    : `FiveM ${category.name} Images`) + pageSuffix
   // `brand` holds our own logos and banners, not game content. Until
   // 05.09.2026 the GTA wording covered that category too, so the search result
   // description claimed the opposite of what the rights notice on the very same
@@ -47,7 +64,9 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 
   // A category without a published image is a page with nothing on it. It
   // stays reachable, so a link to it does not break, but it stays out of the
-  // index, with a description that does not start with "0 images".
+  // index, with a description that does not start with "0 images". It names no
+  // language versions: an hreflang pair between two noindex pages points
+  // search engines at something they must not show.
   if (category.count === 0) {
     return {
       title,
@@ -55,11 +74,15 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
         ? `In dieser Kategorie ist noch kein Bild veröffentlicht. Die anderen Kategorien der Bildergalerie sind frei für FiveM-Scripts nutzbar.`
         : `No image has been published in this category yet. The other categories of the image gallery are free to use in FiveM scripts.`,
       robots: { index: false, follow: true },
-      alternates: alternatesFor(lang, `/tools/images/${slug}`),
+      alternates: { canonical: alternatesFor(lang, `/tools/images/${slug}`).canonical },
     }
   }
 
-  return { title, description, alternates: alternatesFor(lang, `/tools/images/${slug}`) }
+  return {
+    title,
+    description: description + pageNote,
+    alternates: alternatesFor(lang, `/tools/images/${slug}`, query),
+  }
 }
 
 export default async function CategoryPage(
