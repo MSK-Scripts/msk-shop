@@ -90,9 +90,12 @@ function Tool({ tool, lang, index }: { tool: CustomPackage; lang: Lang; index: n
               <Image
                 src={imageSrc(tool.image)}
                 alt={p.screenshot.replace('{name}', tool.name)}
-                fill
+                // The box's 16:9 as size, so the img carries one in the HTML;
+                // the screenshots differ and are cropped to it.
+                width={1280}
+                height={720}
                 sizes="(max-width: 1023px) 100vw, 50vw"
-                className="object-cover object-left-top"
+                className="h-full w-full object-cover object-left-top"
               />
             </div>
           )}

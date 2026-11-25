@@ -40,13 +40,15 @@ export function ProductCard({ card, lang, headingLevel = 3 }: Props) {
             // The name right below is the link; the picture adds nothing a
             // screen reader would need twice.
             alt=""
-            fill
+            // The box's 16:10 as size, so the img carries one in the HTML.
+            width={1600}
+            height={1000}
             // The grid never makes a card wider than about 30rem plus a gap
             // (`--grid-card`), and on a phone it is the full width.
             sizes="(max-width: 640px) 100vw, 520px"
             // Screenshots of a UI: the top holds the title bar and the
             // navigation, which say most about what is shown.
-            className="object-cover object-top"
+            className="h-full w-full object-cover object-top"
           />
         ) : (
           <span className="absolute inset-0 grid place-items-center px-4 text-center font-display text-h3 font-semibold text-[var(--color-muted-foreground)]">

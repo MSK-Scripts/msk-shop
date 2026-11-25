@@ -3,7 +3,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 vi.mock('@/lib/db', () => ({ query: vi.fn(), queryOne: vi.fn() }))
 
 import { query, queryOne } from '@/lib/db'
-import { IMAGE_TITLE_MAX, imageTitle, listImages } from '@/lib/images'
+import { IMAGE_DESCRIPTION_MAX, IMAGE_TITLE_MAX, imageDescription, imageTitle, listImages } from '@/lib/images'
 
 const mQuery    = query    as unknown as ReturnType<typeof vi.fn>
 const mQueryOne = queryOne as unknown as ReturnType<typeof vi.fn>
@@ -52,6 +52,14 @@ describe('imageTitle', () => {
     expect(title).toBe('baller6, transparent PNG')
   })
 
+  it('never gives the English and German page the same title', () => {
+    // ".22 Long Rifle (ammo-22) PNG, Items" stood on both language versions.
+    const image = { name: 'ammo-22', label: '.22 Long Rifle', ext: 'png' }
+    expect(imageTitle(image, 'en', 'Items')).not.toBe(imageTitle(image, 'de', 'Items'))
+    const long = { name: 'acapulcogold_untrimmed_bud', label: 'Acapulco Gold Untrimmed Bud', ext: 'png' }
+    expect(imageTitle(long, 'en')).not.toBe(imageTitle(long, 'de'))
+  })
+
   it('names the category for an image published in two categories', () => {
     const image = { name: 'ammo-22', label: '.22 Long Rifle', ext: 'png' }
     const items   = imageTitle(image, 'en', 'Items')
@@ -86,5 +94,25 @@ describe('imageTitle', () => {
     const title = imageTitle({ name: 'banner', label: 'Shop banner', ext: 'jpg' }, 'en')
     expect(title).toBe('Shop banner (banner), JPG')
     expect(title).not.toContain('PNG')
+  })
+})
+
+describe('imageDescription', () => {
+  const base = { label: 'Albany Cavalcade', width: 1024, height: 619 }
+
+  it('tells images with the same label and size apart by spawn name', () => {
+    for (const lang of ['en', 'de'] as const) {
+      const a = imageDescription({ ...base, name: 'cavalcade' },  lang)
+      const b = imageDescription({ ...base, name: 'cavalcade2' }, lang)
+      expect(a).not.toBe(b)
+      expect(b).toContain('cavalcade2')
+    }
+  })
+
+  it('stays inside what a search result shows', () => {
+    const long = { name: 'phentermine_hydrochloride_pppetite_suppressant', label: 'Phentermine Hydrochloride Appetite Suppressant', width: 512, height: 512 }
+    for (const lang of ['en', 'de'] as const) {
+      expect(imageDescription(long, lang, 'Items').length).toBeLessThanOrEqual(IMAGE_DESCRIPTION_MAX)
+    }
   })
 })

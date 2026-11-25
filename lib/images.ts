@@ -1,5 +1,6 @@
 import { query, queryOne } from '@/lib/db'
 import type { Lang } from '@/lib/i18n'
+import { plainExcerpt } from '@/lib/seo'
 
 /**
  * Image gallery: data access and URL building.
@@ -275,10 +276,43 @@ export function imageTitle(
   const worded = (subject: string) => lang === 'de'
     ? (isPng ? `${subject}, freigestelltes PNG` : `${subject}, ${format}`)
     : (isPng ? `${subject}, transparent PNG`    : `${subject}, ${format}`)
-  const candidates = [worded(named), `${named} ${format}`, worded(image.name), `${image.name} ${format}`]
+  // The short forms differ by language too. "… PNG" in both made the English
+  // and German page of 637 images share a title (crawl of 25.11.2026).
+  const short = (subject: string) => lang === 'de' ? `${subject} als ${format}` : `${subject} ${format}`
+  const candidates = [worded(named), short(named), worded(image.name), short(image.name)]
   const placed = where ? candidates.map(c => `${c}, ${where}`) : candidates
   return placed.find(c => c.length <= IMAGE_TITLE_MAX)
     ?? (where ? `${image.name}, ${where}` : image.name)
+}
+
+/** Longest description a search result shows. */
+export const IMAGE_DESCRIPTION_MAX = 155
+
+/**
+ * Meta description of an image page. It names the spawn name next to the
+ * label, because labels repeat: `cavalcade` and `cavalcade2` are both
+ * "Albany Cavalcade" with the same size, and 174 descriptions were shared by
+ * two or three pages (crawl of 25.11.2026). `where` as in `imageTitle`.
+ */
+export function imageDescription(
+  image: Pick<ImageRecord, 'name' | 'label' | 'width' | 'height'>,
+  lang: Lang,
+  where?: string,
+): string {
+  const label = image.label?.trim()
+  const display = label && label.toLowerCase() !== image.name.toLowerCase()
+    ? `${label} (${image.name})`
+    : image.name
+  const place = where ? ` (${where})` : ''
+  const lead = (subject: string) => lang === 'de'
+    ? `Freigestelltes Bild von ${subject} aus GTA V${place}, ${image.width} mal ${image.height} Pixel, kostenlos für FiveM-Scripts.`
+    : `Transparent image of ${subject} from GTA V${place}, ${image.width} by ${image.height} pixels, free for FiveM scripts.`
+  const tail = lang === 'de' ? ' Direkt über die CDN-URL nutzbar.' : ' Use the CDN URL directly.'
+  // First the CDN hint goes, then the label; the spawn name stays, it is what
+  // tells two pages apart.
+  const candidates = [lead(display) + tail, lead(display), lead(image.name) + tail, lead(image.name)]
+  return candidates.find(c => c.length <= IMAGE_DESCRIPTION_MAX)
+    ?? plainExcerpt(lead(image.name), IMAGE_DESCRIPTION_MAX - 1)
 }
 
 /**
